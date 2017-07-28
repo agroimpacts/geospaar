@@ -20,6 +20,44 @@ Originally developed for statistics, free and open source R is now one of the mo
 
 This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
 
+# Course structure
+The follow is an overview of the course structure. Note that this structure will evolve as the course progresses, given that this is a brand new course and we will adjust material to match the pace of learning. 
+
+## Unit 1. An introduction to R
+
+In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills  related to __reproducible research__, including the use of *git* and *github*, how to create an R package, and the use of Rmarkdown to document and present your analyses. 
+
+### Week 1. 
+### Week 2. 
+### Week 3. 
+### Week 4. 
+### Week 5. 
+
+### Key takeaways/skills
+
+
+## Unit 2. Handling and analyzing spatial data with R
+### Week 6.
+### Week 7. 
+### Week 8. 
+### Week 9. 
+### Week 10.
+### Key takeaways/skills
+
+## Unit 3. Projects
+### Week 11. 
+### Week 12. 
+### Week 13. 
+### Week 14. 
+### Week 15. 
+### Key takeaways/skills
+
+
+
+
+
+
+
 
 
 
