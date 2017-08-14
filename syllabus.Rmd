@@ -9,7 +9,7 @@ output:
     toc: yes
 ---
 
-```{r setup, include=FALSE}
+```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -45,7 +45,7 @@ There are some other things you should know before committing to this course.
 <a href="#top">Back to top</a>
     
 ## Style
-There are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow Google's style guide for R, available here.  
+There are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow [Hadley Wickham's style guide](http://adv-r.had.co.nz/Style.html). Please study it.   
 
 <a href="#top">Back to top</a>
 
@@ -58,7 +58,7 @@ During the first two units, you will be given one multi-part assignment per week
 <a href="#top">Back to top</a>
 
 ### Projects
-Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
+Each student will be required to undertake a final project. Please see the [projects](projects.Rmd) page for more detail.
 
 <a href="#top">Back to top</a>
 
@@ -92,17 +92,22 @@ In this first part of the course, we will learn the basics of working with R, st
 
 ### Week 1 (Aug 28, 30). Overview of R and an introduction to reproducibility
 #### Class 1. The nature and history of R
-+ Readings: 
-    + Syllabus and course requirements
-    + R overview and history (find)
-    + Who uses R
++ Materials to read/watch: 
+    + Read this syllabus and course requirements
+    + R overview and history:
+        + [Watch this online lecture by Roger Peng](https://www.youtube.com/watch?v=STihTnVSZnI)
+        + [Read the introduction section](http://adv-r.had.co.nz/Introduction.html) here by Hadley Wickham
+        + [Introduction](http://www.rspatial.org/intr/rst/1-introduction.html) chapter in Introduction to R, and Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf), which is linked from that (there are other interesting links in there)
     + An introduction to Rstudio
-+ No assignment
+        + [Possibility 1](https://www.youtube.com/watch?v=jwBgGS_4RQA)
+        + [Possibility 2](https://www.youtube.com/watch?v=pXd54-vucu0)
++ Assignment: Sign up for github and send us your github user name. 
 
 RInferno? 
 
 #### Class 2 (30/8). git, github, and the philosophy of reproducibility
 [Assignment 1](assignments/assignment1.html)
+
 + Readings (do examples in reading): 
     + Something from reproducibility with R
     + Introduction to git and github
@@ -139,6 +144,7 @@ RInferno?
 + Basic data.frame way, and with control structures
 + Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
     + The tidyverse
+    + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA)
 
 ### Week 4 (Sep 18, 20). Analyses
 [Assignment 3](assignments/assignment3.html)
@@ -178,9 +184,12 @@ The following are some helpful resources that you may wish to follow-up on as yo
 ## Books
 
 ## Web, including social
+### Websites
+[CRAN](), particularly [CRAN's introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html)
+
 ### Blogs
 ### Twitter
-@one
+
 
 
 
