@@ -1,0 +1,44 @@
+---
+title: "Semester Projects"
+author: "Lyndon Estes"
+date: "July 29, 2017"
+output: 
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 5
+    toc: yes
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+Each student will undertake an R-based final project for this class. This project could be one related to your own thesis work, which we will discuss and agree upon. Alternatively, you can choose to undertake one of the projects listed below. Some of these are individual projects, some of their you will work on as part of a team. 
+
+# Project list
+
+## Add `AquacropOS` to `rcropmod`
+
+## Help defeat gerrymandering
+
+## An R library to query Arable pods
+
+## Detect fairy rings with OpenCV
+
+Write an R implementation of OpenCV to detect a fungal pathogen infecting fairy ring, using drone-collected imagery. 
+
+## An R library for running Terrset
+
+## How well do crowdsourcers map individual fields? 
+
+Comparing Turker Maps to GPS collected field boundaries (perhaps done before class starts)
+
+# Expected effort
+
+# Submissions
+
+# Presentation format

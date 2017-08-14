@@ -1,7 +1,6 @@
 ---
 title: "Geography 246/346 Syllabus"
-author: "Lyndon Estes"
-date: "July 28, 2017"
+author: "Lyndon Estes, Zhiwen Zhu (TA)"
 output: 
   html_document:
     fig_caption: yes
@@ -16,32 +15,153 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. 
+Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
 
-This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
+<a href="#top">Back to top</a>
+
+## Philosophy
+Although the primary focus of the course is learning how to use `R`, the course also has a meta-goal, which is to introduce some additional skills and a mindset that together lead to more efficient and transparent, and thus ___reproducible___, research. Reproducibility is something I only started to figure out (and am still learning) well after I completed by postdoc, but sincerely wish I had acquired before I started my PhD.  
+
+## Other points to consider
+
+There are some other things you should know before committing to this course. 
+
+1. ___Assignments in this class are problem-oriented, not recipe-based___: 
+
+    I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in R, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out the precise steps needed to arrive at a solution will not take you as far towards R fluency, and will prevent you from learning the diversity of this language. 
+    
+    I personally find it very rewarding to figure out programming problems (and I even prefer programming to writing papers), but some people can find it boring or even frustrating. If you fall into the latter camp, please consider the possibility that this course might not be for you. Let's discuss.
+
+2. ___This is a flipped class___:
+
+    All materials and problems are expected to be done before class.  With few exceptions, there will be no lectures. Class time is for helping you to work through problems that you are having, clarifying concepts that are unclear, or for presenting your work to your peers. That means that we expect you to have completed your work ahead of time so that you are already aware of the problems you are having.  
+    
+    We have adopted this structure because of the problem-oriented nature of assignments. 
+    
+3. ___I am not a computer scientist___:
+
+    Full disclosure: I am self-taught programmer. That means that the way I teach this course might differ from the way a formally trained computer or (even data) scientist would teach it. I don't know if that's the case, but those of you have taken computer science courses might notice some differences. 
+
+<a href="#top">Back to top</a>
+    
+## Style
+There are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow Google's style guide for R, available here.  
+
+<a href="#top">Back to top</a>
+
+## Reading and Assignments
+
+Readings assignments should be completed before the class they are listed under. 
+___Revisit___
+During the first two units, you will be given one multi-part assignment per week to complete. The first part should be completed before Monday's class, so that we can help you through any problems on Monday. The second part should be done before Wednesday's class. You will submit your final version by midnight Wednesday (as a final git commit and push to your individual repo). 
+
+<a href="#top">Back to top</a>
+
+### Projects
+Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
+
+<a href="#top">Back to top</a>
+
+### Grading
+
+___For assignments___
+
+Assessment: Can we load the data you used, run your code, and arrive at the same result you reported?
+
+Category | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Total
+---------|---------|---------|---------|---------|---------|
+Accuracy |         |         |         |         |         |
+Elegance |         |         |         |         |        
+Reproducibility |         |         |         |         |         |        
+
+___For presentations___
+
+
+
+___For final___
+
+
+<a href="#top">Back to top</a>
 
 # Course structure
-The follow is an overview of the course structure. Note that this structure will evolve as the course progresses, given that this is a brand new course and we will adjust material to match the pace of learning. 
+The follow is an overview of the course structure. Note that this structure will evolve during the semester, given that this is its first run, and we will adjust material to match the pace of learning. 
 
-## Unit 1. An introduction to R
+## Unit 1. *An introduction to R and related reproducibility skills*
 
-In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills  related to __reproducible research__, including the use of *git* and *github*, how to create an R package, and the use of Rmarkdown to document and present your analyses. 
+In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
 
-### Week 1. 
-### Week 2. 
-### Week 3. 
-### Week 4. 
-### Week 5. 
+### Week 1 (Aug 28, 30). Overview of R and an introduction to reproducibility
+#### Class 1. The nature and history of R
++ Readings: 
+    + Syllabus and course requirements
+    + R overview and history (find)
+    + Who uses R
+    + An introduction to Rstudio
++ No assignment
 
-### Key takeaways/skills
+RInferno? 
 
+#### Class 2 (30/8). git, github, and the philosophy of reproducibility
+[Assignment 1](assignments/assignment1.html)
++ Readings (do examples in reading): 
+    + Something from reproducibility with R
+    + Introduction to git and github
+    + Structuring your work like an R library
+    + Rstudio and git/github integration
+
+### Week 2  (Sep 4, 6). Reproducibility (cont.) and R fundamentals
+#### Class 3 
++ Readings:
+    + Introduction to Rmarkdown
+    + R packages
+    + Why you should structure your packages like an R library
+
+#### Class 4. R bestiary 1
++ Objects, functions, classes (S3, S4)
++ Data types
++ Vectors, lists, arrays, matrices, data.frames
++ Environments, namespaces
++ Readings: 
+
+### Week 3 (Sep 11, 13). R fundamentals continued
+[Assignment 2](assignments/assignment2.html)
+#### Class 5. R bestiary 2
++ Control structures: 
+    + `*apply` versus `for` versus `foreach`; `while`
+    + how to avoid control structures if needed
++ Writing functions
+    + Generic functions
+
+#### Class 6. Manipulating data
++ Substitutions, reshaping, grouping, merging
++ The subtleties of indexing
++ grep, gsub, etc. 
++ Basic data.frame way, and with control structures
++ Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
+    + The tidyverse
+
+### Week 4 (Sep 18, 20). Analyses
+[Assignment 3](assignments/assignment3.html)
+#### Class 7. 
++ Math on matrices, data.frames
++ Basic statistics: regressions, correlations, non-parametric (splines)
++ Examining outputs of analyses (summary)
+
+#### Class 8. Visualization
++ Plotting: base R, ggplot alternatives
++ Scatter, lines, bar graphs, boxplots, violin plots
++ Layouts, axes, legends, text, mtext
+
+### Week 5 (Sep 25, 27). Reserved/spillover
+
+<a href="#top">Back to top</a>
 
 ## Unit 2. Handling and analyzing spatial data with R
-### Week 6.
-### Week 7. 
-### Week 8. 
-### Week 9. 
-### Week 10.
+### Week 6 (Oct 2, 4). 
+### Week 7 (Oct 11). 
+### Week 8 (Oct 16, 18). 
+### Week 9 (Oct 23, 25). 
+### Week 10 (Oct 30, Nov 2). Visualization
 ### Key takeaways/skills
 
 ## Unit 3. Projects
@@ -52,6 +172,15 @@ In this first part of the course, we will learn the basics of working with R, st
 ### Week 15. 
 ### Key takeaways/skills
 
+# Resources
+The following are some helpful resources that you may wish to follow-up on as you learn R. 
+
+## Books
+
+## Web, including social
+### Blogs
+### Twitter
+@one
 
 
 
