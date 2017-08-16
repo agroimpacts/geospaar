@@ -31,6 +31,10 @@ There are some other things you should know before committing to this course.
     I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in R, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out the precise steps needed to arrive at a solution will not take you as far towards R fluency, and will prevent you from learning the diversity of this language. 
     
     I personally find it very rewarding to figure out programming problems (and I even prefer programming to writing papers), but some people can find it boring or even frustrating. If you fall into the latter camp, please consider the possibility that this course might not be for you. Let's discuss.
+    
+2. ___The order in which material is introduced will occasionally be non-linear___: 
+
+    Primarily because we are introducing the concept of reproducibility up front in this class, which entails learning about some things that people might ordinarily get around to after they know a bit of R code.  However, I believe that this order of things will enable you to learn R (or any other programming language) more rapidly. It will also (hopefully) make learning R more fun. 
 
 2. ___This is a flipped class___:
 
@@ -52,20 +56,25 @@ There are many ways to write code and get the results you want. However, not all
 ## Required Texts, Reading, and Assignments
 There are no required texts for this course, at least not ones that you have to buy. There is a ton of R material freely available on the web, and we are going to draw on that for this class. You will find links to that material in the syllabus, and, in some cases, in the [Resources](#Resources) section below
 
-__Readings assignments__ should be completed ___before___ the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the material course is separate from the practicals.  
+__Readings assignments__ should be completed ___before___ the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the course is separate from the practicals.  
 
 ___Practicals___. During the first two units, we will give a number of practical exercises. Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. These assignments will ask you to apply skills from the readings to solve a particular problem. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. That means that you will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
 <a href="#top">Back to top</a>
 
-## Communications and Conduct
+## Conduct
+### Communications
+We will conduct class communications via a Slack channel that you should already be invited to. Please don't send emails. We chose to use Slack because it keeps relevant conversations in defined places, rather than scattered across email inboxes. We will have a few channels that are designated for specific kinds of conversations. The \#general channel will be used for course announcements, etc. There will be a specific channel for discussion about each assignment. Any questions you have about the assignment should be asked in those. You can send private individual or group messages that are restricted to those individuals in the conversation. Use this for confidential questions.  
 
-### Slack
-### Office hours
+Slack's most obvious characteristic is instant messaging. However, please don't approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of those hours, we will have physical and Slack [office hours](#office) to which communications should be confined.   
 
-Lyndon (Jefferson 107): Tuesday 1-3 pm 
+Students are encouraged to work together on lab and other assignments to assist each other in understanding the exercises. However, all contents of each student's assignments (text and graphics) must be authored solely by that student.
 
-Zhiwen: 
+### Office hours {#office}
+
+Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Xday Y-Z pm 
+
+Zhiwen: Physical (Jefferson Cofert Office) - Thursday 9-11 am; Slack - Xday Y-Z pm  
 
 
 ### Projects
@@ -126,10 +135,14 @@ In this first part of the course, we will learn the basics of working with R, st
     + ...and use git and GitHub with R and Rstudio: Read [this](http://r-pkgs.had.co.nz/git.html#git), [this](https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control), and [this](https://jahya.net/blog/git-vs-github/).  
 
 ### Week 2  (Sep 4, 6). Reproducibility Continued/R fundamentals
-#### Class 3 
+#### Class 3. Rmarkdown and more on R packages
 + Readings:
-    + Introduction to Rmarkdown
-    + R packages: [this](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)
+    + Two quick things on markdown: [One](http://kbroman.org/knitr_knutshell/pages/markdown.html); [Two](http://blog.kdheepak.com/writing-papers-with-markdown.html)
+    + Which leads to a bit about Rmarkdown: [A quick overview](http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html); and see [Rstudio's Overview of Rmarkdown](http://rmarkdown.rstudio.com/)--click "Get Started" and then go through all the linked sections (Introduction through Cheatsheets).  
+    + Writing R packages: 
+        + [A very short tutorial](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)--note: Step0 in this tutorial is *likely* done already (check the packages tab in RStudio to confirm); 
+        + More details on packages from Hadley Wickham's book. Review these chapters (somewhat long, so probably just read): [Packages](http://r-pkgs.had.co.nz/package.html#package-structure); [R code](http://r-pkgs.had.co.nz/r.html#r); [Package metadata](http://r-pkgs.had.co.nz/description.html#description); [Documentation](http://r-pkgs.had.co.nz/man.html#man); [Vignettes](http://r-pkgs.had.co.nz/man.html#man) (also read [this](http://rmflight.github.io/posts/2014/07/analyses_as_packages.html) about vignettes); [Namespace](http://r-pkgs.had.co.nz/namespace.html#namespace); [External data](http://r-pkgs.had.co.nz/data.html#data); the part about [Tests](http://r-pkgs.had.co.nz/tests.html#tests) is also important, but for your own future work--we won't get that far in this class. 
+    + Poke around the [ROpenSci website](https://ropensci.org), and particularly its section on [tools for reproducibility](http://ropensci.github.io/reproducibility-guide/sections/tools/) to get a bigger picture view of how R fits into reproducibility 
 + [Assignment 1](assignments/assignment1.html). 
 
 
@@ -208,9 +221,14 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 [Tools for Reproducible Research](http://kbroman.org/Tools4RR/)
 
+[R Exercises](http://www.r-exercises.com)
+
+[ROpenSci](https://ropensci.org)
+
 ### Blogs
 
 [R-bloggers](https://www.r-bloggers.com/)
+
 
 ### Twitter
 
