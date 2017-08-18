@@ -56,7 +56,7 @@ There are many ways to write code and get the results you want. However, not all
 ## Required Texts, Reading, and Assignments
 There are no required texts for this course, at least not ones that you have to buy. There is a ton of R material freely available on the web, and we are going to draw on that for this class. You will find links to that material in the syllabus, and, in some cases, in the [Resources](#Resources) section below
 
-__Readings assignments__ should be completed ___before___ the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the course is separate from the practicals.  
+__Readings assignments__ should be completed ___before___ the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the course is separate from the practicals. 
 
 ___Practicals___. During the first two units, we will give a number of practical exercises. Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. These assignments will ask you to apply skills from the readings to solve a particular problem. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. That means that you will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
@@ -68,7 +68,7 @@ We will conduct class communications via a Slack channel that you should already
 
 Slack's most obvious characteristic is instant messaging. However, please don't approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of those hours, we will have physical and Slack [office hours](#office) to which communications should be confined.   
 
-Students are encouraged to work together on lab and other assignments to assist each other in understanding the exercises. However, all contents of each student's assignments (text and graphics) must be authored solely by that student.
+For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, we encourage team efforts (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
 
 ### Office hours {#office}
 
@@ -146,29 +146,29 @@ In this first part of the course, we will learn the basics of working with R, st
     + Poke around the [ROpenSci website](https://ropensci.org), and particularly its section on [tools for reproducibility](http://ropensci.github.io/reproducibility-guide/sections/tools/) to get a bigger picture view of how R fits into reproducibility 
 + [Assignment 1](assignments/assignment1.html). 
 
-#### Class 4. R bestiary 1
+#### Class 4. R bestiary
 + Readings: 
     + Beginning note: some of this material is quite advanced, but we are going to cover it as background so that we have a good idea of the major components of R. Although you may always find it useful to do practical examples as you read through material, for many of these you might just want to read to get an understanding. 
     + You may find it useful to refresh your memory with Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf)
-    + Data types and structures: [rspatial Chapter 2](http://www.rspatial.org/intr/rst/2-basic-data-types.html), [Chapter 3](http://www.rspatial.org/intr/rst/3-basic-data-structures.html), and [Data Structures](http://adv-r.had.co.nz/Data-structures.html)
-    + Functions: rspatial's [chapter](http://www.rspatial.org/intr/rst/8-functions.html) on function; read from top through "Primitive Functions" section in Advanced R's chapter on [Functions](http://adv-r.had.co.nz/Functions.html#function-components).  
+    + Data types and structures: rspatial on [basic data types](http://www.rspatial.org/intr/rst/2-basic-data-types.html) and [basic data structures](http://www.rspatial.org/intr/rst/3-basic-data-structures.html), and Advanced R on [data structures](http://adv-r.had.co.nz/Data-structures.html)
+    + (___Revisit___) Functions: rspatial's [chapter](http://www.rspatial.org/intr/rst/8-functions.html) on functions; read from top through "Primitive Functions" section in Advanced R's chapter on [Functions](http://adv-r.had.co.nz/Functions.html#function-components).  
     + Object-oriented programming (OOP) and R classes (especially S3 & S4): Read 5-5.1 in CRAN's [definition of OOP](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming) first, and then a [python-oriented version](https://python.swaroopch.com/oop.html) of the same, which might be somewhat clearer. Then read the Advanced R [OO field guide](http://adv-r.had.co.nz/OO-essentials.html) that talks about the main OOP-associated classes, particularly S3 and S4, used in R.
     + Environments: Read Environment Basics and Function Environments in the the [Environment chapter](http://adv-r.had.co.nz/Environments.html#env-basics) of Advanced R. 
 
-### Week 3 (Sep 11, 13). R fundamentals continued
+### Week 3 (Sep 11, 13). R fundamentals
 
-#### Class 5. R bestiary 2
-+ Control structures: 
-    + `*apply` versus `for` versus `foreach`; `while`
-    + how to avoid control structures if needed
-+ Writing functions
-    + Generic functions
+#### Class 5. Basic operations, indexing, and control structures
++ Readings: 
+    + Basics: U. Illinois' [Using R as a calculator](http://courses.atlas.illinois.edu/fall2016/STAT/STAT200/RProgramming/RCalculator.html); rspatial's [chapter on algebra](http://www.rspatial.org/intr/rst/5-algebra.html); 
+    + Indexing: rspatial on [indexing](http://www.rspatial.org/intr/rst/4-indexing.html)
+    + Control structures: rspatial on [flow control](http://www.rspatial.org/intr/rst/10-flow.html), or control structures, and on R's unique [apply](http://www.rspatial.org/intr/rst/9-apply.html) family; an R-bloggers [more detailed look](https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/) at family apply
+    + Advanced control structures: [foreach](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf). Just read the introduction and skim the rest if you are so inclined--this is something to keep in our back pocket for future work
+    + (___Revisit___) A bit more on functions from [here](https://ramnathv.github.io/pycon2014-r/learn/functions.html) and [here](http://www.statmethods.net/management/userfunctions.html)
 + [Assignment 2](assignments/assignment2.html)
-
 
 #### Class 6. Manipulating data
 + Substitutions, reshaping, grouping, merging
-+ The subtleties of indexing
+http://www.rspatial.org/intr/rst/11-dataprep.html
 + grep, gsub, etc. 
 + Basic data.frame way, and with control structures
 + Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
