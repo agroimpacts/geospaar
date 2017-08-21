@@ -233,6 +233,8 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 [ROpenSci](https://ropensci.org)
 
+[Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
+
 ### Blogs
 
 [R-bloggers](https://www.r-bloggers.com/)
