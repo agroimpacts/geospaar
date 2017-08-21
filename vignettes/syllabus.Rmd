@@ -174,14 +174,10 @@ In this first part of the course, we will learn the basics of working with R, st
 ### Week 4. Analyses
 #### Class 6 (18 Sep). Working with/manipulating data
 + Readings: 
-    + [Reading/writing data](http://www.rspatial.org/intr/rst/6-files.html)
-+ Substitutions, reshaping, grouping, merging
-http://www.rspatial.org/intr/rst/11-dataprep.html
-+ grep, gsub, etc. 
-+ Basic data.frame way, and with control structures
-+ Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
-    + The tidyverse
-    + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA)
+    + Reading/writing data: [One piece](https://ramnathv.github.io/pycon2014-r/explore/tidy.html) by Ramnath that also introduces the concept of tidy data; [another from rspatial](http://www.rspatial.org/intr/rst/6-files.html)
+    + Data massage (i.e. substitutions, reshaping, merging, or how to tidy up data): [rspatial's piece](http://www.rspatial.org/intr/rst/11-dataprep.html); [ramnath's take](https://ramnathv.github.io/pycon2014-r/explore/reshape.html) on it; [recoding data](http://www.cookbook-r.com/Manipulating_data/Recoding_data/), which is a sub-section of a very useful Cookbook for R section on [Manipulating Data](http://rprogramming.net/recode-data-in-r/) that you have the option of perusing further.  
+    + Several of the previous readings introduce the `gsub` function, which uses *regular expressions* to match and replace patterns in character data types. Working with *regular expressions* is important and can be challenging, so let's read a [bit more](*regular expressions*) about them. Here's a [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for that also. 
++ [Assignment 3](assignments/assignment3.html)
 
 #### Class 7 (20 Sep). 
 + Math on matrices, data.frames
@@ -193,9 +189,11 @@ http://www.rspatial.org/intr/rst/11-dataprep.html
 + Plotting: base R, ggplot alternatives
 + Scatter, lines, bar graphs, boxplots, violin plots
 + Layouts, axes, legends, text, mtext
-+ [Assignment 3](assignments/assignment3.html)
 
 #### Class 9 (29 Sep). Reserved for spillover
++ Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
+    + The tidyverse
+    + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA)
 
 <a href="#top">Back to top</a>
 
