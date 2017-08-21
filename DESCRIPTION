@@ -6,6 +6,9 @@ Author: Lyndon Estes
 Maintainer: Lyndon Estes <LEstes@clarku.edu>
 Description: This package contains the course materials for the Geospatial 
     Analysis with R course. 
-License: No license
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
