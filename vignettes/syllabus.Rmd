@@ -63,7 +63,7 @@ __Readings__ should be completed ___before___ the class they are listed under. E
 
 ___Practical assignments___. During the first two units, we will give a number of practical exercises (see links to individual assignments in the [course structure](#structure) section). Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. These assignments will ask you to apply skills from the readings to solve a particular problem. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. That means that you will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
-__Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.Rmd) page for more detail.
+__Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
 
 A note on writing code: there are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow [Hadley Wickham's style guide](http://adv-r.had.co.nz/Style.html). Please study it.    
 
