@@ -26,7 +26,7 @@ This list is currently in thumbnail form, and will fill out during the next few 
 
 # Project list
 
-## Add `AquacropOS` to `rcropmod`
+## Port `AquacropOS` to R
 Port the code for the crop simulator `AquacropOS` from matlab into R, integrating into the existing `rcropmod` package. Final project results will include running and presenting gridded crop yield simulations. 
 
 ## Help defeat gerrymandering
@@ -53,6 +53,10 @@ Work through and update existing object oriented analysis of fairy ring detectio
 Comparing Turker Maps to GPS collected field boundaries (perhaps done before class starts)
 
 ## Is the variability in farmers' planting dates and seasonal rainfall positively correlated? 
+
+## An R package to summarize land cover change
+
+Write a package to implement the methods described by Pontius et al's (2017) paper "Methods to summarize change among land categories across time intervals"
 
 # Expected effort
 

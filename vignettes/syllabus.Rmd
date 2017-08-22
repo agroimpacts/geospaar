@@ -25,45 +25,60 @@ Originally developed for statistics, free and open source R is now one of the mo
 <a href="#top">Back to top</a>
 
 ## Philosophy
-Although the primary focus of the course is learning how to use `R`, the course also has a meta-goal, which is to introduce some additional skills and a mindset that together lead to more efficient and transparent, and thus ___reproducible___, research. Reproducibility is something I only started to figure out (and am still learning) well after I completed by postdoc, but sincerely wish I had acquired before I started my PhD.  
+Although our primary focus is learning how to use `R` for geospatial analysis, the course also has a meta-goal, which is to introduce some additional skills and a mindset that together lead to more efficient and transparent, and thus ___reproducible___, research. Reproducibility is something I (Lyndon) only started to figure out (and am still learning) well after I completed by postdoc, but sincerely wish I had acquired before I started my PhD.  
 
-## Other points to consider
-
-There are some other things you should know before committing to this course. 
+## Caveats/things to consider
+Here are some other aspects regarding this course that you may wish to consider before committing: 
 
 1. ___Assignments in this class are problem-oriented, not recipe-based___: 
 
     I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in R, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out the precise steps needed to arrive at a solution will not take you as far towards R fluency, and will prevent you from learning the diversity of this language. 
     
-    I personally find it very rewarding to figure out programming problems (and I even prefer programming to writing papers), but some people can find it boring or even frustrating. If you fall into the latter camp, please consider the possibility that this course might not be for you. Let's discuss.
+    I find it very rewarding to figure out programming problems (and I even prefer programming to writing papers), but some people can find it boring or even frustrating. If you fall into the latter camp, please consider the possibility that this course might not be for you. Let's discuss.
     
 2. ___The order in which material is introduced will occasionally be non-linear___: 
 
     Primarily because we are introducing the concept of reproducibility up front in this class, which entails learning about some things that people might ordinarily get around to after they know a bit of R code.  However, I believe that this order of things will enable you to learn R (or any other programming language) more rapidly. It will also (hopefully) make learning R more fun. 
 
-2. ___This is a flipped class___:
+3. ___This is a flipped class___:
 
     All materials and problems are expected to be done before class.  With few exceptions, there will be no lectures. Class time is for helping you to work through problems that you are having, clarifying concepts that are unclear, or for presenting your work to your peers. That means that we expect you to have completed your work ahead of time so that you are already aware of the problems you are having.  
     
     We have adopted this structure because of the problem-oriented nature of assignments. 
     
-3. ___I am not a computer scientist___:
+4. ___I am not a computer scientist___:
 
     Full disclosure: I am self-taught programmer. That means that the way I teach this course might differ from the way a formally trained computer or (even data) scientist would teach it. I don't know if that's the case, but those of you have taken computer science courses might notice some differences. 
+    
+5. ___This is a new course___: 
+
+    We are developing this course for Clark for the first time. Much of it will be developed as the semester unfolds, building out material onto the existing three unit framework. This approach will allow us to adapt the pace and material as needed to match progress.  The disadvantage is that you will not see from Day 1 the exact materials we will be covering for later sections (e.g. Unit 2). 
 
 <a href="#top">Back to top</a>
     
-## Style
-There are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow [Hadley Wickham's style guide](http://adv-r.had.co.nz/Style.html). Please study it.   
+## Required Texts, Reading, and Assignments
+There are no required texts for this course, at least not ones that you have to buy. There is a huge amount of well-developed R material that is freely available on the web, and we are going to draw on that for this class. You will find links to that material in the syllabus, and, in some cases, in the [Resources](#Resources) section below.
+
+__Readings__ should be completed ___before___ the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the course is separate from the practicals. 
+
+___Practical assignments___. During the first two units, we will give a number of practical exercises (see links to individual assignments in the [course structure](#structure) section). Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. These assignments will ask you to apply skills from the readings to solve a particular problem. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. That means that you will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
+
+__Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.Rmd) page for more detail.
+
+A note on writing code: there are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow [Hadley Wickham's style guide](http://adv-r.had.co.nz/Style.html). Please study it.    
 
 <a href="#top">Back to top</a>
 
-## Required Texts, Reading, and Assignments
-There are no required texts for this course, at least not ones that you have to buy. There is a ton of R material freely available on the web, and we are going to draw on that for this class. You will find links to that material in the syllabus, and, in some cases, in the [Resources](#Resources) section below
+## Assessment
 
-__Readings assignments__ should be completed ___before___ the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the course is separate from the practicals. 
+Your progress in this class will be assessed based on: 
 
-___Practicals___. During the first two units, we will give a number of practical exercises. Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. These assignments will ask you to apply skills from the readings to solve a particular problem. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. That means that you will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
+1. Practical assignments in Units 1 and 2 (30% of grade)
+2. Semester projects: 
+    a. Oral presentation (30%)
+    b. Final report/paper (40%)
+
+Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette 
 
 <a href="#top">Back to top</a>
 
@@ -81,28 +96,9 @@ Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Xday Y-Z pm
 
 Zhiwen: Physical (Jefferson Cofert Office) - Thursday 9-11 am; Slack - Xday Y-Z pm  
 
-
-## Assessment
-
-Your progress in this class will be assessed based on: 
-
-1. Practical assignments in Units 1 and 2 (30% of grade)
-2. Semester projects: 
-    a. Oral presentation (30%)
-    b. Final report/paper (40%)
-
-Grading will be based on the rubrics found under the assessments page 
-
-Projects
-__[Under construction]__ Each student will be required to undertake a final project. Please see the [projects](projects.Rmd) page for more detail.
-
 <a href="#top">Back to top</a>
 
-
-
-<a href="#top">Back to top</a>
-
-# Course structure
+# Course structure{#structure}
 The follow is an overview of the course structure. Note that this structure will evolve during the semester, given that this is its first run, and we will adjust material to match the pace of learning. 
 
 ## Unit 1. *An introduction to R and related reproducibility skills*
@@ -119,7 +115,7 @@ In this first part of the course, we will learn the basics of working with R, st
         + [Read the introduction section](http://adv-r.had.co.nz/Introduction.html) here by Hadley Wickham
         + [Introduction](http://www.rspatial.org/intr/rst/1-introduction.html) chapter in rspatial's Introduction to R, and Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf), which is linked from that (there are other interesting links in there)
     + [A video introduction to Rstudio](https://www.youtube.com/watch?v=pXd54-vucu0)
-+ Assignment: Sign up for github and send us your github user name. 
++ Assignment: Sign up for [github](https://github.com) and send us your github user name (by Sunday evening, preferably)
 
 #### Class 2 (30 Aug). Reproducibility and its components
 + Readings: 
