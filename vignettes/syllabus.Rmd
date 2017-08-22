@@ -94,9 +94,10 @@ We will conduct class communications via a Slack channel that you should already
 
 Slack's most obvious characteristic is instant messaging. However, please don't approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of class times, we will have the following physical and Slack (meaning we will respond to Slack messages during those times) office hours, to which any other course-related communications should be confined. 
 
-Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Wednesday 2-4 pm 
-
-Zhiwen: Physical (Jefferson Cofert Office) - Thursday 9-11 am; Slack - Xday Y-Z pm  
+Instructor | Office           | Office hours     | Slack hours
+---------|------------------|------------------|-------
+Lyndon   | Jefferson 107    | Tuesday 1-3 pm   | Wednesday 2-4 pm 
+Zhiwen   | Jefferson Cofert | Thursday 9-11 am | Friday 10 am-12 pm
 
 Also, please feel free to give any ___constructive___ feedback, positive or negative (and it can be an anonymous note, if you are more comfortable), regarding the course or how we are teaching it.  This will be appreciated, and can help make the course better for everyone. 
 
