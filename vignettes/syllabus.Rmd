@@ -82,28 +82,22 @@ Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Xday Y-Z pm
 Zhiwen: Physical (Jefferson Cofert Office) - Thursday 9-11 am; Slack - Xday Y-Z pm  
 
 
-### Projects
-Each student will be required to undertake a final project. Please see the [projects](projects.Rmd) page for more detail.
+## Assessment
+
+Your progress in this class will be assessed based on: 
+
+1. Practical assignments in Units 1 and 2 (30% of grade)
+2. Semester projects: 
+    a. Oral presentation (30%)
+    b. Final report/paper (40%)
+
+Grading will be based on the rubrics found under the assessments page 
+
+Projects
+__[Under construction]__ Each student will be required to undertake a final project. Please see the [projects](projects.Rmd) page for more detail.
 
 <a href="#top">Back to top</a>
 
-### Grading
-
-___For assignments___
-
-Assessment: Can we load the data you used, run your code, and arrive at the same result you reported?
-
-Category | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Total
----------|---------|---------|---------|---------|---------|
-Accuracy |         |         |         |         |         |
-Elegance |         |         |         |         |        
-Reproducibility |         |         |         |         |         |        
-
-___For presentations___
-
-
-
-___For final___
 
 
 <a href="#top">Back to top</a>
@@ -124,9 +118,7 @@ In this first part of the course, we will learn the basics of working with R, st
         + Difference between python and R
         + [Read the introduction section](http://adv-r.had.co.nz/Introduction.html) here by Hadley Wickham
         + [Introduction](http://www.rspatial.org/intr/rst/1-introduction.html) chapter in rspatial's Introduction to R, and Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf), which is linked from that (there are other interesting links in there)
-    + An introduction to Rstudio
-        + [Possibility 1](https://www.youtube.com/watch?v=jwBgGS_4RQA)
-        + [Possibility 2](https://www.youtube.com/watch?v=pXd54-vucu0)
+    + [A video introduction to Rstudio](https://www.youtube.com/watch?v=pXd54-vucu0)
 + Assignment: Sign up for github and send us your github user name. 
 
 #### Class 2 (30 Aug). Reproducibility and its components
@@ -161,6 +153,7 @@ In this first part of the course, we will learn the basics of working with R, st
     + (___Revisit___) Functions: rspatial's [chapter](http://www.rspatial.org/intr/rst/8-functions.html) on functions; read from top through "Primitive Functions" section in Advanced R's chapter on [Functions](http://adv-r.had.co.nz/Functions.html#function-components).  
     + Object-oriented programming (OOP) and R classes (especially S3 & S4): Read 5-5.1 in CRAN's [definition of OOP](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming) first, and then a [python-oriented version](https://python.swaroopch.com/oop.html) of the same, which might be somewhat clearer. Then read the Advanced R [OO field guide](http://adv-r.had.co.nz/OO-essentials.html) that talks about the main OOP-associated classes, particularly S3 and S4, used in R.
     + Environments: Read Environment Basics and Function Environments in the the [Environment chapter](http://adv-r.had.co.nz/Environments.html#env-basics) of Advanced R. 
++ [Assignment 2](assignments/assignment2.html)
 
 #### Class 5 (13 Sep). Basic operations, indexing, and control structures
 + Readings: 
@@ -169,9 +162,9 @@ In this first part of the course, we will learn the basics of working with R, st
     + Control structures: rspatial on [flow control](http://www.rspatial.org/intr/rst/10-flow.html), or control structures, and on R's unique [apply](http://www.rspatial.org/intr/rst/9-apply.html) family; an R-bloggers [more detailed look](https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/) at family apply
     + Advanced control structures: [foreach](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf). Just read the introduction and skim the rest if you are so inclined--this is something to keep in our back pocket for future work
     + (___Revisit___) A bit more on functions from [here](https://ramnathv.github.io/pycon2014-r/learn/functions.html) and [here](http://www.statmethods.net/management/userfunctions.html)
-+ [Assignment 2](assignments/assignment2.html)
 
-### Week 4. Analyses
+
+### Week 4. Data preparation and visualization
 #### Class 6 (18 Sep). Working with/manipulating data
 + Readings: 
     + Reading/writing data: [One piece](https://ramnathv.github.io/pycon2014-r/explore/tidy.html) by Ramnath that also introduces the concept of tidy data; [another from rspatial](http://www.rspatial.org/intr/rst/6-files.html)
@@ -179,16 +172,17 @@ In this first part of the course, we will learn the basics of working with R, st
     + Several of the previous readings introduce the `gsub` function, which uses *regular expressions* to match and replace patterns in character data types. Working with *regular expressions* is important and can be challenging, so let's read a [bit more](*regular expressions*) about them. Here's a [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for that also. 
 + [Assignment 3](assignments/assignment3.html)
 
-#### Class 7 (20 Sep). 
-+ Math on matrices, data.frames
-+ Basic statistics: regressions, correlations, non-parametric (splines)
-+ Examining outputs of analyses (summary)
+#### Class 7 (20 Sep). Visualization 
++ Readings:
+    + The two schools of plotting in R: 
+        + Base graphics, a useful intro by [rspatial](http://www.rspatial.org/intr/rst/12-plots.html), and [intermediate plotting](http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options) from Kelly Black's R tutorial, and [this](http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous) provides an excellent *(and optional)* reference for many different kinds of plots with code. 
+        + ggplot/grammar of graphics: [A nice short bloggy intro](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/), and Hadley Wickham's [longer walk-through](http://r4ds.had.co.nz/visualize.html#undefined). For reference, you might want to look at the [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) describing the underlying philosophy
+        
 
-### Week 5. Visualization
+### Week 5. Analyses
 #### Class 8  (25 Sep). Visualization
-+ Plotting: base R, ggplot alternatives
-+ Scatter, lines, bar graphs, boxplots, violin plots
-+ Layouts, axes, legends, text, mtext
++ Regressions, correlations, non-parametric (splines): 
++ Downstream functions: summary, predict, etc. 
 
 #### Class 9 (29 Sep). Reserved for spillover
 + Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
@@ -233,12 +227,13 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 [Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
 
-### Blogs
+[Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
+
+### Blogs/social
 
 [R-bloggers](https://www.r-bloggers.com/)
 
-### Twitter
-
+[\@RLangTip](https://twitter.com/RLangTip)
 
 
 

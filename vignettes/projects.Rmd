@@ -1,0 +1,61 @@
+---
+title: "Semester Projects"
+author: "Lyndon Estes"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{projects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+Each student will undertake an R-based final project for this class. This project could be one related to your own thesis work, which we will discuss and agree upon. Alternatively, you can choose to undertake one of the projects listed below. Some of these are individual projects, some of their you will work on as part of a team. 
+
+This list is currently in thumbnail form, and will fill out during the next few weeks. 
+
+# Project list
+
+## Add `AquacropOS` to `rcropmod`
+Port the code for the crop simulator `AquacropOS` from matlab into R, integrating into the existing `rcropmod` package. Final project results will include running and presenting gridded crop yield simulations. 
+
+## Help defeat gerrymandering
+Three potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics.  
+
+## Spatio-temporal analyses of weather data from a sensor network
+
+Analyze weather and crop growth data collected by our [network](https://twitter.com/natashakre/status/899956707119558656)
+of [Arable Mark](https://www.arable.com) sensors in Zambia
+
+## Detect change in fairy rings over time
+There are two parts to this potential project, which is based on UAS-collected imagery of two cranberry beds in Southern NJ where a Rutgers colleague (Peter Oudemans) has been running trials to evaluate the effectiveness of fungicides for treating a fungal pathogen that kills cranberry shrubs. 
+
+### Implement OpenCV in R
+Specifically to make use of the circle detection algorithm, to see how well it picks up fairy rings (the blighted area of cranberries, which are killed in expanding circles from an infection point), which would be in comparison to an existing object-oriented detection algorithm. 
+
+### Rework the object-oriented detection of fairy ring
+Work through and update existing object oriented analysis of fairy ring detection that I undertook a couple of years ago, using the `EBImage` package.  
+
+## An R library for running Terrset
+
+## How well do crowdsourcers map individual fields? 
+
+Comparing Turker Maps to GPS collected field boundaries (perhaps done before class starts)
+
+## Is the variability in farmers' planting dates and seasonal rainfall positively correlated? 
+
+# Expected effort
+
+# Submissions
+
+# Presentation format

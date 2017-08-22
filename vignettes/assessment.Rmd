@@ -1,0 +1,39 @@
+---
+title: "Assessment"
+author: "Lyndon Estes"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{assessment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Grading rubrics
+
+__[Under construction]__
+
+## For assignments
+
+Assessment: Can we load the data you used, run your code, and arrive at the same result you reported?
+
+Category | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Total
+---------|---------|---------|---------|---------|---------|
+Accuracy |         |         |         |         |         |
+Elegance |         |         |         |         |        
+Reproducibility |         |         |         |         |         |        
+
+## For presentations
+
+
+## For final paper/report
