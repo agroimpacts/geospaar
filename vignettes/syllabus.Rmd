@@ -82,19 +82,23 @@ Grading will be based on the rubrics found under the [Assessment](assessment.htm
 
 <a href="#top">Back to top</a>
 
-## Conduct
+## Expectations
+Since our class is a computer lab, no food or drink I am sad to say (because I usually like to have a tea with me :( ). Since class is flipped, this is a time for questions and discussion, between us and you, and often between yourselves. However, please keep any conversations low and necessary to the task at hand if they are one-on-one, as we don't want necessary class-wide conversations drowned out.   
+
+For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, many, if not most, of the projects will be team-based (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
+
+We abide by, and will enforce, the University's policies on plagiarism and cheating. 
+
 ### Communications
 We will conduct class communications via a Slack channel that you should already be invited to. Please don't send emails. We chose to use Slack because it keeps relevant conversations in defined places, rather than scattered across email inboxes. We will have a few channels that are designated for specific kinds of conversations. The \#general channel will be used for course announcements, etc. There will be a specific channel for discussion about each assignment. Any questions you have about the assignment should be asked in those. You can send private individual or group messages that are restricted to those individuals in the conversation. Use this for confidential questions.  
 
-Slack's most obvious characteristic is instant messaging. However, please don't approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of those hours, we will have physical and Slack [office hours](#office) to which communications should be confined.   
+Slack's most obvious characteristic is instant messaging. However, please don't approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of class times, we will have the following physical and Slack (meaning we will respond to Slack messages during those times) office hours, to which any other course-related communications should be confined. 
 
-For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, we encourage team efforts (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
-
-### Office hours {#office}
-
-Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Xday Y-Z pm 
+Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Wednesday 2-4 pm 
 
 Zhiwen: Physical (Jefferson Cofert Office) - Thursday 9-11 am; Slack - Xday Y-Z pm  
+
+Also, please feel free to give any ___constructive___ feedback, positive or negative (and it can be an anonymous note, if you are more comfortable), regarding the course or how we are teaching it.  This will be appreciated, and can help make the course better for everyone. 
 
 <a href="#top">Back to top</a>
 
