@@ -1,5 +1,5 @@
 ---
-title: "Assessment"
+title: "Assignment 1"
 author: "Lyndon Estes"
 date: "`r Sys.Date()`"
 output: 
@@ -9,7 +9,7 @@ output:
     toc_depth: 3
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{assessment}
+  %\VignetteIndexEntry{assignment1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
