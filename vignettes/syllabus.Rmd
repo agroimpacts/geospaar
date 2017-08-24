@@ -16,13 +16,18 @@ vignette: >
 
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
 ```
 
-# Introduction
+# Overview
 
 Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
 
 <a href="#top">Back to top</a>
+
+## Meeting Time/Place
+
+Jonas Clark 103, MW, 12-13.15
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also has a meta-goal, which is to introduce some additional skills and a mindset that together lead to more efficient and transparent, and thus ___reproducible___, research. Reproducibility is something I (Lyndon) only started to figure out (and am still learning) well after I completed by postdoc, but sincerely wish I had acquired before I started my PhD.  
@@ -73,32 +78,38 @@ A note on writing code: there are many ways to write code and get the results yo
 
 ## Assessment
 
-Your progress in this class will be assessed based on: 
+Your progress in this class will be assessed according as follows: 
 
-1. Practical assignments in Units 1 and 2 (30% of grade)
-2. Semester projects: 
-    a. Oral presentation (30%)
-    b. Final report/paper (40%)
+```{r, echo = FALSE}
+DF <- rbind(c("Practical assignments (n=6)", "30% of grade", "20% of grade"), 
+            c("Oral presentation of semester project", "20% of grade", 
+              "30% of grade"),
+            c("Final report on semester project", "40% of grade", 
+              "40% of grade"))
+colnames(DF) <- c("Component", "GEOG246", "GEOG346")
+kable(DF)                 
+```
 
-Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette 
+
+Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette ___[still under construction]___.
 
 <a href="#top">Back to top</a>
 
 ## Expectations
 Since our class is a computer lab, no food or drink, I am sad to say (and can't have my tea :( ). Since class is flipped, this is a time for questions and discussion, between us and you, and often between yourselves. However, please keep any conversations low and necessary to the task at hand if they are one-on-one, as we don't want necessary class-wide conversations drowned out.   
 
+Class attendance is expected. It is the primary time in which to get help on understanding reading materials and assignments (see next section on Communications). No late assignments (including presentations and final report) will be accepted, unless you have a documentable emergency that prevents an on-time submission. 
+
 For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, many, if not most, of the projects will be team-based (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
 
-We abide by, and will enforce, the University's policies on plagiarism and cheating. 
-
-<a href="#top">Back to top</a>
+We abide by, and will enforce, the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
 
 ### Communications
 We will conduct class communications via a Slack channel that you should already be invited to. Please don't send emails. We chose to use Slack because it keeps relevant conversations in defined places, rather than scattered across email inboxes. We will have a few channels that are designated for specific kinds of conversations. The \#general channel will be used for course announcements, etc. There will be a specific channel for discussion about each assignment. Any questions you have about the assignment should be asked in those. You can send private individual or group messages that are restricted to those individuals in the conversation. Use this for confidential questions.  
 
 Slack's most obvious characteristic is instant messaging. However, please don't approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of class times, we will have the following physical and Slack (meaning we will respond to Slack messages during those times) office hours, to which any other course-related communications should be confined. 
 
-Instructor | Office           | Office hours     | Slack hours
+Instructor | Office | Office hours | Slack hours
 ---------|------------------|------------------|-------
 Lyndon   | Jefferson 107    | Tuesday 1-3 pm   | Wednesday 2-4 pm 
 Zhiwen   | Geography Earth Observation and Remote Sensing Lab (EORS) | Thursday 9-11 am | Friday 10 am-12 pm
@@ -126,7 +137,9 @@ In this first part of the course, we will learn the basics of working with R, st
         + [Read the introduction section](http://adv-r.had.co.nz/Introduction.html) here by Hadley Wickham
         + [Introduction](http://www.rspatial.org/intr/rst/1-introduction.html) chapter in rspatial's Introduction to R, and Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf), which is linked from that (there are other interesting links in there)
     + [A video introduction to Rstudio](https://www.youtube.com/watch?v=pXd54-vucu0)
-+ Assignment: Sign up for [github](https://github.com) and send us your github user name (by Sunday evening, preferably)
++ To-do: 
+    + Sign up for [github](https://github.com) and send us your github user name (by Sunday evening, preferably)
+    + Install R, Rstudio, and git on the machine that you will be using out of class to do your assignments (you cannot count on the class computers for this). Ideally, you will set up your projects in a cloud-based folder that you can access from the computers in JC103. 
 
 #### Class 2 (30 Aug). Reproducibility and its components
 + Readings: 
@@ -138,6 +151,7 @@ In this first part of the course, we will learn the basics of working with R, st
     + Why you should (and, in this class, will) structure your work as an R package: Read [this](https://hilaryparker.com/2013/04/03/personal-r-packages/), 
     [this](http://kbroman.org/pkg_primer/), and [this](http://r-pkgs.had.co.nz/intro.html)...
     + ...and use git and GitHub with R and Rstudio: Read [this](http://r-pkgs.had.co.nz/git.html#git), [this](https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control), and [this](https://jahya.net/blog/git-vs-github/).  
++ [Assignment 1](assignments/assignment1.html). Note that this first assignment is the exception to the rule, in that it is assigned Wednesday but due the *following* Friday, because of Labor Day. 
 
 <a href="#top">Back to top</a>
 
@@ -148,9 +162,8 @@ In this first part of the course, we will learn the basics of working with R, st
     + Which leads to a bit about Rmarkdown: [A quick overview](http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html); and see [Rstudio's Overview of Rmarkdown](http://rmarkdown.rstudio.com/)--click "Get Started" and then go through all the linked sections (Introduction through Cheatsheets).  
     + Writing R packages: 
         + [A very short tutorial](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)--note: Step0 in this tutorial is *likely* done already (check the packages tab in RStudio to confirm); 
-        + More details on packages from Hadley Wickham's book. Review these chapters (somewhat long, so probably just read): [Packages](http://r-pkgs.had.co.nz/package.html#package-structure); [R code](http://r-pkgs.had.co.nz/r.html#r); [Package metadata](http://r-pkgs.had.co.nz/description.html#description); [Documentation](http://r-pkgs.had.co.nz/man.html#man); [Vignettes](http://r-pkgs.had.co.nz/man.html#man) (also read [this](http://rmflight.github.io/posts/2014/07/analyses_as_packages.html) about vignettes); [Namespace](http://r-pkgs.had.co.nz/namespace.html#namespace); [External data](http://r-pkgs.had.co.nz/data.html#data); the part about [Tests](http://r-pkgs.had.co.nz/tests.html#tests) is also important, but for your own future work--we won't get that far in this class. 
+        + More details on packages from Hadley Wickham's book. Review these chapters (somewhat long, so probably just read): [Packages](http://r-pkgs.had.co.nz/package.html#package-structure); [R code](http://r-pkgs.had.co.nz/r.html#r); [Package metadata](http://r-pkgs.had.co.nz/description.html#description); [Documentation](http://r-pkgs.had.co.nz/man.html#man); [Vignettes](http://r-pkgs.had.co.nz/vignettes.html) (also read [this](http://rmflight.github.io/posts/2014/07/analyses_as_packages.html), which has an interesting part about vignettes); [Namespace](http://r-pkgs.had.co.nz/namespace.html#namespace); [External data](http://r-pkgs.had.co.nz/data.html#data); the part about [Tests](http://r-pkgs.had.co.nz/tests.html#tests) is also important, but for your own future work--we won't get that far in this class. 
     + Poke around the [ROpenSci website](https://ropensci.org), and particularly its section on [tools for reproducibility](http://ropensci.github.io/reproducibility-guide/sections/tools/) to get a bigger picture view of how R fits into reproducibility 
-+ [Assignment 1](assignments/assignment1.html). 
 
 ### Week 3. R fundamentals
 
