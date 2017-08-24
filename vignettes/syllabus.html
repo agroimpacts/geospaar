@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu (TA)" />
 
-<meta name="date" content="2017-08-22" />
+<meta name="date" content="2017-08-24" />
 
 <title>Geography 246/346 Syllabus</title>
 
@@ -32,7 +32,7 @@
 
 <h1 class="title toc-ignore">Geography 246/346 Syllabus</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu (TA)</em></h4>
-<h4 class="date"><em>2017-08-22</em></h4>
+<h4 class="date"><em>2017-08-24</em></h4>
 
 
 <div id="TOC">
@@ -42,9 +42,8 @@
 <li><a href="#caveatsthings-to-consider"><span class="toc-section-number">1.2</span> Caveats/things to consider</a></li>
 <li><a href="#required-texts-reading-and-assignments"><span class="toc-section-number">1.3</span> Required Texts, Reading, and Assignments</a></li>
 <li><a href="#assessment"><span class="toc-section-number">1.4</span> Assessment</a></li>
-<li><a href="#conduct"><span class="toc-section-number">1.5</span> Conduct</a><ul>
+<li><a href="#expectations"><span class="toc-section-number">1.5</span> Expectations</a><ul>
 <li><a href="#communications"><span class="toc-section-number">1.5.1</span> Communications</a></li>
-<li><a href="#office"><span class="toc-section-number">1.5.2</span> Office hours</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#structure"><span class="toc-section-number">2</span> Course structure</a><ul>
@@ -53,7 +52,8 @@
 <li><a href="#week-2.-reproducibility-continued"><span class="toc-section-number">2.1.2</span> Week 2. Reproducibility Continued</a></li>
 <li><a href="#week-3.-r-fundamentals"><span class="toc-section-number">2.1.3</span> Week 3. R fundamentals</a></li>
 <li><a href="#week-4.-data-preparation-and-visualization"><span class="toc-section-number">2.1.4</span> Week 4. Data preparation and visualization</a></li>
-<li><a href="#week-5.-analyses"><span class="toc-section-number">2.1.5</span> Week 5. Analyses</a></li>
+<li><a href="#week-5.-wrap-up"><span class="toc-section-number">2.1.5</span> Week 5. Wrap-up</a></li>
+<li><a href="#unit-1-learning-goals"><span class="toc-section-number">2.1.6</span> Unit 1 Learning Goals</a></li>
 </ul></li>
 <li><a href="#unit-2.-handling-and-analyzing-spatial-data-with-r"><span class="toc-section-number">2.2</span> Unit 2. Handling and analyzing spatial data with R</a><ul>
 <li><a href="#week-6-oct-2-4."><span class="toc-section-number">2.2.1</span> Week 6 (Oct 2, 4).</a></li>
@@ -89,6 +89,7 @@
 <div id="philosophy" class="section level2">
 <h2><span class="header-section-number">1.1</span> Philosophy</h2>
 <p>Although our primary focus is learning how to use <code>R</code> for geospatial analysis, the course also has a meta-goal, which is to introduce some additional skills and a mindset that together lead to more efficient and transparent, and thus <strong><em>reproducible</em></strong>, research. Reproducibility is something I (Lyndon) only started to figure out (and am still learning) well after I completed by postdoc, but sincerely wish I had acquired before I started my PhD.</p>
+<p><a href="#top">Back to top</a></p>
 </div>
 <div id="caveatsthings-to-consider" class="section level2">
 <h2><span class="header-section-number">1.2</span> Caveats/things to consider</h2>
@@ -114,7 +115,7 @@
 <p>There are no required texts for this course, at least not ones that you have to buy. There is a huge amount of well-developed R material that is freely available on the web, and we are going to draw on that for this class. You will find links to that material in the syllabus, and, in some cases, in the <a href="#Resources">Resources</a> section below.</p>
 <p><strong>Readings</strong> should be completed <strong><em>before</em></strong> the class they are listed under. E.g. By the time you arrive for the first class on Monday, August 28th, you should have done the readings. Also, since many of the assigned readings present example code and practical work, you should be running those examples as you read. This is a key part of learning the language, and this part of the course is separate from the practicals.</p>
 <p><strong><em>Practical assignments</em></strong>. During the first two units, we will give a number of practical exercises (see links to individual assignments in the <a href="#structure">course structure</a> section). Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. These assignments will ask you to apply skills from the readings to solve a particular problem. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group’s github <a href="https://github.com/agroimpacts">organization</a>, where there is a <a href="https://github.com/orgs/agroimpacts/teams/geog246346">team</a> setup for this class. That means that you will need to join github (it’s free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.</p>
-<p><strong>Projects</strong> Each student will be required to undertake a final project. Please see the <a href="projects.Rmd">projects</a> page for more detail.</p>
+<p><strong>Projects</strong> Each student will be required to undertake a final project. Please see the <a href="projects.html">projects</a> page for more detail.</p>
 <p>A note on writing code: there are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow <a href="http://adv-r.had.co.nz/Style.html">Hadley Wickham’s style guide</a>. Please study it.</p>
 <p><a href="#top">Back to top</a></p>
 </div>
@@ -132,18 +133,47 @@
 <p>Grading will be based on the rubrics found under the <a href="assessment.html">Assessment</a> vignette</p>
 <p><a href="#top">Back to top</a></p>
 </div>
-<div id="conduct" class="section level2">
-<h2><span class="header-section-number">1.5</span> Conduct</h2>
+<div id="expectations" class="section level2">
+<h2><span class="header-section-number">1.5</span> Expectations</h2>
+<p>Since our class is a computer lab, no food or drink, I am sad to say (and can’t have my tea :( ). Since class is flipped, this is a time for questions and discussion, between us and you, and often between yourselves. However, please keep any conversations low and necessary to the task at hand if they are one-on-one, as we don’t want necessary class-wide conversations drowned out.</p>
+<p>For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student’s own work and coding effort (i.e. not copying code from someone else). For final projects, many, if not most, of the projects will be team-based (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.</p>
+<p>We abide by, and will enforce, the University’s policies on plagiarism and cheating.</p>
+<p><a href="#top">Back to top</a></p>
 <div id="communications" class="section level3">
 <h3><span class="header-section-number">1.5.1</span> Communications</h3>
 <p>We will conduct class communications via a Slack channel that you should already be invited to. Please don’t send emails. We chose to use Slack because it keeps relevant conversations in defined places, rather than scattered across email inboxes. We will have a few channels that are designated for specific kinds of conversations. The #general channel will be used for course announcements, etc. There will be a specific channel for discussion about each assignment. Any questions you have about the assignment should be asked in those. You can send private individual or group messages that are restricted to those individuals in the conversation. Use this for confidential questions.</p>
-<p>Slack’s most obvious characteristic is instant messaging. However, please don’t approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of those hours, we will have physical and Slack <a href="#office">office hours</a> to which communications should be confined.</p>
-<p>For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student’s own work and coding effort (i.e. not copying code from someone else). For final projects, we encourage team efforts (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.</p>
-</div>
-<div id="office" class="section level3">
-<h3><span class="header-section-number">1.5.2</span> Office hours</h3>
-<p>Lyndon: Physical (Jefferson 107) - Tuesday 1-3 pm; Slack - Xday Y-Z pm</p>
-<p>Zhiwen: Physical (Jefferson Cofert Office) - Thursday 9-11 am; Slack - Xday Y-Z pm</p>
+<p>Slack’s most obvious characteristic is instant messaging. However, please don’t approach it as an instant messenger, at least with respect to Zhiwen and myself and how quickly you want a response from us. While I always strive to be responsive, given workloads and the number of students enrolled, we have to restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). Outside of class times, we will have the following physical and Slack (meaning we will respond to Slack messages during those times) office hours, to which any other course-related communications should be confined.</p>
+<table style="width:78%;">
+<colgroup>
+<col width="13%"></col>
+<col width="26%"></col>
+<col width="26%"></col>
+<col width="11%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Instructor</th>
+<th>Office</th>
+<th>Office hours</th>
+<th>Slack hours</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lyndon</td>
+<td>Jefferson 107</td>
+<td>Tuesday 1-3 pm</td>
+<td>Wednesday 2-4 pm</td>
+</tr>
+<tr class="even">
+<td>Zhiwen</td>
+<td>Geography Earth Observation and Remote Sensing Lab (EORS)</td>
+<td>Thursday 9-11 am</td>
+<td>Friday 10 am-12 pm</td>
+</tr>
+</tbody>
+</table>
+<p>Also, please feel free to give any <strong><em>constructive</em></strong> feedback, positive or negative (and it can be an anonymous note, if you are more comfortable), regarding the course or how we are teaching it. This will be appreciated, and can help make the course better for everyone. There will should also be an opportunity for feedback during a mid-course survey.</p>
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
@@ -154,6 +184,7 @@
 <div id="unit-1.-an-introduction-to-r-and-related-reproducibility-skills" class="section level2">
 <h2><span class="header-section-number">2.1</span> Unit 1. <em>An introduction to R and related reproducibility skills</em></h2>
 <p>In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster <strong><em>reproducibility</em></strong>, which can be loosely defined as the ability for you and others to <em>easily</em> repeat the steps of your analysis. including the use of <code>git</code> and <a href="https://github.com">github</a>, how to create an R package, and the use of <code>Rmarkdown</code> to document and present your analyses.</p>
+<p><a href="#top">Back to top</a></p>
 <div id="week-1.-overview-of-r-and-reproducibility" class="section level3">
 <h3><span class="header-section-number">2.1.1</span> Week 1. Overview of R and Reproducibility</h3>
 <div id="class-1-28-aug.-the-nature-and-history-of-r" class="section level4">
@@ -190,6 +221,7 @@
 <li>…and use git and GitHub with R and Rstudio: Read <a href="http://r-pkgs.had.co.nz/git.html#git">this</a>, <a href="https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control">this</a>, and <a href="https://jahya.net/blog/git-vs-github/">this</a>.</li>
 </ul></li>
 </ul>
+<p><a href="#top">Back to top</a></p>
 </div>
 </div>
 <div id="week-2.-reproducibility-continued" class="section level3">
@@ -215,6 +247,7 @@
 </div>
 <div id="week-3.-r-fundamentals" class="section level3">
 <h3><span class="header-section-number">2.1.3</span> Week 3. R fundamentals</h3>
+<p><a href="#top">Back to top</a></p>
 <div id="class-4-11-sep.-r-bestiary" class="section level4">
 <h4><span class="header-section-number">2.1.3.1</span> Class 4 (11 Sep). R bestiary</h4>
 <ul>
@@ -243,6 +276,7 @@
 <li>(<strong><em>Revisit</em></strong>) A bit more on functions from <a href="https://ramnathv.github.io/pycon2014-r/learn/functions.html">here</a> and <a href="http://www.statmethods.net/management/userfunctions.html">here</a></li>
 </ul></li>
 </ul>
+<p><a href="#top">Back to top</a></p>
 </div>
 </div>
 <div id="week-4.-data-preparation-and-visualization" class="section level3">
@@ -272,28 +306,34 @@
 </ul></li>
 </ul></li>
 </ul>
+<p><a href="#top">Back to top</a></p>
 </div>
 </div>
-<div id="week-5.-analyses" class="section level3">
-<h3><span class="header-section-number">2.1.5</span> Week 5. Analyses</h3>
-<div id="class-8-25-sep.-visualization" class="section level4">
-<h4><span class="header-section-number">2.1.5.1</span> Class 8 (25 Sep). Visualization</h4>
+<div id="week-5.-wrap-up" class="section level3">
+<h3><span class="header-section-number">2.1.5</span> Week 5. Wrap-up</h3>
+<div id="class-8-25-sep.-common-analyses" class="section level4">
+<h4><span class="header-section-number">2.1.5.1</span> Class 8 (25 Sep). Common analyses</h4>
 <ul>
 <li>Regressions, correlations, non-parametric (splines):</li>
 <li>Downstream functions: summary, predict, etc.</li>
 </ul>
 </div>
-<div id="class-9-29-sep.-reserved-for-spillover" class="section level4">
-<h4><span class="header-section-number">2.1.5.2</span> Class 9 (29 Sep). Reserved for spillover</h4>
+<div id="class-9-29-sep.-some-more-analyses-and-a-glimpse-of-advanced" class="section level4">
+<h4><span class="header-section-number">2.1.5.2</span> Class 9 (29 Sep). Some more analyses and a glimpse of advanced</h4>
 <ul>
-<li>Advanced data manipulation alternatives: data.table, dplyr (grammer of data)
+<li>Readings:
 <ul>
-<li>The tidyverse</li>
-<li>Possible <a href="https://www.youtube.com/watch?v=9q7gssUP8UA">material</a></li>
+<li>Advanced data manipulation alternatives: data.table, dplyr (grammer of data) / the tidyverse <!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) --></li>
 </ul></li>
 </ul>
 <p><a href="#top">Back to top</a></p>
 </div>
+</div>
+<div id="unit-1-learning-goals" class="section level3">
+<h3><span class="header-section-number">2.1.6</span> Unit 1 Learning Goals</h3>
+<p>By the end of this unit, you should <strong><em>understand</em></strong>: R’s origins and its strengths and weaknesses; the concept of reproducibility and R’s role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R’s data type and structures, objects, classes, and environments.</p>
+<p>And you should be able to comfortably (albeit not yet fluently) do the following: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including apply); write a function; reshape, analyze (with basic statistic functions), and visualize non-spatial data; write clean code following our <a href="http://adv-r.had.co.nz/Style.html">selected R style guide</a></p>
+<p><a href="#top">Back to top</a></p>
 </div>
 </div>
 <div id="unit-2.-handling-and-analyzing-spatial-data-with-r" class="section level2">
@@ -345,6 +385,7 @@
 <div id="books" class="section level2">
 <h2><span class="header-section-number">3.1</span> Books</h2>
 <p><a href="http://www.burns-stat.com/pages/Tutor/R_inferno.pdf">The R Inferno</a></p>
+<p><a href="https://csgillespie.github.io/efficientR/index.html#building-the-book">Efficient R Programming</a></p>
 </div>
 <div id="the-intertubes" class="section level2">
 <h2><span class="header-section-number">3.2</span> The intertubes</h2>
