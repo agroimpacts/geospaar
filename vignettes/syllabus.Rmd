@@ -191,7 +191,7 @@ In this first part of the course, we will learn the basics of working with R, st
     + (___Revisit___) Functions: rspatial's [chapter](http://www.rspatial.org/intr/rst/8-functions.html) on functions; read from top through "Primitive Functions" section in Advanced R's chapter on [Functions](http://adv-r.had.co.nz/Functions.html#function-components).  
     + Object-oriented programming (OOP) and R classes (especially S3 & S4): Read 5-5.1 in CRAN's [definition of OOP](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming) first, and then a [python-oriented version](https://python.swaroopch.com/oop.html) of the same, which might be somewhat clearer. Then read the Advanced R [OO field guide](http://adv-r.had.co.nz/OO-essentials.html) that talks about the main OOP-associated classes, particularly S3 and S4, used in R.
     + Environments: Read Environment Basics and Function Environments in the the [Environment chapter](http://adv-r.had.co.nz/Environments.html#env-basics) of Advanced R. 
-+ [Assignment 2](assignments/assignment2.html)
++ [Assignment 2](assignment2.html) ___[under construction]___
 
 #### Class 5 (13 Sep). Basic operations, indexing, and control structures
 + Readings: 
@@ -209,7 +209,7 @@ In this first part of the course, we will learn the basics of working with R, st
     + Reading/writing data: [One piece](https://ramnathv.github.io/pycon2014-r/explore/tidy.html) by Ramnath that also introduces the concept of tidy data; [another from rspatial](http://www.rspatial.org/intr/rst/6-files.html)
     + Data massage (i.e. substitutions, reshaping, merging, or how to tidy up data): [rspatial's piece](http://www.rspatial.org/intr/rst/11-dataprep.html); [ramnath's take](https://ramnathv.github.io/pycon2014-r/explore/reshape.html) on it; [recoding data](http://www.cookbook-r.com/Manipulating_data/Recoding_data/), which is a sub-section of a very useful Cookbook for R section on [Manipulating Data](http://rprogramming.net/recode-data-in-r/) that you have the option of perusing further.  
     + Several of the previous readings introduce the `gsub` function, which uses *regular expressions* to match and replace patterns in character data types. Working with *regular expressions* is important and can be challenging, so let's read a [bit more](*regular expressions*) about them. Here's a [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for that also. 
-+ [Assignment 3](assignments/assignment3.html)
++ [Assignment 3](assignment3.html) ___[under construction]___
 
 #### Class 7 (20 Sep). Visualization 
 + Readings:
@@ -241,6 +241,8 @@ And you should be able to comfortably (albeit not yet fluently) ___do the follow
 ## Unit 2. Handling and analyzing spatial data with R
 
 Three assignments are planned for this unit. Materials will cover topics such as: vector and raster data classes; workhorse libraries and functions; basic vector operations (intersections, unions, differences) and manipulations (merges/joins); raster operations (algebra, focal analyses, terrain characteristics) and manipulations (aggregate/disaggregate, resample, reproject); spatial models and analysis; visualization/plotting; how to get help on R-sig-geo (creating reproducible examples); introduction to advanced (e.g. data.table) and emerging approaches (the `sf` package as replacement for `sp`).   
+
+___[under construction]___
 
 ### Week 6 (Oct 2, 4). 
 ### Week 7 (Oct 11). 
