@@ -240,14 +240,14 @@ And you should be able to comfortably (albeit not yet fluently) ___do the follow
 
 ## Unit 2. Handling and analyzing spatial data with R
 
-3 assignments are planned for this unit
+Three assignments are planned for this unit. Materials will cover topics such as: vector and raster data classes; workhorse libraries and functions; basic vector operations (intersections, unions, differences) and manipulations (merges/joins); raster operations (algebra, focal analyses, terrain characteristics) and manipulations (aggregate/disaggregate, resample, reproject); spatial models and analysis; visualization/plotting; how to get help on R-sig-geo (creating reproducible examples); introduction to advanced (e.g. data.table) and emerging approaches (the `sf` package as replacement for `sp`).   
 
 ### Week 6 (Oct 2, 4). 
 ### Week 7 (Oct 11). 
 ### Week 8 (Oct 16, 18). 
 ### Week 9 (Oct 23, 25). 
-### Week 10 (Oct 30, Nov 2). <<!-- Visualization -->
-### Key takeaways/skills
+### Week 10 (Oct 30, Nov 2). <!-- Visualization -->
+<!-- ### Key takeaways/skills -->
 
 ## Unit 3. Projects
 
