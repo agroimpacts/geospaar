@@ -38,7 +38,7 @@ knitr::opts_chunk$set(echo = TRUE)
     
 ## Submission:
 
-To complete the assignment, you have to make your final git commit and push it to the GitHub remote repo by the deadline on ___Friday September 8th (midnight)__. 
+To complete the assignment, you have to make your final git commit and push it to the GitHub remote repo by the deadline on ___Friday September 8th (midnight)___. 
 
 # Notes
 

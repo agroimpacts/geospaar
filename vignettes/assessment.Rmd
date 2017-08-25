@@ -17,23 +17,68 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
 ```
 
-# Grading rubrics
+# Grading
 
 __[Under construction]__
+
+## Overall
+
+Final letter grades will be assigned as follows
+```{r, echo = FALSE}
+gr <- rbind(c(99, 93, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60, 0), 
+            c(100, 98, 92, 89, 87, 82, 79, 77, 72, 69, 67, 62, 59))
+lt <- c("A+", "A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-", "D+", "D ", "D-",
+        "F ")
+DF <- cbind(c("lower", "upper", "grade"), rbind.data.frame(gr, lt))
+colnames(DF) <- rep("", ncol(DF))
+kable(DF)
+```
+
 
 ## For assignments
 
 Assessment: Can we load the data you used, run your code, and arrive at the same result you reported?
 
-Category | Level 1 | Level 2 | Level 3 | Level 4 | Level 5 | Total
----------|---------|---------|---------|---------|---------|
-Accuracy |         |         |         |         |         |
-Elegance |         |         |         |         |        
-Reproducibility |         |         |         |         |         |        
+___[Still under construction]___ We will grade using this rubric (or one close to it that captures the results/style/reproducibility dimensions).
+
+```{r, echo=FALSE}
+mat <- rbind(c("Expected results all wrong (0-5%)", 
+               "Indecipherable code, no comments or documentation", 
+               "Can't be made to run", 
+               0), 
+             c("Expected results mostly wrong (5-25%)", 
+               "Indecipherable code, no comments or documentation", 
+               "Doesn't work", 
+               4), 
+             c("Expected results more wrong than right (25-50%)", 
+               "Code indecipherable or no comments/documentation", 
+               "Doesn't run without numerous fixes", 
+               8), 
+             c("Expected results more right than wrong (50-75%)", 
+               "Code readable but not too style/some commenting/documentation",
+               "Runs after a handful of fixes",
+               12), 
+             c("Expected results almost entirely correct (75-95%)",
+               "Code pretty clean/decent documentation & commenting",
+               "Runs after some minor tweaks", 
+               16), 
+             c("Expected results all right (95-100%)", 
+               "Code exactly to style/well commented & documented", 
+               "Runs out of the box", 
+               20))
+DF <- as.data.frame(mat, stringsAsFactors = FALSE)
+colnames(DF) <- c("Accuracy", "Elegance", "Reproducibility", "Points")
+DF$Points <- as.numeric(DF$Points)
+# reshape2::dcast(DF, Accuracy + Elegance + Reproducibility ~ Points)
+# DF2 <- rbind(t(DF[1:6, 1:3]), DF[1:6, 4])
+kable(DF)
+```
 
 ## For presentations
-
+___[Under construction]___
 
 ## For final paper/report
+___[Under construction]___

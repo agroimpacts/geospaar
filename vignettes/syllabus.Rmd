@@ -1,6 +1,6 @@
 ---
 title: "Geography 246/346 Syllabus"
-author: "Lyndon Estes, Zhiwen Zhu (TA)"
+author: "Lyndon Estes, Zhiwen Zhu"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -27,7 +27,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 
 ## Meeting Time/Place
 
-Jonas Clark 103, MW, 12-13.15
+Jonas Clark 103, MW 12-13.15
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also has a meta-goal, which is to introduce some additional skills and a mindset that together lead to more efficient and transparent, and thus ___reproducible___, research. Reproducibility is something I (Lyndon) only started to figure out (and am still learning) well after I completed by postdoc, but sincerely wish I had acquired before I started my PhD.  
@@ -76,22 +76,36 @@ A note on writing code: there are many ways to write code and get the results yo
 
 <a href="#top">Back to top</a>
 
-## Assessment
+## Assessment and engaged time
 
 Your progress in this class will be assessed according as follows: 
 
 ```{r, echo = FALSE}
-DF <- rbind(c("Practical assignments (n=6)", "30% of grade", "20% of grade"), 
+mat <- rbind(c("Practical assignments (n=6)", "30% of grade", "20% of grade"), 
             c("Oral presentation of semester project", "20% of grade", 
               "30% of grade"),
             c("Final report on semester project", "40% of grade", 
               "40% of grade"))
-colnames(DF) <- c("Component", "GEOG246", "GEOG346")
-kable(DF)                 
+colnames(mat) <- c("Component", "GEOG246", "GEOG346")
+kable(mat)                 
 ```
 
-
 Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette ___[still under construction]___.
+
+Courses at Clark are worth 4 credit hours, which equates to 180 hours of engaged academic time. The breakdown of that time is estimated to be: 
+
+```{r, echo = FALSE}
+gr <- c(37, 12, 40, 65, 10, 16)
+ug <- c(37, 14, 50, 59, 8, 12)
+DF <- cbind.data.frame(c("Class meetings", "Readings", "Practicals", 
+                         "Semester projects-analysis", 
+                         "Semester projects-presentation",
+                         "Semester projects-final report", "Total hours"), 
+                       c(gr, sum(gr)), c(ug, sum(ug)))
+colnames(DF) <- c("", "GEOG246 hours", "GEOG346 hours")
+kable(DF)                 
+
+```
 
 <a href="#top">Back to top</a>
 
@@ -118,8 +132,8 @@ Also, please feel free to give any ___constructive___ feedback, positive or nega
 
 <a href="#top">Back to top</a>
 
-# Course structure{#structure}
-The follow is an overview of the course structure. Note that this structure will evolve during the semester, given that this is its first run, and we will adjust material to match the pace of learning. 
+# Course Structure{#structure}
+The following is an overview of the course structure. Note that this structure will evolve during the semester, given that this is its first run, and we will adjust material to match the pace of learning. 
 
 ## Unit 1. *An introduction to R and related reproducibility skills*
 
@@ -220,26 +234,28 @@ In this first part of the course, we will learn the basics of working with R, st
 ### Unit 1 Learning Goals
 By the end of this unit, you should ___understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments. 
 
-And you should be able to comfortably (albeit not yet fluently) do the following: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including apply); write a function; reshape, analyze (with basic statistic functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
+And you should be able to comfortably (albeit not yet fluently) ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including apply); write a function; reshape, analyze (with basic statistic functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
 
 <a href="#top">Back to top</a>
 
-
 ## Unit 2. Handling and analyzing spatial data with R
+
+3 assignments are planned for this unit
+
 ### Week 6 (Oct 2, 4). 
 ### Week 7 (Oct 11). 
 ### Week 8 (Oct 16, 18). 
 ### Week 9 (Oct 23, 25). 
-### Week 10 (Oct 30, Nov 2). Visualization
+### Week 10 (Oct 30, Nov 2). <<!-- Visualization -->
 ### Key takeaways/skills
 
 ## Unit 3. Projects
-### Week 11. 
-### Week 12. 
-### Week 13. 
-### Week 14. 
-### Week 15. 
-### Key takeaways/skills
+
+### Weeks 11-13. 
+Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
+
+### Weeks 14-15. 
+These last two weeks will be used to give final presentations, which will cover progress-to-date and plans for finishing the semester project. Presentations will be on the order of 8-12 minutes per person, thus 8-12 slides. 
 
 # Resources {#Resources}
 The following are some helpful resources that you may wish to follow-up on as you learn R. 
@@ -268,6 +284,8 @@ The following are some helpful resources that you may wish to follow-up on as yo
 ### Blogs/social
 
 [R-bloggers](https://www.r-bloggers.com/)
+
+[R-spatial](http://r-spatial.org/)
 
 [\@RLangTip](https://twitter.com/RLangTip)
 
