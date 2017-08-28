@@ -1,7 +1,7 @@
 # geospaar
-The main repository for Clark University's Geospatial Analysis with R course (GEOG 246/346). All course materials will be presented here. 
+The main repository for Clark University's Geospatial Analysis with R course (GEOG 246/346). All course materials will be presented here.
 
-If you are here and reading this, then you already have access to the private GitHub repository on which this is hosted.  However, we want to install this as an R package. To do that, please follow the instructions here
+If you are here and reading this, then you already have access to the private GitHub repository on which this is hosted.  However, we want to install this as an R package. To do that, please follow the instructions here.
 
 # Installation
 

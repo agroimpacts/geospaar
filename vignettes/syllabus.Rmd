@@ -147,7 +147,7 @@ In this first part of the course, we will learn the basics of working with R, st
     + Read the syllabus
     + R overview and history:
         + [Watch this online lecture by Roger Peng](https://www.youtube.com/watch?v=STihTnVSZnI)
-        + Difference between python and R
+        + [python versus R](https://www.datacamp.com/community/tutorials/r-or-python-for-data-analysis#gs.y7hR=gU)
         + [Read the introduction section](http://adv-r.had.co.nz/Introduction.html) here by Hadley Wickham
         + [Introduction](http://www.rspatial.org/intr/rst/1-introduction.html) chapter in rspatial's Introduction to R, and Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf), which is linked from that (there are other interesting links in there)
     + [A video introduction to Rstudio](https://www.youtube.com/watch?v=pXd54-vucu0)
