@@ -7,7 +7,7 @@ If you are here and reading this, then you already have access to the private Gi
 
 1. Get the `devtools` package:
 
-```r
+```R
 install.packages("devtools")
 library(devtools)
 ```
@@ -16,3 +16,12 @@ library(devtools)
 
 We'll cheat a little bit here and direct you to the directions in the [help file](https://www.dropbox.com/s/pbf9phn8h4rl09d/help.html?dl=0) vignette, before it is installed. That shows you how to get an access token. 
 
+3. Once you have that, install the `geospaar` package
+
+```R
+library(devtools)
+install_github("agroimpacts/geospaR", build_vignettes = TRUE, 
+               auth_token = "the-token-you-just-generated-pasted-here"))
+```
+
+We'll be updating this often as the course unfolds, so you will be repeating the step 3 often.  Keep your token safe and sound somewhere. It's also easy to generate a new one when you need it.  
