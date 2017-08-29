@@ -27,10 +27,25 @@ This list is currently in thumbnail form, and will fill out during the next few 
 # Project list
 
 ## Port `AquacropOS` to R
-Port the code for the crop simulator `AquacropOS` from matlab into R, integrating into the existing `rcropmod` package. Final project results will include running and presenting gridded crop yield simulations. 
+Port the code for the crop simulator `AquacropOS` from matlab into R, integrating into the existing `rcropmod` package. Final project results will include running and presenting gridded crop yield simulations, based on the output of a sophisticated crop model. Skills that will be picked up on the way: matlab -> R translation; `data.table`, `raster`, among others.  
 
 ## Help defeat gerrymandering
-Three potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics.  
+There are four potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics. These ideas come from Sam Wang and Brian Remlinger of the [Princeton Gerrymandering project](http://gerrymander.princeton.edu), with whom you would collaborate if taking up one of these projects.  
+
+All of these projects have the potential to make a substantial contribution to broader public understanding of gerrymandering, and may even help influence state level redistricting efforts.  
+
+Resources: [congressional district boundaries, 1789-2012](http://amypond.sscnet.ucla.edu/districts/); [2016 congressional boundaries](https://catalog.data.gov/dataset/tiger-line-shapefile-2016-nation-u-s-115th-congressional-district-national)
+
+### Voting Precinct Demography
+The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. Skills learned: `rgeos`, `sf`, cleaning topologies.
+
+
+### Districting and Population Visualizations
+
+### Toy Gerrymandering Demo
+
+### GIS Arguments against Compactness/Map Metrics
+
 
 ## Spatio-temporal analyses of weather data from a sensor network
 

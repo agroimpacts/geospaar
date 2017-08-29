@@ -24,4 +24,11 @@ install_github("agroimpacts/geospaar", build_vignettes = TRUE,
                auth_token = "the-token-you-just-generated-pasted-here")
 ```
 
+4. Browse the course materials
+
+```R
+browseVignettes("geospaar")
+```
+
+
 We'll be updating this often as the course unfolds, so you will be repeating the step 3 often.  Keep your token safe and sound somewhere. It's also easy to generate a new one when you need it.  

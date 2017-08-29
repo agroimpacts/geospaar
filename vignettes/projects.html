@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes" />
 
-<meta name="date" content="2017-08-22" />
+<meta name="date" content="2017-08-29" />
 
 <title>Semester Projects</title>
 
@@ -32,7 +32,7 @@
 
 <h1 class="title toc-ignore">Semester Projects</h1>
 <h4 class="author"><em>Lyndon Estes</em></h4>
-<h4 class="date"><em>2017-08-22</em></h4>
+<h4 class="date"><em>2017-08-29</em></h4>
 
 
 <div id="TOC">
@@ -40,7 +40,12 @@
 <li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
 <li><a href="#project-list"><span class="toc-section-number">2</span> Project list</a><ul>
 <li><a href="#port-aquacropos-to-r"><span class="toc-section-number">2.1</span> Port <code>AquacropOS</code> to R</a></li>
-<li><a href="#help-defeat-gerrymandering"><span class="toc-section-number">2.2</span> Help defeat gerrymandering</a></li>
+<li><a href="#help-defeat-gerrymandering"><span class="toc-section-number">2.2</span> Help defeat gerrymandering</a><ul>
+<li><a href="#voting-precinct-demography"><span class="toc-section-number">2.2.1</span> Voting Precinct Demography</a></li>
+<li><a href="#districting-and-population-visualizations"><span class="toc-section-number">2.2.2</span> Districting and Population Visualizations</a></li>
+<li><a href="#toy-gerrymandering-demo"><span class="toc-section-number">2.2.3</span> Toy Gerrymandering Demo</a></li>
+<li><a href="#gis-arguments-against-compactnessmap-metrics"><span class="toc-section-number">2.2.4</span> GIS Arguments against Compactness/Map Metrics</a></li>
+</ul></li>
 <li><a href="#spatio-temporal-analyses-of-weather-data-from-a-sensor-network"><span class="toc-section-number">2.3</span> Spatio-temporal analyses of weather data from a sensor network</a></li>
 <li><a href="#detect-change-in-fairy-rings-over-time"><span class="toc-section-number">2.4</span> Detect change in fairy rings over time</a><ul>
 <li><a href="#implement-opencv-in-r"><span class="toc-section-number">2.4.1</span> Implement OpenCV in R</a></li>
@@ -66,11 +71,26 @@
 <h1><span class="header-section-number">2</span> Project list</h1>
 <div id="port-aquacropos-to-r" class="section level2">
 <h2><span class="header-section-number">2.1</span> Port <code>AquacropOS</code> to R</h2>
-<p>Port the code for the crop simulator <code>AquacropOS</code> from matlab into R, integrating into the existing <code>rcropmod</code> package. Final project results will include running and presenting gridded crop yield simulations.</p>
+<p>Port the code for the crop simulator <code>AquacropOS</code> from matlab into R, integrating into the existing <code>rcropmod</code> package. Final project results will include running and presenting gridded crop yield simulations, based on the output of a sophisticated crop model. Skills that will be picked up on the way: matlab -&gt; R translation; <code>data.table</code>, <code>raster</code>, among others.</p>
 </div>
 <div id="help-defeat-gerrymandering" class="section level2">
 <h2><span class="header-section-number">2.2</span> Help defeat gerrymandering</h2>
-<p>Three potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics.</p>
+<p>There are four potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics. These ideas come from Sam Wang and Brian Remlinger of the <a href="http://gerrymander.princeton.edu">Princeton Gerrymandering project</a>, with whom you would collaborate if taking up one of these projects.</p>
+<p>All of these projects have the potential to make a substantial contribution to broader public understanding of gerrymandering, and may even help influence state level redistricting efforts.</p>
+<p>Resources: <a href="http://amypond.sscnet.ucla.edu/districts/">congressional district boundaries, 1789-2012</a>; <a href="https://catalog.data.gov/dataset/tiger-line-shapefile-2016-nation-u-s-115th-congressional-district-national">2016 congressional boundaries</a></p>
+<div id="voting-precinct-demography" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Voting Precinct Demography</h3>
+<p>The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. Skills learned: <code>rgeos</code>, <code>sf</code>, cleaning topologies.</p>
+</div>
+<div id="districting-and-population-visualizations" class="section level3">
+<h3><span class="header-section-number">2.2.2</span> Districting and Population Visualizations</h3>
+</div>
+<div id="toy-gerrymandering-demo" class="section level3">
+<h3><span class="header-section-number">2.2.3</span> Toy Gerrymandering Demo</h3>
+</div>
+<div id="gis-arguments-against-compactnessmap-metrics" class="section level3">
+<h3><span class="header-section-number">2.2.4</span> GIS Arguments against Compactness/Map Metrics</h3>
+</div>
 </div>
 <div id="spatio-temporal-analyses-of-weather-data-from-a-sensor-network" class="section level2">
 <h2><span class="header-section-number">2.3</span> Spatio-temporal analyses of weather data from a sensor network</h2>

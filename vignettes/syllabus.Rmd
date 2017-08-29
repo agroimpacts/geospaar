@@ -221,8 +221,10 @@ In this first part of the course, we will learn the basics of working with R, st
 
 ### Week 5. Wrap-up
 #### Class 8  (25 Sep). Common analyses
-+ Regressions, correlations, non-parametric (splines): 
-+ Downstream functions: summary, predict, etc. 
++ Readings:
+    + [Basic statistics](http://www.r-tutor.com/elementary-statistics/numerical-measures), by R-tutor. Work through the various links, from mean through kurtosis  
+    + Ordinary linear regression, including evaluation of results, by [rspatial](http://www.rspatial.org/intr/rst/13-statmodels.html). A longer and optional tutorial by R-tutor is [here](http://www.r-tutor.com/elementary-statistics/simple-linear-regression)
+    + Smooth (non-parametric) models/plotting [a short example](http://r-statistics.co/Loess-Regression-With-R.html)
 
 #### Class 9 (29 Sep). Some more analyses and a glimpse of advanced
 + Readings: 
