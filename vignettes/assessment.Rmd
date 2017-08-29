@@ -45,36 +45,34 @@ Assessment: Can we load the data you used, run your code, and arrive at the same
 ___[Still under construction]___ We will grade using this rubric (or one close to it that captures the results/style/reproducibility dimensions).
 
 ```{r, echo=FALSE}
-mat <- rbind(c("Expected results all wrong (0-5%)", 
+mat <- rbind(c("Expected results all wrong (0-5%)", 0, 
+               "Can't be made to run", 0, 
                "Indecipherable code, no comments or documentation", 
-               "Can't be made to run", 
                0), 
-             c("Expected results mostly wrong (5-25%)", 
+             c("Expected results mostly wrong (5-25%)", 4,
+               "Doesn't work", 4,
                "Indecipherable code, no comments or documentation", 
-               "Doesn't work", 
-               4), 
-             c("Expected results more wrong than right (25-50%)", 
+               2), 
+             c("Expected results more wrong than right (25-50%)", 8, 
+               "Doesn't run without numerous fixes", 8, 
                "Code indecipherable or no comments/documentation", 
-               "Doesn't run without numerous fixes", 
-               8), 
-             c("Expected results more right than wrong (50-75%)", 
-               "Code readable but not too style/some commenting/documentation",
-               "Runs after a handful of fixes",
-               12), 
-             c("Expected results almost entirely correct (75-95%)",
-               "Code pretty clean/decent documentation & commenting",
-               "Runs after some minor tweaks", 
-               16), 
-             c("Expected results all right (95-100%)", 
-               "Code exactly to style/well commented & documented", 
-               "Runs out of the box", 
-               20))
+               4), 
+             c("Expected results more right than wrong (50-75%)", 12,
+               "Runs after a handful of fixes", 12,
+               "Code readable but wrong style/some commenting/documentation",
+               6), 
+             c("Expected results almost entirely correct (75-95%)", 16,
+               "Runs after some minor tweaks", 16,
+               "Code pretty clean/decent commenting & documentation", 8), 
+             c("Expected results all right (95-100%)", 20, 
+               "Runs out of the box", 20,
+               "Code elegant and stylish/well commented & documented", 10))
 DF <- as.data.frame(mat, stringsAsFactors = FALSE)
-colnames(DF) <- c("Accuracy", "Elegance", "Reproducibility", "Points")
-DF$Points <- as.numeric(DF$Points)
+colnames(DF) <- c("Accuracy", "Acc. Points", "Elegance", "Ele. Points", "Reproducibility", "Repro. Points")
+for(i in colnames(DF)[c(2, 4, 6)]) DF[, i] <- as.numeric(DF[, i])
 # reshape2::dcast(DF, Accuracy + Elegance + Reproducibility ~ Points)
 # DF2 <- rbind(t(DF[1:6, 1:3]), DF[1:6, 4])
-kable(DF)
+kable(DF, align = "r")
 ```
 
 ## For presentations

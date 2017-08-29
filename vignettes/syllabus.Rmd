@@ -219,13 +219,17 @@ In this first part of the course, we will learn the basics of working with R, st
         
 <a href="#top">Back to top</a>
 
-### Week 5. Wrap-up
+### Week 5. Common analyses and advanced R
 #### Class 8  (25 Sep). Common analyses
 + Readings:
-    + [Basic statistics](http://www.r-tutor.com/elementary-statistics/numerical-measures), by R-tutor. Work through the various links, from mean through kurtosis  
-    + Ordinary linear regression, including evaluation of results, by [rspatial](http://www.rspatial.org/intr/rst/13-statmodels.html). A longer and optional tutorial by R-tutor is [here](http://www.r-tutor.com/elementary-statistics/simple-linear-regression)
-    + Smooth (non-parametric) models/plotting [a short example](http://r-statistics.co/Loess-Regression-With-R.html)
-
+    + Note: this is a very short section, given that statistical analysis is  R's _raison d'etre_. 
+    + [Basic statistics](http://www.r-tutor.com/elementary-statistics/numerical-measures), by R-tutor. Work through the various links, from mean through kurtosis. Also look at [this](http://rfunction.com/archives/539) for basic calculations applied to rows/columns of a matrix/data.frame  
+    + Ordinary, simple linear regression, including evaluation of results, by [rspatial](http://www.rspatial.org/intr/rst/13-statmodels.html). A fuller [tutorial](http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html) (by Harvard's Institute for Quantitative Sciences), is mostly optional, but do look for the examples in there of multiple regression (more than one predictor)
+    + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/)
+    + And then [a short example](http://r-statistics.co/Loess-Regression-With-R.html).
+ of non-parametric regression for non-linear fits.
+    + You might be interested in looking at the [resources](#resources) section below for examples of more advanced modeling techniques. 
+ 
 #### Class 9 (29 Sep). Some more analyses and a glimpse of advanced
 + Readings: 
     + Advanced data manipulation alternatives: data.table, dplyr (grammer of data) / the tidyverse
@@ -271,7 +275,7 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 ## The intertubes
 
-### Bog-standard websites
+### Websites
 
 [CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
 
@@ -284,6 +288,9 @@ The following are some helpful resources that you may wish to follow-up on as yo
 [Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
 
 [Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
+
+Advanced modeling techniques, such as [Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/); [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/); [Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
+
 
 ### Blogs/social
 

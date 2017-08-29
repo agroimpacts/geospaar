@@ -27,15 +27,20 @@ knitr::opts_chunk$set(echo = TRUE)
     + Create your first R package named xyza1, where xyz is replaced by your initials (if you have more or less than 3 initials, replace xyz be the necessary number of initials).
     + The package should have just a single function in it, the same one as in [Hillary Parker's short package tutorial](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/). Note, however, that the package is not named the same. You should document the function per the tutorial.
     + Work within the RStudio environment to make this package, meaning that you have an RStudio project associated with this, as well as a local git repo. 
-    + There are multiple ways you could go about making this library. You could follow and adapt Hillary Parker's tutorial. There is also another, perhaps easier, way you can set up the package and git repo in one go through Rstudio. We'll leave it to you.  
+    + There are multiple ways you could go about making this library. You could follow and adapt Hillary Parker's tutorial. There is also another, perhaps easier, way you can set up the package and git repo in one go through Rstudio. We'll leave it to you. Some hints. Git repos can be initialized post-hoc through Rstudio (project settings) or pre-hoc, without having to resort to command line antics.     
     
-2. Set up a private GitHub repository under your own GitHub sub-team (your name under the [agroimpacts/geog246346](https://github.com/orgs/agroimpacts/teams/geog246346/teams) team) that has the same name as this repo. Do not initialize it with a readme, because you want to populate this GitHub repo with your local git repo. There are instructions on how to do this during the repo creation process on GitHub. 
+2. Set up a private GitHub repository under your own GitHub sub-team (your name under the [agroimpacts/geog246346](https://github.com/orgs/agroimpacts/teams/geog246346/teams) team) and push your new local repo containing your R package to it. Hints: 
++ The GitHub repo and your local repo need to have the same name. 
++ Do not initialize your GitHub repo with a readme
++ GitHub gives fairly helpful instructions on how to push an existing repository to the one you just created on GitHub ("…or push an existing repository from the command line" is the line you are looking just after you press create), and there is a more detailed set of [instructions](https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/#platform-windows) on how to do this (points 7-9 correspond to commands offered under the "push an existing repository option")
++ Pushing the local repository using the aforementioned commands requires you to be in the shell (command line) environment provided by Rstudio (looks for it under the tools tab)
 
 3. Create vignettes for the package: 
 
     + Document the steps you took to do 1 and 2 in a vignette that is part of your xyza1 package. Call this vignette "setup". That means we want to see a descriptive HTML vignette that we can browse to understand the steps you took to make the package, and to get it under version control on GitHub. The `geospaar` package may prove to be a useful resources for this. 
-    + Create a second vignette that demonstrates the use of the `cat_function`, showing the results of both the TRUE and FALSE cases. 
-    
+    + Create a second vignette that demonstrates the use of the `cat_function`, showing the results of both the TRUE and FALSE cases.
+    + Hint: Karl Broman's section on writing vignettes [tutorial on package writing](http://kbroman.org/pkg_primer/) can come in handy on this. 
+
 ## Submission:
 
 To complete the assignment, you have to make your final git commit and push it to the GitHub remote repo by the deadline on ___Friday September 8th (midnight)___. 
