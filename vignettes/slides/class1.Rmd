@@ -9,7 +9,7 @@ subtitle: Welcome to the Course!
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+# knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Class Overview

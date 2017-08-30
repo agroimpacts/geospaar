@@ -1,0 +1,75 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "8/30/2017"
+output:
+  slidy_presentation: default
+  ioslides_presentation: default
+subtitle: Class 2
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Things to Cover Today
+
+- Progress thus far
+    - Rstudio and git installed and working?
+    - `geospaar` installed?
+    - able to do this?
+
+```{r, eval = FALSE}
+browseVignettes("geospaar")
+# or this, for individual vignette?
+vignette("syllabus", package = "geospaar")
+```
+
+- Your questions
+- Key concepts/techniques
+
+## Your questions
+
+Prompts: 
+
+- What was least clear? 
+- What seemed obvious/made most sense? 
+- Feel free to say out loud, or send slack DM to Zhiwen
+
+## Key concepts/techniques
+- Replicability versus reproducibility, and what we mean by reproducible here
+- Objects, functions, arguments, assignment
+- How to get help
+- Where packages live: 
+    - after being built
+    - when they are being built
+- Git, GitHub, and RStudio
+    - When you have to use shell scripts
+
+## Examples
+
+### Help
+```{r, eval = FALSE}
+?matrix  # exact function name
+??matrices  # search for matches 
+apropos("matrix")  # searches matching functions loaded in memory
+help("matrix")
+help("bs")
+help("bs", try.all.packages = TRUE)
+```
+
+http://rseek.org
+http://www.google.com
+https://duckduckgo.com
+https://www.r-project.org/mail.html
+
+
+### Where Built Packages Live
+```{r, eval = FALSE}
+.libPaths()
+dir(paste0(.libPaths(), "/geospaar"))
+R.home()
+dir(R.home())
+dir(paste0(R.home(), "/library"))
+```
+

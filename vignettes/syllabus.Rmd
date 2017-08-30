@@ -291,6 +291,9 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 Advanced modeling techniques, such as [Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/); [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/); [Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
 
+[Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
+
+[R mailing lists/listservs](https://www.r-project.org/mail.html)
 
 ### Blogs/social
 
