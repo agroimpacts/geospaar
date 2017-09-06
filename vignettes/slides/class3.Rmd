@@ -28,6 +28,12 @@ subtitle: Class 2
 (send as slack message to Zhiwen if you prefer)
 
 - What was least clear?
+    - install, install_github, install.packages [differences]
+    - easy way to use vignettes? intended uses of vignettes
+    - working with chunks and knitting
+        - Remember chunk options--they determine whether code is evaluated, presented, and/or displayed at knit time
+    - when to use vignettes
+        - vignettes can have a numbered TOC, but you have to pass additional commands to the `yaml` front matter (see example posted in slack)
 - What seemed obvious/made most sense? 
 
 ## Key concepts/techniques
@@ -71,18 +77,31 @@ a <- as.factor(1:10)
 levels(a)
 a * 10
 
+
 # R typically coerces characters to factors
 b <- letters[1:10]
-DF <- cbind.data.frame(a, 1:10)
+str(b)
+DF <- cbind.data.frame(b, d = 1:10)
 str(DF)
 
 options(stringsAsFactors = FALSE)
 DF <- cbind.data.frame(b, 1:10)
 str(DF)
 
+DF$b <- as.factor(DF$b)
+str(DF)
+
 options(stringsAsFactors = TRUE)
 DF <- cbind.data.frame(b, 1:10)
 str(DF)
+
+
+```
+
+## R concepts - matrix and list
+```{r}
+cbind(b, 1:10)  # all one data type
+list(1:10, letters, plot(1:10))  # lists hold multiple data types
 ```
 
 
