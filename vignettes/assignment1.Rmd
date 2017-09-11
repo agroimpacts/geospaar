@@ -30,10 +30,11 @@ knitr::opts_chunk$set(echo = TRUE)
     + There are multiple ways you could go about making this library. You could follow and adapt Hillary Parker's tutorial. There is also another, perhaps easier, way you can set up the package and git repo in one go through Rstudio. We'll leave it to you. Some hints. Git repos can be initialized post-hoc through Rstudio (project settings) or pre-hoc, without having to resort to command line antics.     
     
 2. Set up a private GitHub repository under your own GitHub sub-team (your name under the [agroimpacts/geog246346](https://github.com/orgs/agroimpacts/teams/geog246346/teams) team) and push your new local repo containing your R package to it. Hints: 
-+ The GitHub repo and your local repo need to have the same name. 
-+ Do not initialize your GitHub repo with a readme
-+ GitHub gives fairly helpful instructions on how to push an existing repository to the one you just created on GitHub ("…or push an existing repository from the command line" is the line you are looking just after you press create), and there is a more detailed set of [instructions](https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/#platform-windows) on how to do this (points 7-9 correspond to commands offered under the "push an existing repository option")
-+ Pushing the local repository using the aforementioned commands requires you to be in the shell (command line) environment provided by Rstudio (looks for it under the tools tab)
+
+    + The GitHub repo and your local repo need to have the same name. 
+    + Do not initialize your GitHub repo with a readme
+    + GitHub gives fairly helpful instructions on how to push an existing repository to the one you just created on GitHub ("…or push an existing repository from the command line" is the line you are looking just after you press create), and there is a more detailed set of [instructions](https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/#platform-windows) on how to do this (points 7-9 correspond to commands offered under the "push an existing repository option")
+    + Pushing the local repository using the aforementioned commands requires you to be in the shell (command line) environment provided by Rstudio (looks for it under the tools tab)
 
 3. Create vignettes for the package: 
 

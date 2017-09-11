@@ -5,7 +5,7 @@ date: "9/6/2017"
 output:
   slidy_presentation: default
   ioslides_presentation: default
-subtitle: Class 2
+subtitle: Class 3
 ---
 
 ```{r setup, include=FALSE}

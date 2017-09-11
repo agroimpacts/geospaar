@@ -51,7 +51,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <body>
 <div class="slide titlepage">
   <h1 class="title">Geospatial Analysis with R</h1>
-  <h1 class="subtitle">Class 2</h1>
+  <h1 class="subtitle">Class 3</h1>
   <p class="author">
 Lyndon Estes &amp; Zhiwen Zhu
   </p>
@@ -146,7 +146,7 @@ b &lt;-<span class="st"> </span>letters[<span class="dv">1</span>:<span class="d
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DF &lt;-<span class="st"> </span><span class="kw">cbind.data.frame</span>(b, <span class="dt">d =</span> <span class="dv">1</span>:<span class="dv">10</span>)
 <span class="kw">str</span>(DF)</code></pre></div>
 <pre><code>## 'data.frame':    10 obs. of  2 variables:
-##  $ b: chr  &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; ...
+##  $ b: Factor w/ 10 levels &quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;,..: 1 2 3 4 5 6 7 8 9 10
 ##  $ d: int  1 2 3 4 5 6 7 8 9 10</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
 DF &lt;-<span class="st"> </span><span class="kw">cbind.data.frame</span>(b, <span class="dv">1</span>:<span class="dv">10</span>)
@@ -196,28 +196,38 @@ DF &lt;-<span class="st"> </span><span class="kw">cbind.data.frame</span>(b, <sp
 <h1>R concepts - Namespaces</h1>
 <p>Notice how the order in which packages are loaded can matter as to which functions are in the search path.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)</code></pre></div>
-<pre><code>## 
-## Attaching package: 'raster'</code></pre>
-<pre><code>## The following objects are masked from 'package:Hmisc':
-## 
-##     mask, zoom</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Hmisc)
-
-mask</code></pre></div>
-<pre><code>## standardGeneric for &quot;mask&quot; defined from package &quot;raster&quot;
-## 
-## function (x, mask, ...) 
-## standardGeneric(&quot;mask&quot;)
-## &lt;bytecode: 0x11b955db8&gt;
-## &lt;environment: 0x10ecc5110&gt;
-## Methods may be defined for arguments: x, mask
-## Use  showMethods(&quot;mask&quot;)  for currently available ones.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">detach</span>(<span class="st">&quot;package:raster&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)
-<span class="kw">detach</span>(<span class="st">&quot;package:Hmisc&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)
-<span class="kw">library</span>(Hmisc)</code></pre></div>
+<pre><code>## Loading required package: sp</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Hmisc)</code></pre></div>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## Loading required package: Formula</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## 
 ## Attaching package: 'Hmisc'</code></pre>
+<pre><code>## The following objects are masked from 'package:raster':
+## 
+##     mask, zoom</code></pre>
 <pre><code>## The following objects are masked from 'package:base':
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mask</code></pre></div>
+<pre><code>## function (a) 
+## {
+##     if (a &gt;= .Machine$integer.max) 
+##         stop(&quot;Value &gt; integer.max&quot;)
+##     a &lt;- as.integer(a)
+##     as.logical((rep(a, 8)%/%rep(2^(0:7), rep(length(a), 8)))%%2)
+## }
+## &lt;environment: namespace:Hmisc&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">detach</span>(<span class="st">&quot;package:raster&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Warning: 'raster' namespace cannot be unloaded:
+##   namespace 'raster' is imported by 'gdalUtils' so cannot be unloaded</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">detach</span>(<span class="st">&quot;package:Hmisc&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)
+<span class="kw">library</span>(Hmisc)</code></pre></div>
+<pre><code>## 
+## Attaching package: 'Hmisc'
+## 
+## The following objects are masked from 'package:base':
 ## 
 ##     format.pval, round.POSIXt, trunc.POSIXt, units</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)</code></pre></div>
@@ -231,8 +241,8 @@ mask</code></pre></div>
 ## 
 ## function (x, mask, ...) 
 ## standardGeneric(&quot;mask&quot;)
-## &lt;bytecode: 0x11740bd48&gt;
-## &lt;environment: 0x11aa376e8&gt;
+## &lt;bytecode: 0x10cb85838&gt;
+## &lt;environment: 0x10c9cebc0&gt;
 ## Methods may be defined for arguments: x, mask
 ## Use  showMethods(&quot;mask&quot;)  for currently available ones.</code></pre>
 </div>
