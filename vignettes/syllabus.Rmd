@@ -191,15 +191,18 @@ In this first part of the course, we will learn the basics of working with R, st
     + Functions: rspatial's [chapter](http://www.rspatial.org/intr/rst/8-functions.html) on functions; read from top through "Primitive Functions" section in Advanced R's chapter on [Functions](http://adv-r.had.co.nz/Functions.html#function-components).  
     + Object-oriented programming (OOP) and R classes (especially S3 & S4): Read 5-5.1 in CRAN's [definition of OOP](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming) first, and then a [python-oriented version](https://python.swaroopch.com/oop.html) of the same, which might be somewhat clearer. Then read the Advanced R [OO field guide](http://adv-r.had.co.nz/OO-essentials.html) that talks about the main OOP-associated classes, particularly S3 and S4, used in R.
     + Environments: Read Environment Basics and Function Environments in the the [Environment chapter](http://adv-r.had.co.nz/Environments.html#env-basics) of Advanced R. 
-+ [Assignment 2](assignment2.html) ___[to be released this afternoon (Sep 11)]___
 
 #### Class 5 (13 Sep). Basic operations, indexing, and control structures
 + Readings: 
-    + Basics: U. Illinois' [Using R as a calculator](http://courses.atlas.illinois.edu/fall2016/STAT/STAT200/RProgramming/RCalculator.html); rspatial's [chapter on algebra](http://www.rspatial.org/intr/rst/5-algebra.html); 
-    + Indexing: rspatial on [indexing](http://www.rspatial.org/intr/rst/4-indexing.html)
-    + Control structures: rspatial on [flow control](http://www.rspatial.org/intr/rst/10-flow.html), or control structures, and on R's unique [apply](http://www.rspatial.org/intr/rst/9-apply.html) family; an R-bloggers [more detailed look](https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/) at family apply
-    + Advanced control structures: [foreach](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf). Just read the introduction and skim the rest if you are so inclined--this is something to keep in our back pocket for future work
-    + A bit more on functions from [here](https://ramnathv.github.io/pycon2014-r/learn/functions.html) and [here](http://www.statmethods.net/management/userfunctions.html)
+    + Required. No need to follow links within the pages these links point to. Do these in sequence, work through one, finish it, return here to find and follow the link to the next
+        + __First:__ Basics. U. Illinois' [Using R as a calculator](http://courses.atlas.illinois.edu/fall2016/STAT/STAT200/RProgramming/RCalculator.html); rspatial's [chapter on algebra](http://www.rspatial.org/intr/rst/5-algebra.html); 
+        + __Second:__ Indexing. rspatial on [indexing](http://www.rspatial.org/intr/rst/4-indexing.html)
+        +  __Third:__ Control sructures. rspatial on [flow control](http://www.rspatial.org/intr/rst/10-flow.html), or control structures, and on R's unique [apply](http://www.rspatial.org/intr/rst/9-apply.html) family
+    + Optional additional information: 
+        + R-bloggers [more detailed look](https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/) at family apply
+        + Advanced control structures: [foreach](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf). Just read the introduction and skim the rest if you are so inclined--this is something to keep in our back pocket for future work
+        + A bit more on functions from [here](https://ramnathv.github.io/pycon2014-r/learn/functions.html) and [here](http://www.statmethods.net/management/userfunctions.html)
++ [Assignment 2](assignment2.html): This assignment will also be an exception to the rule--due the following Friday (9/22)
 
 <a href="#top">Back to top</a>
 

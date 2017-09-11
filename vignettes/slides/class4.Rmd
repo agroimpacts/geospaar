@@ -26,6 +26,10 @@ subtitle: Class 4
 (send as slack message to Zhiwen if you prefer)
 
 - What was least clear?
+
+    - Method dispatch (object-oriented programming)
+    - Name-masking (name-space)
+    
 - What seemed obvious/made most sense? 
 
 ## Key concepts/techniques
@@ -116,6 +120,7 @@ Knitr fails to knit html when errors crop in code. Sometimes you might want the 
 ```{r, error = TRUE}
 a <- "a"
 sum(a)
+
 ```
 
 

@@ -74,29 +74,93 @@ Lyndon Estes &amp; Zhiwen Zhu
 <h1>Your questions</h1>
 <p>(send as slack message to Zhiwen if you prefer)</p>
 <ul>
-<li>What was least clear?</li>
-<li>What seemed obvious/made most sense?</li>
+<li><p>What was least clear?</p>
+<ul>
+<li>Method dispatch (object-oriented programming)</li>
+<li>Name-masking (name-space)</li>
+</ul></li>
+<li><p>What seemed obvious/made most sense?</p></li>
 </ul>
 </div>
 <div id="key-conceptstechniques" class="slide section level2">
 <h1>Key concepts/techniques</h1>
+<ul>
+<li>Environments versus namespaces
+<ul>
+<li>Environments provide spaces for names</li>
+<li>Namespace is the environment for a package: they keep functions in packages separate from one another</li>
+<li>The last package loaded provides the current environment</li>
+<li>The Global Environment is where you work</li>
+<li><p>Functions and environments:</p>
+<p>From <a href="http://adv-r.had.co.nz/Environments.html#function-envs">Advanced R</a> “This works because every package has two environments associated with it: the package environment and the namespace environment. The package environment contains every publicly accessible function, and is placed on the search path. The namespace environment contains all functions (including internal functions), and its parent environment is a special imports environment that contains bindings to all the functions that the package needs. Every exported function in a package is bound into the package environment, but enclosed by the namespace environment. This complicated relationship is illustrated by the following diagram”</p></li>
+<li>How does all this complicated mess matter to you?
+<ul>
+<li>Understanding interactions between functions and objects you are working within the global environment</li>
+<li>Interactions between functions of the same name from different packages</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="key-concepts-continued" class="slide section level2">
+<h1>Key concepts continued</h1>
+<ul>
+<li>Base types, S3, S4</li>
+</ul>
 </div>
 <div id="examples" class="slide section level2">
 <h1>Examples</h1>
-<p>Knitr fails to knit html when errors crop in code. Sometimes you might want the errors to be printed in your html. Use error = TRUE in ```{r, error = TRUE}<br />
-</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> &quot;a&quot;</span>
-<span class="kw">sum</span>(a)</code></pre></div>
-<pre><code>## Error in sum(a): invalid 'type' (character) of argument</code></pre>
+</div>
+<div id="r-concepts---namespaces" class="slide section level2">
+<h1>R concepts - Namespaces</h1>
+<p>The last package loaded Notice how the order in which packages are loaded can matter as to which functions are in the search path.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)
+<span class="kw">library</span>(Hmisc)
+
+mask</code></pre></div>
+<pre><code>## standardGeneric for &quot;mask&quot; defined from package &quot;raster&quot;
+## 
+## function (x, mask, ...) 
+## standardGeneric(&quot;mask&quot;)
+## &lt;bytecode: 0x11624ac70&gt;
+## &lt;environment: 0x1160bd008&gt;
+## Methods may be defined for arguments: x, mask
+## Use  showMethods(&quot;mask&quot;)  for currently available ones.</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">detach</span>(<span class="st">&quot;package:raster&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)
+<span class="kw">detach</span>(<span class="st">&quot;package:Hmisc&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)
+<span class="kw">library</span>(Hmisc)</code></pre></div>
+<pre><code>## 
+## Attaching package: 'Hmisc'</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(raster)</code></pre></div>
+<pre><code>## 
+## Attaching package: 'raster'</code></pre>
+<pre><code>## The following objects are masked from 'package:Hmisc':
+## 
+##     mask, zoom</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mask</code></pre></div>
+<pre><code>## standardGeneric for &quot;mask&quot; defined from package &quot;raster&quot;
+## 
+## function (x, mask, ...) 
+## standardGeneric(&quot;mask&quot;)
+## &lt;bytecode: 0x11b81b878&gt;
+## &lt;environment: 0x11b961238&gt;
+## Methods may be defined for arguments: x, mask
+## Use  showMethods(&quot;mask&quot;)  for currently available ones.</code></pre>
 </div>
 <div id="r-concepts---environments" class="slide section level2">
 <h1>R concepts - Environments</h1>
-<p>For Monday</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
 
 b &lt;-<span class="st"> </span>function(x) {
   a &lt;-<span class="st"> </span>x *<span class="st"> </span><span class="dv">100</span>
   <span class="kw">return</span>(a)  
+}
+a</code></pre></div>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">b2 &lt;-<span class="st"> </span>function(x) {
+  a &lt;-<span class="st"> </span>x *<span class="st"> </span><span class="dv">100</span>
 }
 a</code></pre></div>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
@@ -106,6 +170,19 @@ a</code></pre></div>
 <p>And check the value of <code>a</code> again</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a</code></pre></div>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">b2</span>(a)</code></pre></div>
+<p>Nothing produced! (We didn’t return it to the global environment)</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">o &lt;-<span class="st"> </span><span class="kw">b2</span>(a)
+<span class="kw">return</span>(o)</code></pre></div>
+<pre><code>##  [1]  100  200  300  400  500  600  700  800  900 1000</code></pre>
+</div>
+<div id="knitting-rmd-docs" class="slide section level2">
+<h1>Knitting Rmd docs</h1>
+<p>Knitr fails to knit html when errors crop in code. Sometimes you might want the errors to be printed in your html. Use error = TRUE in ```{r, error = TRUE}<br />
+</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> &quot;a&quot;</span>
+<span class="kw">sum</span>(a)</code></pre></div>
+<pre><code>## Error in sum(a): invalid 'type' (character) of argument</code></pre>
 </div>
 
   <!-- dynamically load mathjax for compatibility with self-contained -->
