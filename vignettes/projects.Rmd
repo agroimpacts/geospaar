@@ -34,23 +34,58 @@ There are four potential projects that will help contribute to an understanding 
 
 All of these projects have the potential to make a substantial contribution to broader public understanding of gerrymandering, and may even help influence state level redistricting efforts.  
 
-Resources: [congressional district boundaries, 1789-2012](http://amypond.sscnet.ucla.edu/districts/); [2016 congressional boundaries](https://catalog.data.gov/dataset/tiger-line-shapefile-2016-nation-u-s-115th-congressional-district-national)
+Resources: 
+
++ [congressional district boundaries (1789-2012)](http://amypond.sscnet.ucla.edu/districts/); 
++ [2016 congressional boundaries](https://catalog.data.gov/dataset/tiger-line-shapefile-2016-nation-u-s-115th-congressional-district-national)
++ [Some demo code](https://gist.github.com/ldemaz/4617b1ee96eb46bcaf73d9467a616c25) 
 
 ### Voting Precinct Demography
-The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. Skills learned: `rgeos`, `sf`, cleaning topologies.
+The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. 
 
+- Skills learned: `rgeos`, `sf`, `sp`, `raster`, cleaning polygon topologies.
 
 ### Districting and Population Visualizations
 
-### Toy Gerrymandering Demo
+The goal is to demonstrate how redistricters gerrymander congressional districts by "packing" or "cracking" high population areas. Background on the issue can be seen in this LA Times [article](http://www.latimes.com/opinion/op-ed/la-oe-wang-remlinger-gerrymandering-20170505-story.html), in which the graphics were mostly made with R with some Adode Illustrator post-hoc manipulations done by the newspaper. What we would really like to do is represented by the purple-yellow scale map of North Carolina [here](http://gerrymander.princeton.edu/info), which didn't make the article, but was done to support it. The goal is to create a package that can: 
+
+1. Take population data from a given year, and congressional district boundary polygons from a corresponding year
+2. Convert them quickly and efficiently into similar maps
+3. Create the package so that it installs and demos with data from North Carolina (all available years), and, depending on data availability, possibly one or two other states (e.g. Pennsylvania).
+4. Additionally, if the same package can also create maps that, together with the population density information, show which party won the district, [as in this visualization](https://static01.nyt.com/images/2017/09/03/magazine/03gerrymandering_map/03gerrymandering_map-superJumbo.gif), that would be even better.  
+
+- Skills learned: `rgeos`, `sf`, `sp`, `raster`, cleaning polygon topologies.
 
 ### GIS Arguments against Compactness/Map Metrics
 
+There is a strong perception that gerrymandering can be foiled by GIS techniques, using things such as a compactness metric (e.g. perimeter/area ratio) as a standard to prove or prevent gerrymandering. However, such standards cannot be applied in law. One reason has to do with how perimeters are measured. That requires GIS, yet the scale and density with which the polygon defining a district has a large impact on perimeter values. The goal here would be to write an R package to demonstrate and visualize how such variations in polygon delineation can impact perimeter:area ratios. This could be done quite simply with the creation of toy polygons and the use of introduced errors into node x,y coordinates. If successful and compelling, it could have an important impact on policy. 
 
-## Spatio-temporal analyses of weather data from a sensor network
+- Skills learned: `rgeos`, `sf`, `sp`, `raster`, cleaning polygon topologies, application of random data in geospatial analysis.
 
-Analyze weather and crop growth data collected by our [network](https://twitter.com/natashakre/status/899956707119558656)
-of [Arable Mark](https://www.arable.com) sensors in Zambia
+
+## Analying sensor and SMS survey data Zambia
+
+We have a [network](https://twitter.com/natashakre/status/899956707119558656) of 60 [Arable Mark](https://www.arable.com) environmental sensors currently deployed in Zambia. We also have over 1000 farmers enrolled in a weekly SMS survey that asks 12 questions related to agricultural management, local weather, and food security during the course of the growing season. The sensor network is fairly new (the majority deployed in August, 2017), but we have rainfall data collected by 7 pods from from October, 2016 up through March, 2017. The farmer surveys have been running for three seasons now in the Southern Province of Zambia, and one season across the whole country. 
+
+There are a variety of potential projects related to these datasets: 
+
+### Quantify Zambia's maize planting season
+Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. How long was the season from planting to harvest?  What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?
+
+### Develop a rainfall onset metric
+Apply and evaluate various objective rainfall onset metrics, using data from the sensors, the SMS survey, and gridded rainfall products. Can a measure applied just to farmer SMS survey responses (e.g. change point detection) produce a similar answer date compared to a metric derived from continuous rainfall measurements from the sensors or gridded rainfall products (e.g. first three consecutive days of rain)?
+
+### Quantify the spatial variability of rainfall
+Use geostatistics to see what the farmers' SMS survey rainfall responses and 2016-2017 sensor data can tell us about the spatial variability of rainfall, at weekly and daily timesteps. How much does rainfall vary between two (or more) different points at a 5, 10, or 25 km scale (the typical pixel size of the gridded rainfall products we use)?
+
+### Develop a mid-season agricultural drought metric
+Use the SMS survey and co-located sensor rainfall data to identify mid-season dry-spells of potential agricultural significance. For example, two or more consecutive rainless weeks close to maize flowering or grain-filling times. Can you detect a signficant drop in farmers' anticipated harvest amounts around such events (we might expect a sudden drop in expected harvest amounts)? How about a significant change in the rate of reduction in farmers' reported maize storage levels fall (if farmers are concerned about crop loss, they might slow their rate of consumption of stored food)? 
+
+### Evaluate the skill of gridded weather products
+Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS's Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors' incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?  
+
+### Predicting farmers' reported yields
+The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
 
 ## Detect change in fairy rings over time
 There are two parts to this potential project, which is based on UAS-collected imagery of two cranberry beds in Southern NJ where a Rutgers colleague (Peter Oudemans) has been running trials to evaluate the effectiveness of fungicides for treating a fungal pathogen that kills cranberry shrubs. 
@@ -62,6 +97,8 @@ Specifically to make use of the circle detection algorithm, to see how well it p
 Work through and update existing object oriented analysis of fairy ring detection that I undertook a couple of years ago, using the `EBImage` package.  
 
 ## An R library for running Terrset
+
+Write an R package that contains wrapper functions that allow you to run certain Terrset functions from R. This would make a valuable contribution to Clark's flagship geospatial software, and could put Terrset on track to join ArcGIS, QGIS, GRASS, SAGA-GIS, and other GIS that have their own R packages.  
 
 ## How well do crowdsourcers map individual fields? 
 

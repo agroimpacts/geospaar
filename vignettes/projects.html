@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes" />
 
-<meta name="date" content="2017-08-29" />
+<meta name="date" content="2017-09-12" />
 
 <title>Semester Projects</title>
 
@@ -32,7 +32,7 @@
 
 <h1 class="title toc-ignore">Semester Projects</h1>
 <h4 class="author"><em>Lyndon Estes</em></h4>
-<h4 class="date"><em>2017-08-29</em></h4>
+<h4 class="date"><em>2017-09-12</em></h4>
 
 
 <div id="TOC">
@@ -43,10 +43,16 @@
 <li><a href="#help-defeat-gerrymandering"><span class="toc-section-number">2.2</span> Help defeat gerrymandering</a><ul>
 <li><a href="#voting-precinct-demography"><span class="toc-section-number">2.2.1</span> Voting Precinct Demography</a></li>
 <li><a href="#districting-and-population-visualizations"><span class="toc-section-number">2.2.2</span> Districting and Population Visualizations</a></li>
-<li><a href="#toy-gerrymandering-demo"><span class="toc-section-number">2.2.3</span> Toy Gerrymandering Demo</a></li>
-<li><a href="#gis-arguments-against-compactnessmap-metrics"><span class="toc-section-number">2.2.4</span> GIS Arguments against Compactness/Map Metrics</a></li>
+<li><a href="#gis-arguments-against-compactnessmap-metrics"><span class="toc-section-number">2.2.3</span> GIS Arguments against Compactness/Map Metrics</a></li>
 </ul></li>
-<li><a href="#spatio-temporal-analyses-of-weather-data-from-a-sensor-network"><span class="toc-section-number">2.3</span> Spatio-temporal analyses of weather data from a sensor network</a></li>
+<li><a href="#analying-sensor-and-sms-survey-data-zambia"><span class="toc-section-number">2.3</span> Analying sensor and SMS survey data Zambia</a><ul>
+<li><a href="#quantify-zambias-maize-planting-season"><span class="toc-section-number">2.3.1</span> Quantify Zambia’s maize planting season</a></li>
+<li><a href="#develop-a-rainfall-onset-metric"><span class="toc-section-number">2.3.2</span> Develop a rainfall onset metric</a></li>
+<li><a href="#quantify-the-spatial-variability-of-rainfall"><span class="toc-section-number">2.3.3</span> Quantify the spatial variability of rainfall</a></li>
+<li><a href="#develop-a-mid-season-agricultural-drought-metric"><span class="toc-section-number">2.3.4</span> Develop a mid-season agricultural drought metric</a></li>
+<li><a href="#evaluate-the-skill-of-gridded-weather-products"><span class="toc-section-number">2.3.5</span> Evaluate the skill of gridded weather products</a></li>
+<li><a href="#predicting-farmers-reported-yields"><span class="toc-section-number">2.3.6</span> Predicting farmers’ reported yields</a></li>
+</ul></li>
 <li><a href="#detect-change-in-fairy-rings-over-time"><span class="toc-section-number">2.4</span> Detect change in fairy rings over time</a><ul>
 <li><a href="#implement-opencv-in-r"><span class="toc-section-number">2.4.1</span> Implement OpenCV in R</a></li>
 <li><a href="#rework-the-object-oriented-detection-of-fairy-ring"><span class="toc-section-number">2.4.2</span> Rework the object-oriented detection of fairy ring</a></li>
@@ -77,24 +83,68 @@
 <h2><span class="header-section-number">2.2</span> Help defeat gerrymandering</h2>
 <p>There are four potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics. These ideas come from Sam Wang and Brian Remlinger of the <a href="http://gerrymander.princeton.edu">Princeton Gerrymandering project</a>, with whom you would collaborate if taking up one of these projects.</p>
 <p>All of these projects have the potential to make a substantial contribution to broader public understanding of gerrymandering, and may even help influence state level redistricting efforts.</p>
-<p>Resources: <a href="http://amypond.sscnet.ucla.edu/districts/">congressional district boundaries, 1789-2012</a>; <a href="https://catalog.data.gov/dataset/tiger-line-shapefile-2016-nation-u-s-115th-congressional-district-national">2016 congressional boundaries</a></p>
+<p>Resources:</p>
+<ul>
+<li><a href="http://amypond.sscnet.ucla.edu/districts/">congressional district boundaries (1789-2012)</a>;</li>
+<li><a href="https://catalog.data.gov/dataset/tiger-line-shapefile-2016-nation-u-s-115th-congressional-district-national">2016 congressional boundaries</a></li>
+<li><a href="https://gist.github.com/ldemaz/4617b1ee96eb46bcaf73d9467a616c25">Some demo code</a></li>
+</ul>
 <div id="voting-precinct-demography" class="section level3">
 <h3><span class="header-section-number">2.2.1</span> Voting Precinct Demography</h3>
-<p>The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. Skills learned: <code>rgeos</code>, <code>sf</code>, cleaning topologies.</p>
+<p>The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these.</p>
+<ul>
+<li>Skills learned: <code>rgeos</code>, <code>sf</code>, <code>sp</code>, <code>raster</code>, cleaning polygon topologies.</li>
+</ul>
 </div>
 <div id="districting-and-population-visualizations" class="section level3">
 <h3><span class="header-section-number">2.2.2</span> Districting and Population Visualizations</h3>
-</div>
-<div id="toy-gerrymandering-demo" class="section level3">
-<h3><span class="header-section-number">2.2.3</span> Toy Gerrymandering Demo</h3>
+<p>The goal is to demonstrate how redistricters gerrymander congressional districts by “packing” or “cracking” high population areas. Background on the issue can be seen in this LA Times <a href="http://www.latimes.com/opinion/op-ed/la-oe-wang-remlinger-gerrymandering-20170505-story.html">article</a>, in which the graphics were mostly made with R with some Adode Illustrator post-hoc manipulations done by the newspaper. What we would really like to do is represented by the purple-yellow scale map of North Carolina <a href="http://gerrymander.princeton.edu/info">here</a>, which didn’t make the article, but was done to support it. The goal is to create a package that can:</p>
+<ol style="list-style-type: decimal">
+<li>Take population data from a given year, and congressional district boundary polygons from a corresponding year</li>
+<li>Convert them quickly and efficiently into similar maps</li>
+<li>Create the package so that it installs and demos with data from North Carolina (all available years), and, depending on data availability, possibly one or two other states (e.g. Pennsylvania).</li>
+<li>Additionally, if the same package can also create maps that, together with the population density information, show which party won the district, <a href="https://static01.nyt.com/images/2017/09/03/magazine/03gerrymandering_map/03gerrymandering_map-superJumbo.gif">as in this visualization</a>, that would be even better.</li>
+</ol>
+<ul>
+<li>Skills learned: <code>rgeos</code>, <code>sf</code>, <code>sp</code>, <code>raster</code>, cleaning polygon topologies.</li>
+</ul>
 </div>
 <div id="gis-arguments-against-compactnessmap-metrics" class="section level3">
-<h3><span class="header-section-number">2.2.4</span> GIS Arguments against Compactness/Map Metrics</h3>
+<h3><span class="header-section-number">2.2.3</span> GIS Arguments against Compactness/Map Metrics</h3>
+<p>There is a strong perception that gerrymandering can be foiled by GIS techniques, using things such as a compactness metric (e.g. perimeter/area ratio) as a standard to prove or prevent gerrymandering. However, such standards cannot be applied in law. One reason has to do with how perimeters are measured. That requires GIS, yet the scale and density with which the polygon defining a district has a large impact on perimeter values. The goal here would be to write an R package to demonstrate and visualize how such variations in polygon delineation can impact perimeter:area ratios. This could be done quite simply with the creation of toy polygons and the use of introduced errors into node x,y coordinates. If successful and compelling, it could have an important impact on policy.</p>
+<ul>
+<li>Skills learned: <code>rgeos</code>, <code>sf</code>, <code>sp</code>, <code>raster</code>, cleaning polygon topologies, application of random data in geospatial analysis.</li>
+</ul>
 </div>
 </div>
-<div id="spatio-temporal-analyses-of-weather-data-from-a-sensor-network" class="section level2">
-<h2><span class="header-section-number">2.3</span> Spatio-temporal analyses of weather data from a sensor network</h2>
-<p>Analyze weather and crop growth data collected by our <a href="https://twitter.com/natashakre/status/899956707119558656">network</a> of <a href="https://www.arable.com">Arable Mark</a> sensors in Zambia</p>
+<div id="analying-sensor-and-sms-survey-data-zambia" class="section level2">
+<h2><span class="header-section-number">2.3</span> Analying sensor and SMS survey data Zambia</h2>
+<p>We have a <a href="https://twitter.com/natashakre/status/899956707119558656">network</a> of 60 <a href="https://www.arable.com">Arable Mark</a> environmental sensors currently deployed in Zambia. We also have over 1000 farmers enrolled in a weekly SMS survey that asks 12 questions related to agricultural management, local weather, and food security during the course of the growing season. The sensor network is fairly new (the majority deployed in August, 2017), but we have rainfall data collected by 7 pods from from October, 2016 up through March, 2017. The farmer surveys have been running for three seasons now in the Southern Province of Zambia, and one season across the whole country.</p>
+<p>There are a variety of potential projects related to these datasets:</p>
+<div id="quantify-zambias-maize-planting-season" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Quantify Zambia’s maize planting season</h3>
+<p>Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. How long was the season from planting to harvest? What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?</p>
+</div>
+<div id="develop-a-rainfall-onset-metric" class="section level3">
+<h3><span class="header-section-number">2.3.2</span> Develop a rainfall onset metric</h3>
+<p>Apply and evaluate various objective rainfall onset metrics, using data from the sensors, the SMS survey, and gridded rainfall products. Can a measure applied just to farmer SMS survey responses (e.g. change point detection) produce a similar answer date compared to a metric derived from continuous rainfall measurements from the sensors or gridded rainfall products (e.g. first three consecutive days of rain)?</p>
+</div>
+<div id="quantify-the-spatial-variability-of-rainfall" class="section level3">
+<h3><span class="header-section-number">2.3.3</span> Quantify the spatial variability of rainfall</h3>
+<p>Use geostatistics to see what the farmers’ SMS survey rainfall responses and 2016-2017 sensor data can tell us about the spatial variability of rainfall, at weekly and daily timesteps. How much does rainfall vary between two (or more) different points at a 5, 10, or 25 km scale (the typical pixel size of the gridded rainfall products we use)?</p>
+</div>
+<div id="develop-a-mid-season-agricultural-drought-metric" class="section level3">
+<h3><span class="header-section-number">2.3.4</span> Develop a mid-season agricultural drought metric</h3>
+<p>Use the SMS survey and co-located sensor rainfall data to identify mid-season dry-spells of potential agricultural significance. For example, two or more consecutive rainless weeks close to maize flowering or grain-filling times. Can you detect a signficant drop in farmers’ anticipated harvest amounts around such events (we might expect a sudden drop in expected harvest amounts)? How about a significant change in the rate of reduction in farmers’ reported maize storage levels fall (if farmers are concerned about crop loss, they might slow their rate of consumption of stored food)?</p>
+</div>
+<div id="evaluate-the-skill-of-gridded-weather-products" class="section level3">
+<h3><span class="header-section-number">2.3.5</span> Evaluate the skill of gridded weather products</h3>
+<p>Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS’s Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors’ incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?</p>
+</div>
+<div id="predicting-farmers-reported-yields" class="section level3">
+<h3><span class="header-section-number">2.3.6</span> Predicting farmers’ reported yields</h3>
+<p>The farmers’ report their harvests at the end of the SMS survey. Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields? If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields.</p>
+</div>
 </div>
 <div id="detect-change-in-fairy-rings-over-time" class="section level2">
 <h2><span class="header-section-number">2.4</span> Detect change in fairy rings over time</h2>
@@ -110,6 +160,7 @@
 </div>
 <div id="an-r-library-for-running-terrset" class="section level2">
 <h2><span class="header-section-number">2.5</span> An R library for running Terrset</h2>
+<p>Write an R package that contains wrapper functions that allow you to run certain Terrset functions from R. This would make a valuable contribution to Clark’s flagship geospatial software, and could put Terrset on track to join ArcGIS, QGIS, GRASS, SAGA-GIS, and other GIS that have their own R packages.</p>
 </div>
 <div id="how-well-do-crowdsourcers-map-individual-fields" class="section level2">
 <h2><span class="header-section-number">2.6</span> How well do crowdsourcers map individual fields?</h2>
