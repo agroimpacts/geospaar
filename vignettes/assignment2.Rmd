@@ -1,12 +1,11 @@
 ---
 title: "Assignment 2"
 author: "Lyndon Estes"
-output: 
-  html_document:
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 5
-    toc: yes
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
