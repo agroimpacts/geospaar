@@ -8,7 +8,7 @@ output:
     toc_depth: 3
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{syllabus}
+  %\VignetteIndexEntry{assignment2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
