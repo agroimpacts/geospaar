@@ -122,6 +122,7 @@ Recall and run this example, after first installing `raster` and `Hmisc`
 library(raster)
 library(Hmisc)
 mask
+search()
 detach("package:raster", unload=TRUE)
 detach("package:Hmisc", unload=TRUE)
 library(Hmisc)
@@ -152,7 +153,7 @@ git checkout -b newbranchname
 
 Commit your new branch to GitHub
 ```
-git commit push origin newbranchname
+git push origin newbranchname
 ```
 
 To switch into an existing branch
