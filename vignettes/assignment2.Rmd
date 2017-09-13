@@ -1,0 +1,116 @@
+---
+title: "Assignment 2"
+author: "Lyndon Estes"
+output: 
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 5
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Assignment 2
+
+Assignment 2 is going to be developed under the same git repo as Assignment 1. In this assignment we will start to get used to branching, continue to develop packages, and start to work with data. 
+
+Note: I will demonstrate things not in your readings in class, such as git branching. 
+
+## Tasks:
+
+1. Create a new branch in the git repo you made for Assignment 1, to capture the state of your package as it was when you submitted Assignment 1. You will want to name this branch `a1`. Push it to your remote repo (the one that lives on GitHub).   
+2. Switch back to (i.e. checkout) your master branch. Delete (in Rstudio, or from file explorer) the vignettes (but keep the function you created) you made for assignment 1, commit, and push those changes. After this, the copy of your package as written for assignment 1 will be in your `a1` branch, and you will be working on changes to your package that relate to assignment 2 will be in your master branch. This means the package name remains the same. 
+4. Create a new vignette, which you will name "calculations". You will use this to document the tasks you undertake for this assignment from task 5 onwards (task 4, the creation of new functions, you don't have to describe your steps within the vignette, but you do have to give them appropriate function documentation for their respective help files). 
+5. Create two new functions within your package, using the `roxygen2` notation to write help files (i.e. the lines of text appearing above the body of the function, which are preceded with #'), and a separate .R file for each, named the same as the function contained therein (and, as mentioned above, create the necessary function documentation, as done for your Assignment 1 function):
+
+    - Function 1 is to be named `mysum`, which will take two arguments, a and b, and then evaluate and return those sums. This function should be able to take any two vectors a and b or matrices a and b and sum them. 
+    
+    - Function 2 is to be named `mycalc`, which will take three arguments, a, b, and oper, which stands for operator. Arguments a and b will be vectors or matrices as in `mysum`, while argument oper will have four possible values: "sum", "subtract", "divide", "multiply". Function `mycalc` will use conditional statements to choose the correct calculation to make based on the value you argument value given to oper. For example, if you pass a, a vector of `1:5`, and b, a vector of `c(5, 2, 3, 10, 2)` to `mycalc` with oper set to "divide", you should get:  
+    
+    
+    ```{r, echo = FALSE}
+1:5 / c(5, 2, 3, 10, 2)
+    ```
+
+
+
+    - Here's are a quick, somewhat-related example for how a function that uses a conditional to switch between possible calculations might look. (Notice the use of the `stop` function in the example below, to stop the function executing and warn you of a bad input)
+
+    ```{r, warning=FALSE, error = TRUE}
+    pieces_of_cheese <- function(piecesbread, howhungryami) {
+      if(howhungryami == "notvery") {
+        cheese <- piecesbread
+      } else if(howhungryami == "somewhat") {
+        cheese <- piecesbread * 2
+      } else if(howhungryami == "very") {
+        cheese <- piecesbread * 3
+      } else {
+        stop(paste("That value is not a recognized level of hunger.", 
+                   "We're stopping things here."), call. = FALSE)
+      }
+      print(paste("You need to cut", cheese, 
+                  "pieces of cheese for your sandwich"))
+    }
+    
+    
+    pieces_of_cheese(1, "somewhat")
+    pieces_of_cheese(2, "somewhat")
+    pieces_of_cheese(2, "very")
+    pieces_of_cheese(2, "sasquatch")
+    ```
+    
+6. Create the following vectors: 
+    - An integer vector of length 20, to be named `v1`, using the `sample` function to randomly select 20 values from 0 through 100, use the option "replace = TRUE" (which means that you can the same value randomly selected more than one time)
+    - A second integer vector (named `v2`), also of length 20, but selecting 20 values from the range 1:10. 
+    - A numeric vector of length 20 (named `v3`), using the `runif` function with the minimum set to 0 and the maximum to 1. 
+    - A character vector of length 20 (named `v4`), using randomly selected values from the built-in dataset `LETTERS`. You will use `v2` to select the values out of `LETTERS` (this means that you are using `v2` as an __index__). 
+    - In making `v1, v2, v3`, you will use the `set.seed` function so that you can get the exact same results each time you run your code to make them. Use a seed value of 1.
+
+7. Create a matrix `m1` from `v1` and `v2`, by binding the two vectors together as ___columns___. Create another (`m2`) from `v2` and `v3`, again by binding columns. Create a third (`m3`) by binding `v3` and `v4 `. 
+
+8. Demonstrate the use of your spiffy new functions: 
+    - Use `mysum` on the following pairs: i) `v1`, `v2`; ii) `v2`, `v3`; iii) `v3`, `v4`, naming the output object from each calculation `s1`, `s2`, `s3`.
+        - What `typeof` data are the resulting objects?
+    - Run your `mycalc` function on the same vector pairs, passing the "sum" and "divide" arguments to oper. Do the same for matrices: i) `m1`, `m1`; ii) `m1`, `m2`; iii) `m2`, `m3`. Use the same names for the output objects. 
+        - What `class` and `typeof` are the resulting output objects? 
+
+9. Create a `data.frame` (named `DF`) by bindings the columns of `v1`, `v2`, `v3`, and `v4`. 
+    - Question: why shouldn't you use the name "df" to name this object?  
+    - Change the column names of `DF` to "a", "b", "c", and "grp". 
+    - Question: why is it okay to rename a column in `DF` "c", but not to rename `v3` that name? 
+    - Look at the `str` of `DF`. What kind of data type is "grp"? What are two ways you can change it from a factor to a character? (Hint: one is when you create it, one is after you have created it. Both are ones I demonstrated in class) 
+     
+10. __Extra credit (5 points)__: Do the following calculations:
+    - Using `mycalc` with `DF`:
+        - Multiply row1, column1 by row1, column2
+        - Multiply rows 1-10, column 1-3 by rows1-10, columns 1-3
+        - Divide the values in columns "a" and "b" by the values in column "c" and of `DF` corresponding to "grp" values "E". In selecting the columns, use their names, rather than their index numbers, to select them
+    - Repeat the last of the aforementioned calculations, but this time do not use mycalc. Simply do it using the two `DF` subsets with the `/` operator
+    
+# Assignment output
+
+As with the previous assignment, this should be an R package that: 
+
+1. Has a vignettes, man, and R folder, with the necessary ingredients in them ("calculations" vignette, R function files, .Rd files for the function documentation) 
+2. Has a DESCRIPTION and NAMESPACE file that shows that both your functions are exported. Fill out the DESCRIPTION file with your relevant details, a description of the package, etc. Also, use 3-digit version numbering. 0.0.0 is the initial version of your package. 0.0.X (where X means some integer in a sequence, 1 if this is your first minor update) is the updated version after a minor fix (a small bug corrected or documentation updated), 0.X.0 is an intermediate release (maybe you have added a new function or two), X.0.0 is a major release of a working version of the package. 
+3. Can be installed with browsable vignettes using `install_github`.  
+4. Code written according to Hadley Wickham's R style guide. 
+5. No extraneous files/folders in your repo. 
+6. In writing your vignettes, make sure that the content of objects that result from each assigned task are printed into the vignette, For example, if you are asked to create a two column data.frame:
+
+This is wrong
+```{r}
+a <- cbind.data.frame(a = 1:10, b = 1:10)
+```
+
+This is right
+```{r}
+a <- cbind.data.frame(a = 1:10, b = 1:10)
+a
+```
+
+
+
