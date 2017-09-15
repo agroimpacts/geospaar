@@ -208,17 +208,25 @@ In this first part of the course, we will learn the basics of working with R, st
 
 ### Week 4. Data preparation and visualization
 #### Class 6 (18 Sep). Working with/manipulating data
-+ Readings: 
-    + Reading/writing data: [One piece](https://ramnathv.github.io/pycon2014-r/explore/tidy.html) by Ramnath that also introduces the concept of tidy data; [another from rspatial](http://www.rspatial.org/intr/rst/6-files.html)
-    + Data massage (i.e. substitutions, reshaping, merging, or how to tidy up data): [rspatial's piece](http://www.rspatial.org/intr/rst/11-dataprep.html); [ramnath's take](https://ramnathv.github.io/pycon2014-r/explore/reshape.html) on it; [recoding data](http://www.cookbook-r.com/Manipulating_data/Recoding_data/), which is a sub-section of a very useful Cookbook for R section on [Manipulating Data](http://rprogramming.net/recode-data-in-r/) that you have the option of perusing further.  
-    + Several of the previous readings introduce the `gsub` function, which uses *regular expressions* to match and replace patterns in character data types. Working with *regular expressions* is important and can be challenging, so let's read a [bit more](*regular expressions*) about them. Here's a [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for that also. 
-+ [Assignment 3](assignment3.html) ___[under construction]___
++ Required readings: (reminder, work through examples in readings unless otherwise indicated--coding is best learned through doing) 
+      + Reading/writing data: 
+          + [This piece](http://www.rspatial.org/intr/rst/6-files.html) by rspatial is a nice introduction to reading and writing data (focused mostly on .csv and other delimited files). There is also good stuff in it on reading directories, working with file path variables (Windows-centric), and the more esoteric, but useful `readLines`
+          + Ramnath Vaidyanathan [(ramnathv)](https://ramnathv.github.io/pycon2014-r/explore/tidy.html) provides another useful file-reading example (using `read.delim`), in which he also introduces the concept of ___tidy data___, which is important to know as it is a key principle underlying Hadley Wickham's ecosystem of packages (the `tidyverse`), which represent an increasingly dominant branch of R. 
+      + Data manipulation: 
+          + *Reshaping*: The ___tidy data___ concept leads us to procedures that we commonly use to reshape and manipulate the structure of data (typically structures of class `data.frame` or `matrix`). [rspatial](http://www.rspatial.org/intr/rst/11-dataprep.html) (note: although w encourage further explanation, you are not expected to follow links out of the rspatial page) covers  _reshaping_ (wide-to-long, and long-to-wide), _merging_ two (or more) together, and _sorting/reordering_ 
+          + *Matching and replacing values*: The preceding reading introduces the `gsub` function, which uses *regular expressions* to match and replace patterns in (usually character) data types. Before getting into that, however, let's look at some fairly simple recoding of data, which is demonstrated [here](http://www.cookbook-r.com/Manipulating_data/Recoding_data/). Don't worry about the section on recoding with `plyr` (the second code block), but focus on the parts below (which use base R). After that, let's get back to *regular expressions*, or *"regex"*, which are important for manipulating data. You will often need to base your data manipulations by finding parts of the data that match certain patterns (e.g. you want to extract all rows of a `data.frame` in which the values in column X contain the word "fruit"). Using *regex* can be challenging (I am stumped on one problem as I write this), but it is pretty important capability, so let's read a [bit more](http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/regExprTalk.pdf) about them, specifically Sections 1-3.1 in the linked document. At the end of this, you should have a clearer idea of why regex is important, and a sense of what the functions `gsub` and `grep` do. I don't expect you to understand the bewildering array of metacharacters yet, or the more advanced ways to use these functions. However, if I give you the vector `c("cat", "dog", "bird", "banana")`, and ask you to 1) find which words contain "a" (`grep`) and 2) to replace all occurrences of "a" with "1", you should be able to do it. 
+  + Optional additional information: 
+      + A more advanced take on reshaping by  [ramnathv](https://ramnathv.github.io/pycon2014-r/explore/reshape.html), which focuses on using the `reshape2` package (e.g. `melt`); 
+      + The full chapter from Cookbook for R on [Manipulating Data](http://rprogramming.net/recode-data-in-r/), from which we took the piece on recoding, very worthy of a further perusal.   
+      + A [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for regex. 
 
 #### Class 7 (20 Sep). Visualization 
 + Readings:
     + The two schools of plotting in R: 
         + Base graphics, a useful intro by [rspatial](http://www.rspatial.org/intr/rst/12-plots.html), and [intermediate plotting](http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options) from Kelly Black's R tutorial, and [this](http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous) provides an excellent *(and optional)* reference for many different kinds of plots with code. 
         + ggplot/grammar of graphics: [A nice short bloggy intro](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/), and Hadley Wickham's [longer walk-through](http://r4ds.had.co.nz/visualize.html#undefined). For reference, you might want to look at the [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) describing the underlying philosophy
+
++ [Assignment 3](assignment3.html) ___[under construction]___
         
 <a href="#top">Back to top</a>
 
@@ -280,15 +288,12 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 ### Websites
 
+#### R-focused
 [CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
-
-[Tools for Reproducible Research](http://kbroman.org/Tools4RR/)
 
 [R Exercises](http://www.r-exercises.com)
 
 [ROpenSci](https://ropensci.org)
-
-[Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
 
 [Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
 
@@ -297,6 +302,15 @@ Advanced modeling techniques, such as [Generalized Additive Models](http://multi
 [Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
 
 [R mailing lists/listservs](https://www.r-project.org/mail.html)
+
+#### Reproducibility
+[Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
+
+[Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
+
+[Tools for Reproducible Research](http://kbroman.org/Tools4RR/)
+
+[manuscriptPackage](https://github.com/jhollist/manuscriptPackage): An R package that provides a package template for ___writing a Latex manuscript using Rmarkdown___, complete with citations. 
 
 ### Blogs/social
 

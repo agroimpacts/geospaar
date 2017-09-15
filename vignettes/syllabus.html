@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-09-13" />
+<meta name="date" content="2017-09-15" />
 
 <title>Geography 246/346 Syllabus</title>
 
@@ -32,7 +32,7 @@
 
 <h1 class="title toc-ignore">Geography 246/346 Syllabus</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-09-13</em></h4>
+<h4 class="date"><em>2017-09-15</em></h4>
 
 
 <div id="TOC">
@@ -361,14 +361,26 @@
 <div id="class-6-18-sep.-working-withmanipulating-data" class="section level4">
 <h4><span class="header-section-number">2.1.4.1</span> Class 6 (18 Sep). Working with/manipulating data</h4>
 <ul>
-<li>Readings:
+<li>Required readings: (reminder, work through examples in readings unless otherwise indicated–coding is best learned through doing)
 <ul>
-<li>Reading/writing data: <a href="https://ramnathv.github.io/pycon2014-r/explore/tidy.html">One piece</a> by Ramnath that also introduces the concept of tidy data; <a href="http://www.rspatial.org/intr/rst/6-files.html">another from rspatial</a></li>
-<li>Data massage (i.e. substitutions, reshaping, merging, or how to tidy up data): <a href="http://www.rspatial.org/intr/rst/11-dataprep.html">rspatial’s piece</a>; <a href="https://ramnathv.github.io/pycon2014-r/explore/reshape.html">ramnath’s take</a> on it; <a href="http://www.cookbook-r.com/Manipulating_data/Recoding_data/">recoding data</a>, which is a sub-section of a very useful Cookbook for R section on <a href="http://rprogramming.net/recode-data-in-r/">Manipulating Data</a> that you have the option of perusing further.<br />
-</li>
-<li>Several of the previous readings introduce the <code>gsub</code> function, which uses <em>regular expressions</em> to match and replace patterns in character data types. Working with <em>regular expressions</em> is important and can be challenging, so let’s read a <a href="*regular%20expressions*">bit more</a> about them. Here’s a <a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf">useful cheatsheet</a> for that also.</li>
+<li>Reading/writing data:
+<ul>
+<li><a href="http://www.rspatial.org/intr/rst/6-files.html">This piece</a> by rspatial is a nice introduction to reading and writing data (focused mostly on .csv and other delimited files). There is also good stuff in it on reading directories, working with file path variables (Windows-centric), and the more esoteric, but useful <code>readLines</code></li>
+<li>Ramnath Vaidyanathan <a href="https://ramnathv.github.io/pycon2014-r/explore/tidy.html">(ramnathv)</a> provides another useful file-reading example (using <code>read.delim</code>), in which he also introduces the concept of <strong><em>tidy data</em></strong>, which is important to know as it is a key principle underlying Hadley Wickham’s ecosystem of packages (the <code>tidyverse</code>), which represent an increasingly dominant branch of R.</li>
 </ul></li>
-<li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
+<li>Data manipulation:
+<ul>
+<li><em>Reshaping</em>: The <strong><em>tidy data</em></strong> concept leads us to procedures that we commonly use to reshape and manipulate the structure of data (typically structures of class <code>data.frame</code> or <code>matrix</code>). <a href="http://www.rspatial.org/intr/rst/11-dataprep.html">rspatial</a> (note: although w encourage further explanation, you are not expected to follow links out of the rspatial page) covers <em>reshaping</em> (wide-to-long, and long-to-wide), <em>merging</em> two (or more) together, and <em>sorting/reordering</em></li>
+<li><em>Matching and replacing values</em>: The preceding reading introduces the <code>gsub</code> function, which uses <em>regular expressions</em> to match and replace patterns in (usually character) data types. Before getting into that, however, let’s look at some fairly simple recoding of data, which is demonstrated <a href="http://www.cookbook-r.com/Manipulating_data/Recoding_data/">here</a>. Don’t worry about the section on recoding with <code>plyr</code> (the second code block), but focus on the parts below (which use base R). After that, let’s get back to <em>regular expressions</em>, or <em>“regex”</em>, which are important for manipulating data. You will often need to base your data manipulations by finding parts of the data that match certain patterns (e.g. you want to extract all rows of a <code>data.frame</code> in which the values in column X contain the word “fruit”). Using <em>regex</em> can be challenging (I am stumped on one problem as I write this), but it is pretty important capability, so let’s read a <a href="http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/regExprTalk.pdf">bit more</a> about them, specifically Sections 1-3.1 in the linked document. At the end of this, you should have a clearer idea of why regex is important, and a sense of what the functions <code>gsub</code> and <code>grep</code> do. I don’t expect you to understand the bewildering array of metacharacters yet, or the more advanced ways to use these functions. However, if I give you the vector <code>c(&quot;cat&quot;, &quot;dog&quot;, &quot;bird&quot;, &quot;banana&quot;)</code>, and ask you to 1) find which words contain “a” (<code>grep</code>) and 2) to replace all occurrences of “a” with “1”, you should be able to do it.</li>
+</ul></li>
+</ul></li>
+<li>Optional additional information:
+<ul>
+<li>A more advanced take on reshaping by <a href="https://ramnathv.github.io/pycon2014-r/explore/reshape.html">ramnathv</a>, which focuses on using the <code>reshape2</code> package (e.g. <code>melt</code>);</li>
+<li>The full chapter from Cookbook for R on <a href="http://rprogramming.net/recode-data-in-r/">Manipulating Data</a>, from which we took the piece on recoding, very worthy of a further perusal.<br />
+</li>
+<li>A <a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf">useful cheatsheet</a> for regex.</li>
+</ul></li>
 </ul>
 </div>
 <div id="class-7-20-sep.-visualization" class="section level4">
@@ -382,6 +394,7 @@
 <li>ggplot/grammar of graphics: <a href="https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/">A nice short bloggy intro</a>, and Hadley Wickham’s <a href="http://r4ds.had.co.nz/visualize.html#undefined">longer walk-through</a>. For reference, you might want to look at the <a href="http://vita.had.co.nz/papers/layered-grammar.pdf">paper</a> describing the underlying philosophy</li>
 </ul></li>
 </ul></li>
+<li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
 </ul>
 <p><a href="#top">Back to top</a></p>
 </div>
@@ -466,15 +479,23 @@
 <h2><span class="header-section-number">3.2</span> The intertubes</h2>
 <div id="websites" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Websites</h3>
+<div id="r-focused" class="section level4">
+<h4><span class="header-section-number">3.2.1.1</span> R-focused</h4>
 <p><a href="https://cran.r-project.org">CRAN</a>, particularly an <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html">Introduction to R</a> the Task view <a href="https://cran.r-project.org/web/views/Spatial.html">Analysis of Spatial Data</a></p>
-<p><a href="http://kbroman.org/Tools4RR/">Tools for Reproducible Research</a></p>
 <p><a href="http://www.r-exercises.com">R Exercises</a></p>
 <p><a href="https://ropensci.org">ROpenSci</a></p>
-<p><a href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">Rmarkdown cheatsheet</a></p>
 <p><a href="http://www.cyclismo.org/tutorial/R/#">Kelly Black’s R tutorial</a></p>
 <p>Advanced modeling techniques, such as <a href="http://multithreaded.stitchfix.com/blog/2015/07/30/gam/">Generalized Additive Models</a>; <a href="https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/">Regression Trees, Random Forests, Gradient Boosting</a>; <a href="https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/">Support Vector Machines</a></p>
 <p><a href="https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example">Creating reproducible examples</a> (read this before posting to one of the mailing lists)</p>
 <p><a href="https://www.r-project.org/mail.html">R mailing lists/listservs</a></p>
+</div>
+<div id="reproducibility" class="section level4">
+<h4><span class="header-section-number">3.2.1.2</span> Reproducibility</h4>
+<p><a href="https://www.rdocumentation.org/packages/citr/versions/0.2.0">Add citations to an Rmarkdown document</a></p>
+<p><a href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">Rmarkdown cheatsheet</a></p>
+<p><a href="http://kbroman.org/Tools4RR/">Tools for Reproducible Research</a></p>
+<p><a href="https://github.com/jhollist/manuscriptPackage">manuscriptPackage</a>: An R package that provides a package template for <strong><em>writing a Latex manuscript using Rmarkdown</em></strong>, complete with citations.</p>
+</div>
 </div>
 <div id="blogssocial" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Blogs/social</h3>
