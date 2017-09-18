@@ -14,7 +14,7 @@ subtitle: Class 6
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 ```
 
-## Overview
+## Introduction
 
 - Any lingering questions from last class?
 - Today: indexing & control structures, focusing on *apply
