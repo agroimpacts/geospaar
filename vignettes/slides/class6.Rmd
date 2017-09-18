@@ -1,0 +1,300 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "9/18/2017"
+output:
+  slidy_presentation: 
+    default:
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+```
+
+## Overview
+
+- Any lingering questions from last class?
+- Today: indexing & control structures, focusing on *apply
+- Projects
+
+## Your questions?
+
+- Anything lingering from last class?
+- Comfort with indexing? 
+- *apply? 
+
+## Subsetting/Selecting/Indexing 1
+
+### Selecting by index __number__
+
+First make the following:
+```{r, which = FALSE}
+# a vector with names for each element
+a <- 1:10
+names(a) <- letters[1:length(a)]
+
+# a matrix
+mat <- cbind(a = 1:10, b = 1:10, c = 1:10)
+colnames(mat) <- c("a", "b", "c")
+
+# a data.frame
+d <- c(rep("pigs", 3), rep("ponies", 4), rep("puppies", 3))
+dat <- cbind.data.frame(mat, d)
+
+# a list
+l <- list(a, mat, dat)
+names(l) <- c("a", "mat", "dat")  # give the list names
+```
+
+- Now do the following exercises, in which you select:
+    - from `a`: 
+        - the 10th value; 
+        - the 1st and 3rd values
+        - all but the 5th value
+    - from `mat`: 
+        - row 1, column 1; 
+        - column 3; row 2 
+    - from `dat`: 
+        - rows 2:4 in columns 3:4; 
+        - rows 2:4 in columns 2 and 4
+    - from `l`: 
+        - the 1st element; 
+        - the 3rd element; 
+        - rows 2:4 in col 2 & 4 in the 3rd element
+
+## Answers 
+### Selecting by index __number__
+
+```{r, eval = FALSE}
+# Vectors
+a[10]  # 10th values of A
+a[c(1, 3)]  # 1st and 3rd values in A
+a[-5]
+
+# matrices
+mat[1, 1]  # row 1, column 1
+mat[2, 3]  # row 2, column 3
+
+# data.frames
+dat[2:4, 3:4]  # rows 2:4 in columns 3:4
+dat[2:4, c(2, 4)]  # rows 2:4 in columns 2 and 4
+
+# lists
+l[[1]]  # first element (a)
+l[[3]]  # third element (dat)
+l[[3]][2:4, c(2, 4)]  # rows 2:4 in col 2 & 4 in 3rd element
+```
+
+## Subsetting/Selecting/Indexing 2
+### Selecting by index __name__
+
+- Do the following exercises, selecting, using names:
+    - from `a`: 
+        - the element named "f"
+    - from `mat`: 
+        - row 1, column "a"
+        - column "b"
+    - from `dat`: 
+        - row 1, column "d"
+        - column "c"
+    - from `l`: 
+        - element "a"
+        - element "mat"
+        - rows 2:4 from columns "b"
+        - "d" in element "dat"
+
+## Answers
+### Selecting by index name
+```{r, eval = FALSE}
+a["f"]
+
+mat[1, "a"]
+mat[, "b"]
+
+dat[1, "d"]
+dat[, "c"]
+
+l$a
+l$mat
+l$dat[2:4, c("b", "d")]
+```
+
+## Subsetting/Selecting/Indexing 3
+
+### Selecting by matching values
+
+### Simple matching
+```{r, eval = FALSE}
+dat[dat$d == "pigs", ]  # all rows/columns of dat where d == "pigs"
+
+# another way (if you don't know name of column 4)
+dat[dat[, 4] == "pigs", ]  # all rows of dat where d == "pigs"
+```
+
+Notice the position where the match is specified (row)
+
+### Partial matching
+```{r, eval = FALSE}
+dat[grep("es", dat$d), ]  # all rows, columns of dat$d containing "es"
+dat[grep("up", dat$d), ]  # all rows, columns of dat$d containing "up"
+```
+
+### Exercises
+
+- Selecting the following
+    - from `dat`: 
+        - all values from "a" where d contains "puppies". Write it using both numerical and named index values for column "a", and for the match to column "d"
+        - all values from columns "a", "b", "c" where "d" contains "on"  
+    
+## Answers
+### Selecting by simple and partial matching
+```{r, eval = FALSE}
+dat[dat$d == "puppies", 1]  # all values from a where d == "pigs"
+dat[dat$d == "puppies", "a"]  # all values from a where d == "pigs"
+dat[dat[, 4] == "puppies", 1]  # all values from a where d == "pigs"
+dat[dat[, 4] == "puppies", "a"]  # all values from a where d == "pigs"
+dat[grep("on", dat$d), 1:3]  # all values from a-c where d contains "on"
+```
+
+## Control structures
+
+Very important, particularly the apply family of functions. 
+
+- apply, lapply, sapply
+
+- First, `for` loops, which occur in all languages
+```{r, eval = FALSE}
+for(i in 1:10) {
+  print(dat[i, "a"] * 10)
+}  # Where are the results kept? 
+
+a <- rep(NA, 10)
+for(i in 1:10) {
+  a[i] <- dat[i, "a"] * 10
+}  # Where are the results kept? 
+a
+```
+
+- The output of `for` has to be "caught" in an object you define
+- One reason we use the `*apply` family is because it is designed to put results into an object
+    - the *apply family functions generally take the following form:
+    
+    ```
+    *apply(data, [an index, maybe], function, function_applied_to_data))
+    ```
+    
+    - `data` can be a vector or any higher data structure
+    - `[index] only certain of the *apply family use an index 
+    - `function` can be a specific one, or just a placeholder
+    - `function_applied_to_data` can be implicit or explicit 
+    
+## apply
+`apply` applies a function to the rows or columns of a data.frame or matrix
+
+```{r, eval = FALSE}
+aa <- apply(dat[, 1:3], 1, sum)  # sum across columns (aka row sums)
+aa
+bb <- apply(dat[, 1:3], 2, sum)  # sum across rows (aka column sums)
+bb
+```
+
+- Here, `[index]` is used, `function` is specific and, `function_applied_to_data` is implicit
+- The example below produces the same result, using a placeholder `function`, and an explicitly stated `function_applied_to_data` part of the code
+
+```{r, eval = FALSE}
+aa <- apply(dat[, 1:3], 1, function(x) sum(x))  # short version
+aa
+aa <- apply(dat[, 1:3], 1, function(x) {  # full syntax
+  sum(x)
+})  # sum across columns
+aa
+```
+
+## lapply
+
+`lapply` also operates on a list, or applies a function to an index of your choosing, but returns a list
+
+`lapply` is arguably the most important of the *apply family to know
+
+```{r, eval = FALSE}
+ee <- lapply(l, function(x) sum(x[1:2]))
+ee
+ff <- lapply(1:10, function(x) sum(dat[x, 1:3]))
+ff
+ff <- lapply(1:10, function(x) {
+  print(paste("iteration", x))
+  d <- dat[x, 1:3]
+  o <- sum(d)
+})
+ff
+```
+
+## sapply
+
+`sapply` is basically a wrapper for lapply, which produces the simplest possible output structure, which can be a `vector`, `matrix`, or `data.frame`. If none of those work, it also returns a `list`. 
+
+It takes the same arguments as `lapply`.
+  
+```{r, eval = FALSE}
+cc <- sapply(l, function(x) sum(x[1:2]))
+cc
+dd <- sapply(1:10, function(x) sum(dat[x, 1:3]))
+dd
+```
+
+Note, however, the way in which `sapply` returns a data.frame
+```{r}
+ee <- sapply(1:3, function(x) {
+  a <- sum(dat[, x])
+  b <- mean(dat[, x])
+  c("sum" = a, "mean" = b)
+})
+ee
+```
+
+- In the example above, we use sapply to iterate over the first three columns of dat, and calculate the `sum` and `mean` of each column. 
+- The output matrix has the statistics by row and the results from each iteration in columns. 
+- I often find it more intuitive to have the __transpose__ of this. 
+
+```{r}
+t(ee)
+```
+
+## `for` versus `apply`
+
+In general, if you want to keep the output of your iterative operation, best look to `*apply`. If not, `for` loops can be useful.
+
+e.g. 
+```{r, fig.height=5}
+par(mfrow = c(2, 2), mar = c(2, 2, 2, 2))
+for(i in 1:4) {
+  plot(1:10, sample(0:20, size = 10, replace = TRUE), xlab = "x", ylab = "y")
+}
+```
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
