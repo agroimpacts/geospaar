@@ -1,11 +1,11 @@
 Package: geospaar
 Type: Package
 Title: Course materials for Clark University GEOG 246/346
-Version: 0.2.3
+Version: 0.2.4
 Author: Lyndon Estes
 Maintainer: Lyndon Estes <LEstes@clarku.edu>
-Description: This package contains the course materials for the Geospatial 
-    Analysis with R course. 
+Description: This package contains the course materials for Geospatial 
+    Analysis with R. 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
