@@ -152,10 +152,10 @@ dat[grep("up", dat$d), ]  # all rows, columns of dat$d containing "up"
 ## Answers
 ### Selecting by simple and partial matching
 ```{r, eval = FALSE}
-dat[dat$d == "puppies", 1]  # all values from a where d == "pigs"
-dat[dat$d == "puppies", "a"]  # all values from a where d == "pigs"
-dat[dat[, 4] == "puppies", 1]  # all values from a where d == "pigs"
-dat[dat[, 4] == "puppies", "a"]  # all values from a where d == "pigs"
+dat[dat$d == "puppies", 1]  # all values from a where d == "puppies"
+dat[dat$d == "puppies", "a"]  # all values from a where d == "puppies"
+dat[dat[, 4] == "puppies", 1]  # all values from a where d == "puppies"
+dat[dat[, 4] == "puppies", "a"]  # all values from a where d == "puppies"
 dat[grep("on", dat$d), 1:3]  # all values from a-c where d contains "on"
 ```
 

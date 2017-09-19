@@ -271,24 +271,39 @@ In this first part of the course, we will learn the basics of working with R, st
 
 <a href="#top">Back to top</a>
 
-### Week 5. Common analyses and advanced R
+### Week 5. Common analyses
 #### Class 8  (25 Sep). Common analyses
-+ Readings:
-    + Note: this is a very short section for a very long topic (statistical analysis is  R's _raison d'etre_, so this is a just a quick look from a fast-moving car). 
-    + [Basic statistics](http://www.r-tutor.com/elementary-statistics/numerical-measures), by R-tutor. Work through the various links, from mean through kurtosis. Also look at [this](http://rfunction.com/archives/539) for basic calculations applied to rows/columns of a matrix/data.frame  
+We are going to spend a week looking at some common statistical analysis with R. This is a very short amount of time for a very long topic--statistical analysis is, after all, R's _raison d'etre_--but this quick look from a fast-moving car will help as many of these analyses are applied to spatial objects, or to data extracted from them. 
+
++ Required readings:
+    + Basic statistics: 
+        + R-tutor has a section on simple statistics in the [numerical measures](http://www.r-tutor.com/elementary-statistics/numerical-measures) section. There are links that take you a different page for each of several measures, beginning with "mean" and ending with "kurtosis". Go through all of these, and run the code for the examples. Two notes on this: 
+            + The author has the unpleasant habit of pasting code from the console. That means you have to get rid of the `>` before each line. 
+            + The author also uses `=` as the assignment operator, rather than `<-`. While that works, that is a practice that we discourage as it does not conform to the style guide. 
+        + A very short piece [here](http://rfunction.com/archives/539) brings up four functions that quickly give you sums or means on the columns or rows of matrices or data.frames  
     + Ordinary, simple linear regression, including evaluation of results, by [rspatial](http://www.rspatial.org/intr/rst/13-statmodels.html). A fuller [tutorial](http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html) (by Harvard's Institute for Quantitative Sciences), is mostly optional, but do look for the examples in there of multiple regression (more than one predictor)
+
+#### Class 9 (29 Sep). Non-linear, non-parametric regressions
++ Required readings:
     + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/)
     + And then [a short example](http://r-statistics.co/Loess-Regression-With-R.html).
  of non-parametric regression for non-linear fits.
     + You might be interested in looking at the [resources](#resources) section below for examples of more advanced modeling techniques. 
 + [Assignment 3](assignment3.html) ___[under construction]___
 
-#### Class 9 (29 Sep). Some more analyses and a glimpse of advanced
+<a href="#top">Back to top</a>
+
+### Week 6. Unit 1 wrap-up
+#### Class 9 (30 Sep). Wrap-up
+ 
+#### Class 10 (2 Oct). Trends in R
 + Readings: 
     + Advanced data manipulation alternatives: data.table, dplyr (grammer of data) / the tidyverse
     <!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) -->
 
-<a href="#top">Back to top</a>
+
+
+
 
 ### Unit 1 Learning Goals
 By the end of this unit, you should ___understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments. 
@@ -344,6 +359,8 @@ Advanced modeling techniques, such as [Generalized Additive Models](http://multi
 [Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
 
 [R mailing lists/listservs](https://www.r-project.org/mail.html)
+
+[Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
 
 #### Reproducibility
 [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
