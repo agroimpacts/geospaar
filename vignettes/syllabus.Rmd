@@ -221,26 +221,68 @@ In this first part of the course, we will learn the basics of working with R, st
       + A [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for regex. 
 
 #### Class 7 (20 Sep). Visualization 
-+ Readings:
-    + The two schools of plotting in R: 
-        + Base graphics, a useful intro by [rspatial](http://www.rspatial.org/intr/rst/12-plots.html), and [intermediate plotting](http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options) from Kelly Black's R tutorial, and [this](http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous) provides an excellent *(and optional)* reference for many different kinds of plots with code. 
-        + ggplot/grammar of graphics: [A nice short bloggy intro](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/), and Hadley Wickham's [longer walk-through](http://r4ds.had.co.nz/visualize.html#undefined). For reference, you might want to look at the [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) describing the underlying philosophy
++ Be prepared to do, in class, an exercise in which we: 
+    + read in a dataset
+    + use controls structures to iteratively subset the data, using index numbers, names, and partial string matching. 
++ Required readings:
+    + On plotting/visualizing data. There are two primary schools of plotting in R. The first uses the base graphics, the plotting functionality that comes with every R install, the second is based on `ggplot2`, a package developed by Hadley Wickham, and is again connected to the tidy data concept.  In this class, we are going to focus on base graphics primarily, since we are learning how to code in base R, but it is important that you have an understanding of what `ggplot2` is and how it differs from base graphics, because it is becoming a graphical mainstay, and spatial packages are increasingly relying on it. 
+        + Base graphics: 
+            + Read and *work through the examples* in Rspatial's useful [intro](http://www.rspatial.org/intr/rst/12-plots.html) to base plotting. A note: you will see that when you run the command `plot(cars)` your result is not the same as what is shown in the reading. That's okay. 
+            + Working with the same `cars` dataset in this reading, run the following code: 
+            
+            ```{r, eval = FALSE}
+            # these first 4 lines are the same steps as in the reading
+            data(cars)
+            set.seed(0)
+            brands <- c('Buick', 'Chevrolet', 'Ford')
+            b <- sample(brands, nrow(cars), replace=TRUE)
+            
+            # this is new--we are showing how to add points to an existing plot
+            cars2 <- cars  # We are copying cars to a new dataset
+            cars2$make <- b
+            cols <- c("blue", "green", "red")
+            plot(speed ~ dist, data = cars2[cars2$make == "Buick", ], pch = 20, 
+                 col = cols[1], ylim = c(0, max(cars2$speed)), 
+                 xlim = c(0, max(cars2$dist)))
+            for(i in 2:3) {
+              points(speed ~ dist, data = cars2[cars2$make == brands[i], ], pch = 20, 
+                     col = cols[i])  
+            }
+            legend(90, 10, brands, pch = 20, pt.cex = 1, col = cols, cex = 1,
+                   bty = "n")
+            ```
+            
+            + Dont' just run, but study the code, which provides an example of:
+                + a `for` loop
+                + setting the plot's x and y limits
+                + passing in colors as a variable
+                + defining a plot formula (see the `~`), instead of in the x and y positions. 
+                + The use of `points`.
+                + By changing the values of arguments, or removing them entirely from the code (e.g. the xlim, ylim arguments), you can help gain a deeper understanding of how things work. 
+        + ggplot/grammar of graphics: [A nice short bloggy intro](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/). 
+    + After doing these two readings 
+        + You should know how to: make a simple xy plot with, base graphics, label axes, annotate plots with text, change plot symbols, put multiple plots in one figure, and add a legend
+        + You should have some understanding of: using control structures with plots; how `ggplot` differs from base graphics, and the grammar of graphics concept.  
++ Optional additional information: 
+    + [This](http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous) is an excellent reference for many different kinds of plots with code. 
+    + [Intermediate plotting](http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options) from Kelly Black's R tutorial. This is a resource you will want to remember, as it tells you some more advanced plotting (multiple plots, putting points on plots, etc.). All of this will come in handy with plotting spatial data. 
+    + The [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) that describes the underlying philosophy of `ggplot`. 
+    + Hadley Wickham's [data visualization tutorial with `ggplot2`](http://r4ds.had.co.nz/visualize.html#undefined). 
 
-+ [Assignment 3](assignment3.html) ___[under construction]___
-        
 <a href="#top">Back to top</a>
 
 ### Week 5. Common analyses and advanced R
 #### Class 8  (25 Sep). Common analyses
 + Readings:
-    + Note: this is a very short section, given that statistical analysis is  R's _raison d'etre_. 
+    + Note: this is a very short section for a very long topic (statistical analysis is  R's _raison d'etre_, so this is a just a quick look from a fast-moving car). 
     + [Basic statistics](http://www.r-tutor.com/elementary-statistics/numerical-measures), by R-tutor. Work through the various links, from mean through kurtosis. Also look at [this](http://rfunction.com/archives/539) for basic calculations applied to rows/columns of a matrix/data.frame  
     + Ordinary, simple linear regression, including evaluation of results, by [rspatial](http://www.rspatial.org/intr/rst/13-statmodels.html). A fuller [tutorial](http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html) (by Harvard's Institute for Quantitative Sciences), is mostly optional, but do look for the examples in there of multiple regression (more than one predictor)
     + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/)
     + And then [a short example](http://r-statistics.co/Loess-Regression-With-R.html).
  of non-parametric regression for non-linear fits.
     + You might be interested in looking at the [resources](#resources) section below for examples of more advanced modeling techniques. 
- 
++ [Assignment 3](assignment3.html) ___[under construction]___
+
 #### Class 9 (29 Sep). Some more analyses and a glimpse of advanced
 + Readings: 
     + Advanced data manipulation alternatives: data.table, dplyr (grammer of data) / the tidyverse

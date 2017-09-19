@@ -12,12 +12,50 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-09-18" />
+<meta name="date" content="2017-09-19" />
 
 <title>Geography 246/346 Syllabus</title>
 
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 
 
 
@@ -32,7 +70,7 @@
 
 <h1 class="title toc-ignore">Geography 246/346 Syllabus</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-09-18</em></h4>
+<h4 class="date"><em>2017-09-19</em></h4>
 
 
 <div id="TOC">
@@ -386,15 +424,66 @@
 <div id="class-7-20-sep.-visualization" class="section level4">
 <h4><span class="header-section-number">2.1.4.2</span> Class 7 (20 Sep). Visualization</h4>
 <ul>
-<li>Readings:
+<li>Be prepared to do, in class, an exercise in which we:
 <ul>
-<li>The two schools of plotting in R:
+<li>read in a dataset</li>
+<li>use controls structures to iteratively subset the data, using index numbers, names, and partial string matching.</li>
+</ul></li>
+<li>Required readings:
 <ul>
-<li>Base graphics, a useful intro by <a href="http://www.rspatial.org/intr/rst/12-plots.html">rspatial</a>, and <a href="http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options">intermediate plotting</a> from Kelly Black’s R tutorial, and <a href="http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous">this</a> provides an excellent <em>(and optional)</em> reference for many different kinds of plots with code.</li>
-<li>ggplot/grammar of graphics: <a href="https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/">A nice short bloggy intro</a>, and Hadley Wickham’s <a href="http://r4ds.had.co.nz/visualize.html#undefined">longer walk-through</a>. For reference, you might want to look at the <a href="http://vita.had.co.nz/papers/layered-grammar.pdf">paper</a> describing the underlying philosophy</li>
+<li>On plotting/visualizing data. There are two primary schools of plotting in R. The first uses the base graphics, the plotting functionality that comes with every R install, the second is based on <code>ggplot2</code>, a package developed by Hadley Wickham, and is again connected to the tidy data concept. In this class, we are going to focus on base graphics primarily, since we are learning how to code in base R, but it is important that you have an understanding of what <code>ggplot2</code> is and how it differs from base graphics, because it is becoming a graphical mainstay, and spatial packages are increasingly relying on it.
+<ul>
+<li>Base graphics:
+<ul>
+<li>Read and <em>work through the examples</em> in Rspatial’s useful <a href="http://www.rspatial.org/intr/rst/12-plots.html">intro</a> to base plotting. A note: you will see that when you run the command <code>plot(cars)</code> your result is not the same as what is shown in the reading. That’s okay.</li>
+<li>Working with the same <code>cars</code> dataset in this reading, run the following code:</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># these first 4 lines are the same steps as in the reading</span>
+<span class="kw">data</span>(cars)
+<span class="kw">set.seed</span>(<span class="dv">0</span>)
+brands &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'Buick'</span>, <span class="st">'Chevrolet'</span>, <span class="st">'Ford'</span>)
+b &lt;-<span class="st"> </span><span class="kw">sample</span>(brands, <span class="kw">nrow</span>(cars), <span class="dt">replace=</span><span class="ot">TRUE</span>)
+
+<span class="co"># this is new--we are showing how to add points to an existing plot</span>
+cars2 &lt;-<span class="st"> </span>cars  <span class="co"># We are copying cars to a new dataset</span>
+cars2$make &lt;-<span class="st"> </span>b
+cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;red&quot;</span>)
+<span class="kw">plot</span>(speed ~<span class="st"> </span>dist, <span class="dt">data =</span> cars2[cars2$make ==<span class="st"> &quot;Buick&quot;</span>, ], <span class="dt">pch =</span> <span class="dv">20</span>, 
+     <span class="dt">col =</span> cols[<span class="dv">1</span>], <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">max</span>(cars2$speed)), 
+     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">max</span>(cars2$dist)))
+for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
+  <span class="kw">points</span>(speed ~<span class="st"> </span>dist, <span class="dt">data =</span> cars2[cars2$make ==<span class="st"> </span>brands[i], ], <span class="dt">pch =</span> <span class="dv">20</span>, 
+         <span class="dt">col =</span> cols[i])  
+}
+<span class="kw">legend</span>(<span class="dv">90</span>, <span class="dv">10</span>, brands, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">pt.cex =</span> <span class="dv">1</span>, <span class="dt">col =</span> cols, <span class="dt">cex =</span> <span class="dv">1</span>,
+       <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>)</code></pre></div>
+<ul>
+<li>Dont’ just run, but study the code, which provides an example of:
+<ul>
+<li>a <code>for</code> loop</li>
+<li>setting the plot’s x and y limits</li>
+<li>passing in colors as a variable</li>
+<li>defining a plot formula (see the <code>~</code>), instead of in the x and y positions.</li>
+<li>The use of <code>points</code>.</li>
+<li>By changing the values of arguments, or removing them entirely from the code (e.g. the xlim, ylim arguments), you can help gain a deeper understanding of how things work.</li>
 </ul></li>
 </ul></li>
-<li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
+<li>ggplot/grammar of graphics: <a href="https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/">A nice short bloggy intro</a>.</li>
+</ul></li>
+<li>After doing these two readings
+<ul>
+<li>You should know how to: make a simple xy plot with, base graphics, label axes, annotate plots with text, change plot symbols, put multiple plots in one figure, and add a legend</li>
+<li>You should have some understanding of: using control structures with plots; how <code>ggplot</code> differs from base graphics, and the grammar of graphics concept.<br />
+</li>
+</ul></li>
+</ul></li>
+<li>Optional additional information:
+<ul>
+<li><a href="http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous">This</a> is an excellent reference for many different kinds of plots with code.</li>
+<li><a href="http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options">Intermediate plotting</a> from Kelly Black’s R tutorial. This is a resource you will want to remember, as it tells you some more advanced plotting (multiple plots, putting points on plots, etc.). All of this will come in handy with plotting spatial data.</li>
+<li>The <a href="http://vita.had.co.nz/papers/layered-grammar.pdf">paper</a> that describes the underlying philosophy of <code>ggplot</code>.</li>
+<li>Hadley Wickham’s <a href="http://r4ds.had.co.nz/visualize.html#undefined">data visualization tutorial with <code>ggplot2</code></a>.</li>
+</ul></li>
 </ul>
 <p><a href="#top">Back to top</a></p>
 </div>
@@ -406,7 +495,7 @@
 <ul>
 <li>Readings:
 <ul>
-<li>Note: this is a very short section, given that statistical analysis is R’s <em>raison d’etre</em>.</li>
+<li>Note: this is a very short section for a very long topic (statistical analysis is R’s <em>raison d’etre</em>, so this is a just a quick look from a fast-moving car).</li>
 <li><a href="http://www.r-tutor.com/elementary-statistics/numerical-measures">Basic statistics</a>, by R-tutor. Work through the various links, from mean through kurtosis. Also look at <a href="http://rfunction.com/archives/539">this</a> for basic calculations applied to rows/columns of a matrix/data.frame<br />
 </li>
 <li>Ordinary, simple linear regression, including evaluation of results, by <a href="http://www.rspatial.org/intr/rst/13-statmodels.html">rspatial</a>. A fuller <a href="http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html">tutorial</a> (by Harvard’s Institute for Quantitative Sciences), is mostly optional, but do look for the examples in there of multiple regression (more than one predictor)</li>
@@ -414,6 +503,7 @@
 <li>And then <a href="http://r-statistics.co/Loess-Regression-With-R.html">a short example</a>. of non-parametric regression for non-linear fits.</li>
 <li>You might be interested in looking at the <a href="#resources">resources</a> section below for examples of more advanced modeling techniques.</li>
 </ul></li>
+<li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
 </ul>
 </div>
 <div id="class-9-29-sep.-some-more-analyses-and-a-glimpse-of-advanced" class="section level4">
