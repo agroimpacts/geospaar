@@ -271,19 +271,31 @@ In this first part of the course, we will learn the basics of working with R, st
 
 <a href="#top">Back to top</a>
 
-### Week 5. Common analyses
+### Week 5. Basic analytics
 #### Class 8  (25 Sep). Common analyses
 We are going to spend a week looking at some common statistical analysis with R. This is a very short amount of time for a very long topic--statistical analysis is, after all, R's _raison d'etre_--but this quick look from a fast-moving car will help as many of these analyses are applied to spatial objects, or to data extracted from them. 
 
 + Required readings:
     + Basic statistics: 
-        + R-tutor has a section on simple statistics in the [numerical measures](http://www.r-tutor.com/elementary-statistics/numerical-measures) section. There are links that take you a different page for each of several measures, beginning with "mean" and ending with "kurtosis". Go through all of these, and run the code for the examples. Two notes on this: 
+        + R-tutor has a section on simple statistics in the [numerical measures](http://www.r-tutor.com/elementary-statistics/numerical-measures) section. There are links that take you a different page for each of several measures, beginning with "mean" and ending with "kurtosis" (there is a reprise of `boxplot` tucked in here also). Go through all of these, and run the code for the examples. Two notes on this: 
             + The author has the unpleasant habit of pasting code from the console. That means you have to get rid of the `>` before each line. 
             + The author also uses `=` as the assignment operator, rather than `<-`. While that works, that is a practice that we discourage as it does not conform to the style guide. 
-        + A very short piece [here](http://rfunction.com/archives/539) brings up four functions that quickly give you sums or means on the columns or rows of matrices or data.frames  
-    + Ordinary, simple linear regression, including evaluation of results, by [rspatial](http://www.rspatial.org/intr/rst/13-statmodels.html). A fuller [tutorial](http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html) (by Harvard's Institute for Quantitative Sciences), is mostly optional, but do look for the examples in there of multiple regression (more than one predictor)
+        + A very short piece [here](http://rfunction.com/archives/539) brings up four functions that quickly give you sums or means on the columns or rows of matrices or data.frames. Let's learn these with an exercise: 
+            + Create a three column `data.frame` named `dat2`,  with columns "a", "b", and "c", each of which has 1000 randomly selected values (for a, select integers between 0-10, for b, random numbers from a uniform distribution between 0-10, and for c random numbers from a normal distribution with a mean of 5 and an `sd` of 1)
+            + Apply `colSums`, `rowSums`, `colMeans`, `rowMeans` to `dat2`
+            + Do the same calculations, but using the `apply` function instead
+    + Regressions: 
+        + Work through rspatial's [overview](http://www.rspatial.org/intr/rst/13-statmodels.html) of simple linear regression (also known as ordinary least squares [OLS] regression), using the `lm` function, and the more versatile `glm` function. 
+        + This of course assumes that you know what linear regression is and how it works.  If this is new to you, please read this [Beginner's Guide to Regression](https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/), which actually includes its own R code and data. However, the explanation of regression is more important. An even more high-level look at OLS is provided by [Harvard Business Review](https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/). 
+    + After doing these readings, you should:
+        + Know the basic statistical functions in R and how to apply them. The purpose of some of them might be less clear if you haven't had stats (e.g. kurtosis, central moment), which is okay. 
+        + Know how to fit a simple regression model, and work with the results, using functions such as `summary`, `plot`, and `predict` (note that this is a fairly typical case of R's S3 system).
++ Optional addition information: A fuller [tutorial](http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html) (by Harvard's Institute for Quantitative Sciences), on OLS regression, including examples of multiple regression (more than one predictor).
 
-#### Class 9 (29 Sep). Non-linear, non-parametric regressions
+#### Class 9 (29 Sep). More regression
+
+Focusing on running and plotting non-linear and non-parametric regressions
+
 + Required readings:
     + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/)
     + And then [a short example](http://r-statistics.co/Loess-Regression-With-R.html).
@@ -294,13 +306,17 @@ We are going to spend a week looking at some common statistical analysis with R.
 <a href="#top">Back to top</a>
 
 ### Week 6. Unit 1 wrap-up
-#### Class 9 (30 Sep). Wrap-up
- 
-#### Class 10 (2 Oct). Trends in R
+#### Class 9 (30 Sep). Trends in R
 + Readings: 
-    + Advanced data manipulation alternatives: data.table, dplyr (grammer of data) / the tidyverse
-    <!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) -->
+    + Emerging evolutionary trajectories in R: 
+        + The tidyverse
+        + `data.table` and `dplyr`: two different approaches for handling large datasets in R. 
 
+#### Class 10 (2 Oct). Wrap-up
+
+Featuring an exercise to put it all together
+
+<!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) -->
 
 
 
@@ -354,11 +370,16 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 [Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
 
-Advanced modeling techniques, such as [Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/); [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/); [Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
-
 [Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
 
 [R mailing lists/listservs](https://www.r-project.org/mail.html)
+
+#### Advanced analytics
+[Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/)
+
+[Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/)
+
+[Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
 
 [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
 

@@ -91,8 +91,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#week-2.-reproducibility-continued"><span class="toc-section-number">2.1.2</span> Week 2. Reproducibility Continued</a></li>
 <li><a href="#week-3.-r-fundamentals"><span class="toc-section-number">2.1.3</span> Week 3. R fundamentals</a></li>
 <li><a href="#week-4.-data-preparation-and-visualization"><span class="toc-section-number">2.1.4</span> Week 4. Data preparation and visualization</a></li>
-<li><a href="#week-5.-common-analyses-and-advanced-r"><span class="toc-section-number">2.1.5</span> Week 5. Common analyses and advanced R</a></li>
-<li><a href="#unit-1-learning-goals"><span class="toc-section-number">2.1.6</span> Unit 1 Learning Goals</a></li>
+<li><a href="#week-5.-basic-analytics"><span class="toc-section-number">2.1.5</span> Week 5. Basic analytics</a></li>
+<li><a href="#week-6.-unit-1-wrap-up"><span class="toc-section-number">2.1.6</span> Week 6. Unit 1 wrap-up</a></li>
+<li><a href="#unit-1-learning-goals"><span class="toc-section-number">2.1.7</span> Unit 1 Learning Goals</a></li>
 </ul></li>
 <li><a href="#unit-2.-handling-and-analyzing-spatial-data-with-r"><span class="toc-section-number">2.2</span> Unit 2. Handling and analyzing spatial data with R</a><ul>
 <li><a href="#week-6-oct-2-4."><span class="toc-section-number">2.2.1</span> Week 6 (Oct 2, 4).</a></li>
@@ -488,37 +489,80 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
-<div id="week-5.-common-analyses-and-advanced-r" class="section level3">
-<h3><span class="header-section-number">2.1.5</span> Week 5. Common analyses and advanced R</h3>
+<div id="week-5.-basic-analytics" class="section level3">
+<h3><span class="header-section-number">2.1.5</span> Week 5. Basic analytics</h3>
 <div id="class-8-25-sep.-common-analyses" class="section level4">
 <h4><span class="header-section-number">2.1.5.1</span> Class 8 (25 Sep). Common analyses</h4>
+<p>We are going to spend a week looking at some common statistical analysis with R. This is a very short amount of time for a very long topic–statistical analysis is, after all, R’s <em>raison d’etre</em>–but this quick look from a fast-moving car will help as many of these analyses are applied to spatial objects, or to data extracted from them.</p>
 <ul>
-<li>Readings:
+<li>Required readings:
 <ul>
-<li>Note: this is a very short section for a very long topic (statistical analysis is R’s <em>raison d’etre</em>, so this is a just a quick look from a fast-moving car).</li>
-<li><a href="http://www.r-tutor.com/elementary-statistics/numerical-measures">Basic statistics</a>, by R-tutor. Work through the various links, from mean through kurtosis. Also look at <a href="http://rfunction.com/archives/539">this</a> for basic calculations applied to rows/columns of a matrix/data.frame<br />
-</li>
-<li>Ordinary, simple linear regression, including evaluation of results, by <a href="http://www.rspatial.org/intr/rst/13-statmodels.html">rspatial</a>. A fuller <a href="http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html">tutorial</a> (by Harvard’s Institute for Quantitative Sciences), is mostly optional, but do look for the examples in there of multiple regression (more than one predictor)</li>
+<li>Basic statistics:
+<ul>
+<li>R-tutor has a section on simple statistics in the <a href="http://www.r-tutor.com/elementary-statistics/numerical-measures">numerical measures</a> section. There are links that take you a different page for each of several measures, beginning with “mean” and ending with “kurtosis” (there is a reprise of <code>boxplot</code> tucked in here also). Go through all of these, and run the code for the examples. Two notes on this:
+<ul>
+<li>The author has the unpleasant habit of pasting code from the console. That means you have to get rid of the <code>&gt;</code> before each line.</li>
+<li>The author also uses <code>=</code> as the assignment operator, rather than <code>&lt;-</code>. While that works, that is a practice that we discourage as it does not conform to the style guide.</li>
+</ul></li>
+<li>A very short piece <a href="http://rfunction.com/archives/539">here</a> brings up four functions that quickly give you sums or means on the columns or rows of matrices or data.frames. Let’s learn these with an exercise:
+<ul>
+<li>Create a three column <code>data.frame</code> named <code>dat2</code>, with columns “a”, “b”, and “c”, each of which has 1000 randomly selected values (for a, select integers between 0-10, for b, random numbers from a uniform distribution between 0-10, and for c random numbers from a normal distribution with a mean of 5 and an <code>sd</code> of 1)</li>
+<li>Apply <code>colSums</code>, <code>rowSums</code>, <code>colMeans</code>, <code>rowMeans</code> to <code>dat2</code></li>
+<li>Do the same calculations, but using the <code>apply</code> function instead</li>
+</ul></li>
+</ul></li>
+<li>Regressions:
+<ul>
+<li>Work through rspatial’s <a href="http://www.rspatial.org/intr/rst/13-statmodels.html">overview</a> of simple linear regression (also known as ordinary least squares [OLS] regression), using the <code>lm</code> function, and the more versatile <code>glm</code> function.</li>
+<li>This of course assumes that you know what linear regression is and how it works. If this is new to you, please read this <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/">Beginner’s Guide to Regression</a>, which actually includes its own R code and data. However, the explanation of regression is more important. An even more high-level look at OLS is provided by <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/">Harvard Business Review</a>.</li>
+</ul></li>
+<li>After doing these readings, you should:
+<ul>
+<li>Know the basic statistical functions in R and how to apply them. The purpose of some of them might be less clear if you haven’t had stats (e.g. kurtosis, central moment), which is okay.</li>
+<li>Know how to fit a simple regression model, and work with the results, using functions such as <code>summary</code>, <code>plot</code>, and <code>predict</code> (note that this is a fairly typical case of R’s S3 system).</li>
+</ul></li>
+</ul></li>
+<li>Optional addition information: A fuller <a href="http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html">tutorial</a> (by Harvard’s Institute for Quantitative Sciences), on OLS regression, including examples of multiple regression (more than one predictor).</li>
+</ul>
+</div>
+<div id="class-9-29-sep.-more-regression" class="section level4">
+<h4><span class="header-section-number">2.1.5.2</span> Class 9 (29 Sep). More regression</h4>
+<p>Focusing on running and plotting non-linear and non-parametric regressions</p>
+<ul>
+<li>Required readings:
+<ul>
 <li>Polynomial regressions, for non-linear fits, by <a href="https://davetang.org/muse/2013/05/09/on-curve-fitting/">David Tang</a></li>
 <li>And then <a href="http://r-statistics.co/Loess-Regression-With-R.html">a short example</a>. of non-parametric regression for non-linear fits.</li>
 <li>You might be interested in looking at the <a href="#resources">resources</a> section below for examples of more advanced modeling techniques.</li>
 </ul></li>
 <li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
 </ul>
-</div>
-<div id="class-9-29-sep.-some-more-analyses-and-a-glimpse-of-advanced" class="section level4">
-<h4><span class="header-section-number">2.1.5.2</span> Class 9 (29 Sep). Some more analyses and a glimpse of advanced</h4>
-<ul>
-<li>Readings:
-<ul>
-<li>Advanced data manipulation alternatives: data.table, dplyr (grammer of data) / the tidyverse <!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) --></li>
-</ul></li>
-</ul>
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
+<div id="week-6.-unit-1-wrap-up" class="section level3">
+<h3><span class="header-section-number">2.1.6</span> Week 6. Unit 1 wrap-up</h3>
+<div id="class-9-30-sep.-trends-in-r" class="section level4">
+<h4><span class="header-section-number">2.1.6.1</span> Class 9 (30 Sep). Trends in R</h4>
+<ul>
+<li>Readings:
+<ul>
+<li>Emerging evolutionary trajectories in R:
+<ul>
+<li>The tidyverse</li>
+<li><code>data.table</code> and <code>dplyr</code>: two different approaches for handling large datasets in R.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="class-10-2-oct.-wrap-up" class="section level4">
+<h4><span class="header-section-number">2.1.6.2</span> Class 10 (2 Oct). Wrap-up</h4>
+<p>Featuring an exercise to put it all together</p>
+<!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) -->
+</div>
+</div>
 <div id="unit-1-learning-goals" class="section level3">
-<h3><span class="header-section-number">2.1.6</span> Unit 1 Learning Goals</h3>
+<h3><span class="header-section-number">2.1.7</span> Unit 1 Learning Goals</h3>
 <p>By the end of this unit, you should <strong><em>understand</em></strong>: R’s origins and its strengths and weaknesses; the concept of reproducibility and R’s role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R’s data type and structures, objects, classes, and environments.</p>
 <p>And you should be able to comfortably (albeit not yet fluently) <strong><em>do the following</em></strong>: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including apply); write a function; reshape, analyze (with basic statistic functions), and visualize non-spatial data; write clean code following our <a href="http://adv-r.had.co.nz/Style.html">selected R style guide</a></p>
 <p><a href="#top">Back to top</a></p>
@@ -575,12 +619,18 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <p><a href="http://www.r-exercises.com">R Exercises</a></p>
 <p><a href="https://ropensci.org">ROpenSci</a></p>
 <p><a href="http://www.cyclismo.org/tutorial/R/#">Kelly Black’s R tutorial</a></p>
-<p>Advanced modeling techniques, such as <a href="http://multithreaded.stitchfix.com/blog/2015/07/30/gam/">Generalized Additive Models</a>; <a href="https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/">Regression Trees, Random Forests, Gradient Boosting</a>; <a href="https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/">Support Vector Machines</a></p>
 <p><a href="https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example">Creating reproducible examples</a> (read this before posting to one of the mailing lists)</p>
 <p><a href="https://www.r-project.org/mail.html">R mailing lists/listservs</a></p>
 </div>
+<div id="advanced-analytics" class="section level4">
+<h4><span class="header-section-number">3.2.1.2</span> Advanced analytics</h4>
+<p><a href="http://multithreaded.stitchfix.com/blog/2015/07/30/gam/">Generalized Additive Models</a></p>
+<p><a href="https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/">Regression Trees, Random Forests, Gradient Boosting</a></p>
+<p><a href="https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/">Support Vector Machines</a></p>
+<p><a href="https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/">Change point detection</a></p>
+</div>
 <div id="reproducibility" class="section level4">
-<h4><span class="header-section-number">3.2.1.2</span> Reproducibility</h4>
+<h4><span class="header-section-number">3.2.1.3</span> Reproducibility</h4>
 <p><a href="https://www.rdocumentation.org/packages/citr/versions/0.2.0">Add citations to an Rmarkdown document</a></p>
 <p><a href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">Rmarkdown cheatsheet</a></p>
 <p><a href="http://kbroman.org/Tools4RR/">Tools for Reproducible Research</a></p>
