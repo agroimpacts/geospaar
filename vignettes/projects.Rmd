@@ -87,14 +87,22 @@ Compare the incoming shortwave solar radiation, temperature, and other variables
 ### Predicting farmers' reported yields
 The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
 
-## Detect change in fairy rings over time
-There are two parts to this potential project, which is based on UAS-collected imagery of two cranberry beds in Southern NJ where a Rutgers colleague (Peter Oudemans) has been running trials to evaluate the effectiveness of fungicides for treating a fungal pathogen that kills cranberry shrubs. 
+### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
 
-### Implement OpenCV in R
-Specifically to make use of the circle detection algorithm, to see how well it picks up fairy rings (the blighted area of cranberries, which are killed in expanding circles from an infection point), which would be in comparison to an existing object-oriented detection algorithm. 
+Put another way, do farming communities in areas with higher rainfall variability show higher variability between farmers in terms of when crops are planted?  We hypothesize that this might be the case, as it might be a community-level adaptive response for dealing with climatic uncertainty.  
 
-### Rework the object-oriented detection of fairy ring
-Work through and update existing object oriented analysis of fairy ring detection that I undertook a couple of years ago, using the `EBImage` package.  
+This would (or could be) a two-level analysis undertaken by two people.  One person looks at this question by querying the SMS surveys across Zambia, looking at the local variability in the survey response to the question "did you plant crops this week", and comparing that to measures of interannual variability derived from the gridded rainfall products (e.g. variability in onset date; variability in amount of rain each year, etc). The second person will look at that on a larger scale, using gridded cropland data, satellite-derived NDVI, and gridded precipitation data to 1) identify local variability in green-up dates in cropland areas over a larger region (maybe all of SSA); 2) compare this to the same rainfall variability metrics, as calculated for that larger region.  
+
+## Using UAS to detect the spread of a crop disease
+
+We (Peter Oudemans, a Rutgers colleague, several Princeton students, and me) used a UAS to fly multiple missions over cranberry bogs in New Jersey, flying every few weeks in the summer to map the progression of a fungal disease called "Fairy Ring" that calls cranberry plants in outwards-spreading circles.  We corrected the imagery very carefully so that it aligned date-on-date with high spatial precision, and want to perform analysis to see if we can check the difference in the rate of spread of the disease between blocks representing different fungicidal treatments. Initial results (from analyses performed in R) show that we can detect differences, using the object-oriented classification from the `EBImage` package (the code is already worked out), but we now have to build on this initial analysis
+
+
+The first thing that needs to be done is the analysis has to be redone for some new imagery and another area that didn't get included in the last analysis. This means taking the existing approach, and redoing it to apply to a new set of images, and to expand the area that we are focusing on. 
+
+The second thing that needs doing is to add another analysis in, which is an accuracy assessment of the object-oriented classifications themselves (how accurately do they discriminate fairy ring infected areas healthy plants). We now have a ground-truth dataset that provides this information, so we have to evaluate each of the 9 images in the time series. 
+
+A final thing that could be done, and which might be most challenging, is to implement Hough Circle detection (a basic computer vision algorithm) in R and see whether that improves classification accuracy. Fairy ring generally presents as a circular feature, so it might be better recognized that way. There are several computer vision packages in R that make use of OpenCV, so implementing one of these to run circle detection on the cranberry imagery is the initial goal. The ultimate goal is to see whether it improves on the existing `EBimage`-based classification routine.  
 
 ## An R library for running Terrset
 
@@ -102,9 +110,9 @@ Write an R package that contains wrapper functions that allow you to run certain
 
 ## How well do crowdsourcers map individual fields? 
 
-Comparing Turker Maps to GPS collected field boundaries (perhaps done before class starts)
+The [Mapping Africa](http://mappingafrica.princeton.edu) project that uses a crowdsourcing platform to digitize cropland visible in high resolution satellite imagery, working within assigned mapping units of 1 km^2^. Our initial production run of the platform (run in the summer of 2016) mapped roughly 30,000 km^2^ over Sub-Saharan Africa. Of particular interest are roughly 200 km^2^ where we had at least 20 different workers map each of the sites. A subset of fields within each site were mapped on the ground using GPS. Now, for each of the fields that we mapped on the ground, we need to assess how many crowdsourced workers digitized that particular field and how many missed it. For any worker-mapped fields that intersect the ground-mapped field, we also need to assess 1) the summary statistics of intersecting worker fields (i.e. the mean worker-mapped field size, the standard deviation, 95th percentile, etc), evaluate 2) the summary statistics of omission (percent overlap) and commission (percent of workers' maps that fell outside of the GPS-mapped field) error of the worker-mapped fields.
 
-## Is the variability in farmers' planting dates and seasonal rainfall positively correlated? 
+This exercise will involve extensive work with vector data. The results will give us important information about how reliable the crowdsourcing data are for understanding the characteristics of cropland throughout Sub-Saharan Africa. 
 
 ## An R package to summarize land cover change
 
