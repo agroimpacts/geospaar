@@ -1,0 +1,140 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "9/20/2017"
+output:
+  slidy_presentation: 
+    default:
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 7
+---
+
+## Today
+
+1. Quick overview of projects
+2. In-class exercise
+
+## Projects
+
+Open up the projects vignette
+
+## Exercise
+
+### Read in the file 
+
+First download the file to somewhere that makes sense. Then use `read.csv` to read it in from that location. The object you read into should be named `farmers`. 
+
+```{r}
+url <- "http://www.dropbox.com/s/q2l4br3tu6q23p0/farmer_test.csv"
+```
+
+## Inspect the data
+
+1. Use `head` to look at what's in it. 
+2. Use `str` to examine the data types in it. 
+
+Do you have factors in there?  We don't want that. What could you do to make sure that those variables are not factors (hint: you could do something with read.csv function). Reinspect after applying your fix.
+
+## Now do some summary statistics
+
+1. First use apply to sum the columns "pl", "ra", "mm"
+
+2. Then take the means of those columns
+
+## Subsetting exercises 
+
+1. First, we are going to learn the function `unique` to inspect the date variable. 
+
+```{r, eval = FALSE}
+dates <- unique(farmers$date)
+dates
+```
+Note there are 6 unique dates in the dataset. 
+
+2. Next we are going to use the unique dates to subset the data, 
+
+Use the first element of `dates` to subset all observations of farmers corresponding to that date (i.e. all columns of `farmers` where date is equal to `dates[1]`). Check how many rows there are using `nrow`
+
+3. Let's do the same with partial string matching on uuid, where we want all columns where the uuid value matches "99f9". How many observations are there? 
+
+## Use control structures to summarize subsets
+
+4. Okay, moving on to summarizing results by date
+
+First use `for`, then `lapply`, and finally `sapply` to calculate the sums of `pl`, `ra`, and `mm` by date. 
+
+This means you use `dates` as your iterator, subset within the body of `for` and `lapply`/`sapply` by each unique value, and then sum the individual columns within that subset. The easiest way that we have learned so far to do that is to use `apply` on the subset within `lapply`. But there is an even easier approach than that, which is `colSums`. 
+
+Hints: 
+For the two apply family functions, this means you are going to set up your code like this (this is pseudo code):
+
+```
+output <- *apply(dates, function {
+  subset here 
+  calculate here
+})
+```
+
+`for` will of course be different
+```
+pre define output object
+for(i in dates) {
+  subset here
+  assign to output <- calculate here
+}
+```
+
+## Plotting 
+
+Lastly, we are going to plot the results of mm by date
+
+To do that, we need to do some extra manipulations, which I will walk you all through. 
+
+
+## Answers
+
+(Not visible in html, but in the Rmarkdown--resist the urge to peek until you have done your best to solve the problem)
+```{r, eval = FALSE, echo = FALSE}
+# Read in (converting factors to strings)
+farmers <- read.csv("~/Desktop/farmer_test.csv", stringsAsFactors = FALSE)
+# Note that windows doesn't use ~ in the file path, so use
+# "C:/path/to/your/farmer_test.csv" type notation.
+
+# Use head to inspect the data
+head(farmers)
+
+# Use str to look at the data types
+str(farmers)
+
+# use apply to sum the columns "pl", "ra", "mm"
+apply(farmers[, c("pl", "ra", "mm")], 2, sum)
+apply(farmers[, c("pl", "ra", "mm")], 2, mean)
+
+# subsetting
+farmers2 <- farmers[farmers$date == dates[1], ]
+farmers3 <- farmers[grep("99f9", farmers$uuid), ]
+
+# summing by subsets
+for(i in dates) {
+  dat <- farmers[farmers$date == i, c("pl", "ra", "mm")]
+  print(apply(dat, 2, sum))
+}
+
+# lapply
+lres <- lapply(dates, function(x) {
+  dat <- farmers[farmers$date == x, c("pl", "ra", "mm")]
+  apply(dat, 2, sum)
+})
+
+sres <- sapply(dates, function(x) {
+  dat <- farmers[farmers$date == x, c("pl", "ra", "mm")]
+  apply(dat, 2, sum)
+})
+sres <- data.frame(t(sres))
+
+# plotting
+plot(as.Date(rownames(sres)), sres$ra)
+
+```
+
