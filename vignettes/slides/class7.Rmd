@@ -124,12 +124,14 @@ for(i in dates) {
 # lapply
 lres <- lapply(dates, function(x) {
   dat <- farmers[farmers$date == x, c("pl", "ra", "mm")]
-  apply(dat, 2, sum)
+  #apply(dat, 2, sum)
+  colSums(dat)
 })
 
 sres <- sapply(dates, function(x) {
   dat <- farmers[farmers$date == x, c("pl", "ra", "mm")]
-  apply(dat, 2, sum)
+  # apply(dat, 2, sum)
+  colSums(dat)
 })
 sres <- data.frame(t(sres))
 
