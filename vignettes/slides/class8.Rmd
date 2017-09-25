@@ -118,7 +118,7 @@ sres <- data.frame(t(sres))
 
 There are two. 
 
-1. Use `lapply` and `sapply` to calculate the `colSum` (columns "pl", "ra", "mm") for observations where "uuid" contains the values "8424", "166f", "99f9"
+1. Use `lapply` and `sapply` to calculate the `colSum` (columns "pl", "ra", "mm") for observations where "uuid" contains the values "8424", "166f", "99f9". This means you will have to use the grep approach to subsetting, rather than `farmers[farmers$date == x, c("pl", "ra", "mm")]`
 
 2. Use `write.csv` to write out the outputs of the `sapply` version of this, where you have the results for "pl", "ra", "mm" as columns, and the partial strings as rows. That means you apply `t` to the resulting object that you direct `sapply` to. I haven't shown you `write.csv` yet, so try and figure this out by adapting examples from the help file for this function (`?write.csv`)
 

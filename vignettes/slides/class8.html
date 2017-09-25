@@ -181,7 +181,7 @@ sres &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span clas
 <h1>Class exercise for Wednesday</h1>
 <p>There are two.</p>
 <ol style="list-style-type: decimal">
-<li><p>Use <code>lapply</code> and <code>sapply</code> to calculate the <code>colSum</code> (columns “pl”, “ra”, “mm”) for observations where “uuid” contains the values “8424”, “166f”, “99f9”</p></li>
+<li><p>Use <code>lapply</code> and <code>sapply</code> to calculate the <code>colSum</code> (columns “pl”, “ra”, “mm”) for observations where “uuid” contains the values “8424”, “166f”, “99f9”. This means you will have to use the grep approach to subsetting, rather than <code>farmers[farmers$date == x, c(&quot;pl&quot;, &quot;ra&quot;, &quot;mm&quot;)]</code></p></li>
 <li><p>Use <code>write.csv</code> to write out the outputs of the <code>sapply</code> version of this, where you have the results for “pl”, “ra”, “mm” as columns, and the partial strings as rows. That means you apply <code>t</code> to the resulting object that you direct <code>sapply</code> to. I haven’t shown you <code>write.csv</code> yet, so try and figure this out by adapting examples from the help file for this function (<code>?write.csv</code>)</p></li>
 </ol>
 </div>
