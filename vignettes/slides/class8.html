@@ -184,14 +184,6 @@ sres &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span clas
 <li><p>Use <code>lapply</code> and <code>sapply</code> to calculate the <code>colSum</code> (columns “pl”, “ra”, “mm”) for observations where “uuid” contains the values “8424”, “166f”, “99f9”</p></li>
 <li><p>Use <code>write.csv</code> to write out the outputs of the <code>sapply</code> version of this, where you have the results for “pl”, “ra”, “mm” as columns, and the partial strings as rows. That means you apply <code>t</code> to the resulting object that you direct <code>sapply</code> to. I haven’t shown you <code>write.csv</code> yet, so try and figure this out by adapting examples from the help file for this function (<code>?write.csv</code>)</p></li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sapply</span>(<span class="kw">c</span>(<span class="st">&quot;8424&quot;</span>, <span class="st">&quot;166f&quot;</span>, <span class="st">&quot;99f9&quot;</span>), function(x) {
-  dat &lt;-<span class="st"> </span>farmers[<span class="kw">grep</span>(x, farmers$uuid), <span class="kw">c</span>(<span class="st">&quot;pl&quot;</span>, <span class="st">&quot;ra&quot;</span>, <span class="st">&quot;mm&quot;</span>)]
-  <span class="kw">colSums</span>(dat)
-})</code></pre></div>
-<pre><code>##    8424 166f 99f9
-## pl    2    1    2
-## ra    0    1    1
-## mm   14   28   27</code></pre>
 </div>
 <div id="plotting" class="slide section level2">
 <h1>Plotting</h1>

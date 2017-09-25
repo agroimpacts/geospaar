@@ -121,13 +121,6 @@ There are two.
 1. Use `lapply` and `sapply` to calculate the `colSum` (columns "pl", "ra", "mm") for observations where "uuid" contains the values "8424", "166f", "99f9"
 
 2. Use `write.csv` to write out the outputs of the `sapply` version of this, where you have the results for "pl", "ra", "mm" as columns, and the partial strings as rows. That means you apply `t` to the resulting object that you direct `sapply` to. I haven't shown you `write.csv` yet, so try and figure this out by adapting examples from the help file for this function (`?write.csv`)
-```{r}
-sapply(c("8424", "166f", "99f9"), function(x) {
-  dat <- farmers[grep(x, farmers$uuid), c("pl", "ra", "mm")]
-  colSums(dat)
-})
-
-```
 
 ##Plotting
 
