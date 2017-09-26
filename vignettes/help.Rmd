@@ -65,6 +65,39 @@ install_github("agroimpacts/geospaR", build_vignettes = TRUE,
 
 ```
 
+## Branching
+
+1. Create a new branch, from within the shell
+
+    (replace <branchname> with a meaningful branch name, e.g. a1)
+    ```{bash, eval = FALSE}
+    git checkout -b <branchname>
+    ```
+
+2. Switch branch
+
+    - from shell
+    
+    ```{bash, eval = FALSE}
+    git checkout <branchname>
+    ```
+
+    - from within Rstudio
+    
+![](fig/branches.png)
+
+
+3. Delete a branch (if you created one by accident, from shell). Don't do this to your master branch. 
+
+    ```{bash, eval = FALSE}
+    git branch -d <branchname>
+    ```
+
+
+3. Push a branch to your remote GitHub repo
+    ```{bash, eval = FALSE}
+    git push origin <branchname>
+    ```
 
 
 

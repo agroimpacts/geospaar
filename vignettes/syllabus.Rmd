@@ -294,13 +294,26 @@ We are going to spend a week looking at some common statistical analysis with R.
 
 #### Class 9 (29 Sep). More regression
 
-Focusing on running and plotting non-linear and non-parametric regressions
+The readings for this class focuses on running and plotting non-linear and non-parametric regressions. These will come in handy for those of working with time series, or when trying to fit models where there are non-linear relationships between variables. We also have a few exercises/code examples related to skills covered in previous readings. 
 
 + Required readings:
-    + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/)
+    + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/). This reading/tutorial shows how to fit a polynomial regression, that is, a variant of linear regression in which the variable whose values you want to predict has a curvilinear relationship with the predictor variable.  The primary skill you should take out of this reading relates to the plotting aspect: that is, the ability to pull out a curvy line from the results of a polynomial regression and plot it, which is demonstrated in the first two code blocks (pay special attention to the `predict` function). Although not the main skill to take away, the subsequent code blocks are also to be read because they show valuable things to know: how to extract the coefficients from the model, and write a function that uses the coefficients to create a curvey polynomial line.
     + And then [a short example](http://r-statistics.co/Loess-Regression-With-R.html).
- of non-parametric regression for non-linear fits.
-    + You might be interested in looking at the [resources](#resources) section below for examples of more advanced modeling techniques. 
+ of non-parametric regression for non-linear fits. This is similar to the above, in that we are fitting a curvy line to data, but it uses a "non-parametric" approach (basically it cuts up the data into lots of subsets where the values are close to one another in xy space, fits a mini-regression to each subset, and then pieces together the predicted results of each of these mini-regressions to make a single smooth line). Work through this up to the "Optimal Smoothing Span" part (you can do that section if you want to learn a bit more about how one can objectively select the right number of mini-regressions that are used to make the smooth line). Additional note: to run the examples in this, you will need to install the `ggplot2` library if you don't have it (as it contains the dataset used).  
++ Exercises (do before class):
+    + The one given at the end of last class (in the slides for Class 8):
+        + Use `lapply` and `sapply` to calculate the `colSums` (columns "pl", "ra", "mm") for observations where "uuid" contains the values "8424", "166f", "99f9". This means you will have to use the grep approach to subsetting (demonstrated in the Class 8 slides), rather than `farmers[farmers$date == x, c("pl", "ra", "mm")]`
+        + Use `write.csv` to write out the outputs of the `sapply` version of this, where you have the results for "pl", "ra", "mm" as columns, and the partial strings as rows. That means you apply `t` to the resulting object that you direct `sapply` to. I haven't shown you `write.csv` yet, so try and figure this out by adapting examples from the help file for this function (`?write.csv`)
+    + A plotting exercise - working with the `farmer` data.frame (the one we have been using in class), do the following: 
+        + Calculate the sum of the "ra" variable for each unique date in the time series (use `sapply`)
+        + Plot the results against the date. That is, plot the 6 summed values of "ra" (the y variable) against `dates` (see previous in-class exercise), which becomes x. For this to work correctly, you need to first coerce `dates` from a character vector to a date vector. Use `as.Date` to do this. Here's how the date coercion looks, applied to `dates` within the `plot` function, to get you started:
+  
+            ```{r, eval = FALSE}
+            plot(x = as.Date(dates), y = rasum)  # rasum = results of your sapply
+            ```
+    
+        + Change the axis labels on your plot ("date" for the x label, "ra total" for the y label).
+        + Change the points on the graph to a solid cicle (see `?pch`) with a red color. Increase the size of the point (see `?cex`)
 + [Assignment 3](assignment3.html) ___[under construction]___
 
 <a href="#top">Back to top</a>

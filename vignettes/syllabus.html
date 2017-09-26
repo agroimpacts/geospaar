@@ -527,13 +527,29 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 </div>
 <div id="class-9-29-sep.-more-regression" class="section level4">
 <h4><span class="header-section-number">2.1.5.2</span> Class 9 (29 Sep). More regression</h4>
-<p>Focusing on running and plotting non-linear and non-parametric regressions</p>
+<p>The readings for this class focuses on running and plotting non-linear and non-parametric regressions. These will come in handy for those of working with time series, or when trying to fit models where there are non-linear relationships between variables. We also have a few exercises/code examples related to skills covered in previous readings.</p>
 <ul>
 <li>Required readings:
 <ul>
-<li>Polynomial regressions, for non-linear fits, by <a href="https://davetang.org/muse/2013/05/09/on-curve-fitting/">David Tang</a></li>
-<li>And then <a href="http://r-statistics.co/Loess-Regression-With-R.html">a short example</a>. of non-parametric regression for non-linear fits.</li>
-<li>You might be interested in looking at the <a href="#resources">resources</a> section below for examples of more advanced modeling techniques.</li>
+<li>Polynomial regressions, for non-linear fits, by <a href="https://davetang.org/muse/2013/05/09/on-curve-fitting/">David Tang</a>. This reading/tutorial shows how to fit a polynomial regression, that is, a variant of linear regression in which the variable whose values you want to predict has a curvilinear relationship with the predictor variable. The primary skill you should take out of this reading relates to the plotting aspect: that is, the ability to pull out a curvy line from the results of a polynomial regression and plot it, which is demonstrated in the first two code blocks (pay special attention to the <code>predict</code> function). Although not the main skill to take away, the subsequent code blocks are also to be read because they show valuable things to know: how to extract the coefficients from the model, and write a function that uses the coefficients to create a curvey polynomial line.</li>
+<li>And then <a href="http://r-statistics.co/Loess-Regression-With-R.html">a short example</a>. of non-parametric regression for non-linear fits. This is similar to the above, in that we are fitting a curvy line to data, but it uses a “non-parametric” approach (basically it cuts up the data into lots of subsets where the values are close to one another in xy space, fits a mini-regression to each subset, and then pieces together the predicted results of each of these mini-regressions to make a single smooth line). Work through this up to the “Optimal Smoothing Span” part (you can do that section if you want to learn a bit more about how one can objectively select the right number of mini-regressions that are used to make the smooth line). Additional note: to run the examples in this, you will need to install the <code>ggplot2</code> library if you don’t have it (as it contains the dataset used).<br />
+</li>
+</ul></li>
+<li>Exercises (do before class):
+<ul>
+<li>The one given at the end of last class (in the slides for Class 8):
+<ul>
+<li>Use <code>lapply</code> and <code>sapply</code> to calculate the <code>colSums</code> (columns “pl”, “ra”, “mm”) for observations where “uuid” contains the values “8424”, “166f”, “99f9”. This means you will have to use the grep approach to subsetting (demonstrated in the Class 8 slides), rather than <code>farmers[farmers$date == x, c(&quot;pl&quot;, &quot;ra&quot;, &quot;mm&quot;)]</code></li>
+<li>Use <code>write.csv</code> to write out the outputs of the <code>sapply</code> version of this, where you have the results for “pl”, “ra”, “mm” as columns, and the partial strings as rows. That means you apply <code>t</code> to the resulting object that you direct <code>sapply</code> to. I haven’t shown you <code>write.csv</code> yet, so try and figure this out by adapting examples from the help file for this function (<code>?write.csv</code>)</li>
+</ul></li>
+<li>A plotting exercise - working with the <code>farmer</code> data.frame (the one we have been using in class), do the following:
+<ul>
+<li>Calculate the sum of the “ra” variable for each unique date in the time series (use <code>sapply</code>)</li>
+<li><p>Plot the results against the date. That is, plot the 6 summed values of “ra” (the y variable) against <code>dates</code> (see previous in-class exercise), which becomes x. For this to work correctly, you need to first coerce <code>dates</code> from a character vector to a date vector. Use <code>as.Date</code> to do this. Here’s how the date coercion looks, applied to <code>dates</code> within the <code>plot</code> function, to get you started:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">as.Date</span>(dates), <span class="dt">y =</span> rasum)  <span class="co"># rasum = results of your sapply</span></code></pre></div></li>
+<li>Change the axis labels on your plot (“date” for the x label, “ra total” for the y label).</li>
+<li>Change the points on the graph to a solid cicle (see <code>?pch</code>) with a red color. Increase the size of the point (see <code>?cex</code>)</li>
+</ul></li>
 </ul></li>
 <li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
 </ul>

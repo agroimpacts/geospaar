@@ -44,3 +44,6 @@ kable(DF)
 #  legend(90, 10, brands, pch = 20, pt.cex = 1, col = cols, cex = 1,
 #         bty = "n")
 
+## ---- eval = FALSE-------------------------------------------------------
+#  plot(x = as.Date(dates), y = rasum)  # rasum = results of your sapply
+
