@@ -1,0 +1,191 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "9/27/2017"
+output:
+  slidy_presentation: 
+    default:
+    css: custom.css
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 9
+---
+
+## Today
+
+- Housekeeping
+    - Extra labs (Thursday at 10.30; Friday at 2.30 pm)
+    - Assignment 3 
+- Review practical from last class
+- Some more `lapply`/`sapply` practice
+- Plotting
+
+## Practical assignment
+
+1. Use `lapply` and `sapply` to calculate the `colSums` (columns "pl", "ra", "mm") for observations where "uuid" contains the values "8424", "166f", "99f9". This means you will have to use the grep approach to subsetting, rather than `farmers[farmers$date == x, c("pl", "ra", "mm")]`
+
+2. Use `write.csv` to write out the outputs of the `sapply` version of this, where you have the results for "pl", "ra", "mm" as columns, and the partial strings as rows. That means you apply `t` to the resulting object that you direct `sapply` to. I haven't shown you `write.csv` yet, so try and figure this out by adapting examples from the help file for this function (`?write.csv`)
+
+3. Calculate the sum of "ra" for each date in `farmers`. Plot the results against date.
+
+## Answers - `lapply`/`sapply` and `colSums`
+
+Two possible interpretations, starting with this, the column sums for all farmers whose IDs match those values. 
+```{r}
+# reload data
+farmers <- read.csv("~/Desktop/farmer_test.csv", stringsAsFactors = FALSE)
+farmers$date <- as.Date(farmers$date)
+farmers <- farmers[order(farmers$date), ]  # reorder farmers by date
+dates <- unique(farmers$date)  # unique dates
+
+# grep
+colSums(farmers[grep("8424|166f|99f9", farmers$uuid), c("pl", "ra", "mm")])
+```
+
+The second interpretation is this, the column sums for the farmer matches to each of those ids
+```{r}
+farmer_out <- t(sapply(c("8424", "166f", "99f9"), function(x) {
+  dat <- farmers[grep(x, farmers$uuid), c("pl", "ra", "mm")]
+  colSums(dat)
+}))
+```
+
+Pay most attention to the way in which multiple matches are combined into a single `grep` (interpretation 1), where the "|" (pipe) character is used to mean "or". Another way we can use the pipe operator
+
+```{r}
+farmers[farmers$uuid == "009a8424" | farmers$uuid == "019d99f9", ]
+```
+
+The literal translation of the above is:
+
+"find all observations in `farmers` where uuid exactly matches '009a8424' or where uuid exactly matches '019d99f9'"
+
+## Answers - write.csv
+
+Easiest - check it out
+```{r}
+write.csv(farmer_out, file = "~/Desktop/farmer_out.csv")
+```
+
+If you don't want rownames at all
+```{r}
+write.csv(farmer_out, file = "~/Desktop/farmer_out.csv", row.names = FALSE)
+```
+
+Let's say you want to keep what's already in that csv, and just add to it
+```{r}
+write.csv(farmer_out, file = "~/Desktop/farmer_out.csv")  # create the 1st again
+write.table(farmer_out, file = "~/Desktop/farmer_out.csv", append = TRUE, 
+            sep = ",", col.names = FALSE)  # use write.table to append to it
+```
+
+But do we have to save it as a csv? Certainly not. We can save it as an R data file (.rda, .Rdata)
+```{r, eval = FALSE}
+save(farmer_out, file = "~/Desktop/farmer_out.rda")  # common
+rm(list = ls())
+load("~/Desktop/farmer_out.rda")
+farmer_out
+save(farmer_out, file = "~/Desktop/farmer_out.Rdata")
+rm(list = ls())
+load("~/Desktop/farmer_out.Rdata")  # common
+farmer_out
+save(farmer_out, file = "~/Desktop/farmer_out.rd")
+rm(list = ls())
+load("~/Desktop/farmer_out.rd")  # not advisable
+farmer_out
+```
+
+The above isn't displayed, but if you run it (changing output file paths to suit your system) you will see they are all the same. 
+
+Note even the .rd extension works. But please don't use it. I prefer .rda. 
+
+## An extra bit on lapply/sapply
+
+Thanks to Nara, we were shown an excellent interactive package for learning R
+
+```{r, eval = FALSE}
+install.packages("swirl")
+library(swirl)
+```
+
+Work through instructions to get to exercise 10--do it in next 10 minutes
+
+Key points made in tutorial: 
+
+1. `lapply`/`sapply` are primarily used for split-apply-combine operations.
+2. *apply used:
+    - most simply with pre-existing functions (and uncomplicated subsets)
+        - e.g. `apply(somedata, 2, sum)`; `sapply(data, sum)`
+    - or with anonymous functions (for operations not defined by existing function, e.g. a custom or complicated subsetting/splitting operation)
+        - e.g. our operations by date or by uuid on `farmers`
+3. Not stated, but the reason that `for` not typically used: 
+    - harder to do the combine step
+    - more work to *apply* a function, even pre-defined ones
+    
+        ```{r}
+        out <- rep(NULL, 3)
+        for(i in colnames(farmers)[3:5]) {
+          out[i] <- sum(farmers[, i])
+        }
+        out
+        ```
+    Versus
+        ```{r}
+        out <- sapply(farmers[, 3:5], sum)
+        out
+        ```
+
+
+## Answers - plotting
+
+Simplest plot
+```{r}
+rasum <- sapply(dates, function(x) {
+  sum(farmers[farmers$date == x, "ra"])
+})
+
+plot(as.Date(dates), rasum)
+```
+
+Fancier
+```{r}
+plot(as.Date(dates), rasum, xlab = "date", ylab = "ra total", 
+     pch = 20, col = "red", cex = 2, # up to here was exercise given
+     las = 2)  # an extra step--rotate axis values
+```
+
+## More plotting
+
+Multiple plots. Let's do two plots side by side. And let's use a `for` loop for the job (this is a good use of `for` loops in R)
+
+First create some data. 
+
+```{r}
+farmers2 <- t(sapply(dates, function(x) {
+  dat <- farmers[farmers$date == x, c("pl", "ra", "mm")]
+  colSums(dat)
+}))
+farmers2 <- cbind.data.frame("date" = as.Date(dates), farmers2)
+rownames(farmers2) <- 1:nrow(farmers2)  # rownames were dates, want them just #
+```
+
+Now, three plots, one for column "pl", "ra", "mm" as y, date as x. Starting without a for loop
+```{r}
+# par defines initial plot parameters, here a figure with 1 row and 3 columns
+par(mfrow = c(1, 3))
+plot(farmers2$date, farmers2$pl, pch = 20, col = "orange", cex = 2)
+plot(farmers2$date, farmers2$ra, pch = 20, col = "blue", cex = 2)
+plot(farmers2$date, farmers2$mm, pch = 20, col = "red", cex = 2)
+lines(farmers2$date, farmers2$mm, col = "red", lwd = 2)
+```
+
+## More plotting 2
+```{r}
+par(mfrow = c(1, 3))
+for(i in c("pl", "ra", "mm")) {
+  x <- farmers2$date
+  y <- farmers2[, i]
+  plot(x, y)
+}
+```
+
