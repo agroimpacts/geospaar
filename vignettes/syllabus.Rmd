@@ -319,13 +319,13 @@ The readings for this class focuses on running and plotting non-linear and non-p
 <a href="#top">Back to top</a>
 
 ### Week 6. Unit 1 wrap-up
-#### Class 9 (30 Sep). Trends in R
+#### Class 9 (2 Oct). Trends in R
 + Readings: 
     + Emerging evolutionary trajectories in R: 
         + The tidyverse
         + `data.table` and `dplyr`: two different approaches for handling large datasets in R. 
 
-#### Class 10 (2 Oct). Wrap-up
+#### Class 10 (4 Oct). Wrap-up
 
 Featuring an exercise to put it all together
 
@@ -365,10 +365,18 @@ These last two weeks will be used to give final presentations, which will cover 
 # Resources {#Resources}
 The following are some helpful resources that you may wish to follow-up on as you learn R. 
 
-## Books
+## Books etc
 [The R Inferno](http://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
 
 [Efficient R Programming](https://csgillespie.github.io/efficientR/index.html#building-the-book)
+
+[Swirl Stats](http://swirlstats.com) and the `swirl` package
+
+```{r, eval = FALSE}
+install.packages("swirl")
+library(swirl)
+```
+
 
 ## The intertubes
 

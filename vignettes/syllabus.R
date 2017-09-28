@@ -47,3 +47,7 @@ kable(DF)
 ## ---- eval = FALSE-------------------------------------------------------
 #  plot(x = as.Date(dates), y = rasum)  # rasum = results of your sapply
 
+## ---- eval = FALSE-------------------------------------------------------
+#  install.packages("swirl")
+#  library(swirl)
+
