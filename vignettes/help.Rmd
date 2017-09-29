@@ -4,7 +4,7 @@ author: "Lyndon Estes"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{help}
+  %\VignetteIndexEntry{Help}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

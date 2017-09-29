@@ -9,7 +9,7 @@ output:
     toc_depth: 3
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{projects}
+  %\VignetteIndexEntry{Projects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

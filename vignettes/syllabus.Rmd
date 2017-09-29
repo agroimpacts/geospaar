@@ -9,7 +9,7 @@ output:
     toc_depth: 3
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{syllabus}
+  %\VignetteIndexEntry{Syllabus}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -314,16 +314,40 @@ The readings for this class focuses on running and plotting non-linear and non-p
     
         + Change the axis labels on your plot ("date" for the x label, "ra total" for the y label).
         + Change the points on the graph to a solid cicle (see `?pch`) with a red color. Increase the size of the point (see `?cex`)
-+ [Assignment 3](assignment3.html) ___[under construction]___
++ [Assignment 3](assignment3.html)
 
 <a href="#top">Back to top</a>
 
 ### Week 6. Unit 1 wrap-up
 #### Class 9 (2 Oct). Trends in R
-+ Readings: 
-    + Emerging evolutionary trajectories in R: 
-        + The tidyverse
-        + `data.table` and `dplyr`: two different approaches for handling large datasets in R. 
+
++ Required readings: 
+    + The readings for this class are informational (i.e. simply read rather than read and do), and intended to show some of the development pathways in the R language, which revolve around two clusters of packages that provide improved R performance. We are reading about them here so that you are aware of R's advanced capabilities, and so that you start to think about the types of choices you might make with respect to learning new approaches as you advance in R.  
+    + The first cluster of packages relates to the ___tidy data___ concept that was mentioned in previous readings, which is the philosophy underlying the `tidyverse`. This is a collection of R packages that are designed to be interoperable, and are particularly geared towards data science workflows. [This post](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/) gives a decent enough overview of it. We are not going to learn the any of the `tidyverse` packages in this class, because their syntax is fairly different from base R. More importantly, most of R's spatial packages are built on base, so the geospatial analyst who wishes to use R needs to learn base R. However, I suspect you are eventually going to want to learn at least parts of the `tidyverse`, as it is becoming the most widely used dialect (a term used in the reading) of R. Packages such as `ggplot2` and `readxl` will be immediately useful.
+        + A key part of the `tidyverse` is the ___Grammar of Graphics___, which underpins the `dplyr` package. Read 12.1-12.3 in [this web book](https://bookdown.org/rdpeng/rprogdatascience/managing-data-frames-with-the-dplyr-package.html) by Roger Peng for a quick overview of the "verbs" that make up this grammar.   
+    + The second cluster of packages is really just a single package, `data.table`. Like `dplyr`, `data.table` is designed to make working with `data.frame`s much faster, and `data.table` seems to be the [fastest between](https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping) in comparisons between `dplyr` and its python competitor [`pandas`](http://pandas.pydata.org). However, `data.table` is less versatile than `dplyr` (`dplyr` is designed to connect to more things, like data bases), and my impression is that it is less widely used. It also has a more esoteric syntax, which is substantially different to `dplyr`'s, but the code can be much more compact. That said, I have invested in learning `data.table` rather than `dplyr`, and I now use them to the near complete exclusion of `data.frame`s (and they are great for certain raster and spatial point operations). The [wiki](https://github.com/Rdatatable/data.table/wiki) for `data.table` is probably the best place (despite the ads in it) for getting an overview of what the package does. 
+
++ Exercise to do before class: work through the base graphics section of the `swirl` package.
+
+    ```
+    > library(swirl)
+    ...
+    > swirl()
+    
+    | Welcome to swirl! Please sign in. If you've been here before, use the same
+    | name as you did then. If you are new, call yourself something unique.
+    
+    What shall I call you? <yourname>
+    ...
+    
+    Selection: 3  # Let's get going
+    ...
+    
+    Selecton: 1  # R programming
+    
+    Selection: 15  # Base Graphics
+    ```
+
 
 #### Class 10 (4 Oct). Wrap-up
 
@@ -382,7 +406,8 @@ library(swirl)
 
 ### Websites
 
-#### R-focused
+__R-focused__
+    
 [CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
 
 [R Exercises](http://www.r-exercises.com)
@@ -395,7 +420,10 @@ library(swirl)
 
 [R mailing lists/listservs](https://www.r-project.org/mail.html)
 
-#### Advanced analytics
+[Speeding up R](http://www.noamross.net/blog/2013/4/25/faster-talk.html)
+
+__Advanced analytics__
+
 [Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/)
 
 [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/)
@@ -404,7 +432,9 @@ library(swirl)
 
 [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
 
-#### Reproducibility
+
+__Reproducibility__
+
 [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
 
 [Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
@@ -413,7 +443,14 @@ library(swirl)
 
 [manuscriptPackage](https://github.com/jhollist/manuscriptPackage): An R package that provides a package template for ___writing a Latex manuscript using Rmarkdown___, complete with citations. 
 
-### Blogs/social
+
+__R versus python__
+
+This is a big topic, but I will post some links here as I find them. 
+
+[Why I'll stick with R](https://md.ekstrandom.net/blog/2016/04/using-r/)
+
+### Blogs/tweeps to follow
 
 [R-bloggers](https://www.r-bloggers.com/)
 

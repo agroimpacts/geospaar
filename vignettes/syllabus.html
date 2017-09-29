@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-09-28" />
+<meta name="date" content="2017-09-29" />
 
 <title>Geography 246/346 Syllabus</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Geography 246/346 Syllabus</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-09-28</em></h4>
+<h4 class="date"><em>2017-09-29</em></h4>
 
 
 <div id="TOC">
@@ -111,7 +111,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#books-etc"><span class="toc-section-number">3.1</span> Books etc</a></li>
 <li><a href="#the-intertubes"><span class="toc-section-number">3.2</span> The intertubes</a><ul>
 <li><a href="#websites"><span class="toc-section-number">3.2.1</span> Websites</a></li>
-<li><a href="#blogssocial"><span class="toc-section-number">3.2.2</span> Blogs/social</a></li>
+<li><a href="#blogstweeps-to-follow"><span class="toc-section-number">3.2.2</span> Blogs/tweeps to follow</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -551,7 +551,7 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <li>Change the points on the graph to a solid cicle (see <code>?pch</code>) with a red color. Increase the size of the point (see <code>?cex</code>)</li>
 </ul></li>
 </ul></li>
-<li><a href="assignment3.html">Assignment 3</a> <strong><em>[under construction]</em></strong></li>
+<li><a href="assignment3.html">Assignment 3</a></li>
 </ul>
 <p><a href="#top">Back to top</a></p>
 </div>
@@ -561,14 +561,34 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <div id="class-9-2-oct.-trends-in-r" class="section level4">
 <h4><span class="header-section-number">2.1.6.1</span> Class 9 (2 Oct). Trends in R</h4>
 <ul>
-<li>Readings:
+<li>Required readings:
 <ul>
-<li>Emerging evolutionary trajectories in R:
+<li>The readings for this class are informational (i.e. simply read rather than read and do), and intended to show some of the development pathways in the R language, which revolve around two clusters of packages that provide improved R performance. We are reading about them here so that you are aware of R’s advanced capabilities, and so that you start to think about the types of choices you might make with respect to learning new approaches as you advance in R.<br />
+</li>
+<li>The first cluster of packages relates to the <strong><em>tidy data</em></strong> concept that was mentioned in previous readings, which is the philosophy underlying the <code>tidyverse</code>. This is a collection of R packages that are designed to be interoperable, and are particularly geared towards data science workflows. <a href="https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/">This post</a> gives a decent enough overview of it. We are not going to learn the any of the <code>tidyverse</code> packages in this class, because their syntax is fairly different from base R. More importantly, most of R’s spatial packages are built on base, so the geospatial analyst who wishes to use R needs to learn base R. However, I suspect you are eventually going to want to learn at least parts of the <code>tidyverse</code>, as it is becoming the most widely used dialect (a term used in the reading) of R. Packages such as <code>ggplot2</code> and <code>readxl</code> will be immediately useful.
 <ul>
-<li>The tidyverse</li>
-<li><code>data.table</code> and <code>dplyr</code>: two different approaches for handling large datasets in R.</li>
+<li>A key part of the <code>tidyverse</code> is the <strong><em>Grammar of Graphics</em></strong>, which underpins the <code>dplyr</code> package. Read 12.1-12.3 in <a href="https://bookdown.org/rdpeng/rprogdatascience/managing-data-frames-with-the-dplyr-package.html">this web book</a> by Roger Peng for a quick overview of the “verbs” that make up this grammar.<br />
+</li>
 </ul></li>
+<li>The second cluster of packages is really just a single package, <code>data.table</code>. Like <code>dplyr</code>, <code>data.table</code> is designed to make working with <code>data.frame</code>s much faster, and <code>data.table</code> seems to be the <a href="https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping">fastest between</a> in comparisons between <code>dplyr</code> and its python competitor <a href="http://pandas.pydata.org"><code>pandas</code></a>. However, <code>data.table</code> is less versatile than <code>dplyr</code> (<code>dplyr</code> is designed to connect to more things, like data bases), and my impression is that it is less widely used. It also has a more esoteric syntax, which is substantially different to <code>dplyr</code>’s, but the code can be much more compact. That said, I have invested in learning <code>data.table</code> rather than <code>dplyr</code>, and I now use them to the near complete exclusion of <code>data.frame</code>s (and they are great for certain raster and spatial point operations). The <a href="https://github.com/Rdatatable/data.table/wiki">wiki</a> for <code>data.table</code> is probably the best place (despite the ads in it) for getting an overview of what the package does.</li>
 </ul></li>
+<li><p>Exercise to do before class: work through the base graphics section of the <code>swirl</code> package.</p>
+<pre><code>&gt; library(swirl)
+...
+&gt; swirl()
+
+| Welcome to swirl! Please sign in. If you've been here before, use the same
+| name as you did then. If you are new, call yourself something unique.
+
+What shall I call you? &lt;yourname&gt;
+...
+
+Selection: 3  # Let's get going
+...
+
+Selecton: 1  # R programming
+
+Selection: 15  # Base Graphics</code></pre></li>
 </ul>
 </div>
 <div id="class-10-4-oct.-wrap-up" class="section level4">
@@ -632,32 +652,30 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <h2><span class="header-section-number">3.2</span> The intertubes</h2>
 <div id="websites" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Websites</h3>
-<div id="r-focused" class="section level4">
-<h4><span class="header-section-number">3.2.1.1</span> R-focused</h4>
+<p><strong>R-focused</strong></p>
 <p><a href="https://cran.r-project.org">CRAN</a>, particularly an <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html">Introduction to R</a> the Task view <a href="https://cran.r-project.org/web/views/Spatial.html">Analysis of Spatial Data</a></p>
 <p><a href="http://www.r-exercises.com">R Exercises</a></p>
 <p><a href="https://ropensci.org">ROpenSci</a></p>
 <p><a href="http://www.cyclismo.org/tutorial/R/#">Kelly Black’s R tutorial</a></p>
 <p><a href="https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example">Creating reproducible examples</a> (read this before posting to one of the mailing lists)</p>
 <p><a href="https://www.r-project.org/mail.html">R mailing lists/listservs</a></p>
-</div>
-<div id="advanced-analytics" class="section level4">
-<h4><span class="header-section-number">3.2.1.2</span> Advanced analytics</h4>
+<p><a href="http://www.noamross.net/blog/2013/4/25/faster-talk.html">Speeding up R</a></p>
+<p><strong>Advanced analytics</strong></p>
 <p><a href="http://multithreaded.stitchfix.com/blog/2015/07/30/gam/">Generalized Additive Models</a></p>
 <p><a href="https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/">Regression Trees, Random Forests, Gradient Boosting</a></p>
 <p><a href="https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/">Support Vector Machines</a></p>
 <p><a href="https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/">Change point detection</a></p>
-</div>
-<div id="reproducibility" class="section level4">
-<h4><span class="header-section-number">3.2.1.3</span> Reproducibility</h4>
+<p><strong>Reproducibility</strong></p>
 <p><a href="https://www.rdocumentation.org/packages/citr/versions/0.2.0">Add citations to an Rmarkdown document</a></p>
 <p><a href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">Rmarkdown cheatsheet</a></p>
 <p><a href="http://kbroman.org/Tools4RR/">Tools for Reproducible Research</a></p>
 <p><a href="https://github.com/jhollist/manuscriptPackage">manuscriptPackage</a>: An R package that provides a package template for <strong><em>writing a Latex manuscript using Rmarkdown</em></strong>, complete with citations.</p>
+<p><strong>R versus python</strong></p>
+<p>This is a big topic, but I will post some links here as I find them.</p>
+<p><a href="https://md.ekstrandom.net/blog/2016/04/using-r/">Why I’ll stick with R</a></p>
 </div>
-</div>
-<div id="blogssocial" class="section level3">
-<h3><span class="header-section-number">3.2.2</span> Blogs/social</h3>
+<div id="blogstweeps-to-follow" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Blogs/tweeps to follow</h3>
 <p><a href="https://www.r-bloggers.com/">R-bloggers</a></p>
 <p><a href="http://r-spatial.org/">R-spatial</a></p>
 <p><a href="https://twitter.com/RLangTip">@RLangTip</a></p>
