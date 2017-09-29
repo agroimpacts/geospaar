@@ -15,6 +15,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+
 ```
 
 # Overview
@@ -179,7 +180,7 @@ Now we are going to start getting into some plotting, using the values of `rain_
 The plot will look like this (the dimensions will be somewhat different though, because here I am presenting a version of this plot that was saved to a png, and read back in as a linked file). Note that in the your html output, you can alter the figure dimensions by adjusting the arguments in the chunk block ({r, fig.width = X, fig.height = Y}).
 
 
-![](../../vignettes/fig/a3-t9.png)
+![](fig/a3-t9.png)
 
 
 ## Task 10
@@ -187,7 +188,7 @@ Next, we are going to make a multipanel plot, where we show each of columns "rfm
 
 The plot will look like this (same caveat related to dimensions).
 
-![](../../vignettes/fig/a3-t10.png)
+![](fig/a3-t10.png)
 
 ## Task 11
 Okay, now the final task. The line plot we created in Task 9 is just a simple joining of points by line segments. We want to now see the predicted fit (i.e. the trend line) from a regression to those points. So: 
@@ -205,7 +206,7 @@ Okay, now the final task. The line plot we created in Task 9 is just a simple jo
       
 The plot will look like this (same caveat related to dimensions).
 
-![](../../vignettes/fig/a3-t11.png)
+![](fig/a3-t11.png)
 
 ## Extra credit (5 points)
 Write a function `myplot` that takes arguments "x", "y", "dat", and "col". "x" is the column name of a variable for the x axis, "y" the column name for the y axis, dat is a `data.frame` (here we are going to use `rain_mean` dataset), and "col" is the color you want to points in the plot to be. 
