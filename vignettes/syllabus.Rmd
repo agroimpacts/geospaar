@@ -371,11 +371,11 @@ Three assignments are planned for this unit. Materials will cover topics such as
 
 ___[under construction]___
 
-### Week 6 (Oct 2, 4). 
-### Week 7 (Oct 11). 
-### Week 8 (Oct 16, 18). 
-### Week 9 (Oct 23, 25). 
-### Week 10 (Oct 30, Nov 2). <!-- Visualization -->
+### Week 6 (Oct 9). 
+### Week 7 (Oct 16, 18). 
+### Week 8 (Oct 23, 25). 
+### Week 9 (Oct 30, Nov 1). 
+### Week 10 (Nov 6, Nov 8). <!-- Visualization -->
 <!-- ### Key takeaways/skills -->
 
 ## Unit 3. Projects
