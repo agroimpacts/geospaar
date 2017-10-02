@@ -319,7 +319,7 @@ The readings for this class focuses on running and plotting non-linear and non-p
 <a href="#top">Back to top</a>
 
 ### Week 6. Unit 1 wrap-up
-#### Class 9 (2 Oct). Trends in R
+#### Class 10 (2 Oct). Trends in R
 
 + Required readings: 
     + The readings for this class are informational (i.e. simply read rather than read and do), and intended to show some of the development pathways in the R language, which revolve around two clusters of packages that provide improved R performance. We are reading about them here so that you are aware of R's advanced capabilities, and so that you start to think about the types of choices you might make with respect to learning new approaches as you advance in R.  
@@ -349,19 +349,16 @@ The readings for this class focuses on running and plotting non-linear and non-p
     ```
 
 
-#### Class 10 (4 Oct). Wrap-up
-
-Featuring an exercise to put it all together
-
-<!-- + Possible [material](https://www.youtube.com/watch?v=9q7gssUP8UA) -->
-
-
-
-
-### Unit 1 Learning Goals
+#### Class 11 (4 Oct). Wrap-up
++ Before class: review the [Unit 1 Learning Goals](#unit1goals) below, and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty. 
++ In-class: we will continue where Class 10 left off with plotting, and also look at regressions and plotting predicted fits to data.  
+    
+### Unit 1 Learning Goals {#unit1goals}
 By the end of this unit, you should ___understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments. 
 
-And you should be able to comfortably (albeit not yet fluently) ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including apply); write a function; reshape, analyze (with basic statistic functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
+And you should be able to comfortably* ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including *apply* functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
+
+*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works. 
 
 <a href="#top">Back to top</a>
 
@@ -421,6 +418,8 @@ __R-focused__
 [R mailing lists/listservs](https://www.r-project.org/mail.html)
 
 [Speeding up R](http://www.noamross.net/blog/2013/4/25/faster-talk.html)
+
+[tidyverse tutorial video](https://www.youtube.com/watch?v=9q7gssUP8UA)
 
 __Advanced analytics__
 

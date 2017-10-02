@@ -26,7 +26,6 @@ knitr::opts_chunk$set(echo = TRUE)
 - Today's data
 ```{r}
 fnm <- system.file("extdata/farmer_test2.csv", package = "geospaar")
-# reload data
 farmers <- read.csv(fnm, stringsAsFactors = FALSE)
 ```
 
