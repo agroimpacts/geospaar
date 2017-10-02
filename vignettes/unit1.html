@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
+
+<meta name="date" content="2017-10-02" />
+
+<title>Unit 1</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Unit 1</h1>
+<h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
+<h4 class="date"><em>2017-10-02</em></h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#an-introduction-to-r-and-related-reproducibility-skills"><span class="toc-section-number">1</span> <em>An introduction to R and related reproducibility skills</em></a><ul>
+<li><a href="#week-1.-overview-of-r-and-reproducibility"><span class="toc-section-number">1.0.1</span> Week 1. Overview of R and Reproducibility</a></li>
+<li><a href="#week-2.-reproducibility-continued"><span class="toc-section-number">1.0.2</span> Week 2. Reproducibility Continued</a></li>
+<li><a href="#week-3.-r-fundamentals"><span class="toc-section-number">1.0.3</span> Week 3. R fundamentals</a></li>
+<li><a href="#week-4.-data-preparation-and-visualization"><span class="toc-section-number">1.0.4</span> Week 4. Data preparation and visualization</a></li>
+<li><a href="#week-5.-basic-analytics"><span class="toc-section-number">1.0.5</span> Week 5. Basic analytics</a></li>
+<li><a href="#week-6.-unit-1-wrap-up"><span class="toc-section-number">1.0.6</span> Week 6. Unit 1 wrap-up</a></li>
+<li><a href="#unit1goals"><span class="toc-section-number">1.0.7</span> Unit 1 Learning Goals</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="an-introduction-to-r-and-related-reproducibility-skills" class="section level1">
+<h1><span class="header-section-number">1</span> <em>An introduction to R and related reproducibility skills</em></h1>
+<p>In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster <strong><em>reproducibility</em></strong>, which can be loosely defined as the ability for you and others to <em>easily</em> repeat the steps of your analysis. including the use of <code>git</code> and <a href="https://github.com">github</a>, how to create an R package, and the use of <code>Rmarkdown</code> to document and present your analyses.</p>
+<p>This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying <a href="unit1.html">Unit 1 vignette</a>.</p>
+<p><a href="#top">Back to top</a></p>
+<div id="week-1.-overview-of-r-and-reproducibility" class="section level3">
+<h3><span class="header-section-number">1.0.1</span> Week 1. Overview of R and Reproducibility</h3>
+<div id="class-1-28-aug.-the-nature-and-history-of-r" class="section level4">
+<h4><span class="header-section-number">1.0.1.1</span> Class 1 (28 Aug). The nature and history of R</h4>
+<ul>
+<li>Readings:
+<ul>
+<li>Read the syllabus</li>
+<li>R overview and history:
+<ul>
+<li><a href="https://www.youtube.com/watch?v=STihTnVSZnI">Watch this online lecture by Roger Peng</a></li>
+<li><a href="https://www.datacamp.com/community/tutorials/r-or-python-for-data-analysis#gs.y7hR=gU">python versus R</a></li>
+<li><a href="http://adv-r.had.co.nz/Introduction.html">Read the introduction section</a> here by Hadley Wickham</li>
+<li><a href="http://www.rspatial.org/intr/rst/1-introduction.html">Introduction</a> chapter in rspatial’s Introduction to R, and Chapters 1 and 2 (pgs 1-7) in <a href="https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf">R for beginners</a>, which is linked from that (there are other interesting links in there)</li>
+</ul></li>
+<li><a href="https://www.youtube.com/watch?v=pXd54-vucu0">A video introduction to Rstudio</a></li>
+</ul></li>
+<li>To-do:
+<ul>
+<li>Sign up for <a href="https://github.com">github</a> and send us your github user name (by Sunday evening, preferably)</li>
+<li>Install R, Rstudio, and git on the machine that you will be using out of class to do your assignments (you cannot count on the class computers for this). Ideally, you will set up your projects in a cloud-based folder that you can access from the computers in JC103.</li>
+</ul></li>
+</ul>
+</div>
+<div id="class-2-30-aug.-reproducibility-and-its-components" class="section level4">
+<h4><span class="header-section-number">1.0.1.2</span> Class 2 (30 Aug). Reproducibility and its components</h4>
+<ul>
+<li>Readings:
+<ul>
+<li><a href="https://www.gitbook.com/book/bids/the-practice-of-reproducible-research/details">The Practice of Reproducible Research</a>, specifically:
+<ul>
+<li>Paragraphs 1-12 in the <a href="https://www.practicereproducibleresearch.org/core-chapters/1-intro.html">Introduction</a></li>
+<li><a href="https://www.practicereproducibleresearch.org/core-chapters/2-assessment.html">Assessing Reproducibility</a></li>
+<li><a href="https://www.practicereproducibleresearch.org/core-chapters/3-basic.html">The Basic Reproducible Workflow Template</a></li>
+</ul></li>
+<li>Skim <a href="http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285">Sandve et al (2013)</a></li>
+<li>Why you should (and, in this class, will) structure your work as an R package: Read <a href="https://hilaryparker.com/2013/04/03/personal-r-packages/">this</a>, <a href="http://kbroman.org/pkg_primer/">this</a>, and <a href="http://r-pkgs.had.co.nz/intro.html">this</a>…</li>
+<li>…and use git and GitHub with R and Rstudio: Read <a href="http://r-pkgs.had.co.nz/git.html#git">this</a>, <a href="https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control">this</a>, and <a href="https://jahya.net/blog/git-vs-github/">this</a>.<br />
+</li>
+</ul></li>
+<li><a href="assignments/assignment1.html">Assignment 1</a>. Note that this first assignment is the exception to the rule, in that it is assigned Wednesday but due the <em>following</em> Friday, because of Labor Day.</li>
+</ul>
+<p><a href="#top">Back to top</a></p>
+</div>
+</div>
+<div id="week-2.-reproducibility-continued" class="section level3">
+<h3><span class="header-section-number">1.0.2</span> Week 2. Reproducibility Continued</h3>
+<div id="class-3-6-sep.-rmarkdown-and-more-on-r-packages" class="section level4">
+<h4><span class="header-section-number">1.0.2.1</span> Class 3 (6 Sep). Rmarkdown and more on R packages</h4>
+<ul>
+<li>Readings:
+<ul>
+<li>Two quick things on markdown: <a href="http://kbroman.org/knitr_knutshell/pages/markdown.html">One</a>; <a href="http://blog.kdheepak.com/writing-papers-with-markdown.html">Two</a></li>
+<li>Which leads to a bit about Rmarkdown: <a href="http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html">A quick overview</a>; and see <a href="http://rmarkdown.rstudio.com/">Rstudio’s Overview of Rmarkdown</a>–click “Get Started” and then go through all the linked sections (Introduction through Cheatsheets).<br />
+</li>
+<li>Writing R packages:
+<ul>
+<li><a href="https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/">A very short tutorial</a>–note: Step0 in this tutorial is <em>likely</em> done already (check the packages tab in RStudio to confirm);</li>
+<li>More details on packages from Hadley Wickham’s book. Review these chapters (somewhat long, so probably just read): <a href="http://r-pkgs.had.co.nz/package.html#package-structure">Packages</a>; <a href="http://r-pkgs.had.co.nz/r.html#r">R code</a>; <a href="http://r-pkgs.had.co.nz/description.html#description">Package metadata</a>; <a href="http://r-pkgs.had.co.nz/man.html#man">Documentation</a>; <a href="http://r-pkgs.had.co.nz/vignettes.html">Vignettes</a> (also read <a href="http://rmflight.github.io/posts/2014/07/analyses_as_packages.html">this</a>, which has an interesting part about vignettes); <a href="http://r-pkgs.had.co.nz/namespace.html#namespace">Namespace</a>; <a href="http://r-pkgs.had.co.nz/data.html#data">External data</a>; the part about <a href="http://r-pkgs.had.co.nz/tests.html#tests">Tests</a> is also important, but for your own future work–we won’t get that far in this class.</li>
+</ul></li>
+<li>Poke around the <a href="https://ropensci.org">ROpenSci website</a>, and particularly its section on <a href="http://ropensci.github.io/reproducibility-guide/sections/tools/">tools for reproducibility</a> to get a bigger picture view of how R fits into reproducibility</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="week-3.-r-fundamentals" class="section level3">
+<h3><span class="header-section-number">1.0.3</span> Week 3. R fundamentals</h3>
+<p><a href="#top">Back to top</a></p>
+<div id="class-4-11-sep.-r-bestiary" class="section level4">
+<h4><span class="header-section-number">1.0.3.1</span> Class 4 (11 Sep). R bestiary</h4>
+<ul>
+<li>Readings:
+<ul>
+<li>Beginning note: some of this material is quite advanced, but we are going to cover it as background so that we have a good idea of the major components of R. Although you may always find it useful to do practical examples as you read through material, for many of these you might just want to read to get an understanding.</li>
+<li>You may find it useful to refresh your memory with Chapters 1 and 2 (pgs 1-7) in <a href="https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf">R for beginners</a></li>
+<li>Data types and structures: rspatial on <a href="http://www.rspatial.org/intr/rst/2-basic-data-types.html">basic data types</a> and <a href="http://www.rspatial.org/intr/rst/3-basic-data-structures.html">basic data structures</a>, and Advanced R on <a href="http://adv-r.had.co.nz/Data-structures.html">data structures</a></li>
+<li>Functions: rspatial’s <a href="http://www.rspatial.org/intr/rst/8-functions.html">chapter</a> on functions; read from top through “Primitive Functions” section in Advanced R’s chapter on <a href="http://adv-r.had.co.nz/Functions.html#function-components">Functions</a>.<br />
+</li>
+<li>Object-oriented programming (OOP) and R classes (especially S3 &amp; S4): Read 5-5.1 in CRAN’s <a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming">definition of OOP</a> first, and then a <a href="https://python.swaroopch.com/oop.html">python-oriented version</a> of the same, which might be somewhat clearer. Then read the Advanced R <a href="http://adv-r.had.co.nz/OO-essentials.html">OO field guide</a> that talks about the main OOP-associated classes, particularly S3 and S4, used in R.</li>
+<li>Environments: Read Environment Basics and Function Environments in the the <a href="http://adv-r.had.co.nz/Environments.html#env-basics">Environment chapter</a> of Advanced R.</li>
+</ul></li>
+</ul>
+</div>
+<div id="class-5-13-sep.-basic-operations-indexing-and-control-structures" class="section level4">
+<h4><span class="header-section-number">1.0.3.2</span> Class 5 (13 Sep). Basic operations, indexing, and control structures</h4>
+<ul>
+<li>Readings:
+<ul>
+<li>Required. No need to follow links within the pages these links point to. Do these in sequence, work through one, finish it, return here to find and follow the link to the next
+<ul>
+<li><strong>First:</strong> Basics. U. Illinois’ <a href="http://courses.atlas.illinois.edu/fall2016/STAT/STAT200/RProgramming/RCalculator.html">Using R as a calculator</a>; rspatial’s <a href="http://www.rspatial.org/intr/rst/5-algebra.html">chapter on algebra</a>;</li>
+<li><strong>Second:</strong> Indexing. rspatial on <a href="http://www.rspatial.org/intr/rst/4-indexing.html">indexing</a></li>
+<li><strong>Third:</strong> Control sructures. rspatial on <a href="http://www.rspatial.org/intr/rst/10-flow.html">flow control</a>, or control structures, and on R’s unique <a href="http://www.rspatial.org/intr/rst/9-apply.html">apply</a> family</li>
+</ul></li>
+<li>Optional additional information:
+<ul>
+<li>R-bloggers <a href="https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/">more detailed look</a> at family apply</li>
+<li>Advanced control structures: <a href="https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf">foreach</a>. Just read the introduction and skim the rest if you are so inclined–this is something to keep in our back pocket for future work</li>
+<li>A bit more on functions from <a href="https://ramnathv.github.io/pycon2014-r/learn/functions.html">here</a> and <a href="http://www.statmethods.net/management/userfunctions.html">here</a></li>
+</ul></li>
+</ul></li>
+<li><a href="assignment2.html">Assignment 2</a>: This assignment will also be an exception to the rule–due the following Friday (9/22)</li>
+</ul>
+<p><a href="#top">Back to top</a></p>
+</div>
+</div>
+<div id="week-4.-data-preparation-and-visualization" class="section level3">
+<h3><span class="header-section-number">1.0.4</span> Week 4. Data preparation and visualization</h3>
+<div id="class-6-18-sep.-working-withmanipulating-data" class="section level4">
+<h4><span class="header-section-number">1.0.4.1</span> Class 6 (18 Sep). Working with/manipulating data</h4>
+<ul>
+<li>Required readings: (reminder, work through examples in readings unless otherwise indicated–coding is best learned through doing)
+<ul>
+<li>Reading/writing data:
+<ul>
+<li><a href="http://www.rspatial.org/intr/rst/6-files.html">This piece</a> by rspatial is a nice introduction to reading and writing data (focused mostly on .csv and other delimited files). There is also good stuff in it on reading directories, working with file path variables (Windows-centric), and the more esoteric, but useful <code>readLines</code>. Note: in the first code block on this rspatial page, the command to load the file <code>read.csv('http://www.ats.ucla.edu/stat/r/faq/hsb2.csv')</code> is using an outdated url. The correct url to is “<a href="https://stats.idre.ucla.edu/stat/data/hsb2.csv" class="uri">https://stats.idre.ucla.edu/stat/data/hsb2.csv</a>”</li>
+<li>Ramnath Vaidyanathan <a href="https://ramnathv.github.io/pycon2014-r/explore/tidy.html">(ramnathv)</a> provides another useful file-reading example (using <code>read.delim</code>), in which he also introduces the concept of <strong><em>tidy data</em></strong>, which is important to know as it is a key principle underlying Hadley Wickham’s ecosystem of packages (the <code>tidyverse</code>), which represent an increasingly dominant branch of R.</li>
+</ul></li>
+<li>Data manipulation:
+<ul>
+<li><em>Reshaping</em>: The <strong><em>tidy data</em></strong> concept leads us to procedures that we commonly use to reshape and manipulate the structure of data (typically structures of class <code>data.frame</code> or <code>matrix</code>). <a href="http://www.rspatial.org/intr/rst/11-dataprep.html">rspatial</a> (note: although w encourage further explanation, you are not expected to follow links out of the rspatial page) covers <em>reshaping</em> (wide-to-long, and long-to-wide), <em>merging</em> two (or more) together, and <em>sorting/reordering</em></li>
+<li><em>Matching and replacing values</em>: The preceding reading introduces the <code>gsub</code> function, which uses <em>regular expressions</em> to match and replace patterns in (usually character) data types. Before getting into that, however, let’s look at some fairly simple recoding of data, which is demonstrated <a href="http://www.cookbook-r.com/Manipulating_data/Recoding_data/">here</a>. Don’t worry about the section on recoding with <code>plyr</code> (the second code block), but focus on the parts below (which use base R). After that, let’s get back to <em>regular expressions</em>, or <em>“regex”</em>, which are important for manipulating data. You will often need to base your data manipulations by finding parts of the data that match certain patterns (e.g. you want to extract all rows of a <code>data.frame</code> in which the values in column X contain the word “fruit”). Using <em>regex</em> can be challenging (I am stumped on one problem as I write this), but it is pretty important capability, so let’s read a <a href="http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/regExprTalk.pdf">bit more</a> about them, specifically Sections 1-3.1 in the linked document. At the end of this, you should have a clearer idea of why regex is important, and a sense of what the functions <code>gsub</code> and <code>grep</code> do. I don’t expect you to understand the bewildering array of metacharacters yet, or the more advanced ways to use these functions. However, if I give you the vector <code>c(&quot;cat&quot;, &quot;dog&quot;, &quot;bird&quot;, &quot;banana&quot;)</code>, and ask you to 1) find which words contain “a” (<code>grep</code>) and 2) to replace all occurrences of “a” with “1”, you should be able to do it.</li>
+</ul></li>
+</ul></li>
+<li>Optional additional information:
+<ul>
+<li>A more advanced take on reshaping by <a href="https://ramnathv.github.io/pycon2014-r/explore/reshape.html">ramnathv</a>, which focuses on using the <code>reshape2</code> package (e.g. <code>melt</code>);</li>
+<li>The full chapter from Cookbook for R on <a href="http://rprogramming.net/recode-data-in-r/">Manipulating Data</a>, from which we took the piece on recoding, very worthy of a further perusal.<br />
+</li>
+<li>A <a href="https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf">useful cheatsheet</a> for regex.</li>
+</ul></li>
+</ul>
+</div>
+<div id="class-7-20-sep.-visualization" class="section level4">
+<h4><span class="header-section-number">1.0.4.2</span> Class 7 (20 Sep). Visualization</h4>
+<ul>
+<li>Be prepared to do, in class, an exercise in which we:
+<ul>
+<li>read in a dataset</li>
+<li>use controls structures to iteratively subset the data, using index numbers, names, and partial string matching.</li>
+</ul></li>
+<li>Required readings:
+<ul>
+<li>On plotting/visualizing data. There are two primary schools of plotting in R. The first uses the base graphics, the plotting functionality that comes with every R install, the second is based on <code>ggplot2</code>, a package developed by Hadley Wickham, and is again connected to the tidy data concept. In this class, we are going to focus on base graphics primarily, since we are learning how to code in base R, but it is important that you have an understanding of what <code>ggplot2</code> is and how it differs from base graphics, because it is becoming a graphical mainstay, and spatial packages are increasingly relying on it.
+<ul>
+<li>Base graphics:
+<ul>
+<li>Read and <em>work through the examples</em> in Rspatial’s useful <a href="http://www.rspatial.org/intr/rst/12-plots.html">intro</a> to base plotting. A note: you will see that when you run the command <code>plot(cars)</code> your result is not the same as what is shown in the reading. That’s okay.</li>
+<li>Working with the same <code>cars</code> dataset in this reading, run the following code:</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># these first 4 lines are the same steps as in the reading</span>
+<span class="kw">data</span>(cars)
+<span class="kw">set.seed</span>(<span class="dv">0</span>)
+brands &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'Buick'</span>, <span class="st">'Chevrolet'</span>, <span class="st">'Ford'</span>)
+b &lt;-<span class="st"> </span><span class="kw">sample</span>(brands, <span class="kw">nrow</span>(cars), <span class="dt">replace=</span><span class="ot">TRUE</span>)
+
+<span class="co"># this is new--we are showing how to add points to an existing plot</span>
+cars2 &lt;-<span class="st"> </span>cars  <span class="co"># We are copying cars to a new dataset</span>
+cars2$make &lt;-<span class="st"> </span>b
+cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;red&quot;</span>)
+<span class="kw">plot</span>(speed ~<span class="st"> </span>dist, <span class="dt">data =</span> cars2[cars2$make ==<span class="st"> &quot;Buick&quot;</span>, ], <span class="dt">pch =</span> <span class="dv">20</span>, 
+     <span class="dt">col =</span> cols[<span class="dv">1</span>], <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">max</span>(cars2$speed)), 
+     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">max</span>(cars2$dist)))
+for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
+  <span class="kw">points</span>(speed ~<span class="st"> </span>dist, <span class="dt">data =</span> cars2[cars2$make ==<span class="st"> </span>brands[i], ], <span class="dt">pch =</span> <span class="dv">20</span>, 
+         <span class="dt">col =</span> cols[i])  
+}
+<span class="kw">legend</span>(<span class="dv">90</span>, <span class="dv">10</span>, brands, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">pt.cex =</span> <span class="dv">1</span>, <span class="dt">col =</span> cols, <span class="dt">cex =</span> <span class="dv">1</span>,
+       <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>)</code></pre></div>
+<ul>
+<li>Dont’ just run, but study the code, which provides an example of:
+<ul>
+<li>a <code>for</code> loop</li>
+<li>setting the plot’s x and y limits</li>
+<li>passing in colors as a variable</li>
+<li>defining a plot formula (see the <code>~</code>), instead of in the x and y positions.</li>
+<li>The use of <code>points</code>.</li>
+<li>By changing the values of arguments, or removing them entirely from the code (e.g. the xlim, ylim arguments), you can help gain a deeper understanding of how things work.</li>
+</ul></li>
+</ul></li>
+<li>ggplot/grammar of graphics: <a href="https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/">A nice short bloggy intro</a>.</li>
+</ul></li>
+<li>After doing these two readings
+<ul>
+<li>You should know how to: make a simple xy plot with, base graphics, label axes, annotate plots with text, change plot symbols, put multiple plots in one figure, and add a legend</li>
+<li>You should have some understanding of: using control structures with plots; how <code>ggplot</code> differs from base graphics, and the grammar of graphics concept.<br />
+</li>
+</ul></li>
+</ul></li>
+<li>Optional additional information:
+<ul>
+<li><a href="http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous">This</a> is an excellent reference for many different kinds of plots with code.</li>
+<li><a href="http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options">Intermediate plotting</a> from Kelly Black’s R tutorial. This is a resource you will want to remember, as it tells you some more advanced plotting (multiple plots, putting points on plots, etc.). All of this will come in handy with plotting spatial data.</li>
+<li>The <a href="http://vita.had.co.nz/papers/layered-grammar.pdf">paper</a> that describes the underlying philosophy of <code>ggplot</code>.</li>
+<li>Hadley Wickham’s <a href="http://r4ds.had.co.nz/visualize.html#undefined">data visualization tutorial with <code>ggplot2</code></a>.</li>
+</ul></li>
+</ul>
+<p><a href="#top">Back to top</a></p>
+</div>
+</div>
+<div id="week-5.-basic-analytics" class="section level3">
+<h3><span class="header-section-number">1.0.5</span> Week 5. Basic analytics</h3>
+<div id="class-8-25-sep.-common-analyses" class="section level4">
+<h4><span class="header-section-number">1.0.5.1</span> Class 8 (25 Sep). Common analyses</h4>
+<p>We are going to spend a week looking at some common statistical analysis with R. This is a very short amount of time for a very long topic–statistical analysis is, after all, R’s <em>raison d’etre</em>–but this quick look from a fast-moving car will help as many of these analyses are applied to spatial objects, or to data extracted from them.</p>
+<ul>
+<li>Required readings:
+<ul>
+<li>Basic statistics:
+<ul>
+<li>R-tutor has a section on simple statistics in the <a href="http://www.r-tutor.com/elementary-statistics/numerical-measures">numerical measures</a> section. There are links that take you a different page for each of several measures, beginning with “mean” and ending with “kurtosis” (there is a reprise of <code>boxplot</code> tucked in here also). Go through all of these, and run the code for the examples. Two notes on this:
+<ul>
+<li>The author has the unpleasant habit of pasting code from the console. That means you have to get rid of the <code>&gt;</code> before each line.</li>
+<li>The author also uses <code>=</code> as the assignment operator, rather than <code>&lt;-</code>. While that works, that is a practice that we discourage as it does not conform to the style guide.</li>
+</ul></li>
+<li>A very short piece <a href="http://rfunction.com/archives/539">here</a> brings up four functions that quickly give you sums or means on the columns or rows of matrices or data.frames. Let’s learn these with an exercise:
+<ul>
+<li>Create a three column <code>data.frame</code> named <code>dat2</code>, with columns “a”, “b”, and “c”, each of which has 1000 randomly selected values (for a, select integers between 0-10, for b, random numbers from a uniform distribution between 0-10, and for c random numbers from a normal distribution with a mean of 5 and an <code>sd</code> of 1)</li>
+<li>Apply <code>colSums</code>, <code>rowSums</code>, <code>colMeans</code>, <code>rowMeans</code> to <code>dat2</code></li>
+<li>Do the same calculations, but using the <code>apply</code> function instead</li>
+</ul></li>
+</ul></li>
+<li>Regressions:
+<ul>
+<li>Work through rspatial’s <a href="http://www.rspatial.org/intr/rst/13-statmodels.html">overview</a> of simple linear regression (also known as ordinary least squares [OLS] regression), using the <code>lm</code> function, and the more versatile <code>glm</code> function.</li>
+<li>This of course assumes that you know what linear regression is and how it works. If this is new to you, please read this <a href="https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/">Beginner’s Guide to Regression</a>, which actually includes its own R code and data. However, the explanation of regression is more important. An even more high-level look at OLS is provided by <a href="https://hbr.org/2015/11/a-refresher-on-regression-analysis">Harvard Business Review</a>.</li>
+</ul></li>
+<li>After doing these readings, you should:
+<ul>
+<li>Know the basic statistical functions in R and how to apply them. The purpose of some of them might be less clear if you haven’t had stats (e.g. kurtosis, central moment), which is okay.</li>
+<li>Know how to fit a simple regression model, and work with the results, using functions such as <code>summary</code>, <code>plot</code>, and <code>predict</code> (note that this is a fairly typical case of R’s S3 system).</li>
+</ul></li>
+</ul></li>
+<li>Optional addition information: A fuller <a href="http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html">tutorial</a> (by Harvard’s Institute for Quantitative Sciences), on OLS regression, including examples of multiple regression (more than one predictor).</li>
+</ul>
+</div>
+<div id="class-9-29-sep.-more-regression" class="section level4">
+<h4><span class="header-section-number">1.0.5.2</span> Class 9 (29 Sep). More regression</h4>
+<p>The readings for this class focuses on running and plotting non-linear and non-parametric regressions. These will come in handy for those of working with time series, or when trying to fit models where there are non-linear relationships between variables. We also have a few exercises/code examples related to skills covered in previous readings.</p>
+<ul>
+<li>Required readings:
+<ul>
+<li>Polynomial regressions, for non-linear fits, by <a href="https://davetang.org/muse/2013/05/09/on-curve-fitting/">David Tang</a>. This reading/tutorial shows how to fit a polynomial regression, that is, a variant of linear regression in which the variable whose values you want to predict has a curvilinear relationship with the predictor variable. The primary skill you should take out of this reading relates to the plotting aspect: that is, the ability to pull out a curvy line from the results of a polynomial regression and plot it, which is demonstrated in the first two code blocks (pay special attention to the <code>predict</code> function). Although not the main skill to take away, the subsequent code blocks are also to be read because they show valuable things to know: how to extract the coefficients from the model, and write a function that uses the coefficients to create a curvey polynomial line.</li>
+<li>And then <a href="http://r-statistics.co/Loess-Regression-With-R.html">a short example</a>. of non-parametric regression for non-linear fits. This is similar to the above, in that we are fitting a curvy line to data, but it uses a “non-parametric” approach (basically it cuts up the data into lots of subsets where the values are close to one another in xy space, fits a mini-regression to each subset, and then pieces together the predicted results of each of these mini-regressions to make a single smooth line). Work through this up to the “Optimal Smoothing Span” part (you can do that section if you want to learn a bit more about how one can objectively select the right number of mini-regressions that are used to make the smooth line). Additional note: to run the examples in this, you will need to install the <code>ggplot2</code> library if you don’t have it (as it contains the dataset used).<br />
+</li>
+</ul></li>
+<li>Exercises (do before class):
+<ul>
+<li>The one given at the end of last class (in the slides for Class 8):
+<ul>
+<li>Use <code>lapply</code> and <code>sapply</code> to calculate the <code>colSums</code> (columns “pl”, “ra”, “mm”) for observations where “uuid” contains the values “8424”, “166f”, “99f9”. This means you will have to use the grep approach to subsetting (demonstrated in the Class 8 slides), rather than <code>farmers[farmers$date == x, c(&quot;pl&quot;, &quot;ra&quot;, &quot;mm&quot;)]</code></li>
+<li>Use <code>write.csv</code> to write out the outputs of the <code>sapply</code> version of this, where you have the results for “pl”, “ra”, “mm” as columns, and the partial strings as rows. That means you apply <code>t</code> to the resulting object that you direct <code>sapply</code> to. I haven’t shown you <code>write.csv</code> yet, so try and figure this out by adapting examples from the help file for this function (<code>?write.csv</code>)</li>
+</ul></li>
+<li>A plotting exercise - working with the <code>farmer</code> data.frame (the one we have been using in class), do the following:
+<ul>
+<li>Calculate the sum of the “ra” variable for each unique date in the time series (use <code>sapply</code>)</li>
+<li><p>Plot the results against the date. That is, plot the 6 summed values of “ra” (the y variable) against <code>dates</code> (see previous in-class exercise), which becomes x. For this to work correctly, you need to first coerce <code>dates</code> from a character vector to a date vector. Use <code>as.Date</code> to do this. Here’s how the date coercion looks, applied to <code>dates</code> within the <code>plot</code> function, to get you started:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="dt">x =</span> <span class="kw">as.Date</span>(dates), <span class="dt">y =</span> rasum)  <span class="co"># rasum = results of your sapply</span></code></pre></div></li>
+<li>Change the axis labels on your plot (“date” for the x label, “ra total” for the y label).</li>
+<li>Change the points on the graph to a solid cicle (see <code>?pch</code>) with a red color. Increase the size of the point (see <code>?cex</code>)</li>
+</ul></li>
+</ul></li>
+<li><a href="assignment3.html">Assignment 3</a></li>
+</ul>
+<p><a href="#top">Back to top</a></p>
+</div>
+</div>
+<div id="week-6.-unit-1-wrap-up" class="section level3">
+<h3><span class="header-section-number">1.0.6</span> Week 6. Unit 1 wrap-up</h3>
+<div id="class-10-2-oct.-trends-in-r" class="section level4">
+<h4><span class="header-section-number">1.0.6.1</span> Class 10 (2 Oct). Trends in R</h4>
+<ul>
+<li>Required readings:
+<ul>
+<li>The readings for this class are informational (i.e. simply read rather than read and do), and intended to show some of the development pathways in the R language, which revolve around two clusters of packages that provide improved R performance. We are reading about them here so that you are aware of R’s advanced capabilities, and so that you start to think about the types of choices you might make with respect to learning new approaches as you advance in R.<br />
+</li>
+<li>The first cluster of packages relates to the <strong><em>tidy data</em></strong> concept that was mentioned in previous readings, which is the philosophy underlying the <code>tidyverse</code>. This is a collection of R packages that are designed to be interoperable, and are particularly geared towards data science workflows. <a href="https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/">This post</a> gives a decent enough overview of it. We are not going to learn the any of the <code>tidyverse</code> packages in this class, because their syntax is fairly different from base R. More importantly, most of R’s spatial packages are built on base, so the geospatial analyst who wishes to use R needs to learn base R. However, I suspect you are eventually going to want to learn at least parts of the <code>tidyverse</code>, as it is becoming the most widely used dialect (a term used in the reading) of R. Packages such as <code>ggplot2</code> and <code>readxl</code> will be immediately useful.
+<ul>
+<li>A key part of the <code>tidyverse</code> is the <strong><em>Grammar of Graphics</em></strong>, which underpins the <code>dplyr</code> package. Read 12.1-12.3 in <a href="https://bookdown.org/rdpeng/rprogdatascience/managing-data-frames-with-the-dplyr-package.html">this web book</a> by Roger Peng for a quick overview of the “verbs” that make up this grammar.<br />
+</li>
+</ul></li>
+<li>The second cluster of packages is really just a single package, <code>data.table</code>. Like <code>dplyr</code>, <code>data.table</code> is designed to make working with <code>data.frame</code>s much faster, and <code>data.table</code> seems to be the <a href="https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping">fastest between</a> in comparisons between <code>dplyr</code> and its python competitor <a href="http://pandas.pydata.org"><code>pandas</code></a>. However, <code>data.table</code> is less versatile than <code>dplyr</code> (<code>dplyr</code> is designed to connect to more things, like data bases), and my impression is that it is less widely used. It also has a more esoteric syntax, which is substantially different to <code>dplyr</code>’s, but the code can be much more compact. That said, I have invested in learning <code>data.table</code> rather than <code>dplyr</code>, and I now use them to the near complete exclusion of <code>data.frame</code>s (and they are great for certain raster and spatial point operations). The <a href="https://github.com/Rdatatable/data.table/wiki">wiki</a> for <code>data.table</code> is probably the best place (despite the ads in it) for getting an overview of what the package does.</li>
+</ul></li>
+<li><p>Exercise to do before class: work through the base graphics section of the <code>swirl</code> package.</p>
+<pre><code>&gt; library(swirl)
+...
+&gt; swirl()
+
+| Welcome to swirl! Please sign in. If you've been here before, use the same
+| name as you did then. If you are new, call yourself something unique.
+
+What shall I call you? &lt;yourname&gt;
+...
+
+Selection: 3  # Let's get going
+...
+
+Selecton: 1  # R programming
+
+Selection: 15  # Base Graphics</code></pre></li>
+</ul>
+</div>
+<div id="class-11-4-oct.-wrap-up" class="section level4">
+<h4><span class="header-section-number">1.0.6.2</span> Class 11 (4 Oct). Wrap-up</h4>
+<ul>
+<li>Before class: review the <a href="#unit1goals">Unit 1 Learning Goals</a> below, and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty.</li>
+<li>In-class: we will continue where Class 10 left off with plotting, and also look at regressions and plotting predicted fits to data.</li>
+</ul>
+</div>
+</div>
+<div id="unit1goals" class="section level3">
+<h3><span class="header-section-number">1.0.7</span> Unit 1 Learning Goals</h3>
+<p>By the end of this unit, you should <strong><em>understand</em></strong>: R’s origins and its strengths and weaknesses; the concept of reproducibility and R’s role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R’s data type and structures, objects, classes, and environments.</p>
+<p>And you should be able to comfortably* <strong><em>do the following</em></strong>: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including <em>apply</em> functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our <a href="http://adv-r.had.co.nz/Style.html">selected R style guide</a></p>
+<p>*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works.</p>
+<p><a href="#top">Back to top</a></p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

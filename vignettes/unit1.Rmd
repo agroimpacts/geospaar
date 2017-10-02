@@ -1,0 +1,247 @@
+---
+title: "Unit 1 - Introduction to R and reproducibility skills"
+author: "Lyndon Estes, Zhiwen Zhu"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Unit 1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+
+# Overview
+
+This section provides the detailed syllabus for the first unit of ___GEOG246-346: Geospatial Analysis with R___. Please return to the main  [Syllabus](syllabus.html) for an overview of the entire course. 
+
+# Week 1. Overview of R and Reproducibility
+## Class 1 (28 Aug). The nature and history of R
++ Readings:
+    + Read the syllabus
+    + R overview and history:
+        + [Watch this online lecture by Roger Peng](https://www.youtube.com/watch?v=STihTnVSZnI)
+        + [python versus R](https://www.datacamp.com/community/tutorials/r-or-python-for-data-analysis#gs.y7hR=gU)
+        + [Read the introduction section](http://adv-r.had.co.nz/Introduction.html) here by Hadley Wickham
+        + [Introduction](http://www.rspatial.org/intr/rst/1-introduction.html) chapter in rspatial's Introduction to R, and Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf), which is linked from that (there are other interesting links in there)
+    + [A video introduction to Rstudio](https://www.youtube.com/watch?v=pXd54-vucu0)
++ To-do: 
+    + Sign up for [github](https://github.com) and send us your github user name (by Sunday evening, preferably)
+    + Install R, Rstudio, and git on the machine that you will be using out of class to do your assignments (you cannot count on the class computers for this). Ideally, you will set up your projects in a cloud-based folder that you can access from the computers in JC103. 
+
+## Class 2 (30 Aug). Reproducibility and its components
++ Readings: 
+    + [The Practice of Reproducible Research](https://www.gitbook.com/book/bids/the-practice-of-reproducible-research/details), specifically: 
+        + Paragraphs 1-12 in the [Introduction](https://www.practicereproducibleresearch.org/core-chapters/1-intro.html)
+        + [Assessing Reproducibility](https://www.practicereproducibleresearch.org/core-chapters/2-assessment.html)
+        + [The Basic Reproducible Workflow Template](https://www.practicereproducibleresearch.org/core-chapters/3-basic.html)
+    + Skim [Sandve et al (2013)](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285) 
+    + Why you should (and, in this class, will) structure your work as an R package: Read [this](https://hilaryparker.com/2013/04/03/personal-r-packages/), 
+    [this](http://kbroman.org/pkg_primer/), and [this](http://r-pkgs.had.co.nz/intro.html)...
+    + ...and use git and GitHub with R and Rstudio: Read [this](http://r-pkgs.had.co.nz/git.html#git), [this](https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control), and [this](https://jahya.net/blog/git-vs-github/).  
++ [Assignment 1](assignment1.html). Note that this first assignment is the exception to the rule, in that it is assigned Wednesday but due the *following* Friday, because of Labor Day. 
+
+<a href="#top">Back to top</a>
+
+# Week 2. Reproducibility Continued
+## Class 3 (6 Sep). Rmarkdown and more on R packages
++ Readings:
+    + Two quick things on markdown: [One](http://kbroman.org/knitr_knutshell/pages/markdown.html); [Two](http://blog.kdheepak.com/writing-papers-with-markdown.html)
+    + Which leads to a bit about Rmarkdown: [A quick overview](http://kbroman.org/knitr_knutshell/pages/Rmarkdown.html); and see [Rstudio's Overview of Rmarkdown](http://rmarkdown.rstudio.com/)--click "Get Started" and then go through all the linked sections (Introduction through Cheatsheets).  
+    + Writing R packages: 
+        + [A very short tutorial](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)--note: Step0 in this tutorial is *likely* done already (check the packages tab in RStudio to confirm); 
+        + More details on packages from Hadley Wickham's book. Review these chapters (somewhat long, so probably just read): [Packages](http://r-pkgs.had.co.nz/package.html#package-structure); [R code](http://r-pkgs.had.co.nz/r.html#r); [Package metadata](http://r-pkgs.had.co.nz/description.html#description); [Documentation](http://r-pkgs.had.co.nz/man.html#man); [Vignettes](http://r-pkgs.had.co.nz/vignettes.html) (also read [this](http://rmflight.github.io/posts/2014/07/analyses_as_packages.html), which has an interesting part about vignettes); [Namespace](http://r-pkgs.had.co.nz/namespace.html#namespace); [External data](http://r-pkgs.had.co.nz/data.html#data); the part about [Tests](http://r-pkgs.had.co.nz/tests.html#tests) is also important, but for your own future work--we won't get that far in this class. 
+    + Poke around the [ROpenSci website](https://ropensci.org), and particularly its section on [tools for reproducibility](http://ropensci.github.io/reproducibility-guide/sections/tools/) to get a bigger picture view of how R fits into reproducibility 
+
+# Week 3. R fundamentals
+
+<a href="#top">Back to top</a>
+
+## Class 4 (11 Sep). R bestiary
++ Readings: 
+    + Beginning note: some of this material is quite advanced, but we are going to cover it as background so that we have a good idea of the major components of R. Although you may always find it useful to do practical examples as you read through material, for many of these you might just want to read to get an understanding. 
+    + You may find it useful to refresh your memory with Chapters 1 and 2 (pgs 1-7) in [R for beginners](https://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf)
+    + Data types and structures: rspatial on [basic data types](http://www.rspatial.org/intr/rst/2-basic-data-types.html) and [basic data structures](http://www.rspatial.org/intr/rst/3-basic-data-structures.html), and Advanced R on [data structures](http://adv-r.had.co.nz/Data-structures.html)
+    + Functions: rspatial's [chapter](http://www.rspatial.org/intr/rst/8-functions.html) on functions; read from top through "Primitive Functions" section in Advanced R's chapter on [Functions](http://adv-r.had.co.nz/Functions.html#function-components).  
+    + Object-oriented programming (OOP) and R classes (especially S3 & S4): Read 5-5.1 in CRAN's [definition of OOP](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming) first, and then a [python-oriented version](https://python.swaroopch.com/oop.html) of the same, which might be somewhat clearer. Then read the Advanced R [OO field guide](http://adv-r.had.co.nz/OO-essentials.html) that talks about the main OOP-associated classes, particularly S3 and S4, used in R.
+    + Environments: Read Environment Basics and Function Environments in the the [Environment chapter](http://adv-r.had.co.nz/Environments.html#env-basics) of Advanced R. 
+
+## Class 5 (13 Sep). Basic operations, indexing, and control structures
++ Readings: 
+    + Required. No need to follow links within the pages these links point to. Do these in sequence, work through one, finish it, return here to find and follow the link to the next
+        + __First:__ Basics. U. Illinois' [Using R as a calculator](http://courses.atlas.illinois.edu/fall2016/STAT/STAT200/RProgramming/RCalculator.html); rspatial's [chapter on algebra](http://www.rspatial.org/intr/rst/5-algebra.html); 
+        + __Second:__ Indexing. rspatial on [indexing](http://www.rspatial.org/intr/rst/4-indexing.html)
+        +  __Third:__ Control sructures. rspatial on [flow control](http://www.rspatial.org/intr/rst/10-flow.html), or control structures, and on R's unique [apply](http://www.rspatial.org/intr/rst/9-apply.html) family
+    + Optional additional information: 
+        + R-bloggers [more detailed look](https://www.r-bloggers.com/r-tutorial-on-the-apply-family-of-functions/) at family apply
+        + Advanced control structures: [foreach](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf). Just read the introduction and skim the rest if you are so inclined--this is something to keep in our back pocket for future work
+        + A bit more on functions from [here](https://ramnathv.github.io/pycon2014-r/learn/functions.html) and [here](http://www.statmethods.net/management/userfunctions.html)
++ [Assignment 2](assignment2.html): This assignment will also be an exception to the rule--due the following Friday (9/22)
+
+<a href="#top">Back to top</a>
+
+# Week 4. Data preparation and visualization
+## Class 6 (18 Sep). Working with/manipulating data
++ Required readings: (reminder, work through examples in readings unless otherwise indicated--coding is best learned through doing) 
+      + Reading/writing data: 
+          + [This piece](http://www.rspatial.org/intr/rst/6-files.html) by rspatial is a nice introduction to reading and writing data (focused mostly on .csv and other delimited files). There is also good stuff in it on reading directories, working with file path variables (Windows-centric), and the more esoteric, but useful `readLines`. Note: in the first code block on this rspatial page, the command to load the file `read.csv('http://www.ats.ucla.edu/stat/r/faq/hsb2.csv')` is using an outdated url. The correct url to is "https://stats.idre.ucla.edu/stat/data/hsb2.csv"
+          + Ramnath Vaidyanathan [(ramnathv)](https://ramnathv.github.io/pycon2014-r/explore/tidy.html) provides another useful file-reading example (using `read.delim`), in which he also introduces the concept of ___tidy data___, which is important to know as it is a key principle underlying Hadley Wickham's ecosystem of packages (the `tidyverse`), which represent an increasingly dominant branch of R. 
+      + Data manipulation: 
+          + *Reshaping*: The ___tidy data___ concept leads us to procedures that we commonly use to reshape and manipulate the structure of data (typically structures of class `data.frame` or `matrix`). [rspatial](http://www.rspatial.org/intr/rst/11-dataprep.html) (note: although w encourage further explanation, you are not expected to follow links out of the rspatial page) covers  _reshaping_ (wide-to-long, and long-to-wide), _merging_ two (or more) together, and _sorting/reordering_ 
+          + *Matching and replacing values*: The preceding reading introduces the `gsub` function, which uses *regular expressions* to match and replace patterns in (usually character) data types. Before getting into that, however, let's look at some fairly simple recoding of data, which is demonstrated [here](http://www.cookbook-r.com/Manipulating_data/Recoding_data/). Don't worry about the section on recoding with `plyr` (the second code block), but focus on the parts below (which use base R). After that, let's get back to *regular expressions*, or *"regex"*, which are important for manipulating data. You will often need to base your data manipulations by finding parts of the data that match certain patterns (e.g. you want to extract all rows of a `data.frame` in which the values in column X contain the word "fruit"). Using *regex* can be challenging (I am stumped on one problem as I write this), but it is pretty important capability, so let's read a [bit more](http://biostat.mc.vanderbilt.edu/wiki/pub/Main/SvetlanaEdenRFiles/regExprTalk.pdf) about them, specifically Sections 1-3.1 in the linked document. At the end of this, you should have a clearer idea of why regex is important, and a sense of what the functions `gsub` and `grep` do. I don't expect you to understand the bewildering array of metacharacters yet, or the more advanced ways to use these functions. However, if I give you the vector `c("cat", "dog", "bird", "banana")`, and ask you to 1) find which words contain "a" (`grep`) and 2) to replace all occurrences of "a" with "1", you should be able to do it. 
+  + Optional additional information: 
+      + A more advanced take on reshaping by  [ramnathv](https://ramnathv.github.io/pycon2014-r/explore/reshape.html), which focuses on using the `reshape2` package (e.g. `melt`); 
+      + The full chapter from Cookbook for R on [Manipulating Data](http://rprogramming.net/recode-data-in-r/), from which we took the piece on recoding, very worthy of a further perusal.   
+      + A [useful cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) for regex. 
+
+## Class 7 (20 Sep). Visualization 
++ Be prepared to do, in class, an exercise in which we: 
+    + read in a dataset
+    + use controls structures to iteratively subset the data, using index numbers, names, and partial string matching. 
++ Required readings:
+    + On plotting/visualizing data. There are two primary schools of plotting in R. The first uses the base graphics, the plotting functionality that comes with every R install, the second is based on `ggplot2`, a package developed by Hadley Wickham, and is again connected to the tidy data concept.  In this class, we are going to focus on base graphics primarily, since we are learning how to code in base R, but it is important that you have an understanding of what `ggplot2` is and how it differs from base graphics, because it is becoming a graphical mainstay, and spatial packages are increasingly relying on it. 
+        + Base graphics: 
+            + Read and *work through the examples* in Rspatial's useful [intro](http://www.rspatial.org/intr/rst/12-plots.html) to base plotting. A note: you will see that when you run the command `plot(cars)` your result is not the same as what is shown in the reading. That's okay. 
+            + Working with the same `cars` dataset in this reading, run the following code: 
+            
+            ```{r, eval = FALSE}
+            # these first 4 lines are the same steps as in the reading
+            data(cars)
+            set.seed(0)
+            brands <- c('Buick', 'Chevrolet', 'Ford')
+            b <- sample(brands, nrow(cars), replace=TRUE)
+            
+            # this is new--we are showing how to add points to an existing plot
+            cars2 <- cars  # We are copying cars to a new dataset
+            cars2$make <- b
+            cols <- c("blue", "green", "red")
+            plot(speed ~ dist, data = cars2[cars2$make == "Buick", ], pch = 20, 
+                 col = cols[1], ylim = c(0, max(cars2$speed)), 
+                 xlim = c(0, max(cars2$dist)))
+            for(i in 2:3) {
+              points(speed ~ dist, data = cars2[cars2$make == brands[i], ], pch = 20, 
+                     col = cols[i])  
+            }
+            legend(90, 10, brands, pch = 20, pt.cex = 1, col = cols, cex = 1,
+                   bty = "n")
+            ```
+            
+            + Dont' just run, but study the code, which provides an example of:
+                + a `for` loop
+                + setting the plot's x and y limits
+                + passing in colors as a variable
+                + defining a plot formula (see the `~`), instead of in the x and y positions. 
+                + The use of `points`.
+                + By changing the values of arguments, or removing them entirely from the code (e.g. the xlim, ylim arguments), you can help gain a deeper understanding of how things work. 
+        + ggplot/grammar of graphics: [A nice short bloggy intro](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/). 
+    + After doing these two readings 
+        + You should know how to: make a simple xy plot with, base graphics, label axes, annotate plots with text, change plot symbols, put multiple plots in one figure, and add a legend
+        + You should have some understanding of: using control structures with plots; how `ggplot` differs from base graphics, and the grammar of graphics concept.  
++ Optional additional information: 
+    + [This](http://shinyapps.org/apps/RGraphCompendium/index.php#miscellaneous) is an excellent reference for many different kinds of plots with code. 
+    + [Intermediate plotting](http://www.cyclismo.org/tutorial/R/intermediatePlotting.html#miscellaneous-options) from Kelly Black's R tutorial. This is a resource you will want to remember, as it tells you some more advanced plotting (multiple plots, putting points on plots, etc.). All of this will come in handy with plotting spatial data. 
+    + The [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) that describes the underlying philosophy of `ggplot`. 
+    + Hadley Wickham's [data visualization tutorial with `ggplot2`](http://r4ds.had.co.nz/visualize.html#undefined). 
+
+<a href="#top">Back to top</a>
+
+# Week 5. Basic analytics
+## Class 8  (25 Sep). Common analyses
+We are going to spend a week looking at some common statistical analysis with R. This is a very short amount of time for a very long topic--statistical analysis is, after all, R's _raison d'etre_--but this quick look from a fast-moving car will help as many of these analyses are applied to spatial objects, or to data extracted from them. 
+
++ Required readings:
+    + Basic statistics: 
+        + R-tutor has a section on simple statistics in the [numerical measures](http://www.r-tutor.com/elementary-statistics/numerical-measures) section. There are links that take you a different page for each of several measures, beginning with "mean" and ending with "kurtosis" (there is a reprise of `boxplot` tucked in here also). Go through all of these, and run the code for the examples. Two notes on this: 
+            + The author has the unpleasant habit of pasting code from the console. That means you have to get rid of the `>` before each line. 
+            + The author also uses `=` as the assignment operator, rather than `<-`. While that works, that is a practice that we discourage as it does not conform to the style guide. 
+        + A very short piece [here](http://rfunction.com/archives/539) brings up four functions that quickly give you sums or means on the columns or rows of matrices or data.frames. Let's learn these with an exercise: 
+            + Create a three column `data.frame` named `dat2`,  with columns "a", "b", and "c", each of which has 1000 randomly selected values (for a, select integers between 0-10, for b, random numbers from a uniform distribution between 0-10, and for c random numbers from a normal distribution with a mean of 5 and an `sd` of 1)
+            + Apply `colSums`, `rowSums`, `colMeans`, `rowMeans` to `dat2`
+            + Do the same calculations, but using the `apply` function instead
+    + Regressions: 
+        + Work through rspatial's [overview](http://www.rspatial.org/intr/rst/13-statmodels.html) of simple linear regression (also known as ordinary least squares [OLS] regression), using the `lm` function, and the more versatile `glm` function. 
+        + This of course assumes that you know what linear regression is and how it works.  If this is new to you, please read this [Beginner's Guide to Regression](https://www.hackerearth.com/practice/machine-learning/machine-learning-algorithms/beginners-guide-regression-analysis-plot-interpretations/tutorial/), which actually includes its own R code and data. However, the explanation of regression is more important. An even more high-level look at OLS is provided by [Harvard Business Review](https://hbr.org/2015/11/a-refresher-on-regression-analysis). 
+    + After doing these readings, you should:
+        + Know the basic statistical functions in R and how to apply them. The purpose of some of them might be less clear if you haven't had stats (e.g. kurtosis, central moment), which is okay. 
+        + Know how to fit a simple regression model, and work with the results, using functions such as `summary`, `plot`, and `predict` (note that this is a fairly typical case of R's S3 system).
++ Optional addition information: A fuller [tutorial](http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html) (by Harvard's Institute for Quantitative Sciences), on OLS regression, including examples of multiple regression (more than one predictor).
+
+## Class 9 (29 Sep). More regression
+
+The readings for this class focuses on running and plotting non-linear and non-parametric regressions. These will come in handy for those of working with time series, or when trying to fit models where there are non-linear relationships between variables. We also have a few exercises/code examples related to skills covered in previous readings. 
+
++ Required readings:
+    + Polynomial regressions, for non-linear fits, by [David Tang](https://davetang.org/muse/2013/05/09/on-curve-fitting/). This reading/tutorial shows how to fit a polynomial regression, that is, a variant of linear regression in which the variable whose values you want to predict has a curvilinear relationship with the predictor variable.  The primary skill you should take out of this reading relates to the plotting aspect: that is, the ability to pull out a curvy line from the results of a polynomial regression and plot it, which is demonstrated in the first two code blocks (pay special attention to the `predict` function). Although not the main skill to take away, the subsequent code blocks are also to be read because they show valuable things to know: how to extract the coefficients from the model, and write a function that uses the coefficients to create a curvey polynomial line.
+    + And then [a short example](http://r-statistics.co/Loess-Regression-With-R.html).
+ of non-parametric regression for non-linear fits. This is similar to the above, in that we are fitting a curvy line to data, but it uses a "non-parametric" approach (basically it cuts up the data into lots of subsets where the values are close to one another in xy space, fits a mini-regression to each subset, and then pieces together the predicted results of each of these mini-regressions to make a single smooth line). Work through this up to the "Optimal Smoothing Span" part (you can do that section if you want to learn a bit more about how one can objectively select the right number of mini-regressions that are used to make the smooth line). Additional note: to run the examples in this, you will need to install the `ggplot2` library if you don't have it (as it contains the dataset used).  
++ Exercises (do before class):
+    + The one given at the end of last class (in the slides for Class 8):
+        + Use `lapply` and `sapply` to calculate the `colSums` (columns "pl", "ra", "mm") for observations where "uuid" contains the values "8424", "166f", "99f9". This means you will have to use the grep approach to subsetting (demonstrated in the Class 8 slides), rather than `farmers[farmers$date == x, c("pl", "ra", "mm")]`
+        + Use `write.csv` to write out the outputs of the `sapply` version of this, where you have the results for "pl", "ra", "mm" as columns, and the partial strings as rows. That means you apply `t` to the resulting object that you direct `sapply` to. I haven't shown you `write.csv` yet, so try and figure this out by adapting examples from the help file for this function (`?write.csv`)
+    + A plotting exercise - working with the `farmer` data.frame (the one we have been using in class), do the following: 
+        + Calculate the sum of the "ra" variable for each unique date in the time series (use `sapply`)
+        + Plot the results against the date. That is, plot the 6 summed values of "ra" (the y variable) against `dates` (see previous in-class exercise), which becomes x. For this to work correctly, you need to first coerce `dates` from a character vector to a date vector. Use `as.Date` to do this. Here's how the date coercion looks, applied to `dates` within the `plot` function, to get you started:
+  
+            ```{r, eval = FALSE}
+            plot(x = as.Date(dates), y = rasum)  # rasum = results of your sapply
+            ```
+    
+        + Change the axis labels on your plot ("date" for the x label, "ra total" for the y label).
+        + Change the points on the graph to a solid cicle (see `?pch`) with a red color. Increase the size of the point (see `?cex`)
++ [Assignment 3](assignment3.html)
+
+<a href="#top">Back to top</a>
+
+# Week 6. Unit 1 wrap-up
+## Class 10 (2 Oct). Trends in R
+
++ Required readings: 
+    + The readings for this class are informational (i.e. simply read rather than read and do), and intended to show some of the development pathways in the R language, which revolve around two clusters of packages that provide improved R performance. We are reading about them here so that you are aware of R's advanced capabilities, and so that you start to think about the types of choices you might make with respect to learning new approaches as you advance in R.  
+    + The first cluster of packages relates to the ___tidy data___ concept that was mentioned in previous readings, which is the philosophy underlying the `tidyverse`. This is a collection of R packages that are designed to be interoperable, and are particularly geared towards data science workflows. [This post](https://rviews.rstudio.com/2017/06/08/what-is-the-tidyverse/) gives a decent enough overview of it. We are not going to learn the any of the `tidyverse` packages in this class, because their syntax is fairly different from base R. More importantly, most of R's spatial packages are built on base, so the geospatial analyst who wishes to use R needs to learn base R. However, I suspect you are eventually going to want to learn at least parts of the `tidyverse`, as it is becoming the most widely used dialect (a term used in the reading) of R. Packages such as `ggplot2` and `readxl` will be immediately useful.
+        + A key part of the `tidyverse` is the ___Grammar of Graphics___, which underpins the `dplyr` package. Read 12.1-12.3 in [this web book](https://bookdown.org/rdpeng/rprogdatascience/managing-data-frames-with-the-dplyr-package.html) by Roger Peng for a quick overview of the "verbs" that make up this grammar.   
+    + The second cluster of packages is really just a single package, `data.table`. Like `dplyr`, `data.table` is designed to make working with `data.frame`s much faster, and `data.table` seems to be the [fastest between](https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping) in comparisons between `dplyr` and its python competitor [`pandas`](http://pandas.pydata.org). However, `data.table` is less versatile than `dplyr` (`dplyr` is designed to connect to more things, like data bases), and my impression is that it is less widely used. It also has a more esoteric syntax, which is substantially different to `dplyr`'s, but the code can be much more compact. That said, I have invested in learning `data.table` rather than `dplyr`, and I now use them to the near complete exclusion of `data.frame`s (and they are great for certain raster and spatial point operations). The [wiki](https://github.com/Rdatatable/data.table/wiki) for `data.table` is probably the best place (despite the ads in it) for getting an overview of what the package does. 
+
++ Exercise to do before class: work through the base graphics section of the `swirl` package.
+
+    ```
+    > library(swirl)
+    ...
+    > swirl()
+    
+    | Welcome to swirl! Please sign in. If you've been here before, use the same
+    | name as you did then. If you are new, call yourself something unique.
+    
+    What shall I call you? <yourname>
+    ...
+    
+    Selection: 3  # Let's get going
+    ...
+    
+    Selecton: 1  # R programming
+    
+    Selection: 15  # Base Graphics
+    ```
+
+
+## Class 11 (4 Oct). Wrap-up
++ Before class: review the [Unit 1 Learning Goals](#unit1goals) below, and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty. 
++ In-class: we will continue where Class 10 left off with plotting, and also look at regressions and plotting predicted fits to data.  
+    
+# Unit 1 Learning Goals {#unit1goals}
+By the end of this unit, you should ___understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments. 
+
+And you should be able to comfortably* ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including *apply* functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
+
+*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works. 
+
+<a href="#top">Back to top</a>
+

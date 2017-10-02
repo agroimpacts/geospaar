@@ -24,30 +24,6 @@ kable(DF)
 
 
 ## ---- eval = FALSE-------------------------------------------------------
-#  # these first 4 lines are the same steps as in the reading
-#  data(cars)
-#  set.seed(0)
-#  brands <- c('Buick', 'Chevrolet', 'Ford')
-#  b <- sample(brands, nrow(cars), replace=TRUE)
-#  
-#  # this is new--we are showing how to add points to an existing plot
-#  cars2 <- cars  # We are copying cars to a new dataset
-#  cars2$make <- b
-#  cols <- c("blue", "green", "red")
-#  plot(speed ~ dist, data = cars2[cars2$make == "Buick", ], pch = 20,
-#       col = cols[1], ylim = c(0, max(cars2$speed)),
-#       xlim = c(0, max(cars2$dist)))
-#  for(i in 2:3) {
-#    points(speed ~ dist, data = cars2[cars2$make == brands[i], ], pch = 20,
-#           col = cols[i])
-#  }
-#  legend(90, 10, brands, pch = 20, pt.cex = 1, col = cols, cex = 1,
-#         bty = "n")
-
-## ---- eval = FALSE-------------------------------------------------------
-#  plot(x = as.Date(dates), y = rasum)  # rasum = results of your sapply
-
-## ---- eval = FALSE-------------------------------------------------------
 #  install.packages("swirl")
 #  library(swirl)
 
