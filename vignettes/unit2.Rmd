@@ -1,0 +1,87 @@
+---
+title: "Unit 2 - Handling and analyzing spatial data with R"
+author: "Lyndon Estes, Zhiwen Zhu"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Unit 2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 38px;
+  <!-- color: DarkRed; -->
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  <!-- color: DarkBlue; -->
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  <!-- color: DarkBlue; -->
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  <!-- font-family: "Times New Roman", Times, serif; -->
+  <!-- color: DarkBlue; -->
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Overview{#unit2overview}
+
+In this unit we finally begin to start working with spatial data. We will learn to use R to do the types of analyses you typically associate with traditional GIS software, such as Idrisi/Terrset, ArcGIS, QGIS, and friends. We will also continue to use and build on the basic R programming and reproducibility skills you learned in [Unit 1](unit1.html). 
+
+Three assignments will be given during this unit. You should also finalize the subject of your final project before the mid-point of this unit, and begin to assemble the data you need to undertake the project, and outline the approach you plan to use. The more effort you put into planning (and even beginning the analysis for) your project, the more R skills you will acquire. Why? Because you will be be thinking about how to make R produce solutions for problems you are interested in solving, which requires more exploration and creativity than simply tackling assignments that I give you. Also, since each of you will be doing different projects, there is more potential for peer-to-peer learning, as each of you will learn about and share different aspects of R.
+
+The learning goals for this unit are as follows - by the end of this unit, you should: 
+
+- ___Understand/know___: the strengths and limitations of working with spatial data in R; possible workarounds for these limitations; the differences between the primary spatial object classes; the three external libraries (GDAL, GEOS, and PROJ.4) that R (and many other GIS) uses to provide spatial capabilities; the fact that R's current `sp`-based classes and methods are in the process of being replaced by [simple features](https://r-spatial.github.io/sf/articles/sf1.html) (via the new `sf` package)
+
+- Be able to do ___the following___: perform basic vector operations (intersections, unions, differences) and manipulations (merges/joins); raster operations (algebra, focal analyses, terrain characteristics) and manipulations (aggregate/disaggregate, resample, reproject); convert rasters to vectors and vice versa; visualize spatial data; extract quantities/statistics from spatial data; run simple spatial models and map their predictions; get help on R-sig-geo (i.e. know how to create a reproducible examples)   
+
+___[under construction]___
+
+# Week 7 - Introduction
+## Class 12 (Oct 9).  
++ Required reading: 
+    + Read the pdf of [Chapter 3]() from Applied Spatial Data Analysis with R, which provides an overview of 
+    
+# Week 8 - Working with vector data
+## Class 13 (Oct 16)
+## Class 14 (Oct 18)
+
+# Week 9 - Working with raster data
+## Class 14 (Oct 23)
+## Class 15 (Oct 25) 
+
+# Week 10 - 
+## Class 16 - Oct 30
+## Class 17 - Nov 1 
+
+
+

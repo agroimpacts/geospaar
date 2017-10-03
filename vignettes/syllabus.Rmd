@@ -14,6 +14,40 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 38px;
+  <!-- color: DarkRed; -->
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  <!-- color: DarkBlue; -->
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  <!-- color: DarkBlue; -->
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  <!-- font-family: "Times New Roman", Times, serif; -->
+  <!-- color: DarkBlue; -->
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
@@ -139,7 +173,7 @@ The following is an overview of the course structure. Note that this structure w
 
 In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
 
-This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html). 
+This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
 
 <a href="#top">Back to top</a>
 
@@ -147,7 +181,7 @@ This syllabus provides the general subject for each week and class. The detailed
 #### Class 1 (28 Aug). The nature and history of R
 
 #### Class 2 (30 Aug). Reproducibility and its components
-[Assignment 1](assignments/assignment1.html)
+- [Assignment 1](assignment1.html)
 
 ### Week 2. Reproducibility Continued
 #### Class 3 (6 Sep). Rmarkdown and more on R packages
@@ -157,33 +191,23 @@ This syllabus provides the general subject for each week and class. The detailed
 #### Class 4 (11 Sep). R bestiary (types, structures, functions, object-orientation)
 
 #### Class 5 (13 Sep). Basic operations, indexing, and control structures
-[Assignment 2](assignment2.html)
-
-<a href="#top">Back to top</a>
+- [Assignment 2](assignment2.html)
 
 ### Week 4. Data preparation and visualization
 #### Class 6 (18 Sep). Working with/manipulating data
 
 #### Class 7 (20 Sep). Visualization 
 
-<a href="#top">Back to top</a>
-
 ### Week 5. Basic analytics
 #### Class 8  (25 Sep). Common analyses: simple statistics and regressions
 
 #### Class 9 (29 Sep). More regression (including non-linear)
+- [Assignment 3](assignment3.html)
 
 ### Week 6. Unit 1 wrap-up
 #### Class 10 (2 Oct). Trends in R
 
 #### Class 11 (4 Oct). Wrap-up
-
-### Unit 1 Learning Goals {#unit1goals}
-By the end of this unit, you should ___understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments. 
-
-And you should be able to comfortably* ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including *apply* functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
-
-*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works. 
 
 <a href="#top">Back to top</a>
 
@@ -228,7 +252,7 @@ library(swirl)
 
 ### Websites
 
-__R-focused__
+__R general__
     
 [CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
 
@@ -256,7 +280,6 @@ __Advanced analytics__
 
 [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
 
-
 __Reproducibility__
 
 [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
@@ -267,12 +290,14 @@ __Reproducibility__
 
 [manuscriptPackage](https://github.com/jhollist/manuscriptPackage): An R package that provides a package template for ___writing a Latex manuscript using Rmarkdown___, complete with citations. 
 
-
 __R versus python__
 
 This is a big topic, but I will post some links here as I find them. 
 
 [Why I'll stick with R](https://md.ekstrandom.net/blog/2016/04/using-r/)
+
+__R spatial__
+[A short R spatial tutorial](https://pakillo.github.io/R-GIS-tutorial/), with some good examples for connecting to Google Maps. 
 
 ### Blogs/tweeps to follow
 

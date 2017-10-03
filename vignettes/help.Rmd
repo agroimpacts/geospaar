@@ -87,16 +87,21 @@ install_github("agroimpacts/geospaR", build_vignettes = TRUE,
 ![](fig/branches.png)
 
 
-3. Delete a branch (if you created one by accident, from shell). Don't do this to your master branch. 
+3. Delete a local branch (if you created one by accident, from shell). Don't do this to your master branch. 
 
     ```{bash, eval = FALSE}
     git branch -d <branchname>
     ```
 
 
-3. Push a branch to your remote GitHub repo
+4. Push a branch to your remote GitHub repo
     ```{bash, eval = FALSE}
     git push origin <branchname>
+    ```
+
+5. Delete a remote branch
+    ```{bash, eval = FALSE}
+    git push origin --delete <branchname>
     ```
 
 

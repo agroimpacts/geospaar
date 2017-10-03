@@ -14,15 +14,60 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 38px;
+  <!-- color: DarkRed; -->
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  <!-- color: DarkBlue; -->
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  <!-- color: DarkBlue; -->
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  <!-- font-family: "Times New Roman", Times, serif; -->
+  <!-- color: DarkBlue; -->
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
 
-# Overview
+# Overview {#unit1overview}
 
-This section provides the detailed syllabus for the first unit of ___GEOG246-346: Geospatial Analysis with R___. Please return to the main  [Syllabus](syllabus.html) for an overview of the entire course. 
+This section provides the detailed syllabus for the first unit of ___GEOG246-346: Geospatial Analysis with R___ (please return to the main  [Syllabus](syllabus.html) for a general course overview). 
+
+In this unit, we will learn the basics of working with R, starting with non-spatial data, as well as additional skills related to ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis. These skills include using version control software (`git` and [github](https://github.com)), creating R packages, and using `Rmarkdown` to document and present your analyses. 
+
+Our learning goals for this unit as are follows--by the end of this unit you should:
+
+- ___Understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments; the evolutionary trajectories emerging in the R language. 
+
+- Be able to comfortably* ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including *apply* functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
+
+    *Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works. 
+
 
 # Week 1. Overview of R and Reproducibility
 ## Class 1 (28 Aug). The nature and history of R
@@ -233,15 +278,9 @@ The readings for this class focuses on running and plotting non-linear and non-p
 
 
 ## Class 11 (4 Oct). Wrap-up
-+ Before class: review the [Unit 1 Learning Goals](#unit1goals) below, and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty. 
++ Before class: review the learning goals in the [Unit 1 overview](#unit1overview), and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty. 
 + In-class: we will continue where Class 10 left off with plotting, and also look at regressions and plotting predicted fits to data.  
     
-# Unit 1 Learning Goals {#unit1goals}
-By the end of this unit, you should ___understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments. 
-
-And you should be able to comfortably* ___do the following___: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including *apply* functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
-
-*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works. 
 
 <a href="#top">Back to top</a>
 
