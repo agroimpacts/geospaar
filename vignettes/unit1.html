@@ -12,9 +12,9 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-10-02" />
+<meta name="date" content="2017-10-03" />
 
-<title>Unit 1</title>
+<title>Unit 1 - Introduction to R and reproducibility skills</title>
 
 
 
@@ -68,34 +68,87 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Unit 1</h1>
+<h1 class="title toc-ignore">Unit 1 - Introduction to R and reproducibility skills</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-10-02</em></h4>
+<h4 class="date"><em>2017-10-03</em></h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#an-introduction-to-r-and-related-reproducibility-skills"><span class="toc-section-number">1</span> <em>An introduction to R and related reproducibility skills</em></a><ul>
-<li><a href="#week-1.-overview-of-r-and-reproducibility"><span class="toc-section-number">1.0.1</span> Week 1. Overview of R and Reproducibility</a></li>
-<li><a href="#week-2.-reproducibility-continued"><span class="toc-section-number">1.0.2</span> Week 2. Reproducibility Continued</a></li>
-<li><a href="#week-3.-r-fundamentals"><span class="toc-section-number">1.0.3</span> Week 3. R fundamentals</a></li>
-<li><a href="#week-4.-data-preparation-and-visualization"><span class="toc-section-number">1.0.4</span> Week 4. Data preparation and visualization</a></li>
-<li><a href="#week-5.-basic-analytics"><span class="toc-section-number">1.0.5</span> Week 5. Basic analytics</a></li>
-<li><a href="#week-6.-unit-1-wrap-up"><span class="toc-section-number">1.0.6</span> Week 6. Unit 1 wrap-up</a></li>
-<li><a href="#unit1goals"><span class="toc-section-number">1.0.7</span> Unit 1 Learning Goals</a></li>
+<li><a href="#unit1overview"><span class="toc-section-number">1</span> Overview</a></li>
+<li><a href="#week-1.-overview-of-r-and-reproducibility"><span class="toc-section-number">2</span> Week 1. Overview of R and Reproducibility</a><ul>
+<li><a href="#class-1-28-aug.-the-nature-and-history-of-r"><span class="toc-section-number">2.1</span> Class 1 (28 Aug). The nature and history of R</a></li>
+<li><a href="#class-2-30-aug.-reproducibility-and-its-components"><span class="toc-section-number">2.2</span> Class 2 (30 Aug). Reproducibility and its components</a></li>
+</ul></li>
+<li><a href="#week-2.-reproducibility-continued"><span class="toc-section-number">3</span> Week 2. Reproducibility Continued</a><ul>
+<li><a href="#class-3-6-sep.-rmarkdown-and-more-on-r-packages"><span class="toc-section-number">3.1</span> Class 3 (6 Sep). Rmarkdown and more on R packages</a></li>
+</ul></li>
+<li><a href="#week-3.-r-fundamentals"><span class="toc-section-number">4</span> Week 3. R fundamentals</a><ul>
+<li><a href="#class-4-11-sep.-r-bestiary"><span class="toc-section-number">4.1</span> Class 4 (11 Sep). R bestiary</a></li>
+<li><a href="#class-5-13-sep.-basic-operations-indexing-and-control-structures"><span class="toc-section-number">4.2</span> Class 5 (13 Sep). Basic operations, indexing, and control structures</a></li>
+</ul></li>
+<li><a href="#week-4.-data-preparation-and-visualization"><span class="toc-section-number">5</span> Week 4. Data preparation and visualization</a><ul>
+<li><a href="#class-6-18-sep.-working-withmanipulating-data"><span class="toc-section-number">5.1</span> Class 6 (18 Sep). Working with/manipulating data</a></li>
+<li><a href="#class-7-20-sep.-visualization"><span class="toc-section-number">5.2</span> Class 7 (20 Sep). Visualization</a></li>
+</ul></li>
+<li><a href="#week-5.-basic-analytics"><span class="toc-section-number">6</span> Week 5. Basic analytics</a><ul>
+<li><a href="#class-8-25-sep.-common-analyses"><span class="toc-section-number">6.1</span> Class 8 (25 Sep). Common analyses</a></li>
+<li><a href="#class-9-29-sep.-more-regression"><span class="toc-section-number">6.2</span> Class 9 (29 Sep). More regression</a></li>
+</ul></li>
+<li><a href="#week-6.-unit-1-wrap-up"><span class="toc-section-number">7</span> Week 6. Unit 1 wrap-up</a><ul>
+<li><a href="#class-10-2-oct.-trends-in-r"><span class="toc-section-number">7.1</span> Class 10 (2 Oct). Trends in R</a></li>
+<li><a href="#class-11-4-oct.-wrap-up"><span class="toc-section-number">7.2</span> Class 11 (4 Oct). Wrap-up</a></li>
 </ul></li>
 </ul>
 </div>
 
-<div id="an-introduction-to-r-and-related-reproducibility-skills" class="section level1">
-<h1><span class="header-section-number">1</span> <em>An introduction to R and related reproducibility skills</em></h1>
-<p>In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster <strong><em>reproducibility</em></strong>, which can be loosely defined as the ability for you and others to <em>easily</em> repeat the steps of your analysis. including the use of <code>git</code> and <a href="https://github.com">github</a>, how to create an R package, and the use of <code>Rmarkdown</code> to document and present your analyses.</p>
-<p>This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying <a href="unit1.html">Unit 1 vignette</a>.</p>
-<p><a href="#top">Back to top</a></p>
-<div id="week-1.-overview-of-r-and-reproducibility" class="section level3">
-<h3><span class="header-section-number">1.0.1</span> Week 1. Overview of R and Reproducibility</h3>
-<div id="class-1-28-aug.-the-nature-and-history-of-r" class="section level4">
-<h4><span class="header-section-number">1.0.1.1</span> Class 1 (28 Aug). The nature and history of R</h4>
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 38px;
+  <!-- color: DarkRed; -->
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  <!-- color: DarkBlue; -->
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  <!-- color: DarkBlue; -->
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  <!-- font-family: "Times New Roman", Times, serif; -->
+  <!-- color: DarkBlue; -->
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+<div id="unit1overview" class="section level1">
+<h1><span class="header-section-number">1</span> Overview</h1>
+<p>This section provides the detailed syllabus for the first unit of <strong><em>GEOG246-346: Geospatial Analysis with R</em></strong> (please return to the main <a href="syllabus.html">Syllabus</a> for a general course overview).</p>
+<p>In this unit, we will learn the basics of working with R, starting with non-spatial data, as well as additional skills related to <strong><em>reproducibility</em></strong>, which can be loosely defined as the ability for you and others to <em>easily</em> repeat the steps of your analysis. These skills include using version control software (<code>git</code> and <a href="https://github.com">github</a>), creating R packages, and using <code>Rmarkdown</code> to document and present your analyses.</p>
+<p>Our learning goals for this unit as are follows–by the end of this unit you should:</p>
+<ul>
+<li><p><strong><em>Understand</em></strong>: R’s origins and its strengths and weaknesses; the concept of reproducibility and R’s role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R’s data type and structures, objects, classes, and environments; the evolutionary trajectories emerging in the R language.</p></li>
+<li><p>Be able to comfortably* <strong><em>do the following</em></strong>: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including <em>apply</em> functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our <a href="http://adv-r.had.co.nz/Style.html">selected R style guide</a></p>
+<p>*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works.</p></li>
+</ul>
+</div>
+<div id="week-1.-overview-of-r-and-reproducibility" class="section level1">
+<h1><span class="header-section-number">2</span> Week 1. Overview of R and Reproducibility</h1>
+<div id="class-1-28-aug.-the-nature-and-history-of-r" class="section level2">
+<h2><span class="header-section-number">2.1</span> Class 1 (28 Aug). The nature and history of R</h2>
 <ul>
 <li>Readings:
 <ul>
@@ -116,8 +169,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul>
 </div>
-<div id="class-2-30-aug.-reproducibility-and-its-components" class="section level4">
-<h4><span class="header-section-number">1.0.1.2</span> Class 2 (30 Aug). Reproducibility and its components</h4>
+<div id="class-2-30-aug.-reproducibility-and-its-components" class="section level2">
+<h2><span class="header-section-number">2.2</span> Class 2 (30 Aug). Reproducibility and its components</h2>
 <ul>
 <li>Readings:
 <ul>
@@ -132,15 +185,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>…and use git and GitHub with R and Rstudio: Read <a href="http://r-pkgs.had.co.nz/git.html#git">this</a>, <a href="https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control">this</a>, and <a href="https://jahya.net/blog/git-vs-github/">this</a>.<br />
 </li>
 </ul></li>
-<li><a href="assignments/assignment1.html">Assignment 1</a>. Note that this first assignment is the exception to the rule, in that it is assigned Wednesday but due the <em>following</em> Friday, because of Labor Day.</li>
+<li><a href="assignment1.html">Assignment 1</a>. Note that this first assignment is the exception to the rule, in that it is assigned Wednesday but due the <em>following</em> Friday, because of Labor Day.</li>
 </ul>
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
-<div id="week-2.-reproducibility-continued" class="section level3">
-<h3><span class="header-section-number">1.0.2</span> Week 2. Reproducibility Continued</h3>
-<div id="class-3-6-sep.-rmarkdown-and-more-on-r-packages" class="section level4">
-<h4><span class="header-section-number">1.0.2.1</span> Class 3 (6 Sep). Rmarkdown and more on R packages</h4>
+<div id="week-2.-reproducibility-continued" class="section level1">
+<h1><span class="header-section-number">3</span> Week 2. Reproducibility Continued</h1>
+<div id="class-3-6-sep.-rmarkdown-and-more-on-r-packages" class="section level2">
+<h2><span class="header-section-number">3.1</span> Class 3 (6 Sep). Rmarkdown and more on R packages</h2>
 <ul>
 <li>Readings:
 <ul>
@@ -157,11 +210,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 </div>
 </div>
-<div id="week-3.-r-fundamentals" class="section level3">
-<h3><span class="header-section-number">1.0.3</span> Week 3. R fundamentals</h3>
+<div id="week-3.-r-fundamentals" class="section level1">
+<h1><span class="header-section-number">4</span> Week 3. R fundamentals</h1>
 <p><a href="#top">Back to top</a></p>
-<div id="class-4-11-sep.-r-bestiary" class="section level4">
-<h4><span class="header-section-number">1.0.3.1</span> Class 4 (11 Sep). R bestiary</h4>
+<div id="class-4-11-sep.-r-bestiary" class="section level2">
+<h2><span class="header-section-number">4.1</span> Class 4 (11 Sep). R bestiary</h2>
 <ul>
 <li>Readings:
 <ul>
@@ -175,8 +228,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul>
 </div>
-<div id="class-5-13-sep.-basic-operations-indexing-and-control-structures" class="section level4">
-<h4><span class="header-section-number">1.0.3.2</span> Class 5 (13 Sep). Basic operations, indexing, and control structures</h4>
+<div id="class-5-13-sep.-basic-operations-indexing-and-control-structures" class="section level2">
+<h2><span class="header-section-number">4.2</span> Class 5 (13 Sep). Basic operations, indexing, and control structures</h2>
 <ul>
 <li>Readings:
 <ul>
@@ -198,10 +251,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
-<div id="week-4.-data-preparation-and-visualization" class="section level3">
-<h3><span class="header-section-number">1.0.4</span> Week 4. Data preparation and visualization</h3>
-<div id="class-6-18-sep.-working-withmanipulating-data" class="section level4">
-<h4><span class="header-section-number">1.0.4.1</span> Class 6 (18 Sep). Working with/manipulating data</h4>
+<div id="week-4.-data-preparation-and-visualization" class="section level1">
+<h1><span class="header-section-number">5</span> Week 4. Data preparation and visualization</h1>
+<div id="class-6-18-sep.-working-withmanipulating-data" class="section level2">
+<h2><span class="header-section-number">5.1</span> Class 6 (18 Sep). Working with/manipulating data</h2>
 <ul>
 <li>Required readings: (reminder, work through examples in readings unless otherwise indicated–coding is best learned through doing)
 <ul>
@@ -225,8 +278,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul></li>
 </ul>
 </div>
-<div id="class-7-20-sep.-visualization" class="section level4">
-<h4><span class="header-section-number">1.0.4.2</span> Class 7 (20 Sep). Visualization</h4>
+<div id="class-7-20-sep.-visualization" class="section level2">
+<h2><span class="header-section-number">5.2</span> Class 7 (20 Sep). Visualization</h2>
 <ul>
 <li>Be prepared to do, in class, an exercise in which we:
 <ul>
@@ -292,10 +345,10 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
-<div id="week-5.-basic-analytics" class="section level3">
-<h3><span class="header-section-number">1.0.5</span> Week 5. Basic analytics</h3>
-<div id="class-8-25-sep.-common-analyses" class="section level4">
-<h4><span class="header-section-number">1.0.5.1</span> Class 8 (25 Sep). Common analyses</h4>
+<div id="week-5.-basic-analytics" class="section level1">
+<h1><span class="header-section-number">6</span> Week 5. Basic analytics</h1>
+<div id="class-8-25-sep.-common-analyses" class="section level2">
+<h2><span class="header-section-number">6.1</span> Class 8 (25 Sep). Common analyses</h2>
 <p>We are going to spend a week looking at some common statistical analysis with R. This is a very short amount of time for a very long topic–statistical analysis is, after all, R’s <em>raison d’etre</em>–but this quick look from a fast-moving car will help as many of these analyses are applied to spatial objects, or to data extracted from them.</p>
 <ul>
 <li>Required readings:
@@ -328,8 +381,8 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <li>Optional addition information: A fuller <a href="http://tutorials.iq.harvard.edu/R/Rstatistics/Rstatistics.html">tutorial</a> (by Harvard’s Institute for Quantitative Sciences), on OLS regression, including examples of multiple regression (more than one predictor).</li>
 </ul>
 </div>
-<div id="class-9-29-sep.-more-regression" class="section level4">
-<h4><span class="header-section-number">1.0.5.2</span> Class 9 (29 Sep). More regression</h4>
+<div id="class-9-29-sep.-more-regression" class="section level2">
+<h2><span class="header-section-number">6.2</span> Class 9 (29 Sep). More regression</h2>
 <p>The readings for this class focuses on running and plotting non-linear and non-parametric regressions. These will come in handy for those of working with time series, or when trying to fit models where there are non-linear relationships between variables. We also have a few exercises/code examples related to skills covered in previous readings.</p>
 <ul>
 <li>Required readings:
@@ -359,10 +412,10 @@ for(i in <span class="dv">2</span>:<span class="dv">3</span>) {
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>
-<div id="week-6.-unit-1-wrap-up" class="section level3">
-<h3><span class="header-section-number">1.0.6</span> Week 6. Unit 1 wrap-up</h3>
-<div id="class-10-2-oct.-trends-in-r" class="section level4">
-<h4><span class="header-section-number">1.0.6.1</span> Class 10 (2 Oct). Trends in R</h4>
+<div id="week-6.-unit-1-wrap-up" class="section level1">
+<h1><span class="header-section-number">7</span> Week 6. Unit 1 wrap-up</h1>
+<div id="class-10-2-oct.-trends-in-r" class="section level2">
+<h2><span class="header-section-number">7.1</span> Class 10 (2 Oct). Trends in R</h2>
 <ul>
 <li>Required readings:
 <ul>
@@ -394,19 +447,12 @@ Selecton: 1  # R programming
 Selection: 15  # Base Graphics</code></pre></li>
 </ul>
 </div>
-<div id="class-11-4-oct.-wrap-up" class="section level4">
-<h4><span class="header-section-number">1.0.6.2</span> Class 11 (4 Oct). Wrap-up</h4>
+<div id="class-11-4-oct.-wrap-up" class="section level2">
+<h2><span class="header-section-number">7.2</span> Class 11 (4 Oct). Wrap-up</h2>
 <ul>
-<li>Before class: review the <a href="#unit1goals">Unit 1 Learning Goals</a> below, and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty.</li>
+<li>Before class: review the learning goals in the <a href="#unit1overview">Unit 1 overview</a>, and assess your own knowledge and skills against them. Bring questions regarding areas of uncertainty.</li>
 <li>In-class: we will continue where Class 10 left off with plotting, and also look at regressions and plotting predicted fits to data.</li>
 </ul>
-</div>
-</div>
-<div id="unit1goals" class="section level3">
-<h3><span class="header-section-number">1.0.7</span> Unit 1 Learning Goals</h3>
-<p>By the end of this unit, you should <strong><em>understand</em></strong>: R’s origins and its strengths and weaknesses; the concept of reproducibility and R’s role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R’s data type and structures, objects, classes, and environments.</p>
-<p>And you should be able to comfortably* <strong><em>do the following</em></strong>: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including <em>apply</em> functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our <a href="http://adv-r.had.co.nz/Style.html">selected R style guide</a></p>
-<p>*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works.</p>
 <p><a href="#top">Back to top</a></p>
 </div>
 </div>

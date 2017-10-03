@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-10-02" />
+<meta name="date" content="2017-10-03" />
 
 <title>Geography 246/346 Syllabus</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Geography 246/346 Syllabus</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-10-02</em></h4>
+<h4 class="date"><em>2017-10-03</em></h4>
 
 
 <div id="TOC">
@@ -93,17 +93,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#week-4.-data-preparation-and-visualization"><span class="toc-section-number">2.1.4</span> Week 4. Data preparation and visualization</a></li>
 <li><a href="#week-5.-basic-analytics"><span class="toc-section-number">2.1.5</span> Week 5. Basic analytics</a></li>
 <li><a href="#week-6.-unit-1-wrap-up"><span class="toc-section-number">2.1.6</span> Week 6. Unit 1 wrap-up</a></li>
-<li><a href="#unit1goals"><span class="toc-section-number">2.1.7</span> Unit 1 Learning Goals</a></li>
 </ul></li>
 <li><a href="#unit-2.-handling-and-analyzing-spatial-data-with-r"><span class="toc-section-number">2.2</span> Unit 2. Handling and analyzing spatial data with R</a><ul>
-<li><a href="#week-6-oct-9."><span class="toc-section-number">2.2.1</span> Week 6 (Oct 9).</a></li>
-<li><a href="#week-7-oct-16-18."><span class="toc-section-number">2.2.2</span> Week 7 (Oct 16, 18).</a></li>
-<li><a href="#week-8-oct-23-25."><span class="toc-section-number">2.2.3</span> Week 8 (Oct 23, 25).</a></li>
-<li><a href="#week-9-oct-30-nov-1."><span class="toc-section-number">2.2.4</span> Week 9 (Oct 30, Nov 1).</a></li>
-<li><a href="#week-10-nov-6-nov-8."><span class="toc-section-number">2.2.5</span> Week 10 (Nov 6, Nov 8). <!-- Visualization --></a></li>
+<li><a href="#week-7-oct-9."><span class="toc-section-number">2.2.1</span> Week 7 (Oct 9).</a></li>
+<li><a href="#week-8-oct-16-18."><span class="toc-section-number">2.2.2</span> Week 8 (Oct 16, 18).</a></li>
+<li><a href="#week-9-oct-23-25."><span class="toc-section-number">2.2.3</span> Week 9 (Oct 23, 25).</a></li>
+<li><a href="#week-10-oct-30-nov-1."><span class="toc-section-number">2.2.4</span> Week 10 (Oct 30, Nov 1).</a></li>
+<li><a href="#week-11-nov-6-nov-8."><span class="toc-section-number">2.2.5</span> Week 11 (Nov 6, Nov 8). <!-- Visualization --></a></li>
 </ul></li>
 <li><a href="#unit-3.-projects"><span class="toc-section-number">2.3</span> Unit 3. Projects</a><ul>
-<li><a href="#weeks-11-13."><span class="toc-section-number">2.3.1</span> Weeks 11-13.</a></li>
+<li><a href="#weeks-12-13."><span class="toc-section-number">2.3.1</span> Weeks 12-13.</a></li>
 <li><a href="#weeks-14-15."><span class="toc-section-number">2.3.2</span> Weeks 14-15.</a></li>
 </ul></li>
 </ul></li>
@@ -117,6 +116,38 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 </div>
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 38px;
+  <!-- color: DarkRed; -->
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  <!-- color: DarkBlue; -->
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  <!-- color: DarkBlue; -->
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  <!-- font-family: "Times New Roman", Times, serif; -->
+  <!-- color: DarkBlue; -->
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
 <div id="overview" class="section level1">
 <h1><span class="header-section-number">1</span> Overview</h1>
 <p>Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA). Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem.</p>
@@ -288,7 +319,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="unit-1.-an-introduction-to-r-and-related-reproducibility-skills" class="section level2">
 <h2><span class="header-section-number">2.1</span> Unit 1. <em>An introduction to R and related reproducibility skills</em></h2>
 <p>In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster <strong><em>reproducibility</em></strong>, which can be loosely defined as the ability for you and others to <em>easily</em> repeat the steps of your analysis. including the use of <code>git</code> and <a href="https://github.com">github</a>, how to create an R package, and the use of <code>Rmarkdown</code> to document and present your analyses.</p>
-<p>This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying Unit 1 vignette.</p>
+<p>This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying <a href="unit1.html">Unit 1 vignette</a>, as well as the overall learning goals for the unit.</p>
 <p><a href="#top">Back to top</a></p>
 <div id="week-1.-overview-of-r-and-reproducibility" class="section level3">
 <h3><span class="header-section-number">2.1.1</span> Week 1. Overview of R and Reproducibility</h3>
@@ -297,7 +328,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="class-2-30-aug.-reproducibility-and-its-components" class="section level4">
 <h4><span class="header-section-number">2.1.1.2</span> Class 2 (30 Aug). Reproducibility and its components</h4>
-<p><a href="assignments/assignment1.html">Assignment 1</a></p>
+<ul>
+<li><a href="assignment1.html">Assignment 1</a></li>
+</ul>
 </div>
 </div>
 <div id="week-2.-reproducibility-continued" class="section level3">
@@ -313,8 +346,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="class-5-13-sep.-basic-operations-indexing-and-control-structures" class="section level4">
 <h4><span class="header-section-number">2.1.3.2</span> Class 5 (13 Sep). Basic operations, indexing, and control structures</h4>
-<p><a href="assignment2.html">Assignment 2</a></p>
-<p><a href="#top">Back to top</a></p>
+<ul>
+<li><a href="assignment2.html">Assignment 2</a></li>
+</ul>
 </div>
 </div>
 <div id="week-4.-data-preparation-and-visualization" class="section level3">
@@ -324,7 +358,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="class-7-20-sep.-visualization" class="section level4">
 <h4><span class="header-section-number">2.1.4.2</span> Class 7 (20 Sep). Visualization</h4>
-<p><a href="#top">Back to top</a></p>
 </div>
 </div>
 <div id="week-5.-basic-analytics" class="section level3">
@@ -334,6 +367,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="class-9-29-sep.-more-regression-including-non-linear" class="section level4">
 <h4><span class="header-section-number">2.1.5.2</span> Class 9 (29 Sep). More regression (including non-linear)</h4>
+<ul>
+<li><a href="assignment3.html">Assignment 3</a></li>
+</ul>
 </div>
 </div>
 <div id="week-6.-unit-1-wrap-up" class="section level3">
@@ -343,41 +379,35 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="class-11-4-oct.-wrap-up" class="section level4">
 <h4><span class="header-section-number">2.1.6.2</span> Class 11 (4 Oct). Wrap-up</h4>
-</div>
-</div>
-<div id="unit1goals" class="section level3">
-<h3><span class="header-section-number">2.1.7</span> Unit 1 Learning Goals</h3>
-<p>By the end of this unit, you should <strong><em>understand</em></strong>: R’s origins and its strengths and weaknesses; the concept of reproducibility and R’s role within that; how R, Rstudio, GitHub, and Rmarkdown play together; R’s data type and structures, objects, classes, and environments.</p>
-<p>And you should be able to comfortably* <strong><em>do the following</em></strong>: create a Git repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic R package; read and write data in R; use control structures (including <em>apply</em> functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our <a href="http://adv-r.had.co.nz/Style.html">selected R style guide</a></p>
-<p>*Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works.</p>
 <p><a href="#top">Back to top</a></p>
+</div>
 </div>
 </div>
 <div id="unit-2.-handling-and-analyzing-spatial-data-with-r" class="section level2">
 <h2><span class="header-section-number">2.2</span> Unit 2. Handling and analyzing spatial data with R</h2>
 <p>Three assignments are planned for this unit. Materials will cover topics such as: vector and raster data classes; workhorse libraries and functions; basic vector operations (intersections, unions, differences) and manipulations (merges/joins); raster operations (algebra, focal analyses, terrain characteristics) and manipulations (aggregate/disaggregate, resample, reproject); spatial models and analysis; visualization/plotting; how to get help on R-sig-geo (creating reproducible examples); introduction to advanced (e.g. data.table) and emerging approaches (the <code>sf</code> package as replacement for <code>sp</code>).</p>
 <p><strong><em>[under construction]</em></strong></p>
-<div id="week-6-oct-9." class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Week 6 (Oct 9).</h3>
+<div id="week-7-oct-9." class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Week 7 (Oct 9).</h3>
 </div>
-<div id="week-7-oct-16-18." class="section level3">
-<h3><span class="header-section-number">2.2.2</span> Week 7 (Oct 16, 18).</h3>
+<div id="week-8-oct-16-18." class="section level3">
+<h3><span class="header-section-number">2.2.2</span> Week 8 (Oct 16, 18).</h3>
 </div>
-<div id="week-8-oct-23-25." class="section level3">
-<h3><span class="header-section-number">2.2.3</span> Week 8 (Oct 23, 25).</h3>
+<div id="week-9-oct-23-25." class="section level3">
+<h3><span class="header-section-number">2.2.3</span> Week 9 (Oct 23, 25).</h3>
 </div>
-<div id="week-9-oct-30-nov-1." class="section level3">
-<h3><span class="header-section-number">2.2.4</span> Week 9 (Oct 30, Nov 1).</h3>
+<div id="week-10-oct-30-nov-1." class="section level3">
+<h3><span class="header-section-number">2.2.4</span> Week 10 (Oct 30, Nov 1).</h3>
 </div>
-<div id="week-10-nov-6-nov-8." class="section level3">
-<h3><span class="header-section-number">2.2.5</span> Week 10 (Nov 6, Nov 8). <!-- Visualization --></h3>
+<div id="week-11-nov-6-nov-8." class="section level3">
+<h3><span class="header-section-number">2.2.5</span> Week 11 (Nov 6, Nov 8). <!-- Visualization --></h3>
 <!-- ### Key takeaways/skills -->
 </div>
 </div>
 <div id="unit-3.-projects" class="section level2">
 <h2><span class="header-section-number">2.3</span> Unit 3. Projects</h2>
-<div id="weeks-11-13." class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Weeks 11-13.</h3>
+<div id="weeks-12-13." class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Weeks 12-13.</h3>
 <p>Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps <em>that week</em>, depending on how much time this ends up taking away from actual work).</p>
 </div>
 <div id="weeks-14-15." class="section level3">
@@ -401,7 +431,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2><span class="header-section-number">3.2</span> The intertubes</h2>
 <div id="websites" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Websites</h3>
-<p><strong>R-focused</strong></p>
+<p><strong>R general</strong></p>
 <p><a href="https://cran.r-project.org">CRAN</a>, particularly an <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html">Introduction to R</a> the Task view <a href="https://cran.r-project.org/web/views/Spatial.html">Analysis of Spatial Data</a></p>
 <p><a href="http://www.r-exercises.com">R Exercises</a></p>
 <p><a href="https://ropensci.org">ROpenSci</a></p>
@@ -423,6 +453,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>R versus python</strong></p>
 <p>This is a big topic, but I will post some links here as I find them.</p>
 <p><a href="https://md.ekstrandom.net/blog/2016/04/using-r/">Why I’ll stick with R</a></p>
+<p><strong>R spatial</strong> <a href="https://pakillo.github.io/R-GIS-tutorial/">A short R spatial tutorial</a>, with some good examples for connecting to Google Maps.</p>
 </div>
 <div id="blogstweeps-to-follow" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Blogs/tweeps to follow</h3>

@@ -217,16 +217,16 @@ Three assignments are planned for this unit. Materials will cover topics such as
 
 ___[under construction]___
 
-### Week 6 (Oct 9). 
-### Week 7 (Oct 16, 18). 
-### Week 8 (Oct 23, 25). 
-### Week 9 (Oct 30, Nov 1). 
-### Week 10 (Nov 6, Nov 8). <!-- Visualization -->
+### Week 7 (Oct 9). 
+### Week 8 (Oct 16, 18). 
+### Week 9 (Oct 23, 25). 
+### Week 10 (Oct 30, Nov 1). 
+### Week 11 (Nov 6, Nov 8). <!-- Visualization -->
 <!-- ### Key takeaways/skills -->
 
 ## Unit 3. Projects
 
-### Weeks 11-13. 
+### Weeks 12-13. 
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
 
 ### Weeks 14-15. 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes" />
 
-<meta name="date" content="2017-09-29" />
+<meta name="date" content="2017-10-03" />
 
 <title>Help Files</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Help Files</h1>
 <h4 class="author"><em>Lyndon Estes</em></h4>
-<h4 class="date"><em>2017-09-29</em></h4>
+<h4 class="date"><em>2017-10-03</em></h4>
 
 
 
@@ -127,10 +127,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 </div>
 <ol start="3" style="list-style-type: decimal">
-<li><p>Delete a branch (if you created one by accident, from shell). Don’t do this to your master branch.</p>
+<li><p>Delete a local branch (if you created one by accident, from shell). Don’t do this to your master branch.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> branch -d <span class="kw">&lt;</span>branchname<span class="kw">&gt;</span></code></pre></div></li>
 <li><p>Push a branch to your remote GitHub repo</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> push origin <span class="kw">&lt;</span>branchname<span class="kw">&gt;</span></code></pre></div></li>
+<li><p>Delete a remote branch</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> push origin --delete <span class="kw">&lt;</span>branchname<span class="kw">&gt;</span></code></pre></div></li>
 </ol>
 </div>
 </div>
