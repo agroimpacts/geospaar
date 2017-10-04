@@ -130,7 +130,7 @@ Let's fit a regression between N farmers planting per date, and the total rainfa
 ```{r}
 pl_lm <- lm(pl ~ mm, data = farmers2)
 # summary(pl_lm)
-# coef(pl_lm)
+coef(pl_lm)
 ```
 
 ## Plot `lm` predictions, three ways
@@ -201,14 +201,20 @@ titles <-c("N farmers who planted", "N farmers reporting rain",
 par(mfrow = c(1, 3))
 for(i in 1:length(inms)) {  # i = 2
   x <- farmers2[, inms[i]]
+  # x <- farmers2[, i + 1]
   hist(x, col = cols[i], xlab = xnms[i], main = titles[i])
 }
 
 # loess
 farmers2$n <- 1:nrow(farmers2)
+
 pl_lo <- loess(pl ~ mm, data = farmers2)
+# pl_lm <- lm(pl ~ mm, data = farmers2)
+
 plot(pl ~ mm, data = farmers2)
-lines(dummy, predict(pl_lo, newdata = data.frame("mm" = dummy)))
+lines(dummy, predict(pl_lo, newdata = data.frame("mm" = dummy)), 
+      col = "red")
+abline(pl_lm)
 ```
 
 ```
