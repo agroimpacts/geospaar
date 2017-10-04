@@ -215,11 +215,13 @@ This syllabus provides the general subject for each week and class. The detailed
 
 ## Unit 2. Handling and analyzing spatial data with R
 
-Three assignments are planned for this unit. Materials will cover topics such as: vector and raster data classes; workhorse libraries and functions; basic vector operations (intersections, unions, differences) and manipulations (merges/joins); raster operations (algebra, focal analyses, terrain characteristics) and manipulations (aggregate/disaggregate, resample, reproject); spatial models and analysis; visualization/plotting; how to get help on R-sig-geo (creating reproducible examples); introduction to advanced (e.g. data.table) and emerging approaches (the `sf` package as replacement for `sp`).   
+In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
+
+### Week 7. Introduction
+#### Class 12 (Oct 9) - Spatial data classes
 
 ___[under construction]___
 
-### Week 7 (Oct 9). 
 ### Week 8 (Oct 16, 18). 
 ### Week 9 (Oct 23, 25). 
 ### Week 10 (Oct 30, Nov 1). 
