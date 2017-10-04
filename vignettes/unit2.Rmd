@@ -69,7 +69,26 @@ ___[under construction]___
 # Week 7 - Introduction
 ## Class 12 (Oct 9).  
 + Required reading: 
-    + Read the pdf of [Chapter 3]() from Applied Spatial Data Analysis with R, which provides an overview of 
+    + Read the scanned pdf of Chapter 3 from Applied Spatial Data Analysis with R, which you can get by download from this [link](http://bit.ly/2gb85kl) (please let me know if this doesn't work). This is primarily a reading assignment (but see next bullet point)--focus on learning about the different types of spatial objects and methods, beginning with section 3, and particularly regarding the different ways that spatial objects are structured, building in complexity from the simplest `Spatial` class up through `SpatialPoints*`, then `SpatialLines*`, and then `SpatialPolygons*` for vectors, and how `data.frame`s are associated with each. For rasters, understand the differences between `SpatialGrids*`, `SpatialPixels*`, and `raster` classes. You also want to pay attention to key "slots" in these various S4 classes (e.g. "bbox", "proj4string", "coords", "data") and the methods that are used to query slots (e.g. `bbox`, `proj4string`, `coordinates`, `slot` [note this list of methods is not a 1:1 map to slots]). 
+    + There is code and data associated with this chapter. Because there is a lot of it, you are not expected to work through it all. However, you are expected to try at least some of it, particularly where you are building up simple spatial objects (up through `SpatialPoints*`, so 2.3-2.4), and in the section (2.8) on the `raster` package, where you have to read in and query basic properties of the raster (up until the code block containing the `writeStart` function in it on page 55--which you can of course do if you are interested). For speed, it is always easiest to copy, paste, and adapt code. However, that is tough to do out of the pdf. Fortunately, all the code and data that accompany this chapter can be accessed as follows: 
+
+        ```{r, eval = FALSE}
+        # change the directory to something you want 
+        my_zip_path <- "~/Desktop/"
+        url <- "http://www.asdar-book.org/bundles2ed/cm_bundle.zip"
+        download.file(url, destfile = paste0(my_zip_path, "cm_bundle.zip"))
+        unzip(paste0(my_zip_path, "cm_bundle.zip"), 
+        exdir = paste0(my_zip_path, "asdar"))
+        setwd(paste0(my_zip_path, "asdar"))
+        ```
+
+
+
+        `cm_mod.R` in the resulting folder contains the code chunks that correspond to what's printed in the chapter, so you can copy and paste out of there, and you will find the datasets that the chapter works with in the unzipped folder. If for some reason the code above does not work for you, then you can manually download and unzip the files from [here](http://www.asdar-book.org/data2ed.php?chapter=1). 
+    
++ Do before class (you will need `raster` for the reading also):
+    + install the following packages: `rgdal`, `raster`, `rgeos`
+    
     
 # Week 8 - Working with vector data
 ## Class 13 (Oct 16)

@@ -3,11 +3,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 
 ## ---- echo = FALSE-------------------------------------------------------
-mat <- rbind(c("Practical assignments (n=6)", "30% of grade", "20% of grade"), 
-            c("Oral presentation of semester project", "20% of grade", 
-              "30% of grade"),
-            c("Final report on semester project", "40% of grade", 
-              "40% of grade"))
+# a <- c(20, 30, 40)
+# a / sum(a)
+mat <- rbind(c("Practical assignments (n=6)", "33% of grade", "22% of grade"), 
+            c("Oral presentation of semester project", "22% of grade", 
+              "33% of grade"),
+            c("Final report on semester project", "45% of grade", 
+              "45% of grade"))
 colnames(mat) <- c("Component", "GEOG246", "GEOG346")
 kable(mat)                 
 
