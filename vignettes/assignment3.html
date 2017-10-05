@@ -79,15 +79,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#task-1"><span class="toc-section-number">2.2</span> Task 1</a></li>
 <li><a href="#task-2"><span class="toc-section-number">2.3</span> Task 2</a></li>
 <li><a href="#task-3"><span class="toc-section-number">2.4</span> Task 3</a></li>
-<li><a href="#task-3-1"><span class="toc-section-number">2.5</span> Task 3</a></li>
-<li><a href="#task-4"><span class="toc-section-number">2.6</span> Task 4</a></li>
-<li><a href="#task-5"><span class="toc-section-number">2.7</span> Task 5</a></li>
-<li><a href="#task-6"><span class="toc-section-number">2.8</span> Task 6</a></li>
-<li><a href="#task-7"><span class="toc-section-number">2.9</span> Task 7</a></li>
-<li><a href="#task-8"><span class="toc-section-number">2.10</span> Task 8</a></li>
-<li><a href="#task-9"><span class="toc-section-number">2.11</span> Task 9</a></li>
-<li><a href="#task-10"><span class="toc-section-number">2.12</span> Task 10</a></li>
-<li><a href="#task-11"><span class="toc-section-number">2.13</span> Task 11</a></li>
+<li><a href="#task-4"><span class="toc-section-number">2.5</span> Task 4</a></li>
+<li><a href="#task-5"><span class="toc-section-number">2.6</span> Task 5</a></li>
+<li><a href="#task-6"><span class="toc-section-number">2.7</span> Task 6</a></li>
+<li><a href="#task-7"><span class="toc-section-number">2.8</span> Task 7</a></li>
+<li><a href="#task-8"><span class="toc-section-number">2.9</span> Task 8</a></li>
+<li><a href="#task-9"><span class="toc-section-number">2.10</span> Task 9</a></li>
+<li><a href="#task-10"><span class="toc-section-number">2.11</span> Task 10</a></li>
+<li><a href="#task-11"><span class="toc-section-number">2.12</span> Task 11</a></li>
+<li><a href="#task-12"><span class="toc-section-number">2.13</span> Task 12</a></li>
 <li><a href="#extra-credit-5-points"><span class="toc-section-number">2.14</span> Extra credit (5 points)</a></li>
 </ul></li>
 </ul>
@@ -128,8 +128,8 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 <h2><span class="header-section-number">2.4</span> Task 3</h2>
 <p>Let’s start off with a simple evalution of statistics in the <code>farmers</code> dataset. Use the <code>apply</code> function to calculate the <code>mean</code> of the “pl”, “ra”, and “mm” columns in <code>farmers</code>. Do the same, but this time find the <code>range</code> of values in those three columns. Rather than having the results print after the operation, direct the outputs into objects, named <code>farm_mu</code> (for the first operation) and <code>farm_rng</code> for the second one.</p>
 </div>
-<div id="task-3-1" class="section level2">
-<h2><span class="header-section-number">2.5</span> Task 3</h2>
+<div id="task-4" class="section level2">
+<h2><span class="header-section-number">2.5</span> Task 4</h2>
 <p>Having done that now, let’s combine these two output objects into a single data.frame.</p>
 <ul>
 <li>Use <code>rbind</code> to join the two output objects by row (put <code>farm_mu</code> first), creating a new object called <code>farm_stat</code>.</li>
@@ -148,13 +148,13 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 ## 2   min 0.0000000 0.0000000  0.00000
 ## 3   max 1.0000000 1.0000000 39.00000</code></pre>
 </div>
-<div id="task-4" class="section level2">
-<h2><span class="header-section-number">2.6</span> Task 4</h2>
+<div id="task-5" class="section level2">
+<h2><span class="header-section-number">2.6</span> Task 5</h2>
 <p>Having done that now, I want you to recreate the exact same results, but using a single operation of <code>sapply</code> to get the <code>mean</code> and <code>range</code> of those three columns of <code>farmers</code>. That means you have to calculate <code>mean</code> and <code>range</code> within the body of the <code>sapply</code>, and join their results (think <code>c</code>) in the last step in the sequence of commands that are in the <code>sapply</code> body. Name the output of this <code>farm_stat2</code>. Finish by doing the same <code>cbind.data.frame</code> step with <code>stats</code> as above, and show the results in your html.</p>
 <p>The output of this operation should look the same as for Task 3.</p>
 </div>
-<div id="task-5" class="section level2">
-<h2><span class="header-section-number">2.7</span> Task 5</h2>
+<div id="task-6" class="section level2">
+<h2><span class="header-section-number">2.7</span> Task 6</h2>
 <p>Now we will move on to a split-apply-combine operation, in which we will calculate a) mean rainfall per date in the <code>farmers</code> data (rainfall values are in the “mm” column), and b) the sum of rainfall. This requires you to use <code>lapply</code>/<code>sapply</code> and a vector of <code>unique</code> dates to perform the operation. As output, we want the following:</p>
 <ul>
 <li>a data.frame named <code>rain_mean</code> that has:</li>
@@ -188,14 +188,14 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 ##  $ rfmu : num  0.804 0.991 1.708 5.862 11.032 ...
 ##  $ rftot: num  205 341 579 1864 2405 ...</code></pre>
 </div>
-<div id="task-6" class="section level2">
-<h2><span class="header-section-number">2.8</span> Task 6</h2>
+<div id="task-7" class="section level2">
+<h2><span class="header-section-number">2.8</span> Task 7</h2>
 <p>Calculate how many farmers report on each date. In other words, what is the total number of unique farmers (farmer ids are in the “uuid” column) reporting per date? We want just a single vector of integer output, stored in object <code>nfarm</code>. Hint: you need to use both the 1) <code>unique</code> and 2) <code>length</code> functions in this operation (applied in that order). Present the results of <code>nfarm</code> in the html.</p>
 <p>The output of this task should look like this:</p>
 <pre><code>##  [1] 255 344 339 318 218 293  30 314 285 219 232 232 295 364</code></pre>
 </div>
-<div id="task-7" class="section level2">
-<h2><span class="header-section-number">2.9</span> Task 7</h2>
+<div id="task-8" class="section level2">
+<h2><span class="header-section-number">2.9</span> Task 8</h2>
 <p>Okay, now that you know how to create <code>nfarm</code>, redo <code>rain_mean</code>, this time adding the operation to calculate the number of unique farmers into the same <code>sapply</code> operation used to originally create <code>rain_mean</code>, so that your output <code>data.frame</code> has columns “rfmu”, “rftot”, and “nfarm”. Display these updated <code>rain_mean</code> results in the html.</p>
 <p>Results you should be getting:</p>
 <pre><code>##         dates       rfmu rftot nfarm
@@ -214,8 +214,8 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 ## 13 2017-01-23 18.5830508  5482   295
 ## 14 2017-01-30 19.4065934  7064   364</code></pre>
 </div>
-<div id="task-8" class="section level2">
-<h2><span class="header-section-number">2.10</span> Task 8</h2>
+<div id="task-9" class="section level2">
+<h2><span class="header-section-number">2.10</span> Task 9</h2>
 <p>Find, for each date, the mean rainfall for individual farmers (whose ids are given in “uuid”), whose ids match “fa4c6”, “ba5973”, or “e340de”. The output should be a single vector named <code>frfmu</code>. Bind this to <code>rain_mean</code> as a new column (use the <code>$</code> operator to add it as a new column of <code>rain_mean</code>. Hint: For this exercise, you will probably want to first select out of <code>farmers</code> the subset of observations matching those farmer uuids (meaning you make a new <code>data.frame</code>, called it <code>farmers_ss</code>), and then perform the split-apply-combine. Present the results of the updated <code>rain_mean</code> in the html.</p>
 <pre><code>##         dates       rfmu rftot nfarm     frfmu
 ## 1  2016-10-31  0.8039216   205   255  0.000000
@@ -233,8 +233,8 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 ## 13 2017-01-23 18.5830508  5482   295 24.000000
 ## 14 2017-01-30 19.4065934  7064   364 19.000000</code></pre>
 </div>
-<div id="task-9" class="section level2">
-<h2><span class="header-section-number">2.11</span> Task 9</h2>
+<div id="task-10" class="section level2">
+<h2><span class="header-section-number">2.11</span> Task 10</h2>
 <p>Now we are going to start getting into some plotting, using the values of <code>rain_mean</code>. Let’s start of with a 2-D scatter plot, in which “rfmu” is the y variable and “dates” is the x variable. Make the label for the x axis “Date”, and for the y axis “Rainfall (mm)”. Make the points on the graph red and solid. After that, add the line version of these data to the same plot (use the <code>lines</code> function with the same variables), making the line red also.</p>
 <p>The plot will look like this (the dimensions will be somewhat different though, because here I am presenting a version of this plot that was saved to a png, and read back in as a linked file). Note that in the your html output, you can alter the figure dimensions by adjusting the arguments in the chunk block ({r, fig.width = X, fig.height = Y}).</p>
 <div class="figure">
@@ -242,8 +242,8 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 
 </div>
 </div>
-<div id="task-10" class="section level2">
-<h2><span class="header-section-number">2.12</span> Task 10</h2>
+<div id="task-11" class="section level2">
+<h2><span class="header-section-number">2.12</span> Task 11</h2>
 <p>Next, we are going to make a multipanel plot, where we show each of columns “rfmu”, “rftot”, “nfarm”, and “frfmu” plot as the y variable against date, the x variable. Change the color of each plot’s points, using “red”, “orange”, “purple”, and “blue” for each plot. Update the y axis label using the selected column name. Plot the four panels using a <code>for</code> loop. Hint, to get this plot to display correctly in the html vignette, pass in an extra set of parameters to the <code>par</code> function, “mar = c(4, 4, 1, 1)”, which changes the margins of your plot (leaving enough space for the axis labels to be seen).</p>
 <p>The plot will look like this (same caveat related to dimensions).</p>
 <div class="figure">
@@ -251,8 +251,8 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 
 </div>
 </div>
-<div id="task-11" class="section level2">
-<h2><span class="header-section-number">2.13</span> Task 11</h2>
+<div id="task-12" class="section level2">
+<h2><span class="header-section-number">2.13</span> Task 12</h2>
 <p>Okay, now the final task. The line plot we created in Task 9 is just a simple joining of points by line segments. We want to now see the predicted fit (i.e. the trend line) from a regression to those points. So:</p>
 <ul>
 <li>Run a regression (<code>lm</code>) in which the x variable is “dates” and the y variable “rfmu”. Capture the regression results in object <code>rflm</code></li>

@@ -1,0 +1,219 @@
+---
+title: "Class 11 Supplement for `*apply`"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "10/4/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(repos = c(CRAN = "http://ftp.ussg.iu.edu/CRAN/"))
+```
+
+## Overview
+
+This is bit of extra material to try help explain the `*apply` family a bit better, and how it works.  
+
+## Split-Apply-Combine, revisited
+
+Let's start with a basic `data.frame`, which has two data columns "a" and "b", and a column defining the "grp", which has possible values "a", "b", "c", "d", "e.
+
+```{r}
+set.seed(1)
+dat <- data.frame("V1" = 1:100, 
+                  "V2" = sample(1:100, size = 100, replace = TRUE),
+                  "grp" = letters[sample(1:5, size = 100, replace = TRUE)])
+```
+
+Let's say we want to calculate the mean value of columns V1 and V2 for each group, and we want the results of those calculations in a data.frame in which the rows list the group-wise means for each column V1 and V2. 
+
+This is a split-apply-combine (SAC) operation, because we need to: 
+
+1. Split the data up by groups
+2. Apply the `mean` function within each column for each group
+3. Combine the results back into a single `data.frame`/`matrix`.  
+
+## Split-Apply-Combine with a `for` loop
+
+The SAC is an iterative operation, and, in this example, the number of unique groups in `dat` defines the number of iterations that have to happen. Since we are talking iterations, let's first illustrate SAC for this example using a `for` loop.  
+
+```{r}
+# first create dummy data.frame to catch results. Note that this 
+# data.frame is necessary for the combine part of the operation
+grp <- sort(unique(dat$grp))  # Line 1
+result <- data.frame("V1" = rep(NA, 5), "V2" = rep(NA, 5))  # Line 2
+for(i in 1:length(grp)) {  # Line 3
+  d <- dat[dat$grp == grp[i], c("V1", "V2")]  # Line 4
+  result[i, ] <- colMeans(d)  # Line 5 
+}  # Line 6
+
+result
+```
+
+Okay, let's look at what is happening line by line in the code block:
+
+- Line 1: We create the object that contains the values that provide the basis for the split (the unique values of `dat$grp`. We sort the values so that they are in order a-e.
+
+- Line 2: We create a dummy data.frame with NA values, to catch the results of the operation.  It has 5 rows and two columns, because there are five groups and we want mean results for both columns. Note that `result` is what enables the combine part of the split-apply-combine
+
+- Line 3: This is where the iteration process is set up. Within the parentheses there is the `1:length(grp)`, which is a vector of integers beginning with 1 and ending with `length(grp)` (5), so 1, 2, 3, 4, 5. At the first iteration, the value 1 is assigned to i, on iteration 2, 2 is assigned to i, and so on up to iteration 5, where 5 is assigned to i.
+
+- Line 4: This is where the split happens. The split is actually a subsetting of the data, in which the values in `dat$grp` that exactly match `grp[i]` are selected (at the first iteration, that means the values matching `grp[1]`, i.e. the letter "a", are selected). There is another subset also occurring at this stage, which is that we selecting values just from the two columns "V1" and "V2" and leaving behind "grp". This subset (or split, if you prefer), is assigned to a new data.frame `d`, which gets replaced at each iteration. 
+
+- Line 5: Combines both the apply and combine steps, in that i) the `colMeans` function is ___applied___ to the subsetted values in `d`, and ii) then are added to the correct row number in `result`, the object we pre-defined to catch (i.e. ___combine___) the results.
+
+- Line 6: Closes the body of the `for` loop structure. 
+
+So, that's a split-apply-combine with a `for` loop. 
+
+One thing to note here: in this function, I set up the iteration so that `i` was getting the value of the integer index of `grp` (i.e. `for(i in 1:length(grp))`), rather than the direct value of `grp` (i.e. `for(i in grp)`), because I needed to stick the results into each row of `result`.  It is much easier to index into rows using the row number, so that is why I set up the `for` loop this way. 
+
+However, I could have done it the other way, in which `i` gets directly assigned the values of `grp`, as follows: 
+```{r}
+result <- data.frame("V1" = rep(NA, 5), "V2" = rep(NA, 5))
+grp <- sort(unique(dat$grp))  
+rownames(result) <- grp  # by assigning grp's values to result's rownames...
+for(i in grp) {  # ... and passing grp's values directly to i ...
+  d <- dat[dat$grp == i, c("V1", "V2")]  # ... where i does the split ...
+  result[i, ] <- colMeans(d)  # ... I can assign results to result by rowname 
+} 
+result
+```
+
+
+Next, let's turn to split-apply-combine with `*apply`. 
+
+## Split-Apply-Combine with the *apply family
+
+### `lapply`
+
+I am going to start by showing what we just did with `lapply`. 
+
+```{r}
+grp <- sort(unique(dat$grp))  # Line 1
+result <- lapply(1:length(grp), function(i) {  # Line 2
+  d <- dat[dat$grp == grp[i], c("V1", "V2")]  # Line 3
+  colMeans(d)  # Line 4
+})  # Line 5
+result <- data.frame(do.call(rbind, result))  # Line 6
+result
+```
+
+The result is identical to what we did with the first for loop. So let's explain this line by line.  
+
+- Line 1: Identical to previous, in that it sets up the variable defining the split.  
+
+- Line 2: This is where i) the iteration process is set up, and ii) where the combine is done. Let's dig in a bit further to that: 
+    - `1:length(grp), function(i) {`: This is basically `for(i in 1:length(grp))` rewritten, i.e. the iteration procedure. `function(i)` is referred to as an "anonymous function". In this case the anonymous function takes a single argument `i` (typically we use `x`, but here we use `i` to make the `for` loop comparison more obvious), and then passes the value in `i` the body of `lapply` (which contains our split and apply operations). However, maybe this operation really isn't so anonymous, because we know that this is basically serving the same purpose as the `for` function (it is iterating over the integer index `1:length(grp)`), or, restated, this part of the `lapply` procedure is basically ___running the `for` function on the vector `1:length(grp)`___.  
+    - `result <-`: This does the job that is being done in lines 2 and (in the `result[i, ] <- ` part of) 5 of the `for` loop approach to SAC shown above. i.e. the combine part of split-apply-combine.
+    
+
+- Line 3: This is the split, same as in line 4 of the `for` loop approach. 
+
+- Line 4: This is the apply part of split-apply-combine, same as in the Line 5 of the for loop, with the critical difference that you do not need to stuff the results into a predefined output `data.frame`, because `lapply` means that your results are directed into an output `list` object that has the same number of elements as iterations (i.e. here the number of values in `grp`)
+
+- Line 5: Closes the body of the `lapply`: note the `})` structure. 
+
+- Line 6: What's this?  Isn't the result of `lapply` already sent to an object?  Yes, but that object is a list (test that for yourself--run the code, but just for `lapply` block, i.e. lines 2-4, and examine `result`).  If you want instead a `data.frame` that matches what we got from the `for` loop approach, you need to do a few extra steps. 
+
+    - `do.call(rbind(result))` applies the function `rbind` to `result`,  binding the elements of the list (`result`'s initial class) together into rows, thereby converting it to a `matrix`.
+    - The `data.frame()` function wrapped around that coerces the matrix to a data.frame. 
+    - We now have the same result as the first `for` loop example.
+    - The following code gives the same results as the second `for` loop example
+    
+    
+```{r}
+grp <- sort(unique(dat$grp))  
+result <- lapply(grp, function(i) {
+  d <- dat[dat$grp == i, c("V1", "V2")]
+  colMeans(d) 
+})
+result <- data.frame(do.call(rbind, result))  
+rownames(result) <- grp  # to get the rownames to be the values of grp
+result
+```
+
+### Using `sapply`
+
+Now, let's do the same thing, but with `sapply`
+
+```{r}
+grp <- sort(unique(dat$grp))  # Line 1
+result <- sapply(1:length(grp), function(i) {  # Line 2
+  d <- dat[dat$grp == grp[i], c("V1", "V2")]  # Line 3
+  colMeans(d)  # Line 4
+})  # Line 5
+result <- data.frame(t(result))  # Line 6
+result
+
+```
+
+Okay, that is the same thing as the first `lapply` example (and producing the same result as the first `for` loop example), with two exceptions: 
+
+    - The first exception is in line 2, and that is simply that we have `sapply` instead of `lapply`
+    - The second is in line 6. Instead of `do.call(rbind` we have `t(`. Why? Because the results of the `sapply` produce a matrix with V1 and V2 as rows and the iterations (i.e. the `grp` values) as columns (check that for yourself), even though the columns are not named. We use `t` to transpose the matrix (rows becomes columns and vice versa) before converting it to a data.frame. 
+    - Let's use `sapply` to produce the same results as the second incarnations of the `for` loop and `lapply`
+
+```{r}
+grp <- sort(unique(dat$grp))  
+result <- sapply(grp, function(i) { 
+  d <- dat[dat$grp == i, c("V1", "V2")]
+  colMeans(d) 
+})
+result <- data.frame(t(result))  
+rownames(result) <- grp  # to get the rownames to be the values of grp
+result
+```
+
+## Reduced form `*apply` functions
+
+Okay, so we have seen how `lapply` and `sapply` are used in split-apply-combine. What about those cases where we don't have the anonymous functions? Like in the `swirl` exercises. 
+
+Good question.  Let's look at it with an example.  
+
+```{r}
+lresult <- lapply(dat[, c("V1", "V2")], mean)
+sresult <- sapply(dat[, c("V1", "V2")], mean)
+
+lresult
+sresult
+```
+
+What's happening here?  Well, this is still a split-apply-combine operation, just somewhat different and much more implicit. Let's break it down:
+
+- `dat[, c("V1", "V2")]`: I am taking the two numeric columns of `dat`, and passing it into the first argument of `lapply`/`sapply` (that argument actually has a name, which is X, see the `?lapply`)
+
+      ```
+      lapply(X, FUN, ...)
+      
+      sapply(X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)
+      ```
+
+- `lapply`/`sapply` then applies the `mean` function (whereas before we used an anonymous function `function(i)` to essentially run a `for` loop) to the elements of `dat[, c("V1", "V2")]`
+
+- `dat[, c("V1", "V2")]` is interpreted as a list with two elements, which are the two selected columns of `dat`, and the `lapply`/`sapply` ___splits___ this list into separate elements (columns), and the `mean` function is then iteratively ___applied___ to each column (which is a vector once split out of the list), and the result is then ___combined___ into `lresult`, a list, or `sresult`, a two-element vector. 
+
+Let's do both of those with for loops, just for the sake of bringing it back to something more intuitive. 
+
+
+```{r}
+lresult <- vector(mode = "list", length = 2)  # empty two element list
+sresult <- vector(length = 2)  # empty two element vector
+
+datss <- dat[, c("V1", "V2")]  # subset out the columns I need
+for(i in 1:ncol(datss)) {
+  lresult[[i]] <- mean(datss[, i])
+  sresult[i] <- mean(datss[, i])
+}  # note I have been lazy, and used a single for loop to create both outputs
+
+lresult
+sresult
+```
+
+So that's it.  I hope this makes `lapply` and `sapply` somewhat clearer. Please bring questions on this to class Wednesday. 
+
+
+
+
+
+
