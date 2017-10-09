@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes" />
 
-<meta name="date" content="2017-10-03" />
+<meta name="date" content="2017-10-06" />
 
 <title>Help Files</title>
 
@@ -70,9 +70,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Help Files</h1>
 <h4 class="author"><em>Lyndon Estes</em></h4>
-<h4 class="date"><em>2017-10-03</em></h4>
+<h4 class="date"><em>2017-10-06</em></h4>
 
 
+<div id="TOC">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#github-related">Github-related</a><ul>
+<li><a href="#set-up-a-github-access-token">Set up a github access token</a></li>
+<li><a href="#branching-and-merging">Branching and merging</a></li>
+<li><a href="#rstudio-and-github">Rstudio and GitHub</a></li>
+</ul></li>
+</ul>
+</div>
 
 <div id="overview" class="section level1">
 <h1>Overview</h1>
@@ -107,8 +117,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="kw">install_github</span>(<span class="st">&quot;agroimpacts/geospaR&quot;</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>, 
                <span class="dt">auth_token =</span> <span class="st">&quot;the-token-you-just-generated-pasted-here&quot;</span>)<span class="er">)</span></code></pre></div>
 </div>
-<div id="branching" class="section level2">
-<h2>Branching</h2>
+<div id="branching-and-merging" class="section level2">
+<h2>Branching and merging</h2>
+<p>A very useful references for basic branching merging can be found <a href="https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging">here</a></p>
 <ol style="list-style-type: decimal">
 <li><p>Create a new branch, from within the shell</p>
 <p>(replace <branchname> with a meaningful branch name, e.g. a1)</p>
@@ -133,6 +144,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> push origin <span class="kw">&lt;</span>branchname<span class="kw">&gt;</span></code></pre></div></li>
 <li><p>Delete a remote branch</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> push origin --delete <span class="kw">&lt;</span>branchname<span class="kw">&gt;</span></code></pre></div></li>
+<li><p>Merge two branches</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> checkout <span class="kw">&lt;</span>branch-you-want-to-merge-onto<span class="kw">&gt;</span>
+<span class="kw">git</span> merge <span class="kw">&lt;</span>branch-to-merge-onto-the-branch-you-are-in<span class="kw">&gt;</span></code></pre></div></li>
+</ol>
+</div>
+<div id="rstudio-and-github" class="section level2">
+<h2>Rstudio and GitHub</h2>
+<ol style="list-style-type: decimal">
+<li><p>I can push and pull to my repo from the command line, but Rstudio’s git push and pull buttons are greyed out. How do I fix that? The answer can be found <a href="https://landeco2point0.wordpress.com/2014/07/22/things-i-forget-pushpull-greyed-out-in-rstudio/">here</a>. You can fix this and bring the buttons back to life if you do this, from the shell:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> push -u origin <span class="kw">&lt;</span>branch-to-push<span class="kw">&gt;</span></code></pre></div>
+<p>Note the -u flag. That should fix it.</p></li>
 </ol>
 </div>
 </div>

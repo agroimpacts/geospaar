@@ -80,7 +80,14 @@ The output of this operation should look like this:
 ## Task 5
 Having done that now, I want you to recreate the exact same results, but using a single operation of `sapply` to get the `mean` and `range` of those three columns of `farmers`. That means you have to calculate `mean` and `range` within the body of the `sapply`, and join their results (think `c`) in the last step in the sequence of commands that are in the `sapply` body. Name the output of this `farm_stat2`. Finish by doing the same `cbind.data.frame` step with `stats` as above, and show the results in your html.    
 
-The output of this operation should look the same as for Task 3. 
+The output of this operation should look the same as for Task 4, i.e. 
+
+```
+##   stats        pl        ra       mm
+## 1  mean 0.3039058 0.6198502 12.46495
+## 2   min 0.0000000 0.0000000  0.00000
+## 3   max 1.0000000 1.0000000 39.00000
+```
 
 ## Task 6
 Now we will move on to a split-apply-combine operation, in which we will calculate a) mean rainfall per date in the `farmers` data (rainfall values are in the "mm" column), and b) the sum of rainfall. This requires you to use `lapply`/`sapply` and a vector of `unique` dates to perform the operation. As output, we want the following: 

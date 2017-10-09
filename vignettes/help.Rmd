@@ -2,7 +2,11 @@
 title: "Help Files"
 author: "Lyndon Estes"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    toc_depth: 3
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{Help}
   %\VignetteEngine{knitr::rmarkdown}
@@ -65,7 +69,9 @@ install_github("agroimpacts/geospaR", build_vignettes = TRUE,
 
 ```
 
-## Branching
+## Branching and merging
+
+A very useful references for basic branching merging can be found [here](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)
 
 1. Create a new branch, from within the shell
 
@@ -104,6 +110,22 @@ install_github("agroimpacts/geospaR", build_vignettes = TRUE,
     git push origin --delete <branchname>
     ```
 
+6. Merge two branches
 
+    ```{bash, eval = FALSE}
+    git checkout <branch-you-want-to-merge-onto>
+    git merge <branch-to-merge-onto-the-branch-you-are-in>
+    
+    ```
+
+## Rstudio and GitHub
+
+1. I can push and pull to my repo from the command line, but Rstudio's git push and pull buttons are greyed out. How do I fix that? The answer can be found [here](https://landeco2point0.wordpress.com/2014/07/22/things-i-forget-pushpull-greyed-out-in-rstudio/). You can fix this and bring the buttons back to life if you do this, from the shell:
+
+    ```{bash, eval = FALSE}
+    git push -u origin <branch-to-push>
+    ```
+    
+    Note the -u flag. That should fix it. 
 
 
