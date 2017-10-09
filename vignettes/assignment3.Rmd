@@ -98,9 +98,9 @@ Now we will move on to a split-apply-combine operation, in which we will calcula
 - the mean rainfall as column "rfmu"
 - the summed rainfall as "rftot" 
 
-Do this operation with both `lapply` and `sapply`, producing the identical results from each. Hint: `lapply` will require you to perform 3 operations: the `lapply` itself, a `do.call` with `rbind` operation, and a `cbind.data.frame` thereafter to join `dates` (the unique date vector) to it.
+Do this operation with both `lapply` and `sapply`, producing the identical results from each. Hint: `lapply` will require you to perform 3 operations: the `lapply` itself, then a `do.call` with `rbind` operation, and finally a `cbind.data.frame` thereafter to join `dates` (the unique date vector) to it.
     
-The `sapply` approach also has three steps, with one of those steps being a transpose (`t`). 
+The `sapply` approach also has three steps, the difference with the `lapply` procedure being that the second step is a transpose (`t`).
     
 For results, show in the html the output of `rain_mean` produced by `lapply`, as well as `str(rain_mean)`, and the same (`rain_mean` and `str(rain_mean)`) produced by `sapply`. 
     
@@ -198,7 +198,7 @@ The plot will look like this (same caveat related to dimensions).
 ![](fig/a3-t10.png)
 
 ## Task 12
-Okay, now the final task. The line plot we created in Task 9 is just a simple joining of points by line segments. We want to now see the predicted fit (i.e. the trend line) from a regression to those points. So: 
+Okay, now the final task. The line plot we created in Task 10 is just a simple joining of points by line segments. We want to now see the predicted fit (i.e. the trend line) from a regression to those points. So: 
 
 - Run a regression (`lm`) in which the x variable is "dates" and the y variable "rfmu". Capture the regression results in object `rflm`
 - Recreate the point plot from the preceding task (don't add the line), and use `abline` to plot the regression fit. Leave it as the default color ("black")
@@ -218,4 +218,4 @@ The plot will look like this (same caveat related to dimensions).
 ## Extra credit (5 points)
 Write a function `myplot` that takes arguments "x", "y", "dat", and "col". "x" is the column name of a variable for the x axis, "y" the column name for the y axis, dat is a `data.frame` (here we are going to use `rain_mean` dataset), and "col" is the color you want to points in the plot to be. 
 
-The goal is to create a function that takes these arguments and creates an output xy scatter plot like the one in Task 9 (just the `plot` part, not the `lines` part), with the same point symbol, but using the column names as axis labels. Basically, if you pass it "dates" for the "x" argument and "rfmu" for the "y" from `rain_mean`, it should produce an identical plot (minus the line and the different axis labels). This function should you choose to do it, should be part of your package. Demonstrate the plot in the html version of the vignette for full credit (3 points), by creating two plots. The first plots "date" against "rfmu", as in Task 9. The second plots "frfmu" against "rfmu". 
+The goal is to create a function that takes these arguments and creates an output xy scatter plot like the one in Task 10 (just the `plot` part, not the `lines` part), with the same point symbol, but using the column names as axis labels. Basically, if you pass it "dates" for the "x" argument and "rfmu" for the "y" from `rain_mean`, it should produce an identical plot (minus the line and the different axis labels). This function should you choose to do it, should be part of your package. Demonstrate the plot in the html version of the vignette for full credit (3 points), by creating two plots. The first plots "date" against "rfmu", as in Task 10. The second plots "frfmu" against "rfmu". 

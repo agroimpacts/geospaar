@@ -167,8 +167,8 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 <li>the mean rainfall as column “rfmu”</li>
 <li>the summed rainfall as “rftot”</li>
 </ul>
-<p>Do this operation with both <code>lapply</code> and <code>sapply</code>, producing the identical results from each. Hint: <code>lapply</code> will require you to perform 3 operations: the <code>lapply</code> itself, a <code>do.call</code> with <code>rbind</code> operation, and a <code>cbind.data.frame</code> thereafter to join <code>dates</code> (the unique date vector) to it.</p>
-<p>The <code>sapply</code> approach also has three steps, with one of those steps being a transpose (<code>t</code>).</p>
+<p>Do this operation with both <code>lapply</code> and <code>sapply</code>, producing the identical results from each. Hint: <code>lapply</code> will require you to perform 3 operations: the <code>lapply</code> itself, then a <code>do.call</code> with <code>rbind</code> operation, and finally a <code>cbind.data.frame</code> thereafter to join <code>dates</code> (the unique date vector) to it.</p>
+<p>The <code>sapply</code> approach also has three steps, the difference with the <code>lapply</code> procedure being that the second step is a transpose (<code>t</code>).</p>
 <p>For results, show in the html the output of <code>rain_mean</code> produced by <code>lapply</code>, as well as <code>str(rain_mean)</code>, and the same (<code>rain_mean</code> and <code>str(rain_mean)</code>) produced by <code>sapply</code>.</p>
 <p>The outputs of both versions should look like this:</p>
 <pre><code>##         dates       rfmu rftot
@@ -257,7 +257,7 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 </div>
 <div id="task-12" class="section level2">
 <h2><span class="header-section-number">2.13</span> Task 12</h2>
-<p>Okay, now the final task. The line plot we created in Task 9 is just a simple joining of points by line segments. We want to now see the predicted fit (i.e. the trend line) from a regression to those points. So:</p>
+<p>Okay, now the final task. The line plot we created in Task 10 is just a simple joining of points by line segments. We want to now see the predicted fit (i.e. the trend line) from a regression to those points. So:</p>
 <ul>
 <li>Run a regression (<code>lm</code>) in which the x variable is “dates” and the y variable “rfmu”. Capture the regression results in object <code>rflm</code></li>
 <li>Recreate the point plot from the preceding task (don’t add the line), and use <code>abline</code> to plot the regression fit. Leave it as the default color (“black”)</li>
@@ -283,7 +283,7 @@ farmers &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span cla
 <div id="extra-credit-5-points" class="section level2">
 <h2><span class="header-section-number">2.14</span> Extra credit (5 points)</h2>
 <p>Write a function <code>myplot</code> that takes arguments “x”, “y”, “dat”, and “col”. “x” is the column name of a variable for the x axis, “y” the column name for the y axis, dat is a <code>data.frame</code> (here we are going to use <code>rain_mean</code> dataset), and “col” is the color you want to points in the plot to be.</p>
-<p>The goal is to create a function that takes these arguments and creates an output xy scatter plot like the one in Task 9 (just the <code>plot</code> part, not the <code>lines</code> part), with the same point symbol, but using the column names as axis labels. Basically, if you pass it “dates” for the “x” argument and “rfmu” for the “y” from <code>rain_mean</code>, it should produce an identical plot (minus the line and the different axis labels). This function should you choose to do it, should be part of your package. Demonstrate the plot in the html version of the vignette for full credit (3 points), by creating two plots. The first plots “date” against “rfmu”, as in Task 9. The second plots “frfmu” against “rfmu”.</p>
+<p>The goal is to create a function that takes these arguments and creates an output xy scatter plot like the one in Task 10 (just the <code>plot</code> part, not the <code>lines</code> part), with the same point symbol, but using the column names as axis labels. Basically, if you pass it “dates” for the “x” argument and “rfmu” for the “y” from <code>rain_mean</code>, it should produce an identical plot (minus the line and the different axis labels). This function should you choose to do it, should be part of your package. Demonstrate the plot in the html version of the vignette for full credit (3 points), by creating two plots. The first plots “date” against “rfmu”, as in Task 10. The second plots “frfmu” against “rfmu”.</p>
 </div>
 </div>
 
