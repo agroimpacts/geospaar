@@ -303,6 +303,8 @@ This is a big topic, but I will post some links here as I find them.
 __R spatial__
 [A short R spatial tutorial](https://pakillo.github.io/R-GIS-tutorial/), with some good examples for connecting to Google Maps. 
 
+[Another R spatial tutorial](https://cran.r-project.org/doc/contrib/intro-spatial-rl.pdf), with `ggplot2` and `tmap`
+
 ### Blogs/tweeps to follow
 
 [R-bloggers](https://www.r-bloggers.com/)
