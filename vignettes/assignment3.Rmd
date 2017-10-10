@@ -205,7 +205,7 @@ Okay, now the final task. The line plot we created in Task 10 is just a simple j
 - Maybe a non-linear fit is more appropriate. Let's use the `loess` function to plot a non-parametric regression line through the data also
     - Call the output of the loess function `rflo` 
     - Create the smooth line from `rflo` by using the `predict` function, which should be directed into an object named `loline`
-    - Plot `loline` onto the same plot as the one with the linear regression fit (i.e. the results of the `abline` plot). The `loess` line should be red. No need to use the span term in `loess` when doing this--we will just do with the defaults, meaning you don't have to specify this argument (unlike the example given in your reading for the `loess` function) 
+    - Plot `loline` onto the same plot as the one with the linear regression fit (i.e. the results of the `abline` plot). The `loess` line should be blue. No need to use the span term in `loess` when doing this--we will just do with the defaults, meaning you don't have to specify this argument (unlike the example given in your reading for the `loess` function) 
     - Some additional points to know regarding `loess` and plotting the smooth line:
         - Unlike `lm`, `loess` fails if you pass a date value as the x term
         - This means that to fit `loess`, you have to create a new column "index" on `rain_mean`, which is simply `1:nrow(rain_mean)`. Use "index" as the x term in `loess`'s formula 
