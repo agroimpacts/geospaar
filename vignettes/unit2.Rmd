@@ -86,10 +86,12 @@ ___[under construction]___
     
 + Do before class (you will need `raster` for the reading also):
     + install the following packages: `rgdal`, `raster`, `rgeos`
-    
+
     
 # Week 8 - Working with vector data
-## Class 13 (Oct 16)
+## Class 13 (Oct 16) 
++ Please read and work through the [vignette on Vector Data](vector-data.html), from the start through Section 1. 
+
 ## Class 14 (Oct 18)
 
 # Week 9 - Working with raster data
