@@ -257,15 +257,10 @@ pre { /* Code block - determines code spacing between lines */
 ## 5 AmigoCloud                    AmigoCloud  TRUE FALSE     TRUE
 ## 6        BNA                     Atlas BNA  TRUE FALSE     TRUE</code></pre>
 <p>Right, let’s read that back in now, but just pulling from the shapefile itself. I am going the first delete the .sqlite version, for the sake of directory cleanliness (having shown you a nicer format, I am not going to work with because so much is still done with ESRI shapefiles, so we must as well remain used to them)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">file.remove</span>(<span class="st">&quot;../external/unit2/data/farmers.sqlite&quot;</span>)</code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(farmers) 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">file.remove</span>(<span class="st">&quot;../external/unit2/data/farmers.sqlite&quot;</span>)
+<span class="kw">rm</span>(farmers) 
 farmers &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn =</span> <span class="st">&quot;../external/unit2/data/farmers.shp&quot;</span>,
                    <span class="dt">layer =</span> <span class="st">&quot;farmers&quot;</span>)</code></pre></div>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;../external/unit2/data/farmers.shp&quot;, layer: &quot;farmers&quot;
-## with 3738 features
-## It has 4 fields</code></pre>
 <p>Okay, so I used <code>file.remove</code> to get rid of the .sqlite, and then used <code>rm</code> to get rid of the existing <code>farmers</code> SpatialPointsDataFrame, and then read back in the <code>farmers</code> I had written to the .shp. So I have <code>farmers</code> back again.</p>
 <p>Now, there are two more datasets that come with <code>geospaar</code> to read in using <code>readOGR</code>: <code>roads.shp</code> and <code>districts.shp</code>. The paths to both are found with the <code>system.file</code> function. I’ll set up the first one for you.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fnm &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/roads.shp&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;geospaar&quot;</span>)
@@ -440,6 +435,7 @@ for(i in <span class="dv">1</span>:<span class="kw">length</span>(spdat)) {
 <h1><span class="header-section-number">4</span> Section 2</h1>
 <p>In this section we are going to learn vector manipulations and operations, which will require the <code>rgeos</code> package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rgeos)</code></pre></div>
+<pre><code>## Warning: package 'rgeos' was built under R version 3.4.2</code></pre>
 <p>There are a total of X exercises: Exercises <a href="#exercise6">#6</a>, <a href="#exercise7">#7</a>, <a href="#exercise8">#8</a>, <a href="#exercise9">#9</a>, <a href="#exercise10">#10</a></p>
 <div id="extracting-spatial-properties" class="section level2">
 <h2><span class="header-section-number">4.1</span> Extracting spatial properties</h2>

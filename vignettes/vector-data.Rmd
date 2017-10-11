@@ -159,7 +159,7 @@ coordinates(farmers) <- ~lon + lat  # notice ~ and the lack of encloding ""
 
 We are going to do some reading and writing (in reverse order) of spatial data now. You should now have `farmers` back as a `r class(farmers)`. And you should have a "data" folder under your "unit2" working folder. My folder lives here`geospaar/external/unit2/data`, which is convenient for me to keep where course material is developed, but is ignored by `devtools` during package building, and which I do not commit to geospaar's repo), so in the next step I am going to use the function `writeOGR` from the `rgdal` package to write `farmers` as an ESRI shapefile out to that folder. Follow along, ___but change the file path to correctly lead to your own `unit2/data` path___ (note in the construction below, I have `../external/unit2/`, which is necessary for the function to run and find my `geospaar/external/unit2/` because when the vignette that I am writing this in knits, it starts from the `geospaar/vignettes`, so needs to go back up one directory level first--you probably don't need to do this)
 
-```{r}
+```{r, eval = FALSE}
 writeOGR(obj = farmers,
          dsn = "../external/unit2/data/farmers.shp",
          layer = "farmers", driver = "ESRI Shapefile",
@@ -177,7 +177,7 @@ proj4string(farmers)
 `farmers` does not have a coordinate reference system (CRS) associated with it yet, even though we can tell it is in geographic coordinates.  Remember this, because we will come back to it. 
 
 Because .shp is an annoying format, we can try other types. Let's do the much more convenient "SQLite" format, which produces a single file.  
-```{r}
+```{r, eval = FALSE}
 writeOGR(obj = farmers, dsn = "../external/unit2/data/farmers.sqlite",
          layer = "farmers", driver = "SQLite")
 ```
@@ -188,7 +188,7 @@ head(ogrDrivers())
 ```
 
 Right, let's read that back in now, but just pulling from the shapefile itself. I am going the first delete the .sqlite version, for the sake of directory cleanliness (having shown you a nicer format, I am not going to work with because so much is still done with ESRI shapefiles, so we must as well remain used to them) 
-```{r}
+```{r, eval = FALSE}
 file.remove("../external/unit2/data/farmers.sqlite")
 rm(farmers) 
 farmers <- readOGR(dsn = "../external/unit2/data/farmers.shp",
