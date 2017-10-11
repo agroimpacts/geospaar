@@ -82,16 +82,16 @@ ___[under construction]___
         setwd(paste0(my_zip_path, "asdar"))
         ```
 
-
-
         `cm_mod.R` in the resulting folder contains the code chunks that correspond to what's printed in the chapter, so you can copy and paste out of there, and you will find the datasets that the chapter works with in the unzipped folder. If for some reason the code above does not work for you, then you can manually download and unzip the files from [here](http://www.asdar-book.org/data2ed.php?chapter=1). 
     
 + Do before class (you will need `raster` for the reading also):
     + install the following packages: `rgdal`, `raster`, `rgeos`
-    
+
     
 # Week 8 - Working with vector data
-## Class 13 (Oct 16)
+## Class 13 (Oct 16) 
++ Please read and work through the [vignette on Vector Data](vector-data.html), from the start through Section 1. 
+
 ## Class 14 (Oct 18)
 
 # Week 9 - Working with raster data
