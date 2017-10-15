@@ -499,7 +499,7 @@ The histograms plotted above have some graphical parameters added to them that m
 
 [Back to top](#vectorintro)
 
-## Manipulating data in `Spatial*DataFrames`
+## Manipulating `Spatial*DataFrames`
 
 `Spatial*` objects in R can be manipulated using fairly similar methods as those used for manipulating non-spatial data structures. The code in the previous sections provides examples for how you subset by index numbers.  Another example:
 
@@ -514,26 +514,162 @@ Notice that the sub-setting is done "on the fly" within the plotting functions t
 
 That's index-based subsetting. We can also do it using values stored within the rows and columns of the data. To do, we are first going to enhance those data a bit.  
 
-### Merging data
+[Back to top](#vectorintro)
+
+### Merges
 
 The previous examples have shown you how to calculate spatial properties and stick them in separate data objects. Now let's see how to add those properties to our `Spatial*DataFrame`s.  
 
+We'll continue working with `districts_alb`, and start by adding the district areas to the `data.frame` of `districts_alb2`, a copy of `districts_alb`
 
+```{r}
+districts_alb2 <- districts_alb  # create a new version
+districts_alb2$area <- gArea(districts_alb2, byid = TRUE)
+# head(districts_alb@data)
+head(slot(districts_alb2, "data"))
+```
+
+So that's a fairly straightforward way to do it. Just append the areas as a new column name on `districts_alb2` (which we create), which exactly the same way you would do it if this was just an ordinary `data.frame`. Note that this change only affects the `data.frame` part of `districts_alb`, and that to view the altered data.frame, you have to extract the `data.frame` from its slot.
+
+We could also do the same thing this way
+```{r}
+districts_alb2 <- cbind(districts_alb, 
+                        gArea(districts_alb, byid = TRUE))
+colnames(districts_alb2@data) <- c("distName", "area")
+head(slot(districts_alb2, "data"))
+```
+
+Or this way
+```{r}
+dist_area_df <- data.frame("distName" = districts_alb$distName, 
+                           "area" = gArea(districts_alb, byid = TRUE))
+districts_alb2 <- merge(districts_alb, dist_area_df, by.x = "distName", 
+                        by.y = "distName")
+head(slot(districts_alb2, "data"))
+```
+
+This last one might be new to you, as it uses the `merge` function. We had it in earlier readings, but didn't go over it much in class.  `merge` basically joins two `data.frame`s by the values in one or more columns that share the same values, or subsets of the same values. There is a `merge` method for ordinary `data.frame`s, and, as we see here, one for `Spatial*DataFrame`s. 
+
+```{r, echo=FALSE, eval=FALSE}
+# check merge ordering
+set.seed(1)
+n <- sample(1:length(districts_alb2), size = 7)
+plot(districts_alb)
+plot(districts_alb[n, ], add = TRUE, col = "red")
+plot(districts_alb2[n, ], add = TRUE, col = "blue")
+```
 
 [Back to top](#vectorintro)
 
 ### Subsetting 
 
+Now that we have upgraded the `data.frame` in `districts_alb2`, we can do some more subsetting. 
+
+```{r, fig.align='center'}
+dists_begkn <- districts_alb2[grep("^Ka|^Nyi", districts_alb2$distName), ]
+dists_gt2M <- districts_alb2[districts_alb2$area / 10000 > 2000000, ]
+
+par(mar = c(0, 0, 0, 0))
+plot(districts_alb2, col = "grey")
+plot(dists_begkn, col = rgb(0, 0, 1, alpha = 0.5), add = TRUE)
+plot(dists_gt2M, col = rgb(1, 0, 0, alpha = 0.5), add = TRUE)
+
+```
+
+That's two examples of subsetting, in which the first (`dists_begkn`) selects districts with names beginning with either "Ka" or "Nyi", and the second (`dists_gt2M`) selects districts having areas greater than 2 million hectares (notice the division by 10000 to convert from m$^2$ to ha). 
+
+The resulting subsets are plotted onto the full district map of Zambia. Note the use of the `rgb` function to define the colors used to fill the polygons. `rgb` makes red-green-blue color combinations, and the alpha argument allows you to define the transparency of the color.  In this case, our two subsets selected some of the same polygons (two of the districts with names beginning with "Ka" or "Ny" are also large than 2 million ha), so the partial transparency allows us to show where the overlaps occur. 
+
+As an exercise, create new district subsets by use a different grep pattern match on the district names (look at `districts_alb2$distName` for some ideas), and by changing the area used as a threshold (e.g. make it 1 million ha) size, and the replot the results. Instead of a partially transparent blue, make a partially transparent green for the new `dists_gt2m`. [<span style="color:blue">Exercise 8</span><a name="exercise8"></a>] 
+
 [Back to top](#vectorintro)
 
+### Split-apply-combine
+
+As with plain old `data.frame`s, we might want to do split-apply-combine operations on spatial data. Let's demonstrate this selecting the districts in `districts_alb2` that fall within certain area ranges, convert the selected districts to centroid points, and then plot them.  
+
+```{r, fig.align='center'}
+# define area ranges for smallest and largest districts
+qt1090 <- quantile(districts_alb2$area, c(0.0, 0.05, 0.95, 1))
+qt1090 <- rbind(qt1090[1:2], qt1090[3:4])  
+
+# split-apply-combine
+smlg_dist <- lapply(1:nrow(qt1090), function(x) {
+  dists <- districts_alb2[districts_alb2$area >= qt1090[x, 1] & 
+                            districts_alb2$area <= qt1090[x, 2], ]
+  gCentroid(dists, byid = TRUE)
+})
+
+# plot, with legend
+cols <- c("red", "blue")
+par(mar = c(0, 0, 0, 0))
+plot(districts_alb2, col = "grey")  # map background
+for(i in 1:length(smlg_dist)) {
+  points(smlg_dist[[i]], col = cols[i], pch = 20)
+}
+legend(x = "bottomright", pch = 20, col = cols, bty = "n",
+       legend = c("Smallest districts", "Largest districts"))
+```
+
+That's pretty busy, so let me explain: 
+
+- The first two lines use the `quantile` function to select the ranges of district areas within which the smallest 5% of districts and largest 5% of districts lie. It places these ranges within a matrix `qt1090`, where row 1 contains the minimum (column 1) and maximum (column 2) areas bounding the smallest 5% of areas, and row 2 does the same for the largest 5%.   
+
+- The second block runs a split-apply-combine with `lapply`. The iteration occurs over the rows of `qt1090`, and the ___split___ is done by selecting the districts `districts_alb2` containing areas that fall within the ranges defined by the area values in the selected row of `qt1090`. `gCentroid` is then ___applied___ to the selected districts, which are combined into list `smlg_dist`. 
+
+- The plot first sets up a base map of all the districts, then loops over `smlg_dist` and plots each set of points with a different color. New to this plot is the `legend` function. 
+
+
+[Back to top](#vectorintro)
 
 ## Operations
 
+Now we will move onto some of the common spatial operations that you can expect to do with polygons. To enable this, we are first going to create some additional spatial data. 
+
+```{r, fig.align='center'}
+# define data.frame of arbitrary x and y coordinates
+coords <- data.frame("x" = c(25, 25.1, 26.3, 26.4, 26.3, 25.1), 
+                     "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
+
+# create SpatialPolygons
+p <- Polygon(coords = coords)
+ps <- Polygons(srl = list(p), ID = 1)
+spp <- SpatialPolygons(Srl = list(ps))
+
+# define GCS projection and transform to Albers 
+proj4string(spp) <- proj4string(districts)
+spp_alb <- spTransform(spp, proj4string(roads))
+
+plot(districts_alb2, col = "grey")
+plot(spp_alb, col = "purple", add = TRUE)
+```
+
+The above takes a `data.frame` of x and y coordinates, and builds it up through three steps into `SpatialPolygons`. Step 1 creates a single polygon `p` from the coordinates, step 2 combines that polygon into a polygon list with an ID value, and step3 turns the list of the list into `SpatialPolygons` (`spp`). We then define its crs and reproject it to Albers so we can plot out onto the map of Zambian districts. 
+
 [Back to top](#vectorintro)
 
-### Create data
+### Overlays/spatial queries
 
-Create a dummy polygon from scratch, write out and read back in
+The first thing we will do with our made-up polygon is figure out the districts it intersects. 
+
+```{r}
+spp_alb_int <- over(x = spp_alb, y = districts_alb2, returnList = TRUE)
+spp_alb_int
+```
+
+The `over` function returns the subset of `districts_alb2` that intersects with `spp_alb`, returning the relevant subset of `districts_alb2`'s data.frame within a list. 
+
+Another way of figuring out the same answer is with a `rgeos` function, `gIntersects`
+
+```{r}
+spp_alb_int <- gIntersects(spgeom1 = spp_alb, spgeom2 = districts_alb2,
+                           byid = TRUE)
+head(spp_alb_int)
+which(spp_alb_int)
+```
+
+So that gives somewhat different results. First, `gIntersects` returns a logical value, giving a `TRUE` or `FALSE` for each district in `districts_alb2` as to whether it is intersected by `spp_alb`. We can use the `which` operator to identify the index position of the districts that intersect, and then use the indices to subset out the matching districts.
+
 
 [Back to top](#vectorintro)
 

@@ -118,7 +118,21 @@ A very useful references for basic branching merging can be found [here](https:/
     
     ```
 
-## Rstudio and GitHub
+7. Restore a previous commit
+
+There are multiple ways to do this, some more destructive than others. Perhaps the best way to do this is as follows: 
+
+    ```{bash, eval = FALSE}
+    git checkout -b <branch-name-for-older-project-state> <commithash>
+    ```
+
+The commit hash is the identifier that git assigns to a particular commit. You can find the hashes under RStudio's git history dialog in the SHA column. If you want to reset your master branch to the state it was in under this older commit, then one way you could do it that would best preserve your work up that point would be to: 
+    
+    - create a new branch for the current master branch
+    - delete the files in master branch and commit that change
+    - merge the older branch back onto master, effectively restoring your master branch to the state it was in at the time of that older commit.
+    
+## RStudio and GitHub
 
 1. I can push and pull to my repo from the command line, but Rstudio's git push and pull buttons are greyed out. How do I fix that? The answer can be found [here](https://landeco2point0.wordpress.com/2014/07/22/things-i-forget-pushpull-greyed-out-in-rstudio/). You can fix this and bring the buttons back to life if you do this, from the shell:
 
