@@ -93,6 +93,8 @@ ___[under construction]___
 + Please read and work through the [vignette on Vector Data](vector-data.html), from the start through Section 1. 
 
 ## Class 14 (Oct 18)
++ Read and work through Section 2 in the [vignette on Vector Data](vector-data.html). 
++ There are 6 exercises that should be done in this reading. Please compare prepared with the code that you used to do the assignment, as I will randomly select a different person for each exercise to demonstrate how to do it, or provide the answer, whichever is most appropriate. 
 
 # Week 9 - Working with raster data
 ## Class 14 (Oct 23)

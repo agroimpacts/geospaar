@@ -100,10 +100,16 @@ The same holds as for Windows (just install `rgdal`), but you might also have to
 
 [Back to top](#vectorintro)
 
-# Section 1
+# Section 1{#section1}
 
 This reading introduces reading, writing, and making vector data, how to work with their coordinate reference systems (crs), and how to do some basic plotting, leavened with some additional R programming examples. There are 5 self-examination exercises interspersed throughout the text. You can jump to them from here: 
-Exercises [#1](#exercise1), [#2](#exercise2), [#3](#exercise3), [#4](#exercise4), and [#5](#exercise5) 
+
+## Exercises{#unit1exercises} 
+- [Exercise #1](#exercise1)
+- [Exercise #2](#exercise2)
+- [Exercise #3](#exercise3)
+- [Exercise #4](#exercise4)
+- [Exercise #5](#exercise5) 
 
 ## Reading, writing, and making vector data
 ### From non-spatial to `SpatialPoints`
@@ -145,9 +151,15 @@ farmers <- as.data.frame(farmers)
 class(farmers)
 ```
 
-We can also simply convert `farmers` coordinates to `SpatialPoints`, a simpler spatial class that lacks the accompanying `data.frame`. We are not going to show that here, because that is your first exercise to complete [<span style="color:blue">Exercise 1</span><a name="exercise1"></a>].
+We can also simply convert `farmers` coordinates to `SpatialPoints`, a simpler spatial class that lacks the accompanying `data.frame`. We are not going to show that here, because that is your first exercise to complete 
 
-Let's move on and keep working with `farmers` as a `SpatialPointsDataFrame`, so your next exercise is to promote `farmers` back to a `SpatialPointsDataFrame` [<span style="color:blue">Exercise 2</span><a name="exercise2"></a>]. 
+
+<span style="color:blue">Exercise 1</span><a name="exercise1"></a>: 
+___Figure out how to convert `farmers` to just `SpatialPoints`, rather than a `SpatialPointsDataFrame`___ ([Exercise index](#unit1exercises))
+
+Let's move on and keep working with `farmers` as a `SpatialPointsDataFrame`, so your next exercise is to: 
+
+<span style="color:blue">Exercise 2</span><a name="exercise2"></a>: ___Promote `farmers` back to a `SpatialPointsDataFrame`___ ([Exercise index](#unit1exercises))
 
 ```{r, echo = FALSE}
 coordinates(farmers) <- ~lon + lat  # notice ~ and the lack of encloding ""
@@ -215,7 +227,9 @@ roads_info$layer
 
 A very handy function that reads the spatial file on disk and returns a bunch of useful metadata about it within a list of class `r class(roads_info)`, including the layer name. 
 
-Now, your next exercise is to use `readOGR` to load `districts.shp` into a new object called `districts`, and then figure out the classes of both `roads` and `districts`. Also look at the structure of each object [<span style="color:blue">Exercise 3</span><a name="exercise3"></a>].
+Now, your next exercise is to: 
+
+<span style="color:blue">Exercise 3</span><a name="exercise3"></a>: ___Use `readOGR` to load `districts.shp` into a new object called `districts`, and then figure out the classes of both `roads` and `districts`. Also look at the structure of each object___ ([Exercise index](#unit1exercises))
 
 Once you have those done all of that, let's end this section by a quick look at these data. We are going to plot `districts`, `roads`, and `farmers` all onto one plot.   
 ```{r, echo=FALSE}
@@ -250,7 +264,9 @@ spdat_boxes
 
 In the code above, I added all of our spatial datasets into a `list` (`spdat`), and then ran `sapply` over them to get the bounding boxes of each spatial object. That produced an output matrix `spdat_boxes`, to which I assigned rownames that give meaning to the bounding box values, specifically the westernmost (xmin), southernmost (ymin), easternmost (xmax), and northernmost (ymax) coordinates. 
 
-The results show us that `roads`' coordinates are in different units (meters) than `districts`' and `farmers`' (both decimal degrees).  That means when we try to plot `roads` on the same map as the other two, the roads don't actually appear because the units are not the same. You can see the roads if you plot them on their own, which you should do so on your own [<span style="color:blue">Exercise 4</span><a name="exercise4"></a>]
+The results show us that `roads`' coordinates are in different units (meters) than `districts`' and `farmers`' (both decimal degrees).  That means when we try to plot `roads` on the same map as the other two, the roads don't actually appear because the units are not the same. You can see the roads if you plot them on their own, which you should do so on your own: 
+
+<span style="color:blue">Exercise 4</span><a name="exercise4"></a>: Plot `roads` to have a look at it ([Exercise index](#unit1exercises))
 
 We have seen this problem before with non-spatial data, specifically Task 12 in Unit 1's [assignment 3](#assignment3.html), where you were asked to plot a `loess` prediction line onto an xy scatter where "date" was the unit on the the x axis,  but the loess line was calculated against an integer vector. In that case, we had to change the x values against which we were plotting `loess`, which simply meant we had to "date" into the x argument for the `lines` function to get the `loess` line to appear on the plot. 
 
@@ -364,11 +380,13 @@ plot(spdat$farmers, add = TRUE, col = "blue", pch = 20)
 
 Note the first plot doesn't have the add argument, because it creates the first plot and the "add" argument has the default value of `FALSE` set. The second and third plots need us to change the "add" to `TRUE` to plot on the same line. 
 
-Right, that's the end of this section, but you are left with a final exercise to do [<span style="color:blue">Exercise 5</span><a name="exercise5"></a>]: 
+Right, that's the end of this section, but you are left with a final exercise to do: 
 
-1. Adapt the code above to reproject the spatial objects in `spdat` to the crs used by `roads`;
+<span style="color:blue">Exercise 5</span><a name="exercise5"></a>: 
 
-2. Recreate the same plots using this newly reprojected dataset (i.e. first plot the districts then add the roads and farmers to it. 
+___1. Adapt the code above to reproject the spatial objects in `spdat` to the crs used by `roads`___
+
+___2. Recreate the same plots using this newly reprojected dataset (i.e. first plot the districts then add the roads and farmers to it___ ([Exercise index](#unit1exercises))
 
 [Back to top](#vectorintro)
 
@@ -398,13 +416,23 @@ plot(spdat2$farmers, add = TRUE, col = "blue", pch = 20)
 
 # Section 2
 
-In this section we are going to learn vector manipulations and operations, which will require the `rgeos` package. 
+In this section we are going to learn vector manipulations and operations, which will require the `rgeos` package.
 
 ```{r, message=FALSE}
 library(rgeos)
 ```
 
-There are a total of X exercises: Exercises [#6](#exercise6), [#7](#exercise7), [#8](#exercise8), [#9](#exercise9), [#10](#exercise10)
+As you probably closed this project between Section 1 and 2, you will also need to load back in the `roads`, `districts`, and `farmers` data, and, if necessary, promote them to `Spatial*` classes. The code in [Section 1](#section1) will show you how to do that. 
+
+There are a total of 6 exercises in this section:
+
+## Exercises{#unit2exercises} 
+- [Exercise #6](#exercise6)
+- [Exercise #7](#exercise7)
+- [Exercise #8](#exercise8)
+- [Exercise #9](#exercise9)
+- [Exercise #10](#exercise10) 
+- [Exercise #11](#exercise11) 
 
 ## Extracting spatial properties
 
@@ -461,9 +489,11 @@ plot(districts_alb, col = "grey")
 points(dist_cent, col = "red", pch = 20)
 ```
 
-The resulting centroids in `dist_cent` are of class `r class(dist_cent)`. Note the use of "byid = TRUE" as an argument.  If we set that to `FALSE`, or didn't specify the argument at all, it would have returned a single set of coordinates for the centroid of Zambia. Redo the code above so that you get just the centroid of Zambia, and then plot that onto the district map of Zambia (i.e. the map above, but with just one red point in Zambia' geographic center [<span style="color:blue">Exercise 6</span><a name="exercise6"></a>].
+The resulting centroids in `dist_cent` are of class `r class(dist_cent)`. Note the use of "byid = TRUE" as an argument.  If we set that to `FALSE`, or didn't specify the argument at all, it would have returned a single set of coordinates for the centroid of Zambia. Now, here's the first exercise for this unit: 
 
-We can now find out how far apart the centroids of each district are by using another `rgeos` function, `gDistance`
+<span style="color:blue">Exercise 6</span><a name="exercise6"></a>: ___Redo the code above so that you get just the centroid of Zambia (i.e. that single point I just mentioned), and then plot that onto the district map of Zambia (i.e. the map above, but with just one red point in Zambia' geographic center___ ([Exercise index](#unit2exercises))
+
+Moving on, we can now find out how far apart the centroids of each district are by using another `rgeos` function, `gDistance`
 
 ```{r}
 all_dists <- gDistance(spgeom1 = dist_cent, byid = TRUE)
@@ -476,7 +506,9 @@ There are two variants above. The first is captured in `all_dists`, and it produ
 
 I invite you to examine the contents of both of those objects--I am not printing them here because this vignette is already long.  What I do show you is a summary of the distances in kilometers using the `quantile` function.
 
-Okay, here's another exercise: figure out which district is the closest to the centroid of Zambia, and how far that distance is in kilometers [<span style="color:blue">Exercise 7</span><a name="exercise7"></a>]. 
+Okay, here's another exercise: 
+
+[<span style="color:blue">Exercise 7</span><a name="exercise7"></a>] ___Figure out which district is the closest to the centroid of Zambia, and how far that distance is in kilometers___ ([Exercise index](#unit2exercises))
 
 ### Length
 
@@ -495,7 +527,9 @@ hist(district_perims / 1000, xlab = "km", col = "green4", las = 2,
 
 `gLength` applied to `SpatialLines*` gives us line lengths, and for `SpatialPolygons` it gives us perimeter length (including the perimeter around any holes in the polygons). If "byid = FALSE" (the default) in either case, you get total length (of all line segments or of all polygon perimeters).
 
-The histograms plotted above have some graphical parameters added to them that might be new to you ("mgp", "cex.main", "cex.lab", "cex.axis"). ___I invite you to re-run the plots after changing the values passed to each argument so that you can understand what they do.___ 
+The histograms plotted above have some graphical parameters added to them that might be new to you ("mgp", "cex.main", "cex.lab", "cex.axis"). 
+
+[<span style="color:blue">Exercise 8</span><a name="exercise8"></a>] ___Rerun those plots, changing the values (at least one time), to the "mgp", "cex.main", "cex.lab", and "cex.axis" arguments.___ ([Exercise index](#unit2exercises))
 
 [Back to top](#vectorintro)
 
@@ -512,7 +546,7 @@ points(spTransform(farmers, proj4string(roads))[30:40, ], col = "red", pch = 20)
 
 Notice that the sub-setting is done "on the fly" within the plotting functions themselves. The one applied to farmers follows the necessary reprojection step, which is also done on the fly. 
 
-That's index-based subsetting. We can also do it using values stored within the rows and columns of the data. To do, we are first going to enhance those data a bit.  
+That's index-based subsetting. We can also do it using values stored within the rows and columns of the data. But to do that, we are first going to enhance those data a bit.  
 
 [Back to top](#vectorintro)
 
@@ -531,7 +565,8 @@ head(slot(districts_alb2, "data"))
 
 So that's a fairly straightforward way to do it. Just append the areas as a new column name on `districts_alb2` (which we create), which exactly the same way you would do it if this was just an ordinary `data.frame`. Note that this change only affects the `data.frame` part of `districts_alb`, and that to view the altered data.frame, you have to extract the `data.frame` from its slot.
 
-We could also do the same thing this way
+We could also do the same thing this way:
+
 ```{r}
 districts_alb2 <- cbind(districts_alb, 
                         gArea(districts_alb, byid = TRUE))
@@ -548,8 +583,6 @@ districts_alb2 <- merge(districts_alb, dist_area_df, by.x = "distName",
 head(slot(districts_alb2, "data"))
 ```
 
-This last one might be new to you, as it uses the `merge` function. We had it in earlier readings, but didn't go over it much in class.  `merge` basically joins two `data.frame`s by the values in one or more columns that share the same values, or subsets of the same values. There is a `merge` method for ordinary `data.frame`s, and, as we see here, one for `Spatial*DataFrame`s. 
-
 ```{r, echo=FALSE, eval=FALSE}
 # check merge ordering
 set.seed(1)
@@ -558,6 +591,18 @@ plot(districts_alb)
 plot(districts_alb[n, ], add = TRUE, col = "red")
 plot(districts_alb2[n, ], add = TRUE, col = "blue")
 ```
+
+
+This last one might be new to you, as it uses the `merge` function. We had it in earlier readings, but didn't go over it much in class.  `merge` basically joins two `data.frame`s by the values in one or more columns that share the same values, or subsets of the same values. There is a `merge` method for ordinary `data.frame`s, and, as we see here, one for `Spatial*DataFrame`s. 
+
+That brings us to our next exercise, for which I will first do some more work to help: 
+
+```{r}
+roads$roadnum <- 1:length(roads)  # new identifier, because of NAs in "roadid"
+```
+
+
+<span style="color:blue">Exercise 9</span><a name="exercise9"></a>: ___Adapt the code you see above to calculate road lengths (in km) in `roads`, and merge the resulting `data.frame` containing the road lengths and "roadnum" identifier (the merge key) onto `roads`, to create a new `roads2` object. Plot the histogram of those lengths, making the bars blue___ ([Exercise index](#unit2exercises))
 
 [Back to top](#vectorintro)
 
@@ -580,7 +625,9 @@ That's two examples of subsetting, in which the first (`dists_begkn`) selects di
 
 The resulting subsets are plotted onto the full district map of Zambia. Note the use of the `rgb` function to define the colors used to fill the polygons. `rgb` makes red-green-blue color combinations, and the alpha argument allows you to define the transparency of the color.  In this case, our two subsets selected some of the same polygons (two of the districts with names beginning with "Ka" or "Ny" are also large than 2 million ha), so the partial transparency allows us to show where the overlaps occur. 
 
-As an exercise, create new district subsets by use a different grep pattern match on the district names (look at `districts_alb2$distName` for some ideas), and by changing the area used as a threshold (e.g. make it 1 million ha) size, and the replot the results. Instead of a partially transparent blue, make a partially transparent green for the new `dists_gt2m`. [<span style="color:blue">Exercise 8</span><a name="exercise8"></a>] 
+As an exercise, create new district subsets by use a different grep pattern match on the district names (look at `districts_alb2$distName` for some ideas), and by changing the area used as a threshold (e.g. make it 1 million ha) size, and the replot the results. This leads us to our penultimate exercise for this section, which should be fairly easy (you will probably just have to read `?rgb` to figure it out)
+
+<span style="color:blue">Exercise 10</span><a name="exercise10"></a>: ___Recreate the plot above, but instead of a partially transparent blue, use a partially transparent green for the plot of `dists_gt2m`___ ([Exercise index](#unit2exercises))
 
 [Back to top](#vectorintro)
 
@@ -619,8 +666,21 @@ That's pretty busy, so let me explain:
 
 - The plot first sets up a base map of all the districts, then loops over `smlg_dist` and plots each set of points with a different color. New to this plot is the `legend` function. 
 
+Okay, now for our final exercise of this section:
+
+<span style="color:blue">Exercise 11</span><a name="exercise11"></a>: ___Taking the split-apply-combine code above as an example, find___
+
+___1. The 15th, 25th and 75th, and 85th percentile area value for districts___
+
+___2. Apply the split apply combine, selecting districts falling between the 15th and 25th percentiles of area, and between the 75th and 85th percentile areas, calculating the centroids of the selected districts___  
+
+___3. Plot the centroids as above___ ([Exercise index](#unit2exercises))
 
 [Back to top](#vectorintro)
+
+
+# Section 3
+## Exercises{#unit3exercises} 
 
 ## Spatial Operations
 
@@ -781,6 +841,14 @@ points(dist_cent, col = "red", pch = 20)
 zam_cent <- gCentroid(dist_cent)
 zam_dists <- gDistance(spgeom1 = zam_cent, spgeom2 = dist_cent, byid = TRUE)
 districts@data[which.min(zam_dists), ]
+
+# exercise 9
+road_len_df <- data.frame("roadnum" = roads$roadnum, 
+                          "length" = gLength(roads, byid = TRUE) / 1000)
+roads2 <- merge(roads, road_len_df, by.x = "roadnum", by.y = "roadnum")
+head(slot(roads2, "data"))
+hist(roads2$length, col = "blue")
+
 ```
 
 
