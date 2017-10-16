@@ -286,18 +286,45 @@ Compare their classes.
 Convert `roads` to just `SpatialLines`, and `districts` to just `SpatialPolygons`
 
 ## Answers
-```{r, eval = FALSE, echo = FALSE}
+
+```{r, eval = FALSE}
 # Exercise 1
+# spatialpoints
 farmerpts <- farmers[, c("lat", "lon")]
 coordinates(farmerpts) <- ~lon + lat
-plot(farmerpts)
-slotNames(farmerpts)
 
-coordinates(farmers) <- ~lon + lat
+# or 
+farmerpts <- as.data.frame(farmerpts)
+farmerpts <- SpatialPoints(farmerpts)  # but doesn't work for data.frames
+
+# SpatialPointsDataFrame
+farmers <- SpatialPointsDataFrame(farmers)  # fail
+coordinates(farmers) <- ~lon + lat  # correct, promotes to SpDF
+
+class(farmerpts)
+class(farmers)
+
+# various in-class meanderings 
+# explore slots
+slotNames(farmerpts)
 slotNames(farmers)
 
+slotNames(farmers)
+slot(farmers, "data")[1:2, ]
+slot(farmers, "coords")[1:2, ]
+slot(farmers, "coords.nrs")
+
+```
+
+## Answers cont
+
+```{r, eval=FALSE}
 # Exercise 2
-farmers <- as.data.frame(farmers)
+farmers <- as.data.frame(farmers)  # coerce/demote back to data.frame
+
+# coercion
+farmerpts <- as.data.frame(farmerpts)
+as(farmerpts, "SpatialPoints")  # fail
 
 # Exercise 3
 fnm <- system.file("extdata/roads.shp", package = "geospaar")
@@ -305,9 +332,11 @@ roads <- readOGR(dsn = fnm, layer = "roads")
 fnm <- system.file("extdata/districts.shp", package = "geospaar")
 districts <- readOGR(dsn = fnm, layer = "districts")
 
-class(roads)[1]
-class(districts)[1]
-
+# Exercise
+roads_spl <- as(roads, "SpatialLines")
+dists_spl <- as(districts, "SpatialPolygons")
+c(class(roads_spl)[1], class(roads)[1])
+c(class(dists_spl)[1], class(districts)[1])
 ```
 
 

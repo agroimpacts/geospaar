@@ -374,6 +374,52 @@ Lyndon Estes &amp; Zhiwen Zhu
 </div>
 <div id="answers" class="slide section level2">
 <h1>Answers</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Exercise 1</span>
+<span class="co"># spatialpoints</span>
+farmerpts &lt;-<span class="st"> </span>farmers[, <span class="kw">c</span>(<span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>)]
+<span class="kw">coordinates</span>(farmerpts) &lt;-<span class="st"> </span><span class="er">~</span>lon +<span class="st"> </span>lat
+
+<span class="co"># or </span>
+farmerpts &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(farmerpts)
+farmerpts &lt;-<span class="st"> </span><span class="kw">SpatialPoints</span>(farmerpts)  <span class="co"># but doesn't work for data.frames</span>
+
+<span class="co"># SpatialPointsDataFrame</span>
+farmers &lt;-<span class="st"> </span><span class="kw">SpatialPointsDataFrame</span>(farmers)  <span class="co"># fail</span>
+<span class="kw">coordinates</span>(farmers) &lt;-<span class="st"> </span><span class="er">~</span>lon +<span class="st"> </span>lat  <span class="co"># correct, promotes to SpDF</span>
+
+<span class="kw">class</span>(farmerpts)
+<span class="kw">class</span>(farmers)
+
+<span class="co"># various in-class meanderings </span>
+<span class="co"># explore slots</span>
+<span class="kw">slotNames</span>(farmerpts)
+<span class="kw">slotNames</span>(farmers)
+
+<span class="kw">slotNames</span>(farmers)
+<span class="kw">slot</span>(farmers, <span class="st">&quot;data&quot;</span>)[<span class="dv">1</span>:<span class="dv">2</span>, ]
+<span class="kw">slot</span>(farmers, <span class="st">&quot;coords&quot;</span>)[<span class="dv">1</span>:<span class="dv">2</span>, ]
+<span class="kw">slot</span>(farmers, <span class="st">&quot;coords.nrs&quot;</span>)</code></pre></div>
+</div>
+<div id="answers-cont" class="slide section level2">
+<h1>Answers cont</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Exercise 2</span>
+farmers &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(farmers)  <span class="co"># coerce/demote back to data.frame</span>
+
+<span class="co"># coercion</span>
+farmerpts &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(farmerpts)
+<span class="kw">as</span>(farmerpts, <span class="st">&quot;SpatialPoints&quot;</span>)  <span class="co"># fail</span>
+
+<span class="co"># Exercise 3</span>
+fnm &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/roads.shp&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;geospaar&quot;</span>)
+roads &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn =</span> fnm, <span class="dt">layer =</span> <span class="st">&quot;roads&quot;</span>)
+fnm &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/districts.shp&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;geospaar&quot;</span>)
+districts &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn =</span> fnm, <span class="dt">layer =</span> <span class="st">&quot;districts&quot;</span>)
+
+<span class="co"># Exercise</span>
+roads_spl &lt;-<span class="st"> </span><span class="kw">as</span>(roads, <span class="st">&quot;SpatialLines&quot;</span>)
+dists_spl &lt;-<span class="st"> </span><span class="kw">as</span>(districts, <span class="st">&quot;SpatialPolygons&quot;</span>)
+<span class="kw">c</span>(<span class="kw">class</span>(roads_spl)[<span class="dv">1</span>], <span class="kw">class</span>(roads)[<span class="dv">1</span>])
+<span class="kw">c</span>(<span class="kw">class</span>(dists_spl)[<span class="dv">1</span>], <span class="kw">class</span>(districts)[<span class="dv">1</span>])</code></pre></div>
 </div>
 
   <!-- dynamically load mathjax for compatibility with self-contained -->
