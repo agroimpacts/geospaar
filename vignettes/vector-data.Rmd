@@ -622,7 +622,7 @@ That's pretty busy, so let me explain:
 
 [Back to top](#vectorintro)
 
-## Operations
+## Spatial Operations
 
 Now we will move onto some of the common spatial operations that you can expect to do with polygons. To enable this, we are first going to create some additional spatial data. 
 
@@ -639,6 +639,7 @@ spp <- SpatialPolygons(Srl = list(ps))
 # define GCS projection and transform to Albers 
 proj4string(spp) <- proj4string(districts)
 spp_alb <- spTransform(spp, proj4string(roads))
+spp_alb <- SpatialPolygonsDataFrame(spp_alb, data.frame("ID" = 1))
 
 plot(districts_alb2, col = "grey")
 plot(spp_alb, col = "purple", add = TRUE)
@@ -668,12 +669,96 @@ head(spp_alb_int)
 which(spp_alb_int)
 ```
 
-So that gives somewhat different results. First, `gIntersects` returns a logical value, giving a `TRUE` or `FALSE` for each district in `districts_alb2` as to whether it is intersected by `spp_alb`. We can use the `which` operator to identify the index position of the districts that intersect, and then use the indices to subset out the matching districts.
+So that gives somewhat different results. First, `gIntersects` returns a logical value, giving a `TRUE` or `FALSE` for each district in `districts_alb2` as to whether it is intersected by `spp_alb`. We can use the `which` operator to identify the index of the intersecting districts, and then use the indices to subset out the matching districts, as follows.
 
+```{r}
+spp_alb_int <- which(gIntersects(spgeom1 = spp_alb, spgeom2 = districts_alb2,
+                                 byid = TRUE))
+districts_int_spp <- districts_alb2[spp_alb_int, ]
+
+par(mar = c(0, 0, 0, 0))
+plot(districts_alb2, col = "grey")
+plot(districts_int_spp, add = TRUE, 
+     col = rainbow(n = length(districts_int_spp)))
+plot(spp_alb, add = TRUE, border = "grey20", col = "grey20", density = 10,
+     angle = 45, lwd = 1.5)
+```
+
+In the code above, you will see that we slightly revised the code, by putting the `gIntersects` inside the `which` function, and capturing the output in `spp_alb_int`, which we then used to subset `districts_alb2` into a new `SpatialPolygonsDataFrame`, `districts_int_spp`. 
+
+In the plot commands function, you will see a new way of selecting colors, using the `rainbow` function. In this case, we tell `rainbow` to select "n" colors (here equal to the number of districts in `districts_int_spp`), so that we get a different color for each of the selected districts. We also overlay `spp_alb` on the districts it intersects, using angled cross-hatching in place of a fill color (set using the "density" and "angle" arguments). Cross-hatching is apparently considered a no-no, however, because of visual distortions, but now you know how to do it. 
 
 [Back to top](#vectorintro)
 
-### Intersects and Intersections
+### Intersections
+
+We have just seen how `gIntersects` can be used to identify intersecting polygons. Now let's look at what `gIntersection` does. 
+
+```{r}
+spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2, 
+                                byid = TRUE)
+
+par(mar = rep(0, 4))
+plot(districts_alb2, col = "grey")
+plot(spp_int_distrs, col = rainbow(n = length(spp_int_distrs)), add = TRUE)
+```
+
+Pretty clear what `gIntersection` does, and how it differs from `gIntersects`. However, note that you have to use the "byid = TRUE" option if you want to the detail of the intersected district boundaries, else you would get this.
+
+```{r}
+spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2)
+
+par(mar = rep(0, 4))
+plot(districts_alb2, col = "grey")
+plot(spp_int_distrs, col = rainbow(n = length(spp_int_distrs)), add = TRUE)
+```
+
+Just a single filled polygon, not what we were hoping to see. 
+
+Now, a much friendlier way of doing an intersection, which uses, somewhat counterintuitively, the `raster` package.  The developers of the `raster` package have created a more user friendly set of certain `rgeos` functions, so we are going to demonstrate those here. 
+
+```{r}
+library(raster)
+
+spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2, 
+                                byid = TRUE)
+spp_int_distrs2 <- intersect(x = spp_alb, y = districts_alb2)
+class(spp_int_distrs2)[1]
+class(spp_int_distrs)[1]
+```
+
+It turns out that `raster` has a function (`intersect`) that does the same job as `rgeos` (go ahead and plot `spp_int_distrs2`, and you will see), but goes further, in that it retains the relevant information from any `data.frame`(s) in the objects being intersected, whereas `gIntersects` only returns the intersected geometries, and you need to do a great deal more work to recover and then join the accompanying attributes to the geometries.  
+
+
+> An aside: These last two example demonstrates both a strength and weakness of R, in my opinion--R's strength is that you can usually find multiple solutions to solve a particular problem; R's weakness is that choosing the best solution can be tricky, given the profusion of choice, and you might end up trying something that takes up a lot of your time. 
+
+### Aggregation
+
+```{r}
+# plot(aggregate(x = spp_int_distrs2, by = "ID"))
+# spp_int_distrs2$distName
+# 
+# gUnionCascaded()
+# 
+# aggregate(x = districts_alb2, y = spp_alb, 
+#           by = list(i = "area"), FUN = sum)
+# spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2, 
+#                                 byid = TRUE)
+# rbind(districts_alb2, spp_alb)
+# 
+# 
+# lapply(spp_int_distrs@polygons, function(x) {
+#   x
+#   slot(x, "ID")
+# })
+# 
+# sapply(spp_int_distrs@polygons, function(x) slot(x, "ID"))
+# 
+# 
+# SpatialPolygonsDataFrame(spp_int_distrs, 
+#                          data.frame("distName" = districts_int_spp$distName))
+
+```
 
 [Back to top](#vectorintro)
 
