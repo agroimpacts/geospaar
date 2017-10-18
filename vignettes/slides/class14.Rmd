@@ -82,3 +82,95 @@ set.seed(1)
 student_names[sample(1:nrow(student_names), size = 6, replace = FALSE), ]
 ```
 
+## Answers to Today's Exercises 1
+
+```{r, eval = FALSE}
+# Prep
+fnm <- system.file("extdata/roads.shp", package = "geospaar")
+roads <- readOGR(dsn = fnm, layer = "roads")
+
+fnm <- system.file("extdata/districts.shp", package = "geospaar")
+districts <- readOGR(dsn = fnm, layer = "districts")
+districts_alb <- spTransform(districts, proj4string(roads))
+
+# exercise 6
+zam_cent <- gCentroid(spgeom = districts_alb)  # get centroids
+plot(spTransform(districts, proj4string(roads)), col = "grey")
+points(zam_cent, col = "red", pch = 20)
+
+# exercse 7
+dist_cent <- gCentroid(spgeom = districts_alb, byid = TRUE)  # get centroids
+zam_dists <- gDistance(spgeom1 = zam_cent, spgeom2 = dist_cent, byid = TRUE)
+districts[which.min(zam_dists), ]  # district name
+plot(districts_alb, col = "grey") 
+plot(districts_alb[which.min(zam_dists), ], add = TRUE, col = "red")
+points(zam_cent, col = "blue", pch = 20, cex = 2)
+```
+
+## Answers to Today's Exercises 2
+```{r, eval = FALSE}
+# exercise 8
+road_lengths <- gLength(spgeom = roads, byid = TRUE)
+district_perims <- gLength(spgeom = districts_alb, byid = TRUE)
+
+par(mfrow = c(1, 2), mgp = c(0, 2, -0.2))    # mgp changes margins (title, axis labels, axis lines)
+hist(road_lengths / 1000, xlab = "km", col = "blue", las = 2, cex.main = 2,
+     cex.lab = 0.5, cex.axis = 0.5, main = "Histogram of road lengths")
+hist(district_perims / 1000, xlab = "km", col = "green4", las = 2,
+     cex.main = 1.1, cex.lab = 1, cex.axis = 1,
+     main = "Histogram of district perimeters")
+
+# exercise 9
+roads$roadnum <- 1:length(roads)  # new identifier, because of NAs in "roadid"
+road_len_df <- data.frame("roadnum" = roads$roadnum, 
+                          "length" = gLength(roads, byid = TRUE) / 1000)
+roads2 <- merge(roads, road_len_df, by.x = "roadnum", by.y = "roadnum")
+head(slot(roads2, "data"))
+par(mar = c(4, 4, 2, 3), mgp = c(3, 1, 0))
+hist(roads2$length, col = "blue")
+
+```
+
+## Answers to Today's Exercises 3
+```{r, eval = FALSE}
+# Exercise 10
+districts_alb2 <- districts_alb  # create a new version
+districts_alb2$area <- gArea(districts_alb2, byid = TRUE)
+
+dists_begkn <- districts_alb2[grep("^Ka|^Nyi", districts_alb2$distName), ]
+dists_gt2M <- districts_alb2[districts_alb2$area / 10000 > 2000000, ]
+
+par(mar = c(0, 0, 0, 0))
+plot(districts_alb2, col = "grey")
+plot(dists_begkn, col = rgb(0, 0, 1, alpha = 0.5), add = TRUE)
+plot(dists_gt2M, col = rgb(0, 1, 0, alpha = 0.5), add = TRUE)
+```
+
+## Answers to Today's Exercises 4
+```{r, eval=FALSE}
+# Exercise 11
+qtq11 <- quantile(districts_alb2$area, c(0.0, 0.15, 0.25, .75, .85))
+qtq11a <- rbind(qtq11[2:3], qtq11[4:5])
+rownames(qtq11a) <- c("15-25", "75-85") 
+colnames(qtq11a) <- c("min", "max")
+
+smlg_dist <- lapply(1:nrow(qtq11a), function(x) {
+  dists <- districts_alb2[districts_alb2$area >= qtq11a[x, 1] &
+                            districts_alb2$area <= qtq11a[x, 2], ]
+  gCentroid(dists, byid = TRUE)
+})
+
+# plot, with legend
+cols <- c("red", "blue")
+par(mar = c(0, 0, 0, 0))
+plot(districts_alb2, col = "grey")  # map background
+for(i in 1:length(smlg_dist)) {
+  points(smlg_dist[[i]], col = cols[i], pch = 20)
+}
+legend(x = "bottomright", pch = 20, col = cols, bty = "n",
+       legend = c("15-25pct", "75-85pct"))
+
+```
+
+
+

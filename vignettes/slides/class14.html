@@ -126,6 +126,89 @@ student_names[<span class="kw">sample</span>(<span class="dv">1</span>:<span cla
 <pre><code>## [1] &quot;Daniel Lassila&quot;        &quot;Grant Madigan-Kolstad&quot; &quot;Lucy Lee&quot;             
 ## [4] &quot;Tom Smith&quot;             &quot;Caitlin Cassisi&quot;       &quot;Roopa Krithivasan&quot;</code></pre>
 </div>
+<div id="answers-to-todays-exercises-1" class="slide section level2">
+<h1>Answers to Today’s Exercises 1</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Prep</span>
+fnm &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/roads.shp&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;geospaar&quot;</span>)
+roads &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn =</span> fnm, <span class="dt">layer =</span> <span class="st">&quot;roads&quot;</span>)
+
+fnm &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata/districts.shp&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;geospaar&quot;</span>)
+districts &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn =</span> fnm, <span class="dt">layer =</span> <span class="st">&quot;districts&quot;</span>)
+districts_alb &lt;-<span class="st"> </span><span class="kw">spTransform</span>(districts, <span class="kw">proj4string</span>(roads))
+
+<span class="co"># exercise 6</span>
+zam_cent &lt;-<span class="st"> </span><span class="kw">gCentroid</span>(<span class="dt">spgeom =</span> districts_alb)  <span class="co"># get centroids</span>
+<span class="kw">plot</span>(<span class="kw">spTransform</span>(districts, <span class="kw">proj4string</span>(roads)), <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>)
+<span class="kw">points</span>(zam_cent, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>)
+
+<span class="co"># exercse 7</span>
+dist_cent &lt;-<span class="st"> </span><span class="kw">gCentroid</span>(<span class="dt">spgeom =</span> districts_alb, <span class="dt">byid =</span> <span class="ot">TRUE</span>)  <span class="co"># get centroids</span>
+zam_dists &lt;-<span class="st"> </span><span class="kw">gDistance</span>(<span class="dt">spgeom1 =</span> zam_cent, <span class="dt">spgeom2 =</span> dist_cent, <span class="dt">byid =</span> <span class="ot">TRUE</span>)
+districts[<span class="kw">which.min</span>(zam_dists), ]  <span class="co"># district name</span>
+<span class="kw">plot</span>(districts_alb, <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>) 
+<span class="kw">plot</span>(districts_alb[<span class="kw">which.min</span>(zam_dists), ], <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)
+<span class="kw">points</span>(zam_cent, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">cex =</span> <span class="dv">2</span>)</code></pre></div>
+</div>
+<div id="answers-to-todays-exercises-2" class="slide section level2">
+<h1>Answers to Today’s Exercises 2</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># exercise 8</span>
+road_lengths &lt;-<span class="st"> </span><span class="kw">gLength</span>(<span class="dt">spgeom =</span> roads, <span class="dt">byid =</span> <span class="ot">TRUE</span>)
+district_perims &lt;-<span class="st"> </span><span class="kw">gLength</span>(<span class="dt">spgeom =</span> districts_alb, <span class="dt">byid =</span> <span class="ot">TRUE</span>)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dt">mgp =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, -<span class="fl">0.2</span>))    <span class="co"># mgp changes margins (title, axis labels, axis lines)</span>
+<span class="kw">hist</span>(road_lengths /<span class="st"> </span><span class="dv">1000</span>, <span class="dt">xlab =</span> <span class="st">&quot;km&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="dt">las =</span> <span class="dv">2</span>, <span class="dt">cex.main =</span> <span class="dv">2</span>,
+     <span class="dt">cex.lab =</span> <span class="fl">0.5</span>, <span class="dt">cex.axis =</span> <span class="fl">0.5</span>, <span class="dt">main =</span> <span class="st">&quot;Histogram of road lengths&quot;</span>)
+<span class="kw">hist</span>(district_perims /<span class="st"> </span><span class="dv">1000</span>, <span class="dt">xlab =</span> <span class="st">&quot;km&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;green4&quot;</span>, <span class="dt">las =</span> <span class="dv">2</span>,
+     <span class="dt">cex.main =</span> <span class="fl">1.1</span>, <span class="dt">cex.lab =</span> <span class="dv">1</span>, <span class="dt">cex.axis =</span> <span class="dv">1</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Histogram of district perimeters&quot;</span>)
+
+<span class="co"># exercise 9</span>
+roads$roadnum &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="kw">length</span>(roads)  <span class="co"># new identifier, because of NAs in &quot;roadid&quot;</span>
+road_len_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;roadnum&quot;</span> =<span class="st"> </span>roads$roadnum, 
+                          <span class="st">&quot;length&quot;</span> =<span class="st"> </span><span class="kw">gLength</span>(roads, <span class="dt">byid =</span> <span class="ot">TRUE</span>) /<span class="st"> </span><span class="dv">1000</span>)
+roads2 &lt;-<span class="st"> </span><span class="kw">merge</span>(roads, road_len_df, <span class="dt">by.x =</span> <span class="st">&quot;roadnum&quot;</span>, <span class="dt">by.y =</span> <span class="st">&quot;roadnum&quot;</span>)
+<span class="kw">head</span>(<span class="kw">slot</span>(roads2, <span class="st">&quot;data&quot;</span>))
+<span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="dt">mgp =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">0</span>))
+<span class="kw">hist</span>(roads2$length, <span class="dt">col =</span> <span class="st">&quot;blue&quot;</span>)</code></pre></div>
+</div>
+<div id="answers-to-todays-exercises-3" class="slide section level2">
+<h1>Answers to Today’s Exercises 3</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Exercise 10</span>
+districts_alb2 &lt;-<span class="st"> </span>districts_alb  <span class="co"># create a new version</span>
+districts_alb2$area &lt;-<span class="st"> </span><span class="kw">gArea</span>(districts_alb2, <span class="dt">byid =</span> <span class="ot">TRUE</span>)
+
+dists_begkn &lt;-<span class="st"> </span>districts_alb2[<span class="kw">grep</span>(<span class="st">&quot;^Ka|^Nyi&quot;</span>, districts_alb2$distName), ]
+dists_gt2M &lt;-<span class="st"> </span>districts_alb2[districts_alb2$area /<span class="st"> </span><span class="dv">10000</span> &gt;<span class="st"> </span><span class="dv">2000000</span>, ]
+
+<span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))
+<span class="kw">plot</span>(districts_alb2, <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>)
+<span class="kw">plot</span>(dists_begkn, <span class="dt">col =</span> <span class="kw">rgb</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>), <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(dists_gt2M, <span class="dt">col =</span> <span class="kw">rgb</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dt">alpha =</span> <span class="fl">0.5</span>), <span class="dt">add =</span> <span class="ot">TRUE</span>)</code></pre></div>
+</div>
+<div id="answers-to-todays-exercises-4" class="slide section level2">
+<h1>Answers to Today’s Exercises 4</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Exercise 11</span>
+qtq11 &lt;-<span class="st"> </span><span class="kw">quantile</span>(districts_alb2$area, <span class="kw">c</span>(<span class="fl">0.0</span>, <span class="fl">0.15</span>, <span class="fl">0.25</span>, .<span class="dv">75</span>, .<span class="dv">85</span>))
+qtq11a &lt;-<span class="st"> </span><span class="kw">rbind</span>(qtq11[<span class="dv">2</span>:<span class="dv">3</span>], qtq11[<span class="dv">4</span>:<span class="dv">5</span>])
+<span class="kw">rownames</span>(qtq11a) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;15-25&quot;</span>, <span class="st">&quot;75-85&quot;</span>) 
+<span class="kw">colnames</span>(qtq11a) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)
+
+smlg_dist &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span>:<span class="kw">nrow</span>(qtq11a), function(x) {
+  dists &lt;-<span class="st"> </span>districts_alb2[districts_alb2$area &gt;=<span class="st"> </span>qtq11a[x, <span class="dv">1</span>] &amp;
+<span class="st">                            </span>districts_alb2$area &lt;=<span class="st"> </span>qtq11a[x, <span class="dv">2</span>], ]
+  <span class="kw">gCentroid</span>(dists, <span class="dt">byid =</span> <span class="ot">TRUE</span>)
+})
+
+<span class="co"># plot, with legend</span>
+cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>)
+<span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))
+<span class="kw">plot</span>(districts_alb2, <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>)  <span class="co"># map background</span>
+for(i in <span class="dv">1</span>:<span class="kw">length</span>(smlg_dist)) {
+  <span class="kw">points</span>(smlg_dist[[i]], <span class="dt">col =</span> cols[i], <span class="dt">pch =</span> <span class="dv">20</span>)
+}
+<span class="kw">legend</span>(<span class="dt">x =</span> <span class="st">&quot;bottomright&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">col =</span> cols, <span class="dt">bty =</span> <span class="st">&quot;n&quot;</span>,
+       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;15-25pct&quot;</span>, <span class="st">&quot;75-85pct&quot;</span>))</code></pre></div>
+</div>
 
   <!-- dynamically load mathjax for compatibility with self-contained -->
   <script>
