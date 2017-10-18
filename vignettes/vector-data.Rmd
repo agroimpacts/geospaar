@@ -687,6 +687,10 @@ There will be a total of X exercises:
 
 - [Exercise #12](#exercise12)
 - [Exercise #13](#exercise13)
+- [Exercise #14](#exercise14)
+- [Exercise #15](#exercise15)
+- [Exercise #16](#exercise16)
+- [Exercise #17](#exercise17)
 
 ## Spatial Operations
 
@@ -828,7 +832,9 @@ for(i in l) {
 
 ```
 
-We have three variants on `sp::aggregate` shown above.  `spint_agg` resulted from "by = "ID"", which aggregates polygons according to the values the "ID" column. `spint_agg2` did not have that argument passed to it, `spint_agg3` had "dissolve = FALSE" as an argument, and `spint_agg4` is the same as the previous plus the "by = "ID"" argument. The plots shows that the first two look identical and that they were dissolved. The second two look like they weren't dissolved at all. So what are the differences? 
+We have three variants on `aggregate` shown above.  `spint_agg` resulted from "by = "ID"", which aggregates polygons according to the values the "ID" column. `spint_agg2` did not have that argument passed to it, `spint_agg3` had "dissolve = FALSE" as an argument, and `spint_agg4` is the same as the previous plus the "by = "ID"" argument. The plots shows that the first two look identical and that they were dissolved. The second two look like they weren't dissolved at all. So what are the differences? 
+
+> Function note: There are two versions of `aggregate` that we could have used here. The `raster` package has its own version, which is simpler than the one provided by `sp`. Since we loaded `raster` last into our environment (remember how to confirm that? use `search()` to check the load order), the version we are using here is the one provided by `raster`, which works on rasters as well as `SpatialPolygons`. 
 
 ```{r}
 sapply(l, class)
@@ -872,7 +878,7 @@ I am not going to explain this code too much, but what it does is give you a way
 
 However, the main point of showing that code is so that you can recycle it for an exercise:
 
-<span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Recreate the list `l` so that it contains just two objects: `spp_int_distrs2` and `spintd_agg4`. Rerun the code directly above with the new `l`. What do the results tell us about the structures of the two objects in `l`?___ [Exercise index](#unit3exercises) 
+<span style="color:blue">Exercise 12</span><a name="exercise12"></a>: ___Recreate the list `l` so that it contains just two objects: `spp_int_distrs2` and `spintd_agg4`. Rerun the code directly above with the new `l`. What do the results tell us about the structures of the two objects in `l`?___ [Exercise index](#unit3exercises) 
 
 By the way, before we go into the next section, just wanted to mention that the `gUnaryUnion` dissolves the same way that `aggregate` does by default (e.g. as done to make `spintd_agg2` above), producing just `SpatialPolygons` output.  
 
@@ -896,7 +902,7 @@ sppoly_structure(l)
 
 In the above, we have applied `disaggregate` to the dissolved aggregate `spint_agg`, and to the version of the aggregation in which the districts were aggregated into a single polygon group (`spintd_agg4`). We combine the results of the two disaggregation into a list, together with `spintd_agg4`, and then run `sppoly_structure` on it. 
 
-> Wait, what is `sppoly_structure`? That complicated thing I asked you to run for [Exercise 13](#exercise13)--I added it as a function to the `geospaar` package so that I didn't have to keep copying a big chunk of code that I want to use--that right there (the need to repeatedly reuse some code) is the main reason for writing and documenting a package function. Have a look at `?sppoly_function`.
+> Wait, what is `sppoly_structure`? That complicated thing I asked you to run for [Exercise 12](#exercise12)--I added it as a function to the `geospaar` package so that I didn't have to keep copying a big chunk of code that I want to use--that right there (the need to repeatedly reuse some code) is the main reason for writing and documenting a package function. Have a look at `?sppoly_function`.
 
 The results tell us that you can't really disaggregate `SpatialPolygons*` that have been dissolved, but you can split up a polygon group containing multiple polygons into multiple polygon groups, each with a single polygon in it. Compare the results for object#s 2 (`spintd_dagg4`) and (`spintd_dagg4`) 3 in the output from `sppoly_structure` above to see how disaggregation changes the structure of an aggregated polygon. 
 
@@ -924,13 +930,94 @@ for(i in 1:length(l)) {
 
 That shows `rgeos::gDifference` applied two ways to cut out the area of `spp_alb` from the districts it ___intersects___, one in which the remainder shape of each district is preserved (with the "byid = TRUE" argument), the other in which the remainders of the districts are dissolved. The function `raster::erase` does the same as the first version of `gDifference`. In this case, we coerce the two input objects to `SpatialPolygons` to deal with an error `erase` was throwing about row.names in the `data.frame` not matching the polygons IDs.  
 
-Plotting tip: note in the code above how we add titles to the plots, and also tweak the margins to add space to the top margin to help it display. 
+<span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Run the `erase` example again, but apply it to the `districts_int_alb` and `spp_alb` without coercing them to `SpatialPolygons` to see the error. How do you think we could fix those errors? No need to do it, but just want you to think how you might do it. Hints: look at the function `spChFids` and at Kristen's solution in this [post](https://groups.google.com/forum/#!topic/davis-rug/BmchhejJm4M)___ [Exercise index](#unit3exercises) 
+
+
+> Plotting tip: note in the code above how we add titles to the plots, and also tweak the margins to add space to the top margin so that those titles can be  displayed. 
 
 [Back to top](#vectorintro)
 
 ### Unions
 
+We have already seen a `gUnaryUnion`, which is basically a dissolve. Now let's look at unions in the way you are probably more used to seeing them in traditional GIS. 
+
+```{r, fig.width=7, fig.height=3}
+spp_dist_uni1 <- union(x = spp_alb, y = districts_int_spp)
+spp_dist_uni2 <- gUnion(spgeom1 = spp_alb, spgeom2 = districts_int_spp, 
+                        byid = TRUE)
+spp_dist_uni3 <- gUnion(spgeom1 = spp_alb, spgeom2 = districts_int_spp)
+
+l <- list(spp_dist_uni1, spp_dist_uni2, spp_dist_uni3)
+titles <- c("raster::union", "gUnion byid", "gUnion dissolve")
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 0))
+for(i in 1:length(l)) {
+  dlabs <- sapply(slot(l[[i]], "polygons"), function(x) slot(x, "ID"))
+  plot(l[[i]], col = rainbow(n = length(l[[i]])), main = titles[i])
+  text(l[[i]], labels = dlabs)
+}
+
+sapply(l, class)
+slot(l[[1]], "data")
+
+```
+
+Three different ways of doing a union, the first with raster::union, which as the `?union` for it describes, does this when applied to SpatialPolygons*:
+
+> Overlapping polygons (between layers, not within layers) are intersected, other spatial objects are appended. Tabular attributes are joined.
+
+You can see how `union` joins the attributes above.  
+
+The other two ways are with `gUnion`, which allows unioning by ID (middle map), or a complete dissolve. As with the earlier `rgeos` functions, the operation leaves behind attributes. And you will see that the union-by-id result looks rather different than the one produced by `raster`, seeming to dissolve `spp_alb` into the entirety of one districts but only the overlapping parts of the other districts. Keep these alternative behaviors in mind when selecting a function.
+
+> Plotting notes: In the plots we just made above, we use the `slot` function to grab the polygon IDs from each of the unioned `SpatialPolygons*`, and then use the `text` function, in this case a `generic` method from the `raster` package (there are other method for plotting text into other kinds of plots, e.g. xy scatter plots), to label the polygons in the map with the polygon labels. The visualization helps to understand some differences in the various unioning methods.   
+
 [Back to top](#vectorintro)
+
+### Buffering
+
+A fairly common operation
+```{r}
+# Block 1
+farmers_alb <- spTransform(farmers, proj4string(roads))  # 1
+long_roads <- roads[which(road_lengths > 500000), ]  # 2
+
+# Block 2
+bwidths <- c(10000, 20000, 30000) # 1
+set.seed(1) # 2
+n <- sample(1:nrow(farmers_alb), size = 5, replace = TRUE)  # 3
+
+# Block 3
+buffs <- lapply(bwidths, function(x) {  # 1
+  fbuf <- buffer(x = farmers_alb[n, ], width = x, dissolve = FALSE)  # 2
+  rbuf <- buffer(x = long_roads, width = x, dissolve = FALSE)  # 3
+  list("farm" = fbuf, "road" = rbuf)  # 4
+})  # 5
+
+# Block 4
+par(mar = c(0, 0, 0, 0))  # 1
+cols <- c("blue", "green", "yellow")  # 2
+cols2 <- c("purple", "green4", "antiquewhite")  
+plot(aggregate(districts_alb2, dissolve = TRUE), col = "grey")  # 3
+for(i in length(buffs):1) {  # 4
+  plot(buffs[[i]]$farm, add = TRUE, col = cols[i])  # 5
+  plot(buffs[[i]]$road, add = TRUE, col = cols2[i])  # 6
+}
+```
+
+There is a lot of code above, but I am not going to explain it this time. Rather, I am going to give you two exercises to do with it: 
+
+<span style="color:blue">Exercise 14</span><a name="exercise14"></a>: ___Explain what each of the 4 code blocks is doing, line by line. The buffering operation is happening in one of them. We will go over this in class.___
+
+<span style="color:blue">Exercise 15</span><a name="exercise15"></a>: ___Re-run the code above, except you should first replace the buffering function used above with the `gBuffer` function from rgeos. And then, once you have done that, run it again, but this time allow the buffering function to dissolve buffers where they intersect (either buffer approach will do that, so use the one you like best)___ [Exercise index](#unit3exercises)
+
+
+### Summary and final problem to solve{#unit3summary}
+
+This section has given a brief and by no means exhaustive introduction to do some common vector operations. There are a number of other types of operations that we could have looked at, some or many of which we will undoubtedly encounter as we plunge ahead.  
+
+For now, I am going to leave you with a final problem to solve, which takes us back to the farmers dataset. 
+
+[Create final exercise]
 
 
 ```{r, echo = FALSE, eval=FALSE}
@@ -951,7 +1038,7 @@ roads2 <- merge(roads, road_len_df, by.x = "roadnum", by.y = "roadnum")
 head(slot(roads2, "data"))
 hist(roads2$length, col = "blue")
 
-# Exercise 13
+# Exercise 12
 l <- list(spp_int_distrs2, spintd_agg4)
 do.call(rbind, lapply(1:length(l), function(x) {  # x <- 1
   p <- slot(l[[x]], "polygons")  # get polygons slot from x
@@ -961,6 +1048,49 @@ do.call(rbind, lapply(1:length(l), function(x) {  # x <- 1
   }))
   cbind("object#" = x, ps)  
 }))
+
+# Exercise 13
+sapply(slot(districts_int_spp, "polygons"), function(x) slot(x, "ID")) == 
+  row.names(districts_int_spp)
+
+# solution 1 - fix the polygon ids
+districts_int_spp2 <- spChFIDs(districts_int_spp, 
+                               x = as.character(row.names(districts_int_spp)))
+erase(x = districts_int_spp2, y = spp_alb)
+
+# solution 2 - fix the data.frame ids
+districts_int_spp2 <- districts_int_spp
+ids <- sapply(slot(districts_int_spp, "polygons"), function(x) slot(x, "ID"))
+row.names(districts_int_spp2) <- ids
+erase(x = districts_int_spp2, y = spp_alb)
+
+# Exercise 15
+# Block 1
+farmers_alb <- spdat$farmers  # 1
+long_roads <- roads[which(road_lengths > 500000), ]  # 2
+
+# Block 2
+bwidths <- c(10000, 20000, 30000) # 1
+set.seed(1) # 2
+n <- sample(1:nrow(farmers_alb), size = 5, replace = TRUE)  # 3
+
+# Block 3
+buffs <- lapply(bwidths, function(x) {  # 1
+  fbuf <- gBuffer(spgeom = farmers_alb[n, ], width = x)#, byid = TRUE)  # 2
+  rbuf <- gBuffer(spgeom = long_roads, width = x)#, byid = TRUE)  # 3
+  list("farm" = fbuf, "road" = rbuf)  # 4
+})  # 5
+
+# Block 4
+par(mar = c(0, 0, 0, 0))  # 1
+cols <- c("blue", "green", "yellow")  # 2
+cols2 <- c("purple", "green4", "antiquewhite")  
+plot(aggregate(districts_alb2, dissolve = TRUE), col = "grey")  # 3
+for(i in length(buffs):1) {  # 4
+  plot(buffs[[i]]$farm, add = TRUE, col = cols[i])  # 5
+  plot(buffs[[i]]$road, add = TRUE, col = cols2[i])  # 6
+}
+
 
 ```
 
