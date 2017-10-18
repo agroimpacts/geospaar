@@ -1,7 +1,7 @@
 ---
 title: "Geospatial Analysis with R"
 author: "Lyndon Estes & Zhiwen Zhu"
-date: "10/17/2017"
+date: "10/16/2017"
 output:
   slidy_presentation: 
     default:
