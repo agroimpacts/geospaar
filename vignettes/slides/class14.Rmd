@@ -1,0 +1,84 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "10/18/2017"
+output:
+  slidy_presentation: 
+    default:
+    css: custom.css
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 14
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(repos = c(CRAN = "http://ftp.ussg.iu.edu/CRAN/"))
+```
+
+## Today
+
+- Introducing Yi Zhao
+    - Next week
+- Survey wrap-up
+    - Lab times
+    - Reading
+- Some GitHub
+- Exercises
+
+## Survey wrap-up
+
+Lab slots
+
+- Mon Oct 30: 1:15-2:30pm
+ 
+- Weds Nov 1: 10:55am-12:00pm; 1:15-1:55pm
+
+## GitHub
+
+- A quick look around branching and merging
+
+- `install_github` from a specific branch
+
+> Always builds from master
+> ```{r, eval = FALSE}
+devtools::install_github("agroimpacts/geospaar", build_vignettes = TRUE,
+                         auth_token = pw)
+```
+
+> Builds from the "devel" branch
+> ```{r, eval = FALSE}
+devtools::install_github("agroimpacts/geospaar@devel", build_vignettes = TRUE,
+                         auth_token = pw)
+```
+
+## Exercises
+
+Preparation (as an exercise):
+
+1. Read in districts.shp
+2. Read in roads.shp
+3. Reproject districts using the proj4string for roads
+
+## Exercises from section 2
+
+Exercise 6 (section 4.2.2): Plot the centroid of Zambia onto the district map of Zambia
+
+Exercise 7 (also section 4.2.2): Figure out which district is closest to centroid of Zambia
+
+Exercise 8 (4.2.3): Rerun histograms with different values of the “mgp”, “cex.main”, “cex.lab”, and “cex.axis” arguments
+
+Exercise 9 (4.3.1): Adapt code to calculate road lengths (in km) in `roads`, and merge the resulting data.frame containing the road lengths and “roadnum” identifier onto `roads`, to create a new roads2 object. Plot the histogram of those lengths, making the bars blue
+
+Exercise 10 (4.3.2): Recreate transparent map of selected districts, using partially transparent green for `dists_gt2m`.
+
+Exercise 11 (4.3.3): Taking the split-apply-combine code above as an example, find: 1) The 15th, 25th and 75th, and 85th percentile area value for districts; 2) Select districts falling between the 15th and 25th area percentiles, and 75th and 85th percentile areas, and find centroids of selected districts; 3) plot the centroids as above
+
+## Rapporteurs
+
+```{r}
+student_names <- read.csv("students.csv", stringsAsFactors = FALSE)
+set.seed(1)
+student_names[sample(1:nrow(student_names), size = 6, replace = FALSE), ]
+```
+
