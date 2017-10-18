@@ -48,8 +48,7 @@ pre { /* Code block - determines code spacing between lines */
 </style>
 
 ```{r setup, include=FALSE}
-
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
 ```
 
 # Introduction{#vectorintro}
@@ -124,13 +123,13 @@ head(farmers)
 
 Okay, so this looks similar to what we had before, but now we have a "lat" and a "lon" column, and are also missing the "mm" column.  First, check the class of the `farmers`. It will show you that it is a `data.frame`, which means it is non-spatial at the moment.  But we can see that we have some coordinates there, and they are in decimal degree format. Given that these are point data, we can turn them into a facsimile of spatial data by simply plotting them and having a look. 
 
-```{r, fig.align='center'}
+```{r}
 plot(x = farmers$lon, y = farmers$lat, pch = 20, cex = 0.5)
 ```
 
 So that shows you, in a very crude way, where these points lie in space, given that `farmers$lon` (the longitude) is exactly analogous to the x coordinate of a scatter plot, and `farmers$lat` (latitude) is the y coordinate. But it is still not a spatial object. So, let's convert it to one, and then plot it again.
 
-```{r, fig.align='center'}
+```{r}
 coordinates(farmers) <- ~lon + lat
 head(farmers)
 plot(farmers, pch = 20, cex = 0.5)
@@ -236,7 +235,7 @@ Once you have those done all of that, let's end this section by a quick look at 
 data(roads)
 data(districts)
 ```
-```{r, fig.align='center'}
+```{r}
 par(mar = c(0, 0, 0, 0))
 plot(districts, col = "grey")
 lines(roads, col = "red")
@@ -450,7 +449,7 @@ districts_area / 10^6  # km sq
 
 We apply `rgeos::gArea` to the projected `districts_alb` dataset, which returns a single value in m$^2$, or alternatively in hectares or km$^2$, with some additional calculation. But that's for all of Zambia. What about for individual districts? For that, we simply set the "byid" argument to `TRUE`.
 
-```{r, fig.align='center', fig.width=5, fig.height=3.5}
+```{r, fig.width=5, fig.height=3.5}
 district_areas <- gArea(spgeom = districts_alb, byid = TRUE)
 par(mar = c(5, 5, 3, 3))
 hist(district_areas / 10000, main = "District Areas", xlab = "Hectares", 
@@ -479,7 +478,7 @@ See what we did there?  We iterated through each polygon in `districts_alb` and 
 ### Distance
 
 We can also calculate the distances between spatial features. To do that, we are going to make use of another `rgeos` function first, `gCentroid`, which we will use to find the coordinates of the centroid of each district, and then plot the on top of the districts themselves. 
-```{r, fig.align='center'}
+```{r}
 dist_cent <- gCentroid(spgeom = districts_alb, byid = TRUE)  # get centroids
 head(dist_cent)
 
@@ -513,7 +512,7 @@ Okay, here's another exercise:
 ### Length
 
 For the last example of functions that extract spatial properties, we will use `gLength` to calculate line lengths.
-```{r, fig.align='center', fig.width=7, fig.height=4}
+```{r, fig.width=7, fig.height=4}
 road_lengths <- gLength(spgeom = roads, byid = TRUE)
 district_perims <- gLength(spgeom = districts_alb, byid = TRUE)
 
@@ -601,7 +600,6 @@ That brings us to our next exercise, for which I will first do some more work to
 roads$roadnum <- 1:length(roads)  # new identifier, because of NAs in "roadid"
 ```
 
-
 <span style="color:blue">Exercise 9</span><a name="exercise9"></a>: ___Adapt the code you see above to calculate road lengths (in km) in `roads`, and merge the resulting `data.frame` containing the road lengths and "roadnum" identifier (the merge key) onto `roads`, to create a new `roads2` object. Plot the histogram of those lengths, making the bars blue___ ([Exercise index](#unit2exercises))
 
 [Back to top](#vectorintro)
@@ -610,7 +608,7 @@ roads$roadnum <- 1:length(roads)  # new identifier, because of NAs in "roadid"
 
 Now that we have upgraded the `data.frame` in `districts_alb2`, we can do some more subsetting. 
 
-```{r, fig.align='center'}
+```{r}
 dists_begkn <- districts_alb2[grep("^Ka|^Nyi", districts_alb2$distName), ]
 dists_gt2M <- districts_alb2[districts_alb2$area / 10000 > 2000000, ]
 
@@ -635,7 +633,7 @@ As an exercise, create new district subsets by use a different grep pattern matc
 
 As with plain old `data.frame`s, we might want to do split-apply-combine operations on spatial data. Let's demonstrate this selecting the districts in `districts_alb2` that fall within certain area ranges, convert the selected districts to centroid points, and then plot them.  
 
-```{r, fig.align='center'}
+```{r}
 # define area ranges for smallest and largest districts
 qt1090 <- quantile(districts_alb2$area, c(0.0, 0.05, 0.95, 1))
 qt1090 <- rbind(qt1090[1:2], qt1090[3:4])  
@@ -680,13 +678,21 @@ ___3. Plot the centroids as above___ ([Exercise index](#unit2exercises))
 
 
 # Section 3
-## Exercises{#unit3exercises} 
+
+In this section we will start to do some spatial operations (overlays/extractions, intersections, unions, and differences), and also learn how to create polygons from scratch. We are going start working with the `raster` package as well, which seems strange given that we are working with vectors, but the reason why will become clear below. 
+
+There will be a total of X exercises:
+
+## Exercises{#unit3exercises}
+
+- [Exercise #12](#exercise12)
+- [Exercise #13](#exercise13)
 
 ## Spatial Operations
 
 Now we will move onto some of the common spatial operations that you can expect to do with polygons. To enable this, we are first going to create some additional spatial data. 
 
-```{r, fig.align='center'}
+```{r}
 # define data.frame of arbitrary x and y coordinates
 coords <- data.frame("x" = c(25, 25.1, 26.3, 26.4, 26.3, 25.1), 
                      "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
@@ -701,6 +707,7 @@ proj4string(spp) <- proj4string(districts)
 spp_alb <- spTransform(spp, proj4string(roads))
 spp_alb <- SpatialPolygonsDataFrame(spp_alb, data.frame("ID" = 1))
 
+par(mar = rep(0, 4))
 plot(districts_alb2, col = "grey")
 plot(spp_alb, col = "purple", add = TRUE)
 ```
@@ -711,16 +718,18 @@ The above takes a `data.frame` of x and y coordinates, and builds it up through 
 
 ### Overlays/spatial queries
 
-The first thing we will do with our made-up polygon is figure out the districts it intersects. 
+The first thing we will do with our made-up polygon is figure out which districts it intersects. What we are going to do in this case is the ArcGIS equivalent of select by spatial location (I hope I am remembering my ESRI terminology correctly--it's been a while since I looked at it) 
 
 ```{r}
 spp_alb_int <- over(x = spp_alb, y = districts_alb2, returnList = TRUE)
 spp_alb_int
 ```
 
-The `over` function returns the subset of `districts_alb2` that intersects with `spp_alb`, returning the relevant subset of `districts_alb2`'s data.frame within a list. 
+The `over` function returns the subset of `districts_alb2` that `spp_alb` overlies, returning the relevant subset of `districts_alb2`'s data.frame within a list. What `over` does, from `?sp::over`:
 
-Another way of figuring out the same answer is with a `rgeos` function, `gIntersects`
+> consistent spatial overlay for points, grids and polygons: at the spatial locations of object x retrieves the indexes or attributes from spatial object y
+
+Another way of figuring out the same answer is with an `rgeos` function, `gIntersects`
 
 ```{r}
 spp_alb_int <- gIntersects(spgeom1 = spp_alb, spgeom2 = districts_alb2,
@@ -744,9 +753,9 @@ plot(spp_alb, add = TRUE, border = "grey20", col = "grey20", density = 10,
      angle = 45, lwd = 1.5)
 ```
 
-In the code above, you will see that we slightly revised the code, by putting the `gIntersects` inside the `which` function, and capturing the output in `spp_alb_int`, which we then used to subset `districts_alb2` into a new `SpatialPolygonsDataFrame`, `districts_int_spp`. 
+In the code above, you will see that we slightly revised the code, by putting the `gIntersects` inside the `which` function, and capturing the output in `spp_alb_int`, which we then used to subset `districts_alb2` into a new object:  `districts_int_spp`. 
 
-In the plot commands function, you will see a new way of selecting colors, using the `rainbow` function. In this case, we tell `rainbow` to select "n" colors (here equal to the number of districts in `districts_int_spp`), so that we get a different color for each of the selected districts. We also overlay `spp_alb` on the districts it intersects, using angled cross-hatching in place of a fill color (set using the "density" and "angle" arguments). Cross-hatching is apparently considered a no-no, however, because of visual distortions, but now you know how to do it. 
+In the plot commands function, you will also see a new way of selecting colors, using the `rainbow` function. In this case, we tell `rainbow` to select "n" colors (here equal to the number of districts in `districts_int_spp`), giving us a different color for each of the selected districts. We also overlay `spp_alb` onto the districts it intersects, using angled cross-hatching in place of a fill color (set using the "density" and "angle" arguments). Cross-hatching is apparently considered a no-no by visualization experts, however, because it can produce perception distortions, but now you know how to do it. 
 
 [Back to top](#vectorintro)
 
@@ -763,7 +772,7 @@ plot(districts_alb2, col = "grey")
 plot(spp_int_distrs, col = rainbow(n = length(spp_int_distrs)), add = TRUE)
 ```
 
-Pretty clear what `gIntersection` does, and how it differs from `gIntersects`. However, note that you have to use the "byid = TRUE" option if you want to the detail of the intersected district boundaries, else you would get this.
+Seems pretty clear what `gIntersection` does, and how it differs from `gIntersects`. However, note that you have to use the "byid = TRUE" option if you want to retain the detail of the intersected district boundaries, else you would get this:
 
 ```{r}
 spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2)
@@ -775,11 +784,10 @@ plot(spp_int_distrs, col = rainbow(n = length(spp_int_distrs)), add = TRUE)
 
 Just a single filled polygon, not what we were hoping to see. 
 
-Now, a much friendlier way of doing an intersection, which uses, somewhat counterintuitively, the `raster` package.  The developers of the `raster` package have created a more user friendly set of certain `rgeos` functions, so we are going to demonstrate those here. 
+Here's a much friendlier way of doing an intersection, using (somewhat counterintuitively) a function from the `raster` package.  The developers of the `raster` package have created a more user friendly set of certain `rgeos` functions, so we are going to demonstrate those here, in contrast to the `gIntersection`
 
 ```{r}
 library(raster)
-
 spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2, 
                                 byid = TRUE)
 spp_int_distrs2 <- intersect(x = spp_alb, y = districts_alb2)
@@ -787,42 +795,136 @@ class(spp_int_distrs2)[1]
 class(spp_int_distrs)[1]
 ```
 
-It turns out that `raster` has a function (`intersect`) that does the same job as `rgeos` (go ahead and plot `spp_int_distrs2`, and you will see), but goes further, in that it retains the relevant information from any `data.frame`(s) in the objects being intersected, whereas `gIntersects` only returns the intersected geometries, and you need to do a great deal more work to recover and then join the accompanying attributes to the geometries.  
+It turns out that `raster` has a function (`intersect`) that does the same job as `rgeos` (go ahead and plot `spp_int_distrs2`, and you will see) but even better, as it retains the relevant information from any `data.frame`(s) in the objects being intersected; `gIntersection` only returns the intersected geometries, and you need to do a great deal more work to recover and then join the accompanying attributes to the geometries.  
 
 
-> An aside: These last two example demonstrates both a strength and weakness of R, in my opinion--R's strength is that you can usually find multiple solutions to solve a particular problem; R's weakness is that choosing the best solution can be tricky, given the profusion of choice, and you might end up trying something that takes up a lot of your time. 
+> An aside: These last example demonstrates both a strength and weakness of R, in my opinion--R's strength is that you can usually find multiple solutions to solve a particular problem; R's weakness is that choosing the best solution can be tricky, given the profusion of choice, and you might end up trying something that takes up a lot of your time. 
 
-### Aggregation
+> ```{r}
+detach("package:raster", unload = TRUE)
+farmers[1:2, ]
+library(raster)
+farmers[1:2, ]
+```
 
-```{r}
-# plot(aggregate(x = spp_int_distrs2, by = "ID"))
-# spp_int_distrs2$distName
-# 
-# gUnionCascaded()
-# 
-# aggregate(x = districts_alb2, y = spp_alb, 
-#           by = list(i = "area"), FUN = sum)
-# spp_int_distrs <- gIntersection(spgeom1 = spp_alb, spgeom2 = districts_alb2, 
-#                                 byid = TRUE)
-# rbind(districts_alb2, spp_alb)
-# 
-# 
-# lapply(spp_int_distrs@polygons, function(x) {
-#   x
-#   slot(x, "ID")
-# })
-# 
-# sapply(spp_int_distrs@polygons, function(x) slot(x, "ID"))
-# 
-# 
-# SpatialPolygonsDataFrame(spp_int_distrs, 
-#                          data.frame("distName" = districts_int_spp$distName))
+> And the code above demonstrates more package differences. Detaching/unloading `raster`, as done above, and then printing out farmers (just the first two lines, to avoid a very long print of all coordinates) provides a much more longer and less convenient output (produced by `sp`) than the one produced by the `raster` package after it is re-loaded.  
+
+### Aggregation/Dissolve
+
+Now that we have intersected boundaries, let's dissolve them.  
+
+```{r, fig.width=5, fig.height=5}
+spintd_agg <- aggregate(x = spp_int_distrs2, by = "ID") 
+spintd_agg2 <- aggregate(x = spp_int_distrs2)
+spintd_agg3 <- aggregate(x = spp_int_distrs2, dissolve = FALSE)
+spintd_agg4 <- aggregate(x = spp_int_distrs2, by = "ID", dissolve = FALSE)
+
+l <- list(spintd_agg, spintd_agg2, spintd_agg3, spintd_agg4)
+par(mfrow = c(2, 2), mar = c(0, 0, 0, 0))
+for(i in l) {
+  plot(districts_alb2, col = "grey")
+  plot(i, col = rainbow(n = length(i)), add = TRUE)
+}
 
 ```
+
+We have three variants on `sp::aggregate` shown above.  `spint_agg` resulted from "by = "ID"", which aggregates polygons according to the values the "ID" column. `spint_agg2` did not have that argument passed to it, `spint_agg3` had "dissolve = FALSE" as an argument, and `spint_agg4` is the same as the previous plus the "by = "ID"" argument. The plots shows that the first two look identical and that they were dissolved. The second two look like they weren't dissolved at all. So what are the differences? 
+
+```{r}
+sapply(l, class)
+```
+
+Okay, so 1 differs from 2 in that the former has a `data.frame`, and the same holds for 3 and 4. So how do 1/2 differ from 3/4? 
+
+```{r}
+t(sapply(l, function(x) {
+  c("N poly groups" = length(x),  # 1
+    "N polys in group" = length(slot(slot(x, "polygons")[[1]], "Polygons"))) # 2
+}))
+```
+
+> Code explanation: The somewhat complex bit of code above uses `sapply` to loop through each permutation of the aggregations, and first line in the body (# 1) queries how many polygons groups each element of `l` has, while the second line (# 2) does this:  
+>
+> - `slot(x, "polygons")[[1]]` grabs the first group of polygons (there is only one in this example) living under the "polygons" slot of the `SpatialPolygonsDataFrame` `x` (anyone of the four aggregated objects in `l`). There is only one "polygons" slot in any `SpatialPolygonsDataFrame`. 
+>
+> - `slot(<snip>, "Polygons")` accesses the "Polygons" slot from the first group of polygons (which was extracted as described above, the code for which fits into the place where <snip> is now). There can be multiple polygons living in each polygon group, one or more of which may define holes in another polygon(s) in the group, or which many simply be polygons representing parts of a more complicated thing that is considered a ___single feature___, such as an island chain that has one name (e.g. the State of Hawaii, or Indonesia).  
+>
+> - That is why there is this awkward and complicated structure to `SpatialPolygons*`
+
+What does the output of that `sapply` tell us?  That each of objects in `l` has just one polygon group, and that for the first two objects there only have one polygon per polygon group. The reason for that is that the aggregation ___dissolved___ the district boundaries. The second two were aggregated differently--they were not dissolved, but instead aggregated so that the polygons are now gathered into a single polygon group that is taken to represent the components of a single feature (as described above). 
+
+Now, for some more advanced coding. The `sapply` above is somewhat half-baked, because it assumes that the `SpatialPolygons*` in `l` only have one polygon group each.  Here is how we would make that query more programmatic, i.e. if we didn't want to assume there was only one polygon group per object in `l`: 
+
+```{r}
+# x <- 1
+# y <- 1
+do.call(rbind, lapply(1:length(l), function(x) {  
+  p <- slot(l[[x]], "polygons")  # get polygons slot from l[[x]]
+  ps <- t(sapply(1:length(p), function(y) {  # loop through p's poly groups
+    a <- length(slot(p[[y]], "Polygons"))  # find out # polys in each poly group
+    c("poly group" = y, "N polys in group" = a) # combine w/ y, poly grp counter
+  }))  # transpose sapply results to get variables as columns
+  cbind("object#" = x, ps)  # cbind x with ps, giving a label for object 
+}))  
+```
+
+I am not going to explain this code too much, but what it does is give you a way of creating the same result as the previous `sapply`, plus some information about which object in the list corresponds to the results. If you run the two commented out lines above the code, you can use that to step through the inner parts of the function, which is more complex than you have seen before because it nests `sapply` (wrapped in `t`) within an `lapply`. That will help you understand the code better.  
+
+However, the main point of showing that code is so that you can recycle it for an exercise:
+
+<span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Recreate the list `l` so that it contains just two objects: `spp_int_distrs2` and `spintd_agg4`. Rerun the code directly above with the new `l`. What do the results tell us about the structures of the two objects in `l`?___ [Exercise index](#unit3exercises) 
+
+By the way, before we go into the next section, just wanted to mention that the `gUnaryUnion` dissolves the same way that `aggregate` does by default (e.g. as done to make `spintd_agg2` above), producing just `SpatialPolygons` output.  
+
+```{r}
+gUnaryUnion(spgeom = spp_int_distrs2)
+spintd_agg2
+```
+
+### Disaggregation
+
+We have shown how you can aggregate `SpatialPolygons*`. Now let's see about disaggregating polygons that have been aggregated. 
+
+```{r}
+spintd_dagg <- disaggregate(x = spintd_agg) 
+spintd_dagg4 <- disaggregate(x = spintd_agg4)
+
+l <- list(spintd_dagg, spintd_dagg4, spintd_agg4)
+sppoly_structure(l)
+?sppoly_structure
+```
+
+In the above, we have applied `disaggregate` to the dissolved aggregate `spint_agg`, and to the version of the aggregation in which the districts were aggregated into a single polygon group (`spintd_agg4`). We combine the results of the two disaggregation into a list, together with `spintd_agg4`, and then run `sppoly_structure` on it. 
+
+> Wait, what is `sppoly_structure`? That complicated thing I asked you to run for [Exercise 13](#exercise13)--I added it as a function to the `geospaar` package so that I didn't have to keep copying a big chunk of code that I want to use--that right there (the need to repeatedly reuse some code) is the main reason for writing and documenting a package function. Have a look at `?sppoly_function`.
+
+The results tell us that you can't really disaggregate `SpatialPolygons*` that have been dissolved, but you can split up a polygon group containing multiple polygons into multiple polygon groups, each with a single polygon in it. Compare the results for object#s 2 (`spintd_dagg4`) and (`spintd_dagg4`) 3 in the output from `sppoly_structure` above to see how disaggregation changes the structure of an aggregated polygon. 
 
 [Back to top](#vectorintro)
 
 ### Differences
+
+The two preceeding sections gave a rather long look at aggregation/disaggregation and how to query slots. The intention there was to better explore the fairly complicated structures of `SpatialPolygons*`, and how slots are queried. Please ask questions in class if this stuff doesn't make sense. 
+
+Now we are going to move on to do look at another bread and butter operation, differencing (or erasing).
+
+```{r, fig.width=7, fig.height=3}
+d1a <- gDifference(spgeom1 = districts_int_spp, spgeom2 = spp_alb, byid = TRUE)
+d1b <- gDifference(spgeom1 = districts_int_spp, spgeom2 = spp_alb)
+d2 <- erase(x = as(districts_int_spp, "SpatialPolygons"),
+            y = as(spp_alb, "SpatialPolygons"))
+
+l <- list(d1a, d1b, d2)
+titles <- c("gDifference by ID", "gDifference with dissolve", "raster::erase")
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 0))
+for(i in 1:length(l)) {
+  plot(l[[i]], col = rainbow(n = length(l[[i]])), main = titles[i])
+}
+```
+
+That shows `rgeos::gDifference` applied two ways to cut out the area of `spp_alb` from the districts it ___intersects___, one in which the remainder shape of each district is preserved (with the "byid = TRUE" argument), the other in which the remainders of the districts are dissolved. The function `raster::erase` does the same as the first version of `gDifference`. In this case, we coerce the two input objects to `SpatialPolygons` to deal with an error `erase` was throwing about row.names in the `data.frame` not matching the polygons IDs.  
+
+Plotting tip: note in the code above how we add titles to the plots, and also tweak the margins to add space to the top margin to help it display. 
 
 [Back to top](#vectorintro)
 
@@ -848,6 +950,17 @@ road_len_df <- data.frame("roadnum" = roads$roadnum,
 roads2 <- merge(roads, road_len_df, by.x = "roadnum", by.y = "roadnum")
 head(slot(roads2, "data"))
 hist(roads2$length, col = "blue")
+
+# Exercise 13
+l <- list(spp_int_distrs2, spintd_agg4)
+do.call(rbind, lapply(1:length(l), function(x) {  # x <- 1
+  p <- slot(l[[x]], "polygons")  # get polygons slot from x
+  ps <- t(sapply(1:length(p), function(y) {  # loop through p's poly groups
+    a <- length(slot(p[[y]], "Polygons"))  # find out # polys in each poly group
+    c("poly group" = y, "N polys in group" = a)
+  }))
+  cbind("object#" = x, ps)  
+}))
 
 ```
 
