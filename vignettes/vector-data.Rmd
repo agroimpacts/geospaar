@@ -53,7 +53,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
 
 # Introduction{#vectorintro}
 
-In this section we are going to use R to work with vector data, learning the most common forms of spatial operations that work with vector data. This means we will be working primarily with the following packages: `sp`, `rgdal`, and `rgeos`. We will touch on, towards the end, the new `sf` package, which is new but already more powerful than `sp`, which it is designed to replace. Okay, so why are we learning about `sp`? Please ask me about that in class! 
+In this section we are going to use R to work with vector data, learning the most common forms of spatial operations that work with vector data. This means we will be working primarily with the following packages: `sp`, `rgdal`, and `rgeos`. We __might__ touch on, towards the end, the new `sf` package, which is new but already more powerful than `sp`, which it is designed to replace. Okay, so why are we learning about `sp`? Please ask me about that in class! 
 
 The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to intersections, buffers, and differencing.  It also assumes that you have already read Chapter 2 in _Applied Spatial Data Analysis with R_ (ASDAR), and know the basics of R spatial classes.
 
@@ -689,8 +689,6 @@ There will be a total of X exercises:
 - [Exercise #13](#exercise13)
 - [Exercise #14](#exercise14)
 - [Exercise #15](#exercise15)
-- [Exercise #16](#exercise16)
-- [Exercise #17](#exercise17)
 
 ## Spatial Operations
 
@@ -1011,14 +1009,11 @@ There is a lot of code above, but I am not going to explain it this time. Rather
 <span style="color:blue">Exercise 15</span><a name="exercise15"></a>: ___Re-run the code above, except you should first replace the buffering function used above with the `gBuffer` function from rgeos. And then, once you have done that, run it again, but this time allow the buffering function to dissolve buffers where they intersect (either buffer approach will do that, so use the one you like best)___ [Exercise index](#unit3exercises)
 
 
-### Summary and final problem to solve{#unit3summary}
+# Unit Summary{#unitsummary}
 
-This section has given a brief and by no means exhaustive introduction to do some common vector operations. There are a number of other types of operations that we could have looked at, some or many of which we will undoubtedly encounter as we plunge ahead.  
+This unit section has given a brief and by no means exhaustive introduction to do some common vector operations and ways in which vector data are manipulated. Along the way, it has also introduced some new plotting approaches and vocabulary, and has explored some of the issues regarding SpatialPolygons* structuring. 
 
-For now, I am going to leave you with a final problem to solve, which takes us back to the farmers dataset. 
-
-[Create final exercise]
-
+There are a number of other types of operations that we could have looked at, some or many of which we will undoubtedly encounter as we plunge ahead.  
 
 ```{r, echo = FALSE, eval=FALSE}
 # exercise 6
