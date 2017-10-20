@@ -928,7 +928,7 @@ for(i in 1:length(l)) {
 
 That shows `rgeos::gDifference` applied two ways to cut out the area of `spp_alb` from the districts it ___intersects___, one in which the remainder shape of each district is preserved (with the "byid = TRUE" argument), the other in which the remainders of the districts are dissolved. The function `raster::erase` does the same as the first version of `gDifference`. In this case, we coerce the two input objects to `SpatialPolygons` to deal with an error `erase` was throwing about row.names in the `data.frame` not matching the polygons IDs.  
 
-<span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Run the `erase` example again, but apply it to the `districts_int_alb` and `spp_alb` without coercing them to `SpatialPolygons` to see the error. How do you think we could fix those errors? No need to do it, but just want you to think how you might do it. Hints: look at the function `spChFids` and at Kristen's solution in this [post](https://groups.google.com/forum/#!topic/davis-rug/BmchhejJm4M)___ [Exercise index](#unit3exercises) 
+<span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Run the `erase` example again, but apply it to the `districts_int_spp` and `spp_alb` without coercing them to `SpatialPolygons` to see the error. How do you think we could fix those errors? No need to do it, but just want you to think how you might do it. Hints: look at the function `spChFids` and at Kristen's solution in this [post](https://groups.google.com/forum/#!topic/davis-rug/BmchhejJm4M)___ [Exercise index](#unit3exercises) 
 
 
 > Plotting tip: note in the code above how we add titles to the plots, and also tweak the margins to add space to the top margin so that those titles can be  displayed. 
