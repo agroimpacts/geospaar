@@ -48,16 +48,19 @@ pre { /* Code block - determines code spacing between lines */
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', fig.height = 4, 
+                      fig.width = 5)
 ```
 
 # Introduction{#rasterintro}
 
 The preamble to this section is basically the same as the one for the previous sections on [vector data](vector-data.html), except here we are working with raster data, and will primarily use the `raster` package (which we started using when working with vectors, because of the convenient functions). We will continue to draw on, directly or indirectly (via package dependencies), `sp`, `rgdal`, and `rgeos`.
 
-The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to moving windows, raster algebra, terrain analysis, and the like. 
+One additional note. This unit deals almost entirely with the `raster` package and its associated classes. The `sp` package provides other methods for dealing with gridded data, but we are not going to cover those in this course because the `raster` package covers (I would argue) most gridded data use cases. I have been using R for nearly a decade, and rarely have the need to use non-`raster` classes to handle grids.  
 
-As with the previous vector-focused materials, reading are designed with the expectation that you work through the code as you read through it, and do the exercises (as much as you can) before class. Additionally, you should also look at the help file for each new function that is introduced, in order to familiarize yourself with the arguments. 
+> The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to moving windows, raster algebra, terrain analysis, and the like. 
+>
+> As with the previous vector-focused materials, reading are designed with the expectation that you work through the code as you read through it, and do the exercises (as much as you can) before class. Additionally, you should also look at the help file for each new function that is introduced, in order to familiarize yourself with the arguments. 
 
 [Back to top](#rasterintro)
 
@@ -71,6 +74,7 @@ Please continue to use the same working space configuration as described in the 
 Let's start by loading the following packages.
 ```{r, warning=FALSE, message=FALSE}
 library(geospaar)
+library(rgdal)
 library(raster)
 ```
 
@@ -84,13 +88,68 @@ library(raster)
 - [Exercise #5](#exercise5) 
 
 ## Data
-```{r}
+
+We'll need the following data loaded in for this section
+```{r, message=FALSE, warning=FALSE}
 farmers <- read.csv(system.file("extdata/farmer_spatial.csv", 
                                 package = "geospaar"), stringsAsFactors = FALSE)
-head(farmers)
+roads <- readOGR(system.file("extdata/roads.shp", package = "geospaar"), 
+                 layer = "roads")
+data("chirps")  
+data("districts")
 ```
 
-## Reading, writing, and creating rasters
+## Raster basics
+
+We are going to start out by learning how to build our own raster.  
+
+```{r}
+e <- extent(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  # 1
+r <- raster(x = e, res = 0.25, crs = crs(districts))  # 2 
+set.seed(1)  
+values(r) <- sample(1:100, size = ncell(r), replace = TRUE)  # 3
+# r[] <- sample(1:100, size = ncell(r), replace = TRUE) 
+# r <- setValues(x = r, values = sample(1:100, size = ncell(r), replace = TRUE))
+
+par(mar = c(0, 0, 0, 4))
+plot(districts, col = "grey")
+plot(r, add = TRUE)
+```
+
+We just created used several functions from the `raster` package to create a random `raster` named `r` that has a 1/4 degree resolution and covers an area of 2 X 2 degrees in southern Zambia. This particular raster is a temporary one that lives in memory. 
+
+Let's walk through the labelled code. In # 1, we use `raster`'s `extent` function to define the boundaries of the raster, and then in # 2 use the `raster` function to create a raster from the resulting `r class(e)` object `e`, assigning a CRS using the "crs" argument, which in turn uses `raster`'s `crs` to extract the crs from districts. `crs` is similar to `sp::proj4string`, but outputs a different class of object. You can use the two functions somewhat interchangeably, however. The `raster` function can create a raster from many different types of input objects (passed to argument "x"), per `?raster`:
+
+> filename (character), Extent, Raster*, SpatialPixels*, SpatialGrid*, object, 'image', matrix, im, or missing. Supported file types are the 'native' raster package format and those that can be read via rgdal
+
+Line # 2 created an empty raster `r` with no cell values, so in # 3 we assigned some randomly selected values into `r`. Note the method of assignment, using the `values` function; there are two other lines commented out below # 3 that show different ways of doing the same job. 
+
+The plot of `r` over `districts` uses the `plot` method defined for `raster*` objects. Note that it automatically creates a continuous legend. 
+
+Let's look now at the structure of the object `r`.
+
+```{r}
+class(r)
+typeof(r)
+slotNames(r)
+slot(slot(r, "data"), "values")
+values(r)
+slot(slot(r, "file"))
+res(r)
+slot(r, "data")
+```
+
+`r` is an S4 object that has fairly different slots of class `Spatial*`. 
+
+
+Creating rasters
+
+Raster layer, stack, brick
+
+Reading and writing rasters
+
+
+Creating rasters Reading, writing, and creating rasters
 
 ## Working with 
 
