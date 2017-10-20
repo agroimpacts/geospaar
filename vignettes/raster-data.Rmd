@@ -59,7 +59,7 @@ The material in this section assumes that the reader is familiar with standard G
 
 As with the previous vector-focused materials, reading are designed with the expectation that you work through the code as you read through it, and do the exercises (as much as you can) before class. Additionally, you should also look at the help file for each new function that is introduced, in order to familiarize yourself with the arguments. 
 
-[Back to top](#vectorintro)
+[Back to top](#rasterintro)
 
 # Preparation
 ## Working space
@@ -90,11 +90,21 @@ farmers <- read.csv(system.file("extdata/farmer_spatial.csv",
 head(farmers)
 ```
 
+## Reading, writing, and creating rasters
+
+## Working with 
+
+
 # Section 2{#section2}
+
+[Back to top](#rasterintro)
 
 # Section 3{#section3}
 
-<span style="color:blue">Exercise 15</span><a name="exercise15"></a>: ___Re-run the code above, except you should first replace the buffering function used above with the `gBuffer` function from rgeos. And then, once you have done that, run it again, but this time allow the buffering function to dissolve buffers where they intersect (either buffer approach will do that, so use the one you like best)___ [Exercise index](#unit3exercises)
+[Back to top](#rasterintro)
+
+<span style="color:blue">Exercise 1</span><a name="exercise15"></a>: ___
+___ [Exercise index](#unit3exercises)
 
 
 
