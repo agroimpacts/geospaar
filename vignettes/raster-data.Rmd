@@ -361,9 +361,57 @@ That's it for this reading! We'll pick up with a bit more raster processing work
 
 # Section 2{#section2}
 
-## Masking
+This unit starts to focus on some of the analyses you can do with raster data, which we will get into after doing a bit more on raster processing and preparation.  
 
-## Aggregation/disaggregation
+## Data 
+
+We will keep working with the data from the previous sections, adding in a new dataset that loads with `geospaar`, `chirps`
+
+```{r}
+data("chirps")
+chirps
+names(chirps)
+class(chirps)[1]
+```
+
+We have a help file in `geospaar` describing `chirps` (`?chirps`), which is roughly a 5 km gridded daily rainfall dataset derived mostly from satellite data, but corrected to weather station observations. Our dataset here is subset over Zambia, and for just less than one month of observations. 
+
+
+## Exercises{#unit1exercises} 
+- [Exercise #1](#exercise1)
+- [Exercise #2](#exercise2)
+- [Exercise #3](#exercise3)
+- [Exercise #4](#exercise4)
+- [Exercise #5](#exercise5) 
+
+## Raster processing, continued
+
+There a few important things we missed doing in the first section. 
+
+### Masking
+
+```{r}
+image(chirps$Y16299)
+values(chirps$Y16299)
+
+```
+
+
+### Cropping
+
+### Aggregating/disaggregating
+
+## Raster analysis
+### Summary statistics
+
+`cellStats`
+`calc`
+
+### Zonal
+
+
+
+
 
 [Back to top](#rasterintro)
 
