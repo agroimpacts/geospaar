@@ -54,7 +54,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', fig.height = 4,
 
 # Introduction{#rasterintro}
 
-The preamble to this section is basically the same as the one for the previous sections on [vector data](vector-data.html), except here we are working with raster data, and will primarily use the `raster` package (which we started using when working with vectors, because of the convenient functions). We will continue to draw on, directly or indirectly (via package dependencies), `sp`, `rgdal`, and `rgeos`.
+The preamble to this section is basically the same as in the unit on [vector data](vector-data.html), except here we are working with rasters, and will primarily use the `raster` package (which we started using when working with vectors, because of the convenient functions). We will continue to draw on, directly or indirectly (via package dependencies), `sp`, `rgdal`, and `rgeos`.
 
 One additional note. This unit deals almost entirely with the `raster` package and its associated classes. The `sp` package provides other methods for dealing with gridded data, but we are not going to cover those in this course because the `raster` package covers (I would argue) most gridded data use cases. I have been using R for nearly a decade, and rarely have the need to use non-`raster` classes to handle grids.  
 
@@ -75,6 +75,7 @@ Let's start by loading the following packages.
 ```{r, warning=FALSE, message=FALSE}
 library(geospaar)
 library(rgdal)
+library(rgeos)
 library(raster)
 ```
 
@@ -99,9 +100,13 @@ data("chirps")
 data("districts")
 ```
 
+[Back to top](#rasterintro)
+
 ## Raster basics
 
-We are going to start out by learning how to build our own raster.  
+### `RasterLayer`
+
+We are going to start out by learning how to build our own `RasterLayer`.  
 
 ```{r}
 e <- extent(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  # 1
@@ -129,32 +134,238 @@ The plot of `r` over `districts` uses the `plot` method defined for `raster*` ob
 Let's look now at the structure of the object `r`.
 
 ```{r}
+r
 class(r)
 typeof(r)
 slotNames(r)
-slot(slot(r, "data"), "values")
 values(r)
-slot(slot(r, "file"))
+# slot(slot(r, "data"), "values")  # identical to values(r)
 res(r)
-slot(r, "data")
 ```
 
-`r` is an S4 object that has fairly different slots of class `Spatial*`. 
+`r` is an S4 object that has fairly different slots compared to class `Spatial*`. We are not going to into all of them, but it is useful to know the @file, @data, @extent, and @crs slots. @file has a bunch of stuff in it, but will contain, among the many slots it has, the file name and path of a grid file that was read into R. @data contains many slots also, but the main one of interest is the @data@values slot, which can be accessed with the `values` function directly, or less directly using `slot` (both approaches shown here). Interestingly, the resolution information is not stored in any of the slots of `r`, but rather calculated from the @extent and @ncols and @nrows slots by the `res` function.  
+
+[Back to top](#rasterintro)
+
+### `RasterStack` and `RasterBrick`
+
+We have just seen how to create a `RasterLayer` and learned a bit about the structure of this kind of object, which is two-dimensional. We are now going to learn about three-dimensional rasters, which come in two flavors: `RasterStack` and `RasterBrick`. Before we proceed, we first need to create some new data. 
+
+```{r}
+r2 <- r > 50
+r3 <- r
+set.seed(1)
+values(r3) <- rnorm(n = ncell(r3), mean = 10, sd = 2)
+l <- list(r, r2, r3)
+```
+
+We used r to create two new rasters, `r2` and `r3`. `r2` was made through comparison of values in `r` relative to a number, `r3` was made by using `r` as a template, then overwriting the values with numbers generated randomly from a normal distribution (`rnorm`).  These were then combined into list `l`. 
+
+```{r}
+s <- stack(l)
+# s <- stack(r, r2, r3)  # also works
+names(s) <- c("r", "r2", "r3")
+s
+
+b <- brick(s)
+b
+
+plot(b)
+```
+
+We just used `l` to create a `RasterStack` and `RasterBrick`, which are very similar things, but have a few key differences. A `RasterStack` is a series of rasters that have the same extent and resolution, which are "stacked" on top of one another in the order that they are given in the input list. They can from any number of files stored in different areas on disk. A `RasterBrick` does the same thing (stacks `RasterLayers` on top of one another), but is more restrictive in that, if read off disk, must be contained within a single file. This makes the `RasterBrick` less flexible than the `RasterStack`, but it has the advantage of faster processing times, according to `?brick`. 
+
+Applying `plot` to a stack or brick results in the automatic plotting of each layer into its own sub-window, with coordinates along the plot axes.  
+
+Time now for your first exercise: 
+
+<span style="color:blue">Exercise 1</span><a name="exercise1"></a>: ___Create a new raster `r4`, using `r3` as a template. Update the values of `r` using numbers randomly selected from a uniform distribution ranging between 0 and 1 (this requires the `runif` function that we used back in Unit 1). Create another raster `r5` by finding the values greater than 0.5 in r4. Recreate the list `l` with `r`, `r2`, `r3`, `r4`, and `r5`, and then create and plot stack `s`___ ([Exercise index](#unit1exercises))
+
+Let's end this section with a slightly more orderly and oriented way of plotting the layers in `s` (works for `b` also).
+
+```{r, fig.width=7, fig.height=2.5}
+par(mfrow = c(1, 3), mar = c(0, 0, 0, 4))
+for(i in 1:nlayers(s)) {
+  plot(districts, col = "grey")
+  plot(s[[i]], add = TRUE)
+}
+```
+
+### Reading and writing rasters
+
+Our initial introduction has been working with `Raster*` data that are held in memory. Let's write these out onto disk and then read them back in. Right these out to your "data" folder in your "unit2" working directory (see instructions in the [vector vignette](vector-data.html) for a refresher). 
+
+```{r, eval = FALSE}
+# Block 1 - write to disk
+writeRaster(r, filename = "external/unit2/data/r.tif")
+writeRaster(r2, filename = "external/unit2/data/r2.tif")
+writeRaster(r3, filename = "external/unit2/data/r3.tif")
+writeRaster(b, filename = "external/unit2/data/b.tif")
+
+# Block 2 - read back in each individual raster and recreate stack
+r <- raster("external/unit2/data/r.tif")
+r2 <- raster("external/unit2/data/r2.tif")
+r3 <- raster("external/unit2/data/r3.tif")
+s <- stack(list(r, r2, r3))  # recreate stack
+
+# Block 3 - programmatic creation of stack
+fnms <- dir("external/unit2/data/", pattern = "r.*.tif", full.names = TRUE)
+l <- lapply(fnms, function(x) raster(x))
+s <- stack(l)
+
+# Block 4 - read in brick
+b <- raster("external/unit2/data/b.tif")  # incorrect
+b <- brick("external/unit2/data/b.tif")  # correct
+```
+
+In Block 1 above, we use `writeRaster` to write out each of the three individual rasters to a geotiff, and write `b` to a three-band geotiff. In Block 2 we use the `raster` function to read back in the individual rasters, and then recreate stack `s` from those. Block 3 is a more programmatic way of executing Block 2, using the `dir` function to read the directory, looking for filenames matching a pattern, and returning the full paths to the matching files. These paths are then used in an `lapply` to read the files in with `raster`, recreating list `l`, which is then stacked. 
+
+These last two blocks illustrate how `stack` can be used to create a three-dimensional grid from different files, which differ from what you see next in Block 4, where the "b.tif" is read back into a brick. You will see there that I write that the first line in block 4 is incorrect. Why is that? Answering that is part of the next exercise: 
+
+<span style="color:blue">Exercise 2</span><a name="exercise2"></a>: 
+
+___- Part 1: Why can you not use `raster` to read in a `brick`?___
+
+___- Part 2: You can use the `brick` function to write to disk right when you first create it (by passing it the "filepath" argument with an output path and filename), rather than simply create the brick as an object in memory. Your task is to create a new "b2.tif" on disk using the `brick` function, which you will apply to stack `s`___ ([Exercise index](#unit1exercises))
+
+[Back to top](#rasterintro)
+
+## From vector to raster and back again
+
+Now that you know the major `Raster*` classes, and how to read and write them to disk, let's figure out how to change between raster and vector types. 
+
+### Vector to raster
+We have several vector datasets that come with `geospaar` which we can rasterize, starting with the district boundaries.   
+```{r, fig.width=5, fig.height=4}
+# Block 1
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
+
+# Block 2
+districts$ID <- 1:length(districts)
+distsr <- rasterize(x = districts, y = zamr, field = "ID")
+distsr
+
+par(mar = c(0, 0, 0, 4))
+plot(distsr, axes = FALSE, box = FALSE)
+```
+
+In Block 1, we took an initial step to define a raster (`zamr`) that had properties of resolution (0.1 decimal degrees), CRS, and extent that we want our rasterized vector to have. We set the extent of this raster to that of the `districts`, using `raster::extent` to get the bounding box coordinates (`extent` retrieves the same parameters as `sp::bbox`, but the output is in a different format). 
+
+In Block 2, we use `rasterize` to, as the name says, rasterize `districts`. The "y" argument is where we feed in `zamr`, the raster object that we are rasterizing `districts` against. The "field" argument supplies the column names of the values that we want rasterized. In this case, we created an "ID" variable to give an integer for each district name.  
+
+Our plot removes the coordinate label axes and box around the plot that come with default plots of raster objects. 
+
+Next we rasterize the `farmers` dataset, which requires a little more prep to be meaningful. 
+
+```{r, fig.width=5, fig.height=4}
+# Block 1
+zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+values(zamr2) <- 1:ncell(zamr2)
+
+# Block 2
+farmers2 <- do.call(rbind, lapply(unique(farmers$uuid), function(x) {
+  dat <- farmers[farmers$uuid == x, ][1, ]  # select first row only
+}))
+# farmers3 <- farmers[which(!duplicated(farmers$uuid)), ]
+# nrow(farmers3) == nrow(farmers2)
+
+# Block 3
+coordinates(farmers2) <- ~lon + lat
+farmers2$ct <- 1  # assign value of 1 to each farmers
+farmersr <- rasterize(farmers2, zamr2, field = "ct", fun = sum)
 
 
-Creating rasters
+par(mar = c(0, 0, 1, 4))
+plot(gUnaryUnion(districts), col = "grey", border = "transparent", 
+     main = "N farmers per 0.25 degree grid cell")
+plot(farmersr, add = TRUE)
+```
 
-Raster layer, stack, brick
+In Block 1, we create a coarser scale (0.25 degree) version of `zamr`, `zamr2`, because we want to rasterize a bit differently (that happens in Block 3), in that we want to count how many farmers there are per grid cell. The previous resolution of 0.1 degrees is a bit too fine for that purpose.  
 
-Reading and writing rasters
+In Block 2, we prep that data a bit more. Recall that the `farmers` data contains farmers reporting to us on a weekly basis, which means that we have multiple rows (and thus repeated coordinates) for many farmers. So we need to reduce `farmers` down to just one row for each individual farmer (so that we have just a single set of coordinates for each). We do this using two approachs, the first using the now familiar split-apply-combine approach with `lapply`, in which the split is defined by the unique farmer IDs ("uuid"), and we then select the first row of the data at each split, thereby eliminating duplicated coordinates. This creates a new reduced-record object `farmers2`. Commented out below that is the second approach, which is actually a much more efficient method that uses the `duplicated` function applied to `farmers$uuid`. Here's an exercise for you: 
+
+<span style="color:blue">Exercise 3</span><a name="exercise3"></a>: ___Look up and explain the code used in those two commented-out lines, particularly what `duplicated` is doing, why there is an `!`  in front of it, and what the comparison if objects (with `==`) right below shows___ ([Exercise index](#unit1exercises))
+
+In Block 3, we then do the rasterization. We first promote `farmers` to a spatial object, then assign a value of 1 to all rows in the new column "ct". We then rasterize, passing the `sum` function to the "fun" argument, which means that we end up with a count of the number of farmers falling within each 0.25 degree grid cell. 
+
+The resulting plot shows that most cells have less than 20 farmers. 
+ 
+You can also rasterize SpatialLines, much as we did for points and polygons. However, `rasterize` is exceedingly slow with `SpatialLines*`, so we are not doing that here, but leaving commented out code to show how it could be done. 
+```{r}
+# Block 3 (not run because slow)
+# roads$ID <- 1:length(roads)
+# roads$length <- gLength(spgeom = roads, byid = TRUE) / 1000
+# roadsgcs <- spTransform(roads[roads$length > 1000, ], crs(zamr))
+# roadsr <- rasterize(x = roadsgcs, y = zamr, field = "ID", progress = "text")
+```
+
+[Back to top](#rasterintro)
+
+### Raster to vector
+
+`raster` gives us functions that allow us to transform rasters to vectors. 
+
+```{r, fig.width=5, fig.height=4}
+dists_fromr <- rasterToPolygons(x = distsr, dissolve = TRUE)
+farmers_fromr <- rasterToPoints(x = farmersr, spatial = TRUE)
+
+par(mar = c(0, 0, 0, 0))
+plot(dists_fromr, col = topo.colors(n = length(districts)))
+points(farmers_fromr, pch = 20, col = "red")
+```
+
+Vectorizing rasters of course reduces resolution to that of the originating raster. You will note that this has occurred here, both in converting the rasterized districts back to `SpatialPolygons*`, and the rasterized farmer counts back to points (note that different functions were used for both, but both retained the underlying cell values within the data slot of the output `Spatial` features).
+
+It would be interesting to know how much the degradation of resolution affects statistics one might derive from spatial data. For instance, how much does the perimeter and area of `dists_fromr` differ from that of `districts`?  That is your next exercise: 
+
+<span style="color:blue">Exercise 4</span><a name="exercise4"></a>:
+___Transform `dists_fromr` and `districts` into an Albers projection, and then calculate the overall perimeter and total area of each of the two objects. Then take the ratio of the results from both, e.g. [perimeter of project districts] / [perimeter of projected dists_fromr]. This let us know how much the rasterizing impacts these two properties___ ([Exercise index](#unit1exercises))
+
+[Back to top](#rasterintro)
+
+## Projections
+
+We have been working with our data in geographic coordinates systems up until now. Let's transform these to projected coordinates, using the rasterized districts as an example. 
+
+```{r, fig.width=7, fig.height=2.5}
+zamr_alb <- projectRaster(from = zamr, res = 11000, crs = crs(roads), 
+                          method = "ngb")  # 1
+distsr_alb <- projectRaster(from = distsr, to = zamr_alb, method = "ngb")  # 2
+
+par(mfrow = c(1, 2), mar = c(0, 0, 0, 4))
+plot(distsr, main = "GCS rasterized districts", axes = FALSE, box = FALSE)
+plot(distsr_alb, main = "Albers rasterized districts", axes = FALSE, box = FALSE)
+```
+
+In our first step (# 1), we apply `projectRaster` to our `zamr` object, transforming it to the Albers projection used by `roads` (the "crs" argument). We define an output "res" of 11,000 m, or 11 km, which is reasonably close to the 1/10th of a degree resolution of `zamr`. We also choose a "method" for calculating the transformed values in the new raster. In this case, since `zamr` has values that area basically an integer index of grid cells, we use the "ngb" (nearest neighbor) option, to avoid the bilinear interpolation that would occur by default (see `?projectRaster`). 
+
+The result, `zamr_alb`, then becomes a reference raster (i.e. the raster defining the parameters) for other rasters that need to be reprojected, which is how we use it when reprojecting `distsr_alb` (# 2). In this case, we pass in `zamr_alb` to the "to" argument, and don't need the "res" or "crs" arguments (because those values are read by the function from "zamr_alb"). Here we again use the "ngb" method so that we do not change the values of the categorical identifier of each district. 
+
+You can see what I mean in the plot below, which compares a bilinear method against the nearest nearest neighbor approach. See how the values change along district boundaries as district IDs are averaged?
+
+```{r, fig.width=7, fig.height=2.5}
+distsr_alb2 <- projectRaster(from = distsr, to = zamr_alb, method = "bilinear")
+
+par(mfrow = c(1, 2), mar = c(0, 0, 0, 4))
+plot(distsr_alb2, main = "Bilinear reprojection", axes = FALSE, box = FALSE)
+plot(distsr_alb, main = "Nearest neighbor", axes = FALSE, box = FALSE)
+```
+
+A bilinear interpolation would be more appropriate with a continuous raster, or one where it makes sense to have values averaged to adjust to spatial projection changes. The `farmersr` dataset is one of these, which you will reproject for your next exercise. 
 
 
-Creating rasters Reading, writing, and creating rasters
+<span style="color:blue">Exercise 5</span><a name="exercise5"></a>:
+___Reproject `farmersr` to Albers (i.e. use `crs(roads)`, but in this case you will need to rasterize at a different resolution, since `farmersr` was rasterized to 0.25 degrees (which is about 25 km, or 25,000 m). Reproject using the bilinear method___. ([Exercise index](#unit1exercises))
 
-## Working with 
+[Back to top](#rasterintro)
 
+That's it for this reading! We'll pick up with a bit more raster processing work in the next section, before getting to raster analyes. 
 
 # Section 2{#section2}
+
+## Aggregation/disaggregation
 
 [Back to top](#rasterintro)
 
@@ -166,6 +377,61 @@ Creating rasters Reading, writing, and creating rasters
 ___ [Exercise index](#unit3exercises)
 
 
+```{r, eval = FALSE}
+# exercise 1
+r4 <- r3
+values(r4) <- runif(n = ncell(r4), min = 0, max = 1)
+r5 <- r4 > 0.5
+l <- list(r, r2, r3, r4, r5)
+s <- stack(l)
+plot(s)
+
+# exercise 2
+b2 <- brick(s, filepath = "external/unit2/data/b2.tif")
+
+# exercise 3 is only descriptive
+
+# exericse 4
+# transform
+districts_alb <- spTransform(districts, crs(roads))
+dists_fromr_alb <- spTransform(dists_fromr, crs(roads))
+
+# difference in total perimeter and area
+1 - gLength(districts_alb) / gLength(dists_fromr_alb)
+1 - gArea(districts_alb) / gArea(dists_fromr_alb)
+
+# ((gArea(districts_alb) / gLength(districts_alb))) / 
+#   (gArea(dists_fromr_alb) / gLength(dists_fromr_alb))
+
+# optional for class, if you want to show the students in class the 
+# differences in area at the district level, look at mean differences in area 
+# for each district
+districts_alb$area <- gArea(spgeom = districts_alb, byid = TRUE)
+dists_fromr_alb$area <- gArea(spgeom = dists_fromr_alb, byid = TRUE)
+
+# have to first sort areas from dists_fromr_alb because ordering of districts 
+# is different then it is in districts_alb, see this: 
+cbind(dists_fromr_alb$layer, districts_alb$ID)
+area_sort <- dists_fromr_alb$area[order(dists_fromr_alb$layer)]  # sort areas
+
+cbind(districts_alb$area, area_sort, ddif / 10000)
+
+# then plot
+plot(districts_alb$area / 10000, area_sort / 10000)
+
+# difference
+ddif <- districts_alb$area - area_sort
+plot(districts_alb$area / 10000, ddif / 10000)
+
+# exercise 5
+# approach 1
+zamr2_alb <- projectRaster(from = zamr2, res = 25000, crs = crs(roads))
+farmersr_alb <- projectRaster(from = farmersr, to = zamr2_alb)
+
+# approach 2
+farmersr_alb <- projectRaster(from = farmersr, res = 25000, crs = crs(roads))
+
+```
 
 
 

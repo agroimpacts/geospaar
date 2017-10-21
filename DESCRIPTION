@@ -1,7 +1,7 @@
 Package: geospaar
 Type: Package
 Title: Course materials for Clark University GEOG 246/346
-Version: 0.3.14
+Version: 0.3.15
 Author: Lyndon Estes
 Maintainer: Lyndon Estes <LEstes@clarku.edu>
 Description: This package contains the course materials for Geospatial 
