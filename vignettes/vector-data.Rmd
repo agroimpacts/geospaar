@@ -55,9 +55,9 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
 
 In this section we are going to use R to work with vector data, learning the most common forms of spatial operations that work with vector data. This means we will be working primarily with the following packages: `sp`, `rgdal`, and `rgeos`. We __might__ touch on, towards the end, the new `sf` package, which is new but already more powerful than `sp`, which it is designed to replace. Okay, so why are we learning about `sp`? Please ask me about that in class! 
 
-The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to intersections, buffers, and differencing.  It also assumes that you have already read Chapter 2 in _Applied Spatial Data Analysis with R_ (ASDAR), and know the basics of R spatial classes.
-
-The reading is designed with the expectation that you work through the code as you read through it. It mixes code and explanation of the code with some exercises to practice on your own. Additionally, you should also look at the help file for each new function that is introduced, in order to familiarize yourself with the arguments. 
+> The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to intersections, buffers, and differencing.  It also assumes that you have already read Chapter 2 in _Applied Spatial Data Analysis with R_ (ASDAR), and know the basics of R spatial classes.
+>
+> The reading is designed with the expectation that you work through the code as you read through it. It mixes code and explanation of the code with some exercises to practice on your own. Additionally, you should also look at the help file for each new function that is introduced, in order to familiarize yourself with the arguments. 
 
 [Back to top](#vectorintro)
 
