@@ -7,7 +7,7 @@
 plot_noaxes(x, axes = FALSE, box = FALSE, mar = c(0, 0, 1, 4), ...)
 }
 \arguments{
-\item{x}{An object of class Raster* or Extent}
+\item{x}{An object of class Raster*}
 
 \item{axes}{Defaults to FALSE, meaning axes with coordinates are not plotted}
 

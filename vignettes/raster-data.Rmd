@@ -538,14 +538,115 @@ plot(s$rain > 1 & s$farmer_count > 1)
 # plot(chirps125 > 1 & farmersr > 1)
 ```
 
-## Raster analysis
-### Summary statistics
+## Raster analyses
 
-`cellStats`
-`calc`
+Let's move on now to some analyses with raster data. 
+
+### Global statistics
+
+The most basic thing to do is calculate a variety of summary statistics and graphics from the rasters. 
+
+```{r}
+cellStats(x = chirpsz[[1]], stat = "mean")  # for a single date
+cellStats(x = chirpsz[[c(5, 7, 14)]], stat = "mean")
+summary(chirpsz[[1:3]])
+```
+
+`cellStats` lets you calculate specific statistics from the cell values of a lone `RasterLayer`, or for just a single, multiple, or all layers in a `RasterStackBrick`. `summary` returns the quintile values and counts the number of `NA` or no data cells. Both functions by default remove NA values (which are in many if not most rasters), which is something that usually has to be specified when trying to apply these statistical functions to an ordinary vector, e.g. 
+
+```{r}
+v <- values(chirpsz[[1]])
+mean(v) 
+mean(v, na.rm = TRUE)
+```
+
+`v` is a vector of all of the values from the first layer in the rainfall brick, including its NA values. `mean` returns an `NA` if you don't tell the function to remove `NA` values first.  
+
+> This is important to remember, because both spatial and non-spatial data often have missing values, so you will have to deal with them explicitly in many cases. 
+
+Okay, here's a more programmatic way of using `cellStats`:
+
+```{r}
+# Block 1
+rain_stats <- lapply(c("mean", "sum", "sd", "cv"), function(x) {
+  cellStats(x = chirpsz, stat = x)
+})
+names(rain_stats) <- c("mean", "sum", "sd", "cv")
+
+# Block 2
+dates <- names(rain_stats[[1]])
+dates <- as.Date(gsub("Y", "", dates), "%y%j")  # convert names to date vector
+
+# Block 3
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
+for(i in 1:length(rain_stats)) {
+  plot(x = dates, y = rain_stats[[i]], type = "l", xlab = "Date", 
+       ylab = paste("Rain", names(rain_stats)[i]), col = "blue")
+}
+```
+
+Block 1 leverages `lapply` to calculate 4 statistics over all dates in `chirpsz`, meaning that we get a time series for each statistic as calculated over all of Zambia. 
+
+Block 2 is just converting the character vector that gives the name for each date into a vector of actual dates, using `gsub` to first replace the "Y" in each name, and then `as.Date` to parse the remaining numbers into an actual date. The "%y%j" construction tells `as.Date` which parts of the character string relate to which part of a date: %y = two digit year; %j = julian day; placed next to one another %y%j means these two elements are immediately adjacent to one another in the string. 
+
+> Practice: Try `as.Date("10-11-2017", "%m-%d-%Y")`, `as.Date("10112017", "%m-%d-%Y")`, and `as.Date("10112017", "%m-%d-%Y")` to get a better sense of how that works. 
+
+Block 3 plots the time series, using the `dates` vector to provide the x variable. 
+
+> These results are actually quite interesting. The top two rows show fairly clearly the start of the rainy season (just after Nov 8), and the bottom two show two measures of variability, the standard deviation (SD) and coefficient of variation (CV, i.e. SD / mean). These two measures are effectively characterizing the spatial variability of rainfall across Zambia on each day--SD increases as the amount of rain increases (which is expected--SD is usually positively correlated with the mean), whereas CV declines as rainfall increases, indicating that a progressively larger area of the country receives rainfall, so there is less spatial variability. There is a big spike in CV on November 8, which corresponds with a drop in mean and total rainfall. However, that drop masks in mean/total masks the fact that there are a few small patches that received a decent amount of rainfall, thus leading to a high CV (see plot below).  
+
+```{r, fig.width=5, fig.height=4}
+plot_noaxes(chirpsz[[15]], main = paste("CV =", round(rain_stats$cv[15])))
+```
+
+Another way to summarize raster data is visually, using a histogram (raster has a generic of `hist` designed for rasters)
+```{r, fig.width=7, fig.height=4}
+par(mfrow = c(1, 3))
+hist(chirpsz[[15:17]], col = "blue", xlab = "mm")
+```
+
+This variant plots a histogram per layer in the `Raster*` object (but we told it to plot 1 row, 3 columns).  
+
+`freq` is another way to summarize a raster values that is similar to `hist` but without the automatic plot.
+```{r}
+f <- freq(chirpsz[[1]])
+f
+```
+
+Here we apply `freq` to a dataset with continuous values, while this is probably best reserved for categorical rasters, but the results seems reasonable here 
+
+### Local statistics
+
+The previous gives us statistics calculated across the entire raster. These summaries, and other analuyses, can also be done locally.  
 
 ### Zonal
 
+One way local statistics can be calculated is by defining zones, and summarizing statistics within those zones. 
+
+```{r}
+# zonemu <- zonal(x = chirpsz, z = distsr, fun = "mean")  # fail b/c extent
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
+zonemu <- zonal(x = chirpsz, z = distsr_rs, fun = "mean")
+head(zonemu)[, 1:5]
+```
+
+That creates a matrix (truncated here) of mean rainfall within each zone ( district), by date. 
+
+#### `subs`
+
+To map the zonal onto their zones, we need to use another function, `subs`.
+
+```{r}
+distr_rfmu <- subs(x = distsr_rs, y = data.frame(zonemu)[, 1:2], by = "zone")
+plot_noaxes(distr_rfmu)
+```
+
+`subs` replaces the values in a raster with those in a `data.frame` containing a variable with common values to those in `subs` (in this case the district IDs). It can be slow-ish on big rasters. 
+
+<span style="color:blue">Exercise 8</span><a name="exercise8"></a>:
+___Use zonal stats on `farmersr_rs` to calculate the total number of farmers per district, and then map them onto the districts as we did above. Remember that `farmersr_rs` is a coarser resolution than `distsr_rs`, but aggregating the districts further would lose a lot information. Disaggregating is also problematic because it messes up the zonal stats. Better to first re-rasterise `farmers2` to the 0.1 resolution, using `distsr_rs` as the reference (to get the right extent) and then calculate and map zonal stats___ ([Exercise index](#unit2exercises))
+
+### Focal
 
 
 
