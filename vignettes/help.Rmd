@@ -120,17 +120,31 @@ A very useful references for basic branching merging can be found [here](https:/
 
 7. Restore a previous commit
 
-There are multiple ways to do this, some more destructive than others. Perhaps the best way to do this is as follows: 
+
+    There are multiple ways to do this, some more destructive than others. Perhaps the best way to do this is as follows: 
 
     ```{bash, eval = FALSE}
     git checkout -b <branch-name-for-older-project-state> <commithash>
+    
     ```
 
-The commit hash is the identifier that git assigns to a particular commit. You can find the hashes under RStudio's git history dialog in the SHA column. If you want to reset your master branch to the state it was in under this older commit, then one way you could do it that would best preserve your work up that point would be to: 
+
+    The commit hash is the identifier that git assigns to a particular commit. You can find the hashes under RStudio's git history dialog in the SHA column. If you want to reset your master branch to the state it was in under this older commit, then one way you could do it that would best preserve your work up that point would be to: 
     
     - create a new branch for the current master branch
     - delete the files in master branch and commit that change
     - merge the older branch back onto master, effectively restoring your master branch to the state it was in at the time of that older commit.
+
+8. Push all commits to remote
+
+
+    Useful if you have multiple branches with commits that you have not yet pushed to GitHub. This does it all at once: 
+
+    ```{bash, eval = FALSE}
+    git push --all -u 
+    ```
+
+
     
 ## RStudio and GitHub
 

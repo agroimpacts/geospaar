@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes" />
 
-<meta name="date" content="2017-10-16" />
+<meta name="date" content="2017-10-22" />
 
 <title>Help Files</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Help Files</h1>
 <h4 class="author"><em>Lyndon Estes</em></h4>
-<h4 class="date"><em>2017-10-16</em></h4>
+<h4 class="date"><em>2017-10-22</em></h4>
 
 
 <div id="TOC">
@@ -147,16 +147,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><p>Merge two branches</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> checkout <span class="kw">&lt;</span>branch-you-want-to-merge-onto<span class="kw">&gt;</span>
 <span class="kw">git</span> merge <span class="kw">&lt;</span>branch-to-merge-onto-the-branch-you-are-in<span class="kw">&gt;</span></code></pre></div></li>
-<li><p>Restore a previous commit</p></li>
-</ol>
+<li><p>Restore a previous commit</p>
 <p>There are multiple ways to do this, some more destructive than others. Perhaps the best way to do this is as follows:</p>
-<pre><code>```bash
-git checkout -b &lt;branch-name-for-older-project-state&gt; &lt;commithash&gt;
-```</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> checkout -b <span class="kw">&lt;</span>branch-name-for-older-project-state<span class="kw">&gt;</span> <span class="kw">&lt;</span>commithash<span class="kw">&gt;</span></code></pre></div>
 <p>The commit hash is the identifier that git assigns to a particular commit. You can find the hashes under RStudio’s git history dialog in the SHA column. If you want to reset your master branch to the state it was in under this older commit, then one way you could do it that would best preserve your work up that point would be to:</p>
-<pre><code>- create a new branch for the current master branch
-- delete the files in master branch and commit that change
-- merge the older branch back onto master, effectively restoring your master branch to the state it was in at the time of that older commit.</code></pre>
+<ul>
+<li>create a new branch for the current master branch</li>
+<li>delete the files in master branch and commit that change</li>
+<li>merge the older branch back onto master, effectively restoring your master branch to the state it was in at the time of that older commit.</li>
+</ul></li>
+<li><p>Push all commits to remote</p>
+<p>Useful if you have multiple branches with commits that you have not yet pushed to GitHub. This does it all at once:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> push --all -u </code></pre></div></li>
+</ol>
 </div>
 <div id="rstudio-and-github" class="section level2">
 <h2>RStudio and GitHub</h2>

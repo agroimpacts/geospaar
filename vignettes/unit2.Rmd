@@ -104,6 +104,7 @@ ___[under construction]___
 
 ## Class 16 (Oct 25) 
 + Read and work through Section 1 in the [raster data vignette](raster-data.html)
++ There are 5 exercises to before class. 
 
 # Week 10 - Rasters continued
 ## Class 17 - Oct 30
