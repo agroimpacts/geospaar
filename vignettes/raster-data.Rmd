@@ -190,6 +190,8 @@ for(i in 1:nlayers(s)) {
 }
 ```
 
+[Back to top](#rasterintro)
+
 ### Reading and writing rasters
 
 Our initial introduction has been working with `Raster*` data that are held in memory. Let's write these out onto disk and then read them back in. Write these to your "unit2/data" folder (see instructions in the [vector vignette](vector-data.html) for a refresher). 
@@ -380,14 +382,16 @@ data("chirps")
 
 ## Raster processing, continued
 
-There a few important things we missed doing in the first section. But first let's talk about the new data we just loaded, `chirps`. We have a help file in `geospaar` describing the dataset, which is provides daily rainfall values at ~5 km resolution, estimated from satellite observations (of cloud top temperature, I believe) and corrected by weather station observations. CHIRPS is a near global product that extends back to the 1970s (read more about it [here](http://chg.geog.ucsb.edu/data/chirps/)), but we have just subset 28 days of data over Zambia. 
+There a few important things we missed doing in the first section. But first let's talk about the new data we just loaded, `chirps`. We have a help file in `geospaar` describing the dataset, which provides daily rainfall values at ~5 km resolution, estimated from satellite observations (of cloud top temperature, I believe) and corrected by weather station observations. CHIRPS is a near global product that extends back to the 1970s (read more about it [here](http://chg.geog.ucsb.edu/data/chirps/)), but we have just subset 28 days of data over Zambia. 
 
 ```{r}
 chirps
 names(chirps)
 ```
 
-That tells us a bit more about the `chirps` subset that we have, including the names we have given to each of the layers, which corresponds to a different in the time series, beginning with Y16299 (Y16 = 2016, 299 = julian day 299, or October 25th) and ending with Y16326 (11/22/2016). Let's have a look at a few of these days. 
+That tells us a bit more about the `chirps` subset that we have, including the names we have given to each of the layers, which correspond to the particular day in the rainfall time series, beginning with Y16299 (Y16 = 2016, 299 = julian day 299, or October 25th) and ending with Y16326 (11/22/2016). Note that `chirps` is actually a `RasterBrick` that we have saved as an .rda file that installs with `geospaar` for convenience. 
+
+Let's have a look at a few of the days in `chirps`: 
 
 ```{r, fig.width=7, fig.height=2.5}
 zam <- gUnaryUnion(districts)
@@ -400,11 +404,13 @@ for(i in 1:3) {
 }
 ```
 
-The above plots the first three dates in `chirps` and drapes Zambia's outline over it. These data are obviously not just confined to Zambia, so that sets up our next set of processing steps we need to consider.  First, please read the coding notes, because we have added new steps in here: 
+The above plots the first three dates in `chirps` and drapes Zambia's outline over it. These data are obviously not just confined to Zambia, so that sets up our next set of processing steps we need to do.  First, please read the coding following notes, because we have added new steps in here: 
 
-> Coding notes: In the plotting code you will see two new things. The use of `ifelse`, a function that allows you to test a condition and assign a value that corresponds to the result of that test.  We use this to tell plot whether or not to add the legend to the figure panel being plotted.  Here we wanted just one legend, because I used the argument zlim within `plot`. This sets a limit on the range of data values that are plotted, which in this case for each plot falls between 0 and the maximum rainfall value observed across all three of the plotted dates.  That gives all three plots a common scale, and, given that, why junk up the plots with three legends showing the same thing?  
+> Coding notes: In the plotting code you will see two new things. The use of `ifelse`, a function that allows you to test a condition and assign a value that corresponds to the result of that test.  We use this to tell `plot` whether or not to add the legend to the figure panel being plotted.  Here we wanted just one legend, because I used the argument "zlim" within `plot`. This sets a limit on the range of data values that are plotted, which in this case for falls between 0 and the maximum rainfall value observed across all three of the plotted dates.  That gives all three plots a common scale, and, given that, why clutter up the plots with three legends showing the same thing?  
 
-> Indexing note: It hasn't been said yet, but you will note from the example above that indexing into a `RasterStackBrick` to select a particular layer or layers is achieved through `[[]]`. This applies to both single (`[[x]]`) and multiple/recursive (`[[x:y]]`) indexing (the latter detail differs from indexing into a `list`, where you use `[x:y]` for multiple selection). Selection by layer names also works (`chirps[[c("Y16299", "Y16300")]]`; `chirps[["Y16299"]]`)
+> Indexing note: It hasn't been said yet, but you will see in the example above that indexing into a `RasterStackBrick` to select a particular layer or layers is achieved through `[[]]`. This applies to both single (`[[x]]`) and multiple/recursive (`[[x:y]]`) indexing (the latter detail differs from indexing into a `list`, where you use `[x:y]` for multiple selection). Selection by layer names also works (`chirps[[c("Y16299", "Y16300")]]`; `chirps[["Y16299"]]`)
+
+[Back to top](#rasterintro)
 
 ### Masking
 
@@ -429,10 +435,12 @@ for(i in sample(1:nlayers(chirpsz), size = 3, replace = FALSE)) {
 }
 ```
 
-Now we have a rainfall dataset that is confined to Zambia's borders (`chirpsz`). The three plots are randomly selected from the layers of `chirpsz`, as a check to confirm that the masking was applied to all layers. 
+The new `chirpsz` dataset contains all rainfall days with the values outside of Zambia converted to NA. The three plots are randomly selected from the layers of `chirpsz`, as a check to confirm that the masking was applied to all layers. 
 
 <span style="color:blue">Exercise 6</span><a name="exercise6"></a>:
-___Mask `farmersr` using `districts` and plot the district boundaries over the masked result, suppressing the axes and box around the plot___ ([Exercise index](#unit2exercises))
+___Mask `farmersr` using `districts`, and plot the district boundaries over the masked result, suppressing the axes and box around the plot___ ([Exercise index](#unit2exercises))
+
+[Back to top](#rasterintro)
 
 ### Cropping
 
@@ -449,7 +457,7 @@ text(districts, labels = districts$ID)
 
 The above uses the extent of district 72 to crop the first layer of `chirpsz`. 
 
-Cropping is important if we want to confine further analyses to a particular sub-region.  However, if we just want to focus our plot to a particular region, then we zoom a plot to that region using an extent object. 
+Cropping is important if we want to confine further analyses to a particular sub-region.  However, if we just want to focus our plot to a particular region, then we can simply zoom the plot to that region (without cropping) using an extent object. 
 
 ```{r, fig.width=5, fig.height=4}
 par(mar = c(0, 0, 0, 4))
@@ -460,7 +468,7 @@ text(districts, labels = districts$ID)
 
 #### A function-writing detour
 
-As we write this, we find ourselves growing weary of repeatedly writing "axes = FALSE, box = FALSE" into the `plot` function, even with Rstudio's handy tab completion. This is the sort of case (repeated use of the same code) where a new function is called for.  
+As we write this, we find ourselves growing weary of repeatedly writing "axes = FALSE, box = FALSE" into the `plot` function, even with Rstudio's handy tab completion. This repeated use of the exact same code is the sort of situation that calls for writing your own function.  
 
 ```{r, eval = FALSE}
 # x <- chirpsz[[1]]; x <- 1:10
@@ -474,14 +482,16 @@ plot_noaxes <- function(x, axes = FALSE, box = FALSE, mar = c(0, 0, 1, 4),
 }
 ```
 
-The function above (not run here, as it now comes built with `geospaar`) takes care of the axes and box problem by setting their default arguments to FALSE. It also sets the default plot margins to the ones we have mostly been using so far (leaves room on the right for the legend and at the top for a title). And it checks whether the object being passed to it belongs to one of the raster classes, failing if it doesn't. Otherwise, it retains all of the ohter functionality of `raster::plot`, as it has the "..." argument, meaning you can pass other eligible arguments to it. 
+The function above (not run in the block above, because it is written into `geospaar`) takes care of the axes and box problem by setting their default arguments to FALSE. It also sets the default plot margins to the ones we have mostly been using so far (leaving room on the right for the legend and at the top for a title), and it checks whether the object being passed to it belongs to one of the raster classes (failing if it doesn't). Otherwise, it retains all of the ohter functionality of `raster::plot`, and has the "..." argument, meaning you can pass other eligible arguments to it. 
 
-Let's see how it works
+Let's see how it works:
 ```{r}
 plot_noaxes(chirpsz[[1]])
 ```
 
 That will make plotting easier moving forward. 
+
+[Back to top](#rasterintro)
 
 ### Aggregating/disaggregating
 
@@ -492,7 +502,7 @@ chirpsz1agg <- aggregate(x = chirpsz[[1]], fact = 2, fun=mean)
 chirpsz1agg
 ```
 
-We aggregate the first layer of `chirpsz` by a factor of 2 ("fact = 2"), taking the average of the aggregated pixels ("fun = mean"). Since the starting resolution was 0.05, doubling the pixel size takes it 0.1. I could have chosen to aggregate all layers, and I could have chosen a different aggregation function (e.g. `sum`, `max`).
+We aggregate the first layer of `chirpsz` by a factor of 2 ("fact = 2"), taking the average of the aggregated pixels ("fun = mean"). Since the starting resolution was 0.05, doubling the pixel size takes it to 0.1. We could have chosen to aggregate all layers, and we could have chosen a different aggregation function (e.g. `sum`, `max`).
 
 To disaggregate, there are two options:
 ```{r}
@@ -501,16 +511,18 @@ chirpsz1km <- disaggregate(x = chirpsz[[1]], fact = 5)
 chirpsz1km
 ```
 
-The first option is the default one, which just breaks apart each pixel into the number of smaller new pixels specified by the factor, giving each new smaller pixel the same value as its larger parent. Here we specified a factor of 5, leading to an output resolution of 0.01 (~1 km), and thus 25 times the number of pixels as in the original chirpsz[[1]] (run `ncell(chirpsz1km) / ncell(chirpsz[[1]])` to see).
+The first option is the default one, which just breaks apart each pixel into the number of smaller new pixels specified by the factor, assigning each new pixel the same value as its larger parent. Here we specified a factor of 5, leading to an output resolution of 0.01 (~1 km), and thus 25 times the number of pixels as in the original `chirpsz[[1]]` (run `ncell(chirpsz1km) / ncell(chirpsz[[1]])` to see).
 
 The second way (commented out), is to pass the "method = bilinear" argument, which interpolates during disaggregation. In this case, `disaggregate` does the job using the `resample` function, which we will see next.  
 
 <span style="color:blue">Exercise 7</span><a name="exercise7"></a>:
 ___Crop `chirpsz[[1]]` using the extent of `districts[57, ]`, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using `plot_noaxes`___ ([Exercise index](#unit2exercises))
 
+[Back to top](#rasterintro)
+
 ### Resampling
 
-Resampling is done for many reasons, but one particularly common way is as a final step following aggregation or disaggregation, in order to co-register the resulting grid to another one. 
+Resampling is done for many reasons, but one particularly common case is as a final step following aggregation or disaggregation, when it is needed to co-register the resulting grid to another grid. 
 
 ```{r, error=TRUE}
 chirps125 <- aggregate(x = chirpsz[[1]], fact = 5)  # no fun b/c default is mean
@@ -522,7 +534,7 @@ plot(extent(farmersr), add = TRUE, col = "red")
 
 ```
 
-After aggregating `chirpsz` layer 1, we try and fail to stack the result with `farmersr`, because (as the plots of extents show and warning tells) the two objects have different extents. So, another approach is needed. 
+After aggregating `chirpsz` layer 1, we try and fail to stack the result with `farmersr`, because (as the plot of extents show, and the warning tells) the two objects have different extents. So, another approach is needed: 
 
 ```{r}
 farmersr_rs <- resample(x = farmersr, y = chirps125) 
@@ -531,12 +543,14 @@ names(s) <- c("rain", "farmer_count")
 plot_noaxes(s)
 ```
 
-We resample `farmersr` to `chirps125rs`, since it has the smaller extent. We can then stack and perform subsequent analyses on both, e.g. finding areas where rainfall exceeded 1 mm and where there was more than 1 farmer
+We resample `farmersr` to `chirps125rs`, since `chirps125rs` has the larger extent. We can then stack and perform subsequent analyses on both, e.g. finding areas where rainfall exceeded 1 mm and where there was more than 1 farmer:
 
 ```{r}
 plot(s$rain > 1 & s$farmer_count > 1)
 # plot(chirps125 > 1 & farmersr > 1)
 ```
+
+[Back to top](#rasterintro)
 
 ## Raster analyses
 
@@ -544,7 +558,7 @@ Let's move on now to some analyses with raster data.
 
 ### Global statistics
 
-The most basic thing to do is calculate a variety of summary statistics and graphics from the rasters. 
+The most basic analyses to perform on rasters is calculate global summary statistics, i.e. statistics calculated across all cell values:
 
 ```{r}
 cellStats(x = chirpsz[[1]], stat = "mean")  # for a single date
@@ -593,35 +607,37 @@ Block 2 is just converting the character vector that gives the name for each dat
 
 Block 3 plots the time series, using the `dates` vector to provide the x variable. 
 
-> These results are actually quite interesting. The top two rows show fairly clearly the start of the rainy season (just after Nov 8), and the bottom two show two measures of variability, the standard deviation (SD) and coefficient of variation (CV, i.e. SD / mean). These two measures are effectively characterizing the spatial variability of rainfall across Zambia on each day--SD increases as the amount of rain increases (which is expected--SD is usually positively correlated with the mean), whereas CV declines as rainfall increases, indicating that a progressively larger area of the country receives rainfall, so there is less spatial variability. There is a big spike in CV on November 8, which corresponds with a drop in mean and total rainfall. However, that drop masks in mean/total masks the fact that there are a few small patches that received a decent amount of rainfall, thus leading to a high CV (see plot below).  
+> The results in the plot above are actually quite interesting. The top two panels show quite clearly the start of the rainy season (just after Nov 8). The bottom two panels show two measures of variability, the standard deviation (SD) and coefficient of variation (CV, i.e. SD / mean). These two measures summarize the spatial variability of rainfall falling across Zambia on each day--SD increases as the amount of rain increases (which is expected--SD is usually positively correlated with the mean), whereas CV declines as rainfall increases, indicating that a progressively larger area of the country receives rainfall as the month progresses, so there is less spatial variability. There is a big spike in CV on November 8, which corresponds to a drop in mean and total rainfall. However, that drop masks the fact that there are a few small patches that received a decent amount of rainfall, thus leading to a high CV (see next plot below).  
 
 ```{r, fig.width=5, fig.height=4}
 plot_noaxes(chirpsz[[15]], main = paste("CV =", round(rain_stats$cv[15])))
 ```
 
-Another way to summarize raster data is visually, using a histogram (raster has a generic of `hist` designed for rasters)
+Another way to summarize raster data is visually, using a histogram (raster has a generic `hist` function)
 ```{r, fig.width=7, fig.height=4}
 par(mfrow = c(1, 3))
 hist(chirpsz[[15:17]], col = "blue", xlab = "mm")
 ```
 
-This variant plots a histogram per layer in the `Raster*` object (but we told it to plot 1 row, 3 columns).  
+This variant plots a histogram per layer in the `Raster*` object (but we told it to plot 1 row, 3 columns, instead of the default (2 rows, 2 columns)).  
 
-`freq` is another way to summarize a raster values that is similar to `hist` but without the automatic plot.
+`freq` is another way to summarize raster values that is similar to `hist` but without the automatic plot.
 ```{r}
 f <- freq(chirpsz[[1]])
 f
 ```
 
-Here we apply `freq` to a dataset with continuous values, while this is probably best reserved for categorical rasters, but the results seems reasonable here 
+Here we apply `freq` to a dataset with continuous values, although this function is probably best reserved for categorical rasters. However, it produces reasonable results here.
+
+[Back to top](#rasterintro)
 
 ### Local statistics
 
-The previous gives us statistics calculated across the entire raster. These summaries, and other analuyses, can also be done locally.  
+The previous gives us statistics calculated across the entire raster. These summaries, and other analyses, can also be done locally.  
 
-### Zonal
+#### Zonal
 
-One way local statistics can be calculated is by defining zones, and summarizing statistics within those zones. 
+One way local statistics can be calculated is by defining zones and then calculating statistics within those zones. 
 
 ```{r}
 # zonemu <- zonal(x = chirpsz, z = distsr, fun = "mean")  # fail b/c extent
@@ -634,22 +650,110 @@ That creates a matrix (truncated here) of mean rainfall within each zone ( distr
 
 #### `subs`
 
-To map the zonal onto their zones, we need to use another function, `subs`.
+To map the zonal statistics onto their zones, we need to use another function, `subs`.
 
 ```{r}
 distr_rfmu <- subs(x = distsr_rs, y = data.frame(zonemu)[, 1:2], by = "zone")
 plot_noaxes(distr_rfmu)
 ```
 
-`subs` replaces the values in a raster with those in a `data.frame` containing a variable with common values to those in `subs` (in this case the district IDs). It can be slow-ish on big rasters. 
+`subs` replaces the values in a raster by other values contained within a `data.frame` that correspond to a variable that has the same values as those in the raster (in this case the district IDs). `subs` can be slow-ish on big rasters. 
 
 <span style="color:blue">Exercise 8</span><a name="exercise8"></a>:
 ___Use zonal stats on `farmersr_rs` to calculate the total number of farmers per district, and then map them onto the districts as we did above. Remember that `farmersr_rs` is a coarser resolution than `distsr_rs`, but aggregating the districts further would lose a lot information. Disaggregating is also problematic because it messes up the zonal stats. Better to first re-rasterise `farmers2` to the 0.1 resolution, using `distsr_rs` as the reference (to get the right extent) and then calculate and map zonal stats___ ([Exercise index](#unit2exercises))
 
-### Focal
+[Back to top](#rasterintro)
 
+#### Focal
 
+Another way of calculating image statistics is to use a moving window/neighborhood approach. This is done with the `focal` function, which has a great many functions that you can apply with it. We will just show you the mean (also known as a low pass filter), and a few permutations of it here to illustrate the concept.  
 
+> Disclaimer: This section assumes that you have applied moving window functions/low pass/high pass filters in your GIS/remote sensing classes so far, and thus are familiar with the calculations. If not, please be sure to ask about this in class.  
+
+```{r, fig.width=6, fig.height=4}
+# Block 1
+wmat <- matrix(1 / 9, nrow = 3, ncol = 3) 
+chirps1_focmu1 <- focal(x = chirpsz[[1]], w = wmat) 
+
+# Block 2
+wmat <- matrix(1, nrow = 3, ncol = 3) 
+chirps1_focmu2 <- focal(x = chirpsz[[1]], w = wmat, fun = mean) 
+
+# Block 3
+wmat <- matrix(1, nrow = 5, ncol = 5) 
+chirps1_focmu3 <- focal(x = chirpsz[[1]], w = wmat, fun = mean) 
+
+# Block 4 
+wmat <- matrix(1, nrow = 5, ncol = 5) 
+chirps1_focmu4 <- focal(x = chirpsz[[1]], w = wmat, fun = mean, na.rm = TRUE) 
+
+# Block 5
+wmat <- matrix(1 / 9, nrow = 5, ncol = 5) 
+chirps1_focmu5 <- focal(x = chirpsz[[1]], w = wmat, na.rm = TRUE) 
+
+# plots
+l <- list(chirps1_focmu1, chirps1_focmu3, chirps1_focmu4, chirps1_focmu5)
+titles <- c("3X3 NAs not removed", "5X5 NAs not removed", 
+            "5X5 NAs removed properly", "5X5 NAs removed improperly")
+par(mfrow = c(2, 2))
+for(i in 1:length(l)) {
+  plot_noaxes(l[[i]], main = titles[i])
+}
+```
+
+We have 5 variants above. In Block 1, we calculate the focal mean the recommended way, which is to: 
+
+1. Define a matrix (`wmat`) that contains the weights that `focal` applies to each pixel when making neighborhood calculations.  In this case, the matrix is 3X3, which is the size of our moving window, and the weights are distributed equally across all pixels and sum to 1 (each gets a weight of 1/9)
+2. `focal` then passes over each image pixel, and multiplies those weights by each pixel value in the neighborhood, and then sums those to get the mean 
+3. It sums the values because `sum` is the default value of the argument "fun" in the function `focal`, which is why we have not even specified the argument "fun" in Block 1
+
+Note that the way `focal` is coded here does not remove NA pixels, thus any neighborhood having even a single NA pixel is itself turned into NA, i.e. all 9 pixels in the neighborhood. Thus the entire boundary of Zambia is trimmed down accordingly (by 2 pixels). This result is illustrated in the upper left panel of the plot above. 
+
+Block 2 is a slower way of doing the same thing. It pass the `mean` function to `focal`'s "fun" argument. The weights matrix in this case has 1s throughout; since we are not using the default "fun=sum" in `focal` and `mean` is doing the work, we can't modify the values of the pixels if we want want the correct mean. We also do not remove NA values from the calculation, so the results are identical (and thus not plotted below). 
+
+In Block 3, we use the same approach as in Block 2, but expand the neighborhood to 5X5. You will see in the plot above (upper right) that Zambia has shrunk even more (by 4 pixels) as a result. 
+
+In Block 4, we again pass `mean` to `focal`, and have a 5X5 neighborhood, but here we specify "na.rm = TRUE", which means that focal passes "TRUE" to the "na.rm" argument of `mean`, thus NAs are removed from each neighborhood before calculating the mean, and boundary pixels aren't lost (note the larger area in the lower left plot above). This is the correct way to remove NAs when calculating focal means.  
+
+In Block 5, we see the improper way of removing NAs from focal calculations, this time using the faster approach demonstrated in Block 1. The lower right plot shows how pixels near Zambia's border have artificially low values, which results from the fact that this method does a weighted mean, but because NAs are removed, the weights do not sum to 1 and thus the mean is underestimated. 
+
+That's a look at `focal`. Now we are going to have you apply in the next exercise:
+
+<span style="color:blue">Exercise 9</span><a name="exercise9"></a>:
+___Use `focal` to calculate for `chirpsz[[20]]` the i) standard deviation within a 3X3 and 5X5 window, and ii) the maximum value in each 3X3 and 5X5 neighborhood. Do not remove NAs. Combine the results in a list, as above, and then plot them with descriptive titles using a `for` loop and the `plot_noaxes` function with descriptive titles.___ ([Exercise index](#unit2exercises))
+
+[Back to top](#rasterintro)
+
+### Analyzing the Z dimension
+
+If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we want to analyze the values in the Z dimension, which may represent time, spectral bands, or unrelated spatial predictors in a model. 
+
+The workhorse for doing this sort of analysis is `calc`, which allows you to apply almost any function to the Z-dimension of a `RasterStackBrick`. 
+
+```{r}
+# Block 1
+rain_zmu <- calc(x = chirpsz, fun = mean)
+rain_zsd <- calc(x = chirpsz, fun = sd)
+rain_zrng <- calc(x = chirpsz, fun = range)
+
+# Block 2
+rain_zstack <- stack(rain_zmu, rain_zsd, rain_zrng)
+names(rain_zstack) <- c("Mean", "StDev", "Min", "Max")
+
+plot_noaxes(rain_zstack)
+
+```
+
+Block 1 passes `mean`, `sd`, and `range` to "fun" in `calc`. Note that `range` always returns two values, so `calc` conveniently returns a two-layer brick that contains the minimum in the first layer and the maximum in the second. 
+
+In Block 2 we then stack the three outputs, and rename the layers something meaningful so that `plot_noaxes` can plot them all at once. 
+
+You will see from the resulting plot that "Min" has only one value, 0, which makes sense for a rainfall time series (every pixel is likely to have at least one day of no rainfall in a month).
+
+So that's it, except for your final exercise: 
+
+<span style="color:blue">Exercise 10</span><a name="exercise10"></a>:
+___Use `calc` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot them with meaningful titles using `plot_noaxes`, outputting plots on 1 row with 3 columns.___ ([Exercise index](#unit2exercises))
 
 [Back to top](#rasterintro)
 
