@@ -335,7 +335,7 @@ zamr_alb <- projectRaster(from = zamr, res = 11000, crs = crs(roads),
                           method = "ngb")  # 1
 distsr_alb <- projectRaster(from = distsr, to = zamr_alb, method = "ngb")  # 2
 
-par(mfrow = c(1, 2), mar = c(0, 0, 0, 4))
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 4))
 plot(distsr, main = "GCS rasterized districts", axes = FALSE, box = FALSE)
 plot(distsr_alb, main = "Albers rasterized districts", axes = FALSE, box = FALSE)
 ```
@@ -347,7 +347,7 @@ The result, `zamr_alb`, then becomes a reference raster (i.e. the raster definin
 ```{r, fig.width=7, fig.height=2.5}
 distsr_alb2 <- projectRaster(from = distsr, to = zamr_alb, method = "bilinear")
 
-par(mfrow = c(1, 2), mar = c(0, 0, 0, 4))
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 4))
 plot(distsr_alb2, main = "Bilinear reprojection", axes = FALSE, box = FALSE)
 plot(distsr_alb, main = "Nearest neighbor", axes = FALSE, box = FALSE)
 ```
@@ -783,22 +783,203 @@ ___Use `calc` with `chirpsz` to calculate the total rainfall in the time series,
 
 # Section 3{#section3}
 
+Let's move on and look at some additional raster-based analyses. This section, like the previous, will depend on objects created in earlier sections. The code to recreate those can be found hidden in the Rmarkdown below (why don't we just make it visible in the vignette then? Because the vignette builds all the objects at once, and we want to avoid duplicating operations, and save space).
+
+```{r, eval = FALSE, echo = FALSE}
+data("chirps")
+data("districts")
+chirpsz <- mask(x = chirps, mask = districts)
+districts$ID <- 1:length(districts)
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
+distsr <- rasterize(x = districts, y = zamr, field = "ID")
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
+farmers <- read.csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"), stringsAsFactors = FALSE)
+farmers2 <- do.call(rbind, lapply(unique(farmers$uuid), function(x) {
+  dat <- farmers[farmers$uuid == x, ][1, ]  # select first row only
+}))
+coordinates(farmers2) <- ~lon + lat
+farmers2$ct <- 1  # assign value of 1 to each farmers
+```
+
+## Exercises{#unit3exercises} 
+- [Exercise #11](#exercise11)
+- [Exercise #12](#exercise12)
+- [Exercise #13](#exercise13)
+
+## Algebra and selection
+
+We can do any number of raster calculations using basic mathematical expressions. Here are some very basic ones:
+
+```{r}
+r1 <- chirpsz[[1]] / chirpsz[[2]]
+r2 <- chirpsz[[1]] + chirpsz[[2]]
+r3 <- chirpsz[[1]] - chirpsz[[2]]
+r4 <- chirpsz[[1]] * chirpsz[[2]]
+
+s <- stack(r1, r2, r3, r4)
+names(s) <- c("divide", "sum", "subtract", "multiply")
+plot_noaxes(s)
+```
+
+As you have seen in section 1, we can also perform logical operations on rasters, selecting cells that meet certain criteria. 
+
+```{r, fig.width = 6, fig.height=4}
+# Block 1
+raintot <- calc(chirpsz, fun = sum)
+raincv <- calc(chirpsz, fun = cv)
+
+# Block 2
+highrain_highcv <- raintot > 80 & raincv > 200  
+
+# Block 3
+dist54 <- distsr_rs == 54  # 1
+distrain <- dist54 * raintot  # 2
+distrain[dist54 == 0] <- NA  # 3
+# distrain <- mask(raintot, dist54, maskvalue = 0)  # 4
+
+# Block 4
+meandistrain <- distrain > cellStats(distrain, mean)
+
+# Block 5
+rain_gt_mu <- raintot > cellStats(raintot, mean)
+
+
+s <- stack(raintot, raincv, highrain_highcv, distrain, meandistrain, rain_gt_mu)
+titles <- c("Total rain", "Rain CV", "High rain, high CV", "Dist 54 rain", 
+            "Dist 54 rain > mean", "Rain > mean")
+par(mfrow = c(2, 3))
+for(i in 1:nlayers(s)) {
+  plot_noaxes(s[[i]], main = titles[i])  
+}
+```
+
+In block 1, we use `calc` to sum rainfall and calculate its CV across the 28 days in `chirpsz`. Then, in block 2, we identify which cells have both high rainfall (>80 mm) and high rainfall variability (CV > 200) during the 28 day time period. 
+
+In block 3, we examine total rainfall within district 54. This is done in several steps. In line #1, we create a mask, where cells in district 54 are 1, and everywhere else 0. In #2, we multiply this mask by `raintot`, thereby masking out rainfall values outside the district. At this point (#2), if we calculated any subsequent statistics on district 54 rainfall, they would be invalid because there would be a lot of 0 values for rainfall outside of district 54 that would be included in the calculation (run `plot(distrain)` right after #2 to see). This would result in a very low mean rainfall, for example. Therefore, in # 3, we identify the indices of the cells in `dist54` that have 0s (`dist54 == 0`), and use those indices to set all the values in `distrain` to NA. Lines 2 and 3 show the raster algebraic way of doing what could also be achieved with `mask`, shown in the commented out line #4.  
+
+Having made `distrain` safe for calculating statistics, in Block 4 we then identify the areas in district 54 that received more rainfall than the district mean rainfall during the 28 days. In Block 5, we do the same thing, but for all of Zambia.  
+
+<span style="color:blue">Exercise 11</span><a name="exercise11"></a>: ___Use `calc` to find the standard deviation of rainfall for each cell in `chirpsz`. Use raster algebra to find the country-wide average standard deviation, and then identify which areas of Zambia have values **less** than that. Finally, calculate the mean standard deviation across those areas having below average standard deviation___ [Exercise index](#unit3exercises)
+
+## Categorizing
+
+Sometimes you will want to create a categorical raster from a continous one.  We will look at two different ways of doing that. Method 1:
+
+```{r}
+qtiles <- quantile(raintot, probs = seq(0, 1, 1/3))
+raintotcut <- cut(x = raintot, breaks = qtiles, include.lowest = TRUE)
+
+cols <- c("tan", "yellow3", "green4")
+plot_noaxes(raintotcut, legend = FALSE, main = "Total Rainfall", col = cols, 
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("High", "Intermediate", "Low"), 
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+```
+
+The above is perhaps the easiest way of doing the job, using the `cut` function. `cut` is a raster-based implementation of a base R function designed for converting numeric vectors to factors. We first define the tercile values (i.e 33.3rd, 66.6th, and 100th percentiles) for `raintot`, and pass those into the "breaks" argument of `cut`. We pass the argument "include.lowest = TRUE" because we want to include all values that are greater than or equal to the lowest value in each category. Our plot of the results has a customized legend, which we chose because we have a categorical raster and thus wanted a categorical, rather than continuous (the default for `raster::plot`, and thus `plot_noaxes`), legend.
+
+Method 2 is somewhat more involved:
+```{r}
+rclmat <- cbind(qtiles[1:3], qtiles[2:4], 1:3)
+rclmat
+raintotrcl <- reclassify(x = raintot, rcl = rclmat, include.lowest = TRUE)
+
+plot_noaxes(raintotrcl, legend = FALSE, main = "Total Rainfall", col = cols, 
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("High", "Intermediate", "Low"), 
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+```
+
+In the first step, we reuse the previously calculated terciles to create a reclassification matrix (`rclmat`). This matrix contains the lower bound of the range of the category in column 1, the upper bound in column 2, and then the new class value that will be assigned in column 3. There are three rows, one per category. This matrix is passed to the `rcl` argument of `reclassify`, in which we also specify the same "include.lowest = TRUE" argument. 
+
+This approach requires slightly more work, but there are cases where you might need to use it, e.g. to reclassify another categorical raster using non-sequential categories. 
+
+<span style="color:blue">Exercise 12</span><a name="exercise12"></a>: ___Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries. Use both the `cut` and `reclassify` approaches. Plot them side-by-side using `plot_noaxes` using the categorical legend, with titles over each map. ___ [Exercise index](#unit3exercises)
+
+## Sampling
+
+Many analyses are based on data sampled from a raster. For example, you might have coordinates for places where you collected field data, and need to collect environmental data for those locations from a raster. The `extract` function is great for this:
+
+### Extract
+
+From the description of `extract`, the function's purpose is to:
+
+> Extract values from a Raster* object at the locations of other spatial data. You can use coordinates (points), lines, polygons or an Extent (rectangle) object. You can also use cell numbers to extract values.
+
+Here we will use points and polygons:
+
+```{r}
+# Block 1
+farmrain <- extract(x = raintot, y = farmers2)
+
+# Block 2
+farmdistid <- unique(extract(distsr_rs, farmers2))  # 1
+farmdistid <- na.exclude(farmdistid)  # 2
+# farmdistids <- farmdistids[!is.na(farmdistids)]  # 3
+farmdists <- districts[na.exclude(farmdistid), ]  # 4
+distrain <- extract(x = raintot, y = farmdists, fun = mean)  # 5
+
+# Block 3
+farmrainmu <- mean(farmrain, na.rm = TRUE)
+distrainmu <- mean(distrain, na.rm = TRUE)
+boxplot(x = list(farmrain, distrain), col = c("blue", "red"), xaxt = "n", 
+        main = "Rainfall", ylab = "mm")
+points(x = 1:2, y = c(farmrainmu, distrainmu), pch = 16, cex = 2)
+axis(side = 1, at = 1:2, labels = c("Farmers", "Districts"))
+```
+
+In block 1, we use the locations of our farmers (represented by `farmers2`) to collect total rainfall values for the `chirpsz` time period. That gives us one rainfall value per farmer location. 
+
+In block 2, we first identify which districts those farmers fall within (line #1). Because we had a few farmers that fell outside of Zambia, there was an NA value in the selected district ids. Therefore we used the function `na.exclude` to remove the NA (#3 shows an alternate way to do it). In #4, we subset `districts` using the selected districts ids (to create `farmdists`), and then in #5 we use `farmdist` to select all rainfall pixels from `raintot` falling within each selected district. When using `extract` with polygons, if you don't pass a value to the "fun" argument, a list is returned, in which each element contains the extracted pixel values corresponding to a particular polyon. Otherwise, if you give "fun" an argument (e.g. `mean`, as in this case), you get back a vector or matrix (if your function gives back more than one value, e.g. `range`) containing the resulting statistic(s) for each polygon. 
+
+In block 3, we compare the distributions of rainfall values in both objects using `boxplot` (if you have never seen a boxplot before, please ask about these in class). Putting `farmrain` and `distrain` into a list allows us to plot the boxplots of both objects side-by-side (note that you can also plot a boxplot directly from a raster). We also add the mean rainfall selected from each object as a point to the boxplots (because the line in the box represents the median value). These results suggest that the rainfall data selected at farmer locations provide a biased estimate of district mean rainfall.  
+
+### Random sampling
+
+Alternatively, you might want to draw a random sample directly from a raster, without all the trials and tribulations of field work (field logistics often make it hard to capture truly randomized, and thus representative, samples). `raster` has functions for this, and we will build off the previous example to demonstrate them. 
+
+```{r}
+# Block 1
+farmdistsr <- distsr_rs %in% farmdistid
+distsrfarm <- mask(x = distsr_rs, mask = farmdistsr, maskvalue = 0)
+# plot_noaxes(farmdistsr)
+
+# Block 2
+set.seed(1)
+distsamp <- sampleRandom(x = distsrfarm, size = nrow(farmers2), cells = TRUE)
+# head(distsample)
+randrain <- raintot[distsamp[, 1]]
+
+# Block 3
+set.seed(1)
+distsamp_str <- sampleStratified(x = distsrfarm, 
+                                 size = nrow(farmers2) / length(farmdistid), 
+                                 cells = TRUE)
+stratrandrain <- raintot[distsamp_str[, 1]]
+
+# Block 4
+randmu <- mean(randrain, na.rm = TRUE)
+strrandmu <- mean(stratrandrain, na.rm = TRUE)
+boxplot(x = list(distrain, randrain, stratrandrain), ylab = "mm",
+        col = c("blue", "red", "purple"), xaxt = "n", main = "Rainfall")
+points(x = 1:3, y = c(distrainmu, randmu, strrandmu), pch = 16, cex = 2)
+axis(side = 1, at = 1:3, labels = c("Distr. means", "Random", "Strat. Random"))
+```
+
+Block 1 masks the raster to exclude districts having no farmers (you can run the commented-out code to see the map). 
+
+Block 2 uses the function `raster::sampleRandom` to take a straight random sample from the farmer-hosting districts. We set the "size" argument so that it is equal to `nrow(farmers2)`, i.e. our sample is equal to the number of farmers in `farmers2` (562). We use the argument "cells = TRUE" to select the cell numbers, which is what we are really interested in (if we didn't, we would just get the values of those cells, i.e. the district ids). Run the commented out code to see what the contents of `distsample` look like. We then use those cell ids (the first column of `distsamp`) to extract the rainfall values from `raintot`. 
+
+> We can use the cell ids selected from one raster to extract values from another only if this two rasters have an identical number of cells and extents, as is the case here. You can confirm that this is the case for `distsrfarm` and `raintot` by running `identical(ncell(raintot), ncell(distsrfarm))` and `identical(extent(raintot), extent(distsrfarm))`.
+
+Block 3 does the more correct way of collecting a representative sample, which is to stratify the sample by districts.  This uses the function `sampleStratified`, which uses the district ids in `distsrfarm` to create the strata, and the "size" argument specifies the size of the sample that should be drawn from __each stratum__ (i.e. district). To estimate that size, we divide `nrow(farmers2)` by the number of farmer-hosting districts, so that we end up with a total sample equal to `r nrow(farmers2)`. Note that this function does not vary the sample size per stratum (which would be the really correct way of doing it). 
+
+In Block 4, we redo the boxplots, showing the results from the two approaches to random sampling alongside the distribution of district mean rainfall values (`distsrfarm`). Both approaches produce statistics that are quite representative of the district rainfall. The stratified approach is closest, as both the median and mean from it align with that of `distrain`. 
+
+<span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts. Randomly select the district IDs (use a seed value of 11) from `districts$ID`. Mask `totrain` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. Then use `sampleRandom` and `sampleStratified` with a size of 300 to get the rainfall values from `newrandrain`. Compare the rainfall values extracted from those with the distributions of district mean rainfalls extracted from `newrandrain` (call that `randdistrain`. Use boxplots to show the results. ___ [Exercise index](#unit3exercises)
+
+
 [Back to top](#rasterintro)
-
-<!-- <span style="color:blue">Exercise 1</span><a name="exercise15"></a>: ___ -->
-<!-- ___ [Exercise index](#unit3exercises) -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
