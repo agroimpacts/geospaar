@@ -140,13 +140,66 @@ farmersr &lt;-<span class="st"> </span><span class="kw">rasterize</span>(farmers
 <h1>Exercise 6</h1>
 <p>Mask <code>farmersr</code> using <code>districts</code>, and plot the district boundaries over the masked result, suppressing the axes and box around the plot</p>
 </div>
+<div id="answer" class="slide section level2">
+<h1>Answer</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Max</span>
+farmersrZ &lt;-<span class="st"> </span><span class="kw">mask</span>(<span class="dt">x=</span> farmersr, <span class="dt">mask =</span> districts)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>))
+<span class="kw">plot</span>(rgeos::<span class="kw">gUnaryUnion</span>(districts))
+<span class="kw">plot</span>(farmersrZ, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(districts, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+
+<span class="co"># Lyndon</span>
+farmersrz &lt;-<span class="st"> </span><span class="kw">mask</span>(<span class="dt">x =</span> farmersr, <span class="dt">mask =</span> districts)
+<span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>))
+<span class="kw">plot</span>(farmersrz, <span class="dt">axes =</span> <span class="ot">FALSE</span>, <span class="dt">box =</span> <span class="ot">FALSE</span>)
+<span class="kw">plot</span>(districts, <span class="dt">add =</span> <span class="ot">TRUE</span>)</code></pre></div>
+</div>
 <div id="exercise-7" class="slide section level2">
 <h1>Exercise 7</h1>
 <p>Crop <code>chirpsz[[1]]</code> using the extent of <code>districts[57, ]</code>, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using <code>plot_noaxes</code></p>
 </div>
+<div id="answer-1" class="slide section level2">
+<h1>Answer</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Erika</span>
+<span class="co"># Exercise 7</span>
+chirps1_dist72 &lt;-<span class="st"> </span><span class="kw">crop</span>(<span class="dt">x =</span> chirpsz[[<span class="dv">1</span>]], <span class="dt">y =</span> districts[<span class="dv">57</span>, ])
+chirpsz1km &lt;-<span class="st"> </span><span class="kw">disaggregate</span>(<span class="dt">x =</span> chirps1_dist72, <span class="dt">fact =</span> <span class="dv">5</span>)
+chirpszdis &lt;-<span class="st"> </span><span class="kw">disaggregate</span>(<span class="dt">x =</span> chirps1_dist72, <span class="dt">fact =</span> <span class="dv">5</span>, 
+                           <span class="dt">method =</span> <span class="st">&quot;bilinear&quot;</span>) 
+<span class="kw">plot_noaxes</span>(<span class="kw">stack</span>(chirpszdis, chirpsz1km), <span class="dt">zlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">20</span>))
+
+<span class="co"># Lyndon</span>
+chirps1_dist57 &lt;-<span class="st"> </span><span class="kw">crop</span>(chirpsz[[<span class="dv">1</span>]], <span class="dt">y =</span> districts[<span class="dv">57</span>, ])
+chirps571kma &lt;-<span class="st"> </span><span class="kw">disaggregate</span>(<span class="dt">x =</span> chirps1_dist57, <span class="dt">fact =</span> <span class="dv">5</span>)
+chirps571kmb &lt;-<span class="st"> </span><span class="kw">disaggregate</span>(<span class="dt">x =</span> chirps1_dist57, <span class="dt">fact =</span> <span class="dv">5</span>, <span class="dt">method =</span> <span class="st">&quot;bilinear&quot;</span>)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
+<span class="kw">plot_noaxes</span>(chirps571kma)
+<span class="kw">plot_noaxes</span>(chirps571kmb)</code></pre></div>
+</div>
 <div id="exercise-8" class="slide section level2">
 <h1>Exercise 8</h1>
 <p>Use zonal stats on <code>farmersr_rs</code> to calculate the total number of farmers per district, and then map them onto the districts as we did above. Remember that <code>farmersr_rs</code> is a coarser resolution than <code>distsr_rs</code>, but aggregating the districts further would lose a lot information. Disaggregating is also problematic because it messes up the zonal stats. Better to first re-rasterise <code>farmers2</code> to the 0.1 resolution, using <code>distsr_rs</code> as the reference (to get the right extent) and then calculate and map zonal stats</p>
+<h3 id="answer-2">Answer</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Jeanie</span>
+chirps125 &lt;-<span class="st"> </span><span class="kw">aggregate</span>(<span class="dt">x =</span> chirpsz[[<span class="dv">1</span>]], <span class="dt">fact =</span> <span class="dv">5</span>)
+farmersr_rs &lt;-<span class="st"> </span><span class="kw">resample</span>(<span class="dt">x =</span> farmersr, <span class="dt">y =</span> chirps125)
+farmers2_re &lt;-<span class="st"> </span><span class="kw">resample</span>(<span class="dt">x =</span> farmersr_rs, <span class="dt">y =</span> distsr_rs)
+zonetot &lt;-<span class="st"> </span><span class="kw">zonal</span>(<span class="dt">x =</span> farmers2_re, <span class="dt">z =</span> distsr_rs, <span class="dt">fun =</span> <span class="st">&quot;sum&quot;</span>)
+<span class="kw">head</span>(zonetot)
+distr_tot&lt;-<span class="st"> </span><span class="kw">subs</span>(<span class="dt">x =</span> distsr_rs, <span class="dt">y =</span> <span class="kw">data.frame</span>(zonetot)[, <span class="dv">1</span>:<span class="dv">2</span>], 
+                 <span class="dt">by =</span> <span class="st">&quot;zone&quot;</span>)
+<span class="kw">plot_noaxes</span>(distr_tot)
+
+<span class="co"># Lyndon </span>
+farmersr_01 &lt;-<span class="st"> </span><span class="kw">rasterize</span>(<span class="dt">x =</span> farmers2, <span class="dt">y =</span> distsr_rs, <span class="dt">field =</span> <span class="st">&quot;ct&quot;</span>, <span class="dt">fun =</span> sum)
+farmersr_01 &lt;-<span class="st"> </span><span class="kw">zonal</span>(farmersr_01, <span class="dt">z =</span> distsr_rs, <span class="dt">fun =</span> <span class="st">&quot;sum&quot;</span>)
+farmersr_01 &lt;-<span class="st"> </span><span class="kw">subs</span>(<span class="dt">x =</span> distsr_rs, <span class="dt">y =</span> <span class="kw">data.frame</span>(farmersr_01)[, <span class="dv">1</span>:<span class="dv">2</span>],
+                    <span class="dt">by =</span> <span class="st">&quot;zone&quot;</span>)
+
+<span class="kw">plot_noaxes</span>(farmersr_01)</code></pre></div>
 </div>
 <div id="additional-exercises---new-zambia-data" class="slide section level2">
 <h1>Additional exercises - new Zambia data</h1>
@@ -159,6 +212,13 @@ farmersr &lt;-<span class="st"> </span><span class="kw">rasterize</span>(farmers
 <li><p>Calculate area of each field in ha</p></li>
 <li><p>Calculate total area by farmers</p></li>
 </ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;external/data/&quot;</span>)  <span class="co"># lyndon's path, replace with your own</span>
+fields &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="st">&quot;chomafields.sqlite&quot;</span>, <span class="dt">layer =</span> <span class="st">&quot;chomafields&quot;</span>)
+fieldsa &lt;-<span class="st"> </span><span class="kw">spTransform</span>(fields, <span class="kw">proj4string</span>(roads))
+fieldsa$area &lt;-<span class="st"> </span>rgeos::<span class="kw">gArea</span>(fieldsa, <span class="dt">byid =</span> <span class="ot">TRUE</span>) /<span class="st"> </span><span class="dv">10000</span>
+<span class="kw">sapply</span>(<span class="kw">unique</span>(fieldsa$farmer), function(x) {
+  <span class="kw">sum</span>(fieldsa@data[fieldsa$farmer ==<span class="st"> </span>x, <span class="st">&quot;area&quot;</span>])
+})</code></pre></div>
 </div>
 <div id="additional-exercises---gitgithub" class="slide section level2">
 <h1>Additional exercises - Git/GitHub</h1>

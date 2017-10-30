@@ -76,13 +76,72 @@ farmersr <- rasterize(farmers2, zamr2, field = "ct", fun = sum)
 
 Mask `farmersr` using `districts`, and plot the district boundaries over the masked result, suppressing the axes and box around the plot 
 
+## Answer
+```{r, eval = FALSE}
+# Max
+farmersrZ <- mask(x= farmersr, mask = districts)
+
+par(mfrow = c(1,1), mar = c(0,0,1,0))
+plot(rgeos::gUnaryUnion(districts))
+plot(farmersrZ, axes = FALSE, box = FALSE, add = TRUE)
+plot(districts, add = TRUE)
+
+# Lyndon
+farmersrz <- mask(x = farmersr, mask = districts)
+par(mar = c(0, 0, 0, 4))
+plot(farmersrz, axes = FALSE, box = FALSE)
+plot(districts, add = TRUE)
+```
+
+
 ## Exercise 7
 
 Crop `chirpsz[[1]]` using the extent of `districts[57, ]`, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using `plot_noaxes`
 
+## Answer
+```{r, eval=FALSE}
+# Erika
+# Exercise 7
+chirps1_dist72 <- crop(x = chirpsz[[1]], y = districts[57, ])
+chirpsz1km <- disaggregate(x = chirps1_dist72, fact = 5)
+chirpszdis <- disaggregate(x = chirps1_dist72, fact = 5, 
+                           method = "bilinear") 
+plot_noaxes(stack(chirpszdis, chirpsz1km), zlim = c(0, 20))
+
+# Lyndon
+chirps1_dist57 <- crop(chirpsz[[1]], y = districts[57, ])
+chirps571kma <- disaggregate(x = chirps1_dist57, fact = 5)
+chirps571kmb <- disaggregate(x = chirps1_dist57, fact = 5, method = "bilinear")
+
+par(mfrow = c(1, 2))
+plot_noaxes(chirps571kma)
+plot_noaxes(chirps571kmb)
+```
+
 ## Exercise 8
 
 Use zonal stats on `farmersr_rs` to calculate the total number of farmers per district, and then map them onto the districts as we did above. Remember that `farmersr_rs` is a coarser resolution than `distsr_rs`, but aggregating the districts further would lose a lot information. Disaggregating is also problematic because it messes up the zonal stats. Better to first re-rasterise `farmers2` to the 0.1 resolution, using `distsr_rs` as the reference (to get the right extent) and then calculate and map zonal stats
+
+### Answer
+```{r, eval = FALSE}
+# Jeanie
+chirps125 <- aggregate(x = chirpsz[[1]], fact = 5)
+farmersr_rs <- resample(x = farmersr, y = chirps125)
+farmers2_re <- resample(x = farmersr_rs, y = distsr_rs)
+zonetot <- zonal(x = farmers2_re, z = distsr_rs, fun = "sum")
+head(zonetot)
+distr_tot<- subs(x = distsr_rs, y = data.frame(zonetot)[, 1:2], 
+                 by = "zone")
+plot_noaxes(distr_tot)
+
+# Lyndon 
+farmersr_01 <- rasterize(x = farmers2, y = distsr_rs, field = "ct", fun = sum)
+farmersr_01 <- zonal(farmersr_01, z = distsr_rs, fun = "sum")
+farmersr_01 <- subs(x = distsr_rs, y = data.frame(farmersr_01)[, 1:2],
+                    by = "zone")
+
+plot_noaxes(farmersr_01)
+```
 
 ## Additional exercises - new Zambia data
 
@@ -97,6 +156,16 @@ https://www.dropbox.com/s/wd6doedusc8zv1l/chomafields.sqlite?dl=0
 3. Calculate area of each field in ha
 
 4. Calculate total area by farmers
+
+```{r, eval=FALSE}
+setwd("external/data/")  # lyndon's path, replace with your own
+fields <- readOGR("chomafields.sqlite", layer = "chomafields")
+fieldsa <- spTransform(fields, proj4string(roads))
+fieldsa$area <- rgeos::gArea(fieldsa, byid = TRUE) / 10000
+sapply(unique(fieldsa$farmer), function(x) {
+  sum(fieldsa@data[fieldsa$farmer == x, "area"])
+})
+```
 
 ## Additional exercises - Git/GitHub
 
