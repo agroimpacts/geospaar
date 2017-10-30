@@ -378,7 +378,6 @@ Since we are recycling some of the objects from the previous section but you mig
 zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
 values(zamr) <- 1:ncell(zamr)
 
-# Block 2
 districts$ID <- 1:length(districts)
 distsr <- rasterize(x = districts, y = zamr, field = "ID")
 distsr
@@ -855,6 +854,8 @@ for(i in 1:nlayers(s)) {
 }
 ```
 
+[Back to top](#rasterintro)
+
 In block 1, we use `calc` to sum rainfall and calculate its CV across the 28 days in `chirpsz`. Then, in block 2, we identify which cells have both high rainfall (>80 mm) and high rainfall variability (CV > 200) during the 28 day time period. 
 
 In block 3, we examine total rainfall within district 54. This is done in several steps. In line #1, we create a mask, where cells in district 54 are 1, and everywhere else 0. In #2, we multiply this mask by `raintot`, thereby masking out rainfall values outside the district. At this point (#2), if we calculated any subsequent statistics on district 54 rainfall, they would be invalid because there would be a lot of 0 values for rainfall outside of district 54 that would be included in the calculation (run `plot(distrain)` right after #2 to see). This would result in a very low mean rainfall, for example. Therefore, in # 3, we identify the indices of the cells in `dist54` that have 0s (`dist54 == 0`), and use those indices to set all the values in `distrain` to NA. Lines 2 and 3 show the raster algebraic way of doing what could also be achieved with `mask`, shown in the commented out line #4.  
@@ -862,6 +863,8 @@ In block 3, we examine total rainfall within district 54. This is done in severa
 Having made `distrain` safe for calculating statistics, in Block 4 we then identify the areas in district 54 that received more rainfall than the district mean rainfall during the 28 days. In Block 5, we do the same thing, but for all of Zambia.  
 
 <span style="color:blue">Exercise 11</span><a name="exercise11"></a>: ___Use `calc` to find the standard deviation of rainfall for each cell in `chirpsz`. Use raster algebra to find the country-wide average standard deviation, and then identify which areas of Zambia have values **less** than that. Finally, calculate the mean standard deviation across those areas having below average standard deviation___ [Exercise index](#unit3exercises)
+
+[Back to top](#rasterintro)
 
 ## Categorizing
 
@@ -897,6 +900,8 @@ In the first step, we reuse the previously calculated terciles to create a recla
 This approach requires slightly more work, but there are cases where you might need to use it, e.g. to reclassify another categorical raster using non-sequential categories. 
 
 <span style="color:blue">Exercise 12</span><a name="exercise12"></a>: ___Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries. Use both the `cut` and `reclassify` approaches. Plot them side-by-side using `plot_noaxes` using the categorical legend, with titles over each map. ___ [Exercise index](#unit3exercises)
+
+[Back to top](#rasterintro)
 
 ## Sampling
 
@@ -935,6 +940,8 @@ In block 1, we use the locations of our farmers (represented by `farmers2`) to c
 In block 2, we first identify which districts those farmers fall within (line #1). Because we had a few farmers that fell outside of Zambia, there was an NA value in the selected district ids. Therefore we used the function `na.exclude` to remove the NA (#3 shows an alternate way to do it). In #4, we subset `districts` using the selected districts ids (to create `farmdists`), and then in #5 we use `farmdist` to select all rainfall pixels from `raintot` falling within each selected district. When using `extract` with polygons, if you don't pass a value to the "fun" argument, a list is returned, in which each element contains the extracted pixel values corresponding to a particular polyon. Otherwise, if you give "fun" an argument (e.g. `mean`, as in this case), you get back a vector or matrix (if your function gives back more than one value, e.g. `range`) containing the resulting statistic(s) for each polygon. 
 
 In block 3, we compare the distributions of rainfall values in both objects using `boxplot` (if you have never seen a boxplot before, please ask about these in class). Putting `farmrain` and `distrain` into a list allows us to plot the boxplots of both objects side-by-side (note that you can also plot a boxplot directly from a raster). We also add the mean rainfall selected from each object as a point to the boxplots (because the line in the box represents the median value). These results suggest that the rainfall data selected at farmer locations provide a biased estimate of district mean rainfall.  
+
+[Back to top](#rasterintro)
 
 ### Random sampling
 
@@ -979,6 +986,9 @@ Block 3 does the more correct way of collecting a representative sample, which i
 In Block 4, we redo the boxplots, showing the results from the two approaches to random sampling alongside the distribution of district mean rainfall values (`distsrfarm`). Both approaches produce statistics that are quite representative of the district rainfall. The stratified approach is closest, as both the median and mean from it align with that of `distrain`. 
 
 <span style="color:blue">Exercise 13</span><a name="exercise13"></a>: ___Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts. Randomly select the district IDs (use a seed value of 11) from `districts$ID`. Mask `totrain` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. Then use `sampleRandom` and `sampleStratified` with a size of 300 to get the rainfall values from `newrandrain`. Compare the rainfall values extracted from those with the distributions of district mean rainfalls extracted from `newrandrain` (call that `randdistrain`. Use boxplots to show the results. ___ [Exercise index](#unit3exercises)
+
+# Section 4{#section4}
+
 
 
 [Back to top](#rasterintro)

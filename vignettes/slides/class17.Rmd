@@ -1,0 +1,126 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "Halloween -1"
+output:
+  slidy_presentation: 
+    default:
+    css: custom.css
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 17
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(repos = c(CRAN = "http://ftp.ussg.iu.edu/CRAN/"))
+```
+
+## Today
+
+- Questions from last week?
+- Projects
+- Exercises from readings
+- Additional exercises
+
+## Projects
+```{r, warning=FALSE, message=FALSE}
+library(data.table)
+projects <- fread("project-list.csv")
+projects[order(Topic, Student), ]
+```
+
+
+## Exercises from reading
+
+### Rapporteurs
+
+```{r}
+student_names <- read.csv("students.csv", stringsAsFactors = FALSE)
+set.seed(1)
+sel_names <- student_names[sample(1:nrow(student_names), size = 6, 
+                                  replace = FALSE), ]
+monday_names <- c("Sarah Gates", "Ali Filipovic")
+student_names2 <- student_names$name[!student_names$name %in% 
+                                       c(sel_names, monday_names)]
+set.seed(100)
+sel_names <- student_names2[sample(1:length(student_names2), size = 3)]
+sel_names
+```
+
+## Exercise Datasets
+
+```{r}
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
+
+districts$ID <- 1:length(districts)
+distsr <- rasterize(x = districts, y = zamr, field = "ID")
+distsr
+
+farmers <- read.csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"), stringsAsFactors = FALSE)
+farmers2 <- do.call(rbind, lapply(unique(farmers$uuid), function(x) {
+  dat <- farmers[farmers$uuid == x, ][1, ]  # select first row only
+}))
+coordinates(farmers2) <- ~lon + lat
+farmers2$ct <- 1  # assign value of 1 to each farmers
+
+zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+values(zamr2) <- 1:ncell(zamr2)
+farmersr <- rasterize(farmers2, zamr2, field = "ct", fun = sum)
+```
+
+
+## Exercise 6
+
+Mask `farmersr` using `districts`, and plot the district boundaries over the masked result, suppressing the axes and box around the plot 
+
+## Exercise 7
+
+Crop `chirpsz[[1]]` using the extent of `districts[57, ]`, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using `plot_noaxes`
+
+## Exercise 8
+
+Use zonal stats on `farmersr_rs` to calculate the total number of farmers per district, and then map them onto the districts as we did above. Remember that `farmersr_rs` is a coarser resolution than `distsr_rs`, but aggregating the districts further would lose a lot information. Disaggregating is also problematic because it messes up the zonal stats. Better to first re-rasterise `farmers2` to the 0.1 resolution, using `distsr_rs` as the reference (to get the right extent) and then calculate and map zonal stats
+
+## Additional exercises - new Zambia data
+
+1. Use `readOGR` to read in this dataset:
+
+```
+https://www.dropbox.com/s/wd6doedusc8zv1l/chomafields.sqlite?dl=0
+```
+
+2. Reproject it to Albers Equal Area Conic (same as one we use)
+
+3. Calculate area of each field in ha
+
+4. Calculate total area by farmers
+
+## Additional exercises - Git/GitHub
+
+1. Create a new project (R package) with new repo locally (xyza2)
+2. Run `devtools::use_vignette()`
+3. Copy into: 
+    a. vignettes folder you Vignette from assignment 3
+    b. R folder your function from assignment 2
+4. Build package and commit
+5. Create remote repo of same name on GitHub, and push local repo onto that. 
+6. Back in local, create new branch "b1"
+7. While in branch b1, copy into R folder the cat function from assignment 1, and your vignette from assignment 2 into vignettes
+8. Rebuild package and commit
+9. checkout your master branch
+10. from shell, run `git merge b1`
+11. Examine results. 
+12. Now delete your GitHub remote and local 
+
+
+
+
+
+
+
+
+
+

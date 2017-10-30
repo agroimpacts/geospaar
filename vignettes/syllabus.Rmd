@@ -222,13 +222,17 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 
 ___[under construction]___
 
-### Week 8 (Oct 16, 18). 
-### Week 9 (Oct 23, 25). 
-### Week 10 (Oct 30, Nov 1). 
-### Week 11 (Nov 6, Nov 8). <!-- Visualization -->
+### Week 8 (Oct 16, 18) - Working with vector data
+- [Assignment 4](assignment4.html)
+### Week 9 (Oct 23, 25) - Vectors continued, intro to rasters
+### Week 10 (Oct 30, Nov 1) - Raster data continued
+- [Assignment 5](assignment5.html)
+### Week 11 (Nov 6) - End of Unit 2 (raster wrap-up) 
 <!-- ### Key takeaways/skills -->
 
 ## Unit 3. Projects
+### Week 11 (Nov 8) - Begin working on projects
+- [Assignment 6](assignment6.html)
 
 ### Weeks 12-13. 
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  

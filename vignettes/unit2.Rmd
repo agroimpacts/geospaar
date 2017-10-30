@@ -109,10 +109,17 @@ ___[under construction]___
 # Week 10 - Rasters continued
 ## Class 17 (Oct 30) 
 + Read and work through Section 2 in the [raster data vignette](raster-data.html)
-+ This section also has 5 pre-class exercises. 
++ This section also has 5 pre-class exercises (do just the first 3; exercises 6-8)
 
 ## Class 18 (Nov 1)
-+ Read and work through Section 3 in the [raster data vignette](raster-data.html) [under construction]
++ Read and work through Section 3 in the [raster data vignette](raster-data.html) 
++ Do exercises 9-10 from Section 2, and 11-13 in Section 3
++ Assignment 5
+
+# Week 10 - End of Unit 2
+## Class 19 (Nov 6)
++ Section 4 in the [raster data vignette](raster-data.html)
++ Do exercises 14-18
 
 
 
