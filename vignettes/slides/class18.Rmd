@@ -1,0 +1,200 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "Halloween +1"
+output:
+  slidy_presentation: 
+    default:
+    css: custom.css
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 18
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(repos = c(CRAN = "http://ftp.ussg.iu.edu/CRAN/"))
+```
+## Today
+
+- Git/GitHub exercise continued
+- Exercises from readings
+
+## Projects
+```{r, warning=FALSE, message=FALSE}
+library(data.table)
+projects <- fread("project-list.csv")
+projects[order(Topic, Student), ]
+```
+
+## Names remaining
+```{r}
+student_names <- read.csv(file = "students.csv", stringsAsFactors = FALSE)$name
+student_names[!gsub("*.*\\s", "", student_names) %in% projects$Student]
+```
+
+## Additional exercises - Git/GitHub
+
+1. Create a new project (R package) with new repo locally (xyza2)
+2. Run `devtools::use_vignette()`
+3. Copy into: 
+    a. vignettes folder you Vignette from assignment 3
+    b. R folder your function from assignment 2
+4. Build package and commit
+5. Create remote repo of same name on GitHub, and push local repo onto that. 
+6. Back in local, create new branch "b1"
+7. While in branch b1, copy into R folder the cat function from assignment 1, and your vignette from assignment 2 into vignettes
+8. Rebuild package and commit
+9. checkout your master branch
+10. from shell, run `git merge b1`
+11. Examine results. 
+12. Now delete your GitHub remote and local 
+
+
+
+## Exercises from reading
+
+### Rapporteurs
+
+```{r}
+set.seed(1)
+sel_names <- student_names[sample(1:length(student_names), size = 6, 
+                                  replace = FALSE)]
+monday_names <- c("Sarah Gates", "Ali Filipovic")
+student_names2 <- student_names[!student_names %in% c(sel_names, monday_names)]
+
+set.seed(100)
+sel_names <- student_names2[sample(1:length(student_names2), size = 3)]
+
+student_names3 <- student_names2[!student_names2 %in% sel_names]
+
+set.seed(1001)
+sel_names <- student_names3[sample(1:length(student_names3), size = 5)]
+sel_names
+
+```
+
+## Exercise Datasets
+
+```{r}
+library(raster)
+library(geospaar)
+chirpsz <- mask(x = chirps, mask = districts)
+
+raintot <- calc(chirpsz, fun = sum)
+districts$ID <- 1:length(districts)
+
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
+
+distsr <- rasterize(x = districts, y = zamr, field = "ID")
+
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
+
+farmers <- read.csv(system.file("extdata/farmer_spatial.csv",
+                                package = "geospaar"), stringsAsFactors = FALSE)
+farmers2 <- do.call(rbind, lapply(unique(farmers$uuid), function(x) {
+  dat <- farmers[farmers$uuid == x, ][1, ]  # select first row only
+}))
+coordinates(farmers2) <- ~lon + lat
+farmers2$ct <- 1  # assign value of 1 to each farmers
+
+farmdistid <- unique(extract(distsr_rs, farmers2))  # 1
+farmdistid <- na.exclude(farmdistid)  # 2
+
+farmdistsr <- distsr_rs %in% farmdistid
+distsrfarm <- mask(x = distsr_rs, mask = farmdistsr, maskvalue = 0)
+
+set.seed(1)
+distsamp <- sampleRandom(x = distsrfarm, size = nrow(farmers2), cells = TRUE)
+# head(distsample)
+randrain <- raintot[distsamp[, 1]]
+
+# zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+# values(zamr2) <- 1:ncell(zamr2)
+# farmersr <- rasterize(farmers2, zamr2, field = "ct", fun = sum)
+```
+
+
+## Exercise 9
+
+Use focal to calculate for `chirpsz[[20]]` the i) standard deviation within a 3X3 and 5X5 window, and ii) the maximum value in each 3X3 and 5X5 neighborhood. Do not remove NAs. Combine the results in a list, as above, and then plot them using a `for` loop and the `plot_noaxes` function with descriptive titles. 
+
+```{r}
+wmats <- lapply(c(3, 5), function(x) matrix(1, nrow = x, ncol = x))
+funs <- list(sd, max)
+l <- lapply(funs, function(x) {  # x <- wmats[[1]]
+  l0 <- lapply(wmats, function(y) {  # y <- funs[[1]]
+    focal(chirpsz[[20]], w = y, fun = x)
+  })
+})
+l <- unlist(l)
+
+# plots
+titles <- c("3X3 SD", "5X5 SD",
+            "3X3 Max", "5X5 Max")
+par(mfrow = c(2, 2))
+for(i in 1:length(l)) {
+  plot_noaxes(l[[i]], main = titles[i])
+}
+
+
+```
+
+## Exercise 10
+
+Use `calc` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot them with meaningful titles using `plot_noaxes`, outputting plots on 1 row with 3 columns.
+
+```{r}
+l <- lapply(list(sum, cv, median), function(x) calc(chirpsz, fun = x))
+s <- stack(l)
+names(s) <- c("Sum", "CV", "Median")
+par(mfrow = c(1, 3))
+for(i in 1:nlayers(s)) plot_noaxes(s[[i]], main = names(s)[i])
+
+```
+
+## Exercise 11
+
+Use `calc` to find the standard deviation of rainfall for each cell in `chirpsz`. Use raster algebra to find the country-wide average standard deviation, and then identify which areas of Zambia have values less than that. Finally, calculate the mean standard deviation across those areas having below average standard deviation
+
+## Exercise 12
+Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries. Use both the `cut` and `reclassify` approaches. Plot them side-by-side using `plot_noaxes` using the categorical legend, with titles over each map.
+
+## Exercise 13
+Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts. Randomly select the district IDs (use a seed value of 11) from `districts$ID`. Mask `totrain` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. Then use `sampleRandom` and `sampleStratified` with a size of 300 to get the rainfall values from `newrandrain`. Compare the rainfall values extracted from those with the distributions of district mean rainfalls extracted from `newrandrain` (call that `randdistrain`. Use boxplots to show the results. 
+
+
+## Additional exercises - new Zambia data
+
+1. Use `readOGR` to read in this dataset:
+
+```
+https://www.dropbox.com/s/wd6doedusc8zv1l/chomafields.sqlite?dl=0
+```
+
+2. Reproject it to Albers Equal Area Conic (same as one we use)
+
+3. Calculate area of each field in ha
+
+4. Calculate total area by farmers
+
+```{r, eval=FALSE}
+setwd("external/data/")  # lyndon's path, replace with your own
+fields <- readOGR("chomafields.sqlite", layer = "chomafields")
+fieldsa <- spTransform(fields, proj4string(roads))
+fieldsa$area <- rgeos::gArea(fieldsa, byid = TRUE) / 10000
+sapply(unique(fieldsa$farmer), function(x) {
+  sum(fieldsa@data[fieldsa$farmer == x, "area"])
+})
+```
+
+
+
+
+
+
+
+
+
+
