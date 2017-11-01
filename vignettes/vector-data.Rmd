@@ -799,7 +799,6 @@ class(spp_int_distrs)[1]
 
 It turns out that `raster` has a function (`intersect`) that does the same job as `rgeos` (go ahead and plot `spp_int_distrs2`, and you will see) but even better, as it retains the relevant information from any `data.frame`(s) in the objects being intersected; `gIntersection` only returns the intersected geometries, and you need to do a great deal more work to recover and then join the accompanying attributes to the geometries.  
 
-
 > An aside: These last example demonstrates both a strength and weakness of R, in my opinion--R's strength is that you can usually find multiple solutions to solve a particular problem; R's weakness is that choosing the best solution can be tricky, given the profusion of choice, and you might end up trying something that takes up a lot of your time. 
 
 > ```{r}
