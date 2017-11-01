@@ -1010,12 +1010,7 @@ farmers2$ct <- 1  # assign value of 1 to each farmers
 raintot <- calc(chirpsz, sum)
 ```
 
-Also, we will use a new package in this section, `dismo`, so install that and then load it up.
-```{r}
-library(dismo)
-library(raster)
-library(geospaar)
-```
+We'll need the `geospaar` and `raster` packages also for this section, so load those. 
 
 ## Exercises{#unit4exercises} 
 - [Exercise #14](#exercise14)
