@@ -1046,7 +1046,7 @@ You can explore those further at your leisure. In our example, we choose the agg
 
 ### Pixel resolution/area 
 
-The DEM we downloaed is in decimal degrees with a resolution of `r res(dem)`, which means the area of each pixel varies through Zambia. To illustrate that, we use a a nice function that `raster` provides that lets you calculate the area of each grid cell, even when it is in a geographic coordinate system:
+The DEM we downloaed is in decimal degrees with a resolution of `r raster::res(dem)`, which means the area of each pixel varies through Zambia. To illustrate that, we use a a nice function that `raster` provides that lets you calculate the area of each grid cell, even when it is in a geographic coordinate system:
 
 ```{r demarea}
 demarea <- area(dem)
