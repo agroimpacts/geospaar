@@ -989,7 +989,7 @@ In Block 4, we redo the boxplots, showing the results from the two approaches to
 
 # Section 4{#section4}
 
-We'll round out this section with some additional raster-based analyses and a bit of modeling. Use the hidden code to create the objects you need from prior sections. 
+We'll round out this units with some additional raster-based analyses and a bit of modeling. Use the hidden code to create the objects you need from prior sections. 
 
 ```{r, eval = FALSE, echo = FALSE}
 data("chirps")
@@ -997,6 +997,8 @@ data("districts")
 chirpsz <- mask(x = chirps, mask = districts)
 districts$ID <- 1:length(districts)
 
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
 distsr <- rasterize(x = districts, y = zamr, field = "ID")
 distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
 farmers <- read.csv(system.file("extdata/farmer_spatial.csv", 
@@ -1006,6 +1008,10 @@ farmers2 <- do.call(rbind, lapply(unique(farmers$uuid), function(x) {
 }))
 coordinates(farmers2) <- ~lon + lat
 farmers2$ct <- 1  # assign value of 1 to each farmers
+coordinates(farmers2) <- ~lon + lat
+farmers2$ct <- 1  # assign value of 1 to each farmers
+zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+farmersr <- rasterize(farmers2, zamr2, field = "ct", fun = sum)
 
 raintot <- calc(chirpsz, sum)
 ```
@@ -1017,7 +1023,6 @@ We'll need the `geospaar` and `raster` packages also for this section, so load t
 - [Exercise #15](#exercise15)
 - [Exercise #16](#exercise16)
 - [Exercise #17](#exercise17)
-- [Exercise #18](#exercise18)
 
 ## Terrain analysis
 
@@ -1028,8 +1033,7 @@ We'll start off this section doing some terrain analysis, with a few little asid
 First we need a digital elevation model. `raster` has a very nice function that allows us to download several different gridded geographic datasets, which includes DEMs:
 
 ```{r dem}
-setwd("../external/unit2/data/")
-dem <- getData(name = "alt", country = "ZMB")
+dem <- getData(name = "alt", country = "ZMB", path = "../external/unit2/data/")
 plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 ```
 
@@ -1037,11 +1041,11 @@ The help file for `getData` tells us the following datasets are available:
 
 > Data set name, currently supported are 'GADM', 'countries', 'SRTM', 'alt', and 'worldclim'. See Details for more info
 
-You can explore those further at your leisure. In our example, we choose the aggregated version of the SRTM DEM, and specified that we wanted it for Zambia. 
+You can explore those further at your leisure. In our example, we choose the aggregated version of the SRTM DEM, and specify that we want it for Zambia. 
 
 ### Pixel resolution/area 
 
-The DEM we downloaed is in decimal degrees with a resolution of `r raster::res(dem)`, which means the area of each pixel varies through Zambia. To illustrate that, we use a a nice function that `raster` provides that lets you calculate the area of each grid cell, even when it is in a geographic coordinate system:
+The DEM we downloaded is in decimal degrees with a resolution of `r raster::res(dem)[1]`&deg;, which means the area of each pixel varies through Zambia. To illustrate that, we use a nice function that `raster` provides, which lets you calculate the pixel areas, even when the raster is in geographic coordinates:
 
 ```{r demarea}
 demarea <- area(dem)
@@ -1051,7 +1055,7 @@ plot_noaxes(demarea, legend.args = list(text = expression("km"^2)),
 plot(districts, add = TRUE)
 ```
 
-The result is in km$^2$, and you can see that the area of each pixel falls as with increasing distance from the poles.  This is why we use equal area projections to calculate area values. 
+The result is in km$^2$, and you can see that the area of each pixel falls the distance from the equator increases (this is why we use equal area projections to calculate area). 
 
 ### An aside on plot annotation
 
@@ -1072,7 +1076,7 @@ text(x = 20, y = 9, pos = 4,
      label = substitute(paste("Overall ", sigma, "=", a), list(a = musd)))
 ```
 
-The example above gives a hint at what can be done, and also shows how it can be somewhat complicated; it always takes us a ton of time and a number of internet searches to figure out how to do this. We won't explain this in detail here, but the code above provides a template that you can hack at if you want to get fancy with labelling your plots. Please ask in class if you want any further explanation.  
+The example above shows how more advanced plot annotations can be done. It also shows that the code can get somewhat complicated; it always takes us a ton of time and a number of internet searches to figure out how to do this. We won't explain this in detail here, but this code provides a template that you can hack at if you want to get fancy with labelling your plots. Please ask in class if you want any further explanation.  
 
 ### Basic terrain variables
 
@@ -1104,13 +1108,17 @@ We need the DEM in a projected coordinate system for `terrain` to work, per the 
 
 > Compute slope, aspect and other terrain characteristics from a raster with elevation data. The elevation data should be in map units (typically meter) for projected (planar) raster data. They should be in meters when the coordinate reference system (CRS) is longitude/latitude.
 
-So we create (in Block 1) a 1 km projected version of the DEM, allowing the default bilinear interpolation to do its work during reprojection. In Block 2 we then calculate slope, aspect, flow direction, and the topographic ruggedness index. The commented out code illustrates the individual calculation of each variable, but we did it programmatically with an `lapply`. Note that in the `lapply` we pass the "unit" argument into the calculation of all four variables, even though it only is used for slope and aspect.  It has no affect on flow direction or TPI. 
+So we create (in Block 1) a 1 km projected version of the DEM, allowing the default bilinear interpolation to do its work during reprojection. 
+
+In Block 2 we calculate slope, aspect, flow direction, and the topographic ruggedness index. The commented out code illustrates how each of these variables can be calculated separately, although we prefer to do the job using `lapply`. Note that in the `lapply` we pass the "unit" argument into the calculation of all four variables, even though it only is used for slope and aspect; this is fine, because `terrain` simply ignores the argument value in calculating flow direction or TRI. 
 
 <span style="color:blue">Exercise 14</span><a name="exercise14"></a>: ___The terrain variables above are quite hard to see because they are so zoomed out. Let's look at them a bit more closely. To do that, crop `demalb` down to the extent of district 42 (bear in mind that `districts` needs to be in the same projection as `demalb`, so transform it first). Then calculate slope, aspect, and TPI on the cropped DEM. Plot the results so that they appear in 3 side by side panels___ [Exercise index](#unit4exercises)
 
+[Back to top](#rasterintro)
+
 ## Interpolation
 
-Interpolating between point values is a fairly common GIS analysis. The `interpolate` function of raster allows you to do this using a number of different types of models, such as kriging and inverse distance weighting. We are going to look at examples of these two using functions drawn from the `gstat` package (please install it), and applied to the `raintot` data.
+Interpolating between point values is a fairly common GIS analysis. The `interpolate` function of raster allows you to do this using a number of different types of models, such as kriging and inverse distance weighting. We are going to demonstrate both approaches, drawing on functions provided by the `gstat` package (please install it):
 
 ```{r interpolate}
 # install.packages("gstat")
@@ -1138,15 +1146,20 @@ invdistrmsk <- mask(x = invdistr, mask = raintotalb)
 coordinates(rainsamp) <- ~x + y  #1
 crs(rainsamp) <- crs(roads)  #2
 v <- variogram(object = rain ~ 1, data = rainsamp)  #3
-plot(v)
 m <- fit.variogram(object = v, model = vgm("Sph"))  #4
 m
-ordkrig <- gstat(id = "rain", formula = rain ~ 1, data = rainsamp, model = m) #5
-ordkrigr <- interpolate(object = r, model = ordkrig)  #6
-ordkrigrmsk <- mask(x = ordkrigr, mask = raintotalb)  #7
+plot(variogramLine(m, max(v[, 2])), type = "l")  #5
+points(v[, 2:3], pch = 20)  #6
+legend("bottomright", legend = c("variogram fit", "variogram"), lty = c(1, NA), 
+       pch = c(NA, 20), bty = "n") #7
+
+# Block 5
+ordkrig <- gstat(id = "rain", formula = rain ~ 1, data = rainsamp, model= m)
+ordkrigr <- interpolate(object = r, model = ordkrig)
+ordkrigrmsk <- mask(x = ordkrigr, mask = raintotalb)
 
 
-# 5
+# Block 6
 raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
 names(raininterp) <- c("Actual rain", "IDW rain", "Kriged rain")
 par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
@@ -1155,22 +1168,150 @@ for(i in 1:3) plot_noaxes(raininterp[[i]], main = names(raininterp)[i])
 
 ```
 
-This is somewhat complex obviously, both conceptually and with code. I will refer you to other, non-R literature to explain [interpolation](http://gisgeography.com/inverse-distance-weighting-idw-interpolation/) and [kriging](http://gisgeography.com/kriging-interpolation-prediction/) if it is unfamiliar. 
-
-The code above provides a demonstration of how you implement these two common spatial prediction models. 
+This example is reasonably complex, both conceptually and with respect to code. We will refer you to other, non-R literature to explain how  [interpolation](http://gisgeography.com/inverse-distance-weighting-idw-interpolation/) and [kriging](http://gisgeography.com/kriging-interpolation-prediction/) work, and confine our explanations to the code. 
 
 Block 1 creates an Albers projected version of `raintot` (which is roughly 5 km on a side), and sets up a dummy raster (`r`) that will be our interpolation target, i.e. it provides the parameters we want our prediction surface to have.  
 
-Block 2 then draws a random sample from across the reprojected rainfall raster to represent point observations of rainfall.  
+Block 2 then draws a random sample from across the reprojected rainfall raster, providing a set of point observations of rainfall.  
 
-Block 3 runs the code for an inverse distance weighted (IDW) interpolation, i.e. each cell between points is given a new value that is the weighted mean the values from the nearest points, with the weight being determined by the distance of each point. The interpolation model is set up by the `gstat` function, using the coordinates x and y as the locations. `raster::interpolate` takes the model and applies it to `r`, making the new `invdistr` raster, which we then mask to the outline of Zambia (`invdistrmsk`). 
+Block 3 runs the code for an inverse distance weighted (IDW) interpolation (each cell between the sample points is given a new value that is the weighted mean of the rainfall values collected at the points nearest to it; the weight is determined by the distance to each point). The interpolation model is set up by the `gstat` function, using the coordinates x and y as the locations. `raster::interpolate` takes the model and applies it to `r`, making the new `invdistr` raster, which we then mask to the outline of Zambia (`invdistrmsk`). 
 
-Block 4 implements ordinary kriging, which has additional steps. In #1 and #2, we have to first convert `rainsamp` from a `data.frame` into a `SpatialPointsDataFrame`. #3 calculates the variogram, which measures the spatial autocorrelation between rainfall values--this requires a spatial object, hence the need for lines #1 and #2. # 4 fits a spherical variogram model. #5-#7 then reprise the steps shown in Block 3. 
+Block 4 provides the initial steps for implementing ordinary kriging. In #1 and #2, we have to first convert `rainsamp` from a `data.frame` into a `SpatialPointsDataFrame`. #3 calculates the variogram, which measures the spatial autocorrelation between rainfall values--this requires a spatial object, hence the need for lines #1 and #2. #4 fits a spherical variogram model. #5-#7 plots the variogram (changes in semivariances with distance) and the spherical model we fit to estimate that semivariance.  
 
-Block 5 is the now familiar stack and plot.  
+Block 5 takes the fitted variogram model (`m`) and uses that to create the rainfall surface. The steps in this block are basically the same as in block 3, except that we use the kriging model. 
 
-<span style="color:blue">Exercise 14</span><a name="exercise15"></a>: ___Using just the code in blocks 1-3 as your template, create IDW interpolations using the original 1000 randomly sampled points, and then two new ones based on 1) 500 and 2) 250 randomly selected points. Create a 4 panel plot by a) stacking, in this order, `raintotalb`, 1000 point IDW, 500 point IDW, 250 IDW, b) naming the layers of the stack, c) using a single call to `plot_noaxes`. Use a "zlim = c(0, 150)" There are two ways of doing this: i) the hard way, by copying, pasting, and changing code blocks 2-3 for each version of the IDW; ii) the elegant way, by creating the three IDWs in an `lapply`. Note: if you choose the elegant way, to make the stack, you will first have to stack the list of three idws, and then stack that with `raintotalb`___ [Exercise index](#unit3exercises)
+Block 6 is the now familiar stack and plot.  
 
+<span style="color:blue">Exercise 15</span><a name="exercise15"></a>: ___Using just the code in blocks 1-3 as your template, create IDW interpolations using the original 1000 randomly sampled points, and then two new ones based on 1) 500 and 2) 250 randomly selected points. Create a 4 panel plot by a) stacking, in this order, `raintotalb`, the 1000 point IDW, the 500 point IDW, and the 250 IDW, b) naming the layers of the stack, c) using a single call to `plot_noaxes`. Use "zlim = c(0, 150)". There are two ways of doing this: i) the hard way, by copying, pasting, and changing code blocks 2-3 for each version of the IDW; ii) the elegant way, by creating the three IDWs in an `lapply`. Note: if you choose the elegant way, to make the stack, you will first have to stack the list of three idws, and then stack that with `raintotalb`___ [Exercise index](#unit4exercises)
+
+## Distance
+
+If you want to calculate how far any point on a grid is from a particular point or points, `raster` offers a few functions for finding euclidean distances:
+
+```{r, fig.width=6, fig.height=4}
+# Block 1
+set.seed(1)
+randsamp <- sampleRandom(raintotalb, size = 10, xy = TRUE)
+randsamp <- as.data.frame(randsamp)
+coordinates(randsamp) <- ~x + y
+
+# Block 2
+ptdistr <- distanceFromPoints(object = raintotalb, xy = randsamp)
+ptdistrmsk <- mask(ptdistr, raintotalb)
+
+# Block 3
+randsampr <- rasterize(as(randsamp, "SpatialPoints"), y = raintotalb)
+ptdistr2 <- distance(randsampr)
+ptdistrmsk2 <- mask(ptdistr2, raintotalb)
+
+# Block 4
+s <- stack(ptdistrmsk, ptdistrmsk2) / 1000
+names(s) <- c("distanceFromPoints", "distance")
+par(mfrow = c(1, 2))
+for(i in 1:nlayers(s)) {
+  plot_noaxes(s[[i]], main = names(s)[i])
+  points(randsamp, pch = 20, cex = 0.5)
+}
+```
+
+Block 1 draws 10 randomly selected points from `raintotalb` and creates a `SpatialPointsDataFrame` called `randsamp`. Here we are interested just in the spatial locations, not the values.  
+
+In block 2, we use the `distanceFromPoints` function to find how far any given point in an input raster (`raintotalb`) is from the xy locations contained in `randsamp`. `raintotalb` serves to just provide the dimensions of the raster surface from which we want to calculate distance values. We mask the resulting distance surface (`ptdistr`) to confine the results to Zambia's borders.
+
+Block 3 does pretty much the same thing, but in this case we use the `distance` function, which takes a set of rasterized points (where the only cells having values are the cells underlying the points that were rasterized--the rest are NA) and calculates the distances from every other cell (the NA values) to the nearest rasterized point having a non-NA value.  
+
+Block 4 plots those distance grids (converting distance to km), and the points to which those distances are calculated. The results are identical. 
+
+> There are more sophisticated distance analyses that can be done, such as cost distance analysis, which are provided by the package `gdistance`. 
+
+<span style="color:blue">Exercise 16</span><a name="exercise16"></a>: ___Select the districts 15, 20, 25, 30, 35, 40, 45, and 50 out of `districts`. Convert the resulting subset of districts to Albers projection. Use `distance` or `distanceFromPoints` to calculate the distances from any point in Zambia to the centroids of those selected districts___ [Exercise index](#unit4exercises)
 
 [Back to top](#rasterintro)
 
+## Model prediction
+
+Although there are many, many more analyses and capabilities we could illustrate with rasters, we will end this section with a relatively simple modeling example. In this, we will use ordinary linear regression to try model rainfall values collected at point locations, based on their correlations with certain predictors.  
+
+First, we will use `getData` to download the Worldclim global precipitation layer (at a resolution of 2.5 minutes of a degree), then `crop` the data to Zambia's extent, sum the resulting cropped monthly values into a single annual value, mask the result, and then save it so that it becomes available as a lazy load with the `geospaar` package. The code for doing this is below, which doesn't execute as part of this vignette.  
+```{r, eval = FALSE}
+wcprec <- getData("worldclim", var = "prec", res = 2.5, path = p_data)
+zamprec <- crop(wcprec, y = districts)
+zamprec <- mask(calc(zamprec, sum), districts)
+save(zamprec, file = "data/zamprec.rda")
+```
+
+After doing that (and rebuilding `geospaar`), we can do our analysis, loading in the `zamprec` data as we need it.
+```{r, fig.width=7, fig.height = 2.5}
+# Block 1
+data(zamprec)
+zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
+names(zamprecalb) <- "rain"
+elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
+
+# Block 2
+set.seed(1)
+pts <- sampleRandom(x = zamprecalb, size = 500, sp = TRUE)
+pts$elev <- extract(x = elev, y = pts)
+pts <- as.data.frame(pts)
+pts <- pts[which(!is.na(rowSums(pts))), ]
+
+# Block 3
+par(mfrow = c(1, 4), mar = c(4, 4, 1, 1))
+for(i in 2:4) {
+  plot(pts[, i], pts$rain, pch = 20, xlab = colnames(pts)[i], ylab = "rain")
+}
+
+# Block 4
+rain_lm <- lm(rain ~ x + y + elev, data = pts)
+summary(rain_lm)
+
+# Block 5
+xs <- xFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+ys <- yFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+x <- y <- raintotalb
+values(x) <- xs
+values(y) <- ys
+
+# Block 6
+predst <- stack(x, y, elev)
+names(predst) <- c("x", "y", "elev")
+predrainr <- predict(object = predst, model = rain_lm)
+
+# Block 7
+s <- stack(zamprecalb, predrainr, (predrainr - zamprecalb) / zamprecalb * 100)
+mae <- round(cellStats(abs(zamprecalb - predrainr), mean), 1)  # mean absolute error
+pnames <- c("'Observed' Rainfall", "Predicted Rainfall", "% Difference")
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 4))
+for(i in 1:3) {
+  plot_noaxes(s[[i]], main = pnames[i])
+  if(i %in% 1:2) points(pts$x, pts$y, pch = 20, cex = 0.1, col = "grey70")
+  if(i == 3) {
+    mtext(side = 1, line = -3, cex = 0.8, 
+          text = paste("Mean abs err =", mae, "mm"))
+  }
+}
+```
+
+This example above demonstrates a very crude model that uses elevation, latitude, and longitude to predict the mean annual rainfall for Zambia. This is not really how you would want to go about predicting rainfall, but the example demonstrates how you can combine statistical models with spatial data to make prediction maps. Despite the crudeness, the model more or less captures the spatial pattern of rainfall.
+
+Let's examine the code a bit:
+
+Block 1 projects the `zamprec` layer to Albers and to the same 5 km resolution as `raintotalb` (using bilinear interpolation), and then aggregates and resamples `demalb` to that same resolution/extent (calling it `elev`). 
+
+Block 2 selects 500 points at random from `zamprecalb`, which gives a sample of rainfall values from that raster. We then use the same points to extract elevation values from `elev`, and convert all that to an ordinary `data.frame` that contains rainfall, elevation, x coordinate (longitude), and y coordinate (latitude) values for each point location. 
+
+Block 3 plots x, y, and elev against rainfall to see if there are any obvious correlations. It seems pretty clear that rainfall increases with both elevation and latitude (note that there is a also a correlation between latitude and elevation, which we choose to ignore here in violation of regression assumptions), and a weak to perhaps non-existent connection between longitude and rainfall.   
+
+In Block 4, we use `lm` to fit a multiple regression model, in which x, y, and elev are used to predict rainfall. The `summary` of the model `rain_lm` shows that the model explains about 75% of the variance in rainfall using those three predictors, and that all predictors are significant (with x having the least influence). 
+
+In Block 5, we set about creating gridded versions of x and y, which we need to do if we want to make a prediction map. We use the `raster` helper functions `xFromCell` and `yFromCell` to get the x and y coordinates for all cell numbers in `raintotalb` (our target raster). We populate new rasters `x` and `y` with the extracted coordinate values.
+
+Block 6 sets up a stack that has all the predictor grids, which, importantly, have the same names as the predictor variables used in the `lm` (x, y, and elev). That is necessary to prevent a failure in running the last line, which uses the generic `predict` function (this one designed to work for rasters) to apply the model coefficients to the spatial predictors, and create the predicted rainfall surface. If the variables in the input stack of spatial predictors don't match the predictor variable names in the model object, the function will fail. 
+
+We plot three maps in Block 7 for comparison: the "actual" rainfall (the scare quotes are there because the WorldClim dataset is itself the result of a fair bit of modeling), the new `lm`-predicted surface, and then a map of the differences between the two layers, expressed as a percent difference relative to the values of `zamprecalb`. The RMSE (in mm) is printed onto the map, using the `mtext` function.   
+
+That's about it. We leave you now with a final exercise:
+
+<span style="color:blue">Exercise 17</span><a name="exercise17"></a>: ___Redo the maps above, but use a new random draw of just 25 points to collect the predictors. Redo it again, but this time use the district centroids (think `gCentroid`) as the points (`pts`), bearing in mind that you have to extract a rainfall value from `zamprecalb` as an extra step in this case. How much more poorly do these two models do than the one with denser observations?___ [Exercise index](#unit4exercises)
+
+[Back to top](#rasterintro)
