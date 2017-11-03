@@ -222,13 +222,22 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 
 ___[under construction]___
 
-### Week 8 (Oct 16, 18) - Working with vector data
+### Week 8 - Working with vector data
+#### Class 13 (Oct 16) - Vectors 1
+#### Class 14 (Oct 18) - Vectors 2
 - [Assignment 4](assignment4.html)
-### Week 9 (Oct 23, 25) - Vectors continued, intro to rasters
-### Week 10 (Oct 30, Nov 1) - Raster data continued
+
+### Week 9 - Vectors continued, intro to rasters
+#### Class 15 (Oct 23) - Vectors 3
+#### Class 16 (Oct 25) - Rasters 1
+
+### Week 10 - Raster data continued
+#### Class 17 (Oct 30) - Rasters 2
+#### Class 18 (Nov 1) - Rasters 3
 - [Assignment 5](assignment5.html)
-### Week 11 (Nov 6) - End of Unit 2 (raster wrap-up) 
-<!-- ### Key takeaways/skills -->
+
+### Week 11 - End of Unit 2 (raster wrap-up) 
+#### Class 19 (Nov 6) - Rasters 4
 
 ## Unit 3. Projects
 ### Week 11 (Nov 8) - Begin working on projects

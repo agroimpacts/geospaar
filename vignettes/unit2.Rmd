@@ -119,7 +119,7 @@ ___[under construction]___
 # Week 10 - End of Unit 2
 ## Class 19 (Nov 6)
 + Section 4 in the [raster data vignette](raster-data.html)
-+ Do exercises 14-18
++ Do exercises 14-17
 
 
 
