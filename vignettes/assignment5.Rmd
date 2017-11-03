@@ -105,17 +105,23 @@ Convert the rasterized farmers counts (`farmersr`) back into a `SpatialPointsDat
 
 ![](fig/a5-t4.png)
 
+[Back to top](#overview)
+
 ### Task 5
 
 Use `raster`'s `getData` function to grab WorldClim's mean temperature ("tmean") dataset at a resolution of 2.5 (note this is not degrees, but minutes of a degree), and download it to somewhere on your local disk. That will give a global scale `RasterBrick` with 12 layers, with each layer representing the average monthly temperature for each grid cell on the planet. Crop that brick to the extent of `districts`, and then calculate the annual mean temperature for each cell. Mask the result using `districts`, and divide it by 10 to get temperature in &deg;C in your final raster, `zamtmean`. Plot the result. 
 
 ![](fig/a5-t5.png)
 
+[Back to top](#overview)
+
 ### Task 6
 
 Classify the temperature data into three categories, low, medium, and high, using <20&deg;, 20-24&deg;, and >24&deg; as the break points for determining the classes.  Use the `reclassify` function rather than the `cut` function. You might find it helpful to use `cellStats` with `range` to identify the maximum and minimum temperature to define the lower bound of the "low" class  and the upper bound of the "high" class. Call the reclassified temperature raster `zamtclass`. Make the map as shown below, with a categorical legend. The exact colors used are "blue", "yellow2", and "red".
 
 ![](fig/a5-t6.png)
+
+[Back to top](#overview)
 
 ### Task 7
 
@@ -125,11 +131,15 @@ Load up the `zamprec` dataset that comes with `geospaar`, then calculate the mea
 
 ![](fig/a5-t7.png)
 
+[Back to top](#overview)
+
 ### Task 8
 
 Use `getData` again to download the elevation raster for Zambia (call it `dem`). Aggregate it to the same resolution as `zamtmean`, using the default mean aggregation (the factor you need is 5). Call that `dem5`. Use `terrain` to calculate aspect from `dem5` (call it `aspect`), selecting degrees as the output value. Then find all west-facing aspects (aspects >247.5 and <292.5), and all east facing aspects (>67.5 and <112.5), making new rasters respectively named `west` and `east`. Stack these together with `aspect` and make a three-panel plot that looks like the one below.  
 
 ![](fig/a5-t8.png)
+
+[Back to top](#overview)
 
 ### Task 9
 Create two random samples of 100 each. The first one should be collected from within the west-facing cells (i.e. only be drawn from cells in `west` that have a cell of one), and the second from east-facing cells. Use a seed of 1. Once you have collected those, which should give you two separate `SpatialPointsDataFrames`, use those two sets of points to extract temperature values from `zamtmean`. Use side-by-side boxplots to compare the distributions of west and east facing temperatures. Don't forget to put a point onto the boxplots that shows the mean value from each set of data. 
@@ -137,6 +147,8 @@ Create two random samples of 100 each. The first one should be collected from wi
 > To confine the random selection of points to just the west and east facing aspects, you need to first convert the 0 values in `west` and `east` to NA values. 
 
 ![](fig/a5-t9.png)
+
+[Back to top](#overview)
 
 ### Task 10
 Our final task involves inverse distance weighted interpolation (IDW). Extract the centroids from each district in `districts` (call it `dcent`), and reproject the points to Albers, using the `crs` of `roads`. Reproject `zamtmean` to Albers also, making the new resolution (5 km, i.e. 5000 m), using bilinear interpolation (call it `zamtmeanalb`). Then use `dcent` to extract the temperature values from `zamtmeanalb` (add the values to `dcent` as a new variable "temp")  
@@ -147,6 +159,8 @@ Plot the result side by side with `zamtmeanalb` for comparison.
 
 ![](fig/a5-t10.png)
 
+[Back to top](#overview)
+
 ### Extra credit (5 points)
 
 Use kriging instead of IDW to create the interpolated temperature map. Plot the results of the variogram and model you fit to it, as well as the three maps side by side (`zamtmeanalb`, `zamtidw`, `zamtkrigr`) for comparison.
@@ -156,6 +170,6 @@ Use kriging instead of IDW to create the interpolated temperature map. Plot the 
 ![](fig/a5-ec2.png)
 
 
-
+[Back to top](#overview)
 
 
