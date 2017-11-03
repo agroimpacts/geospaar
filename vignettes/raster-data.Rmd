@@ -276,7 +276,6 @@ coordinates(farmers2) <- ~lon + lat
 farmers2$ct <- 1  # assign value of 1 to each farmers
 farmersr <- rasterize(farmers2, zamr2, field = "ct", fun = sum)
 
-
 par(mar = c(0, 0, 1, 4))
 plot(gUnaryUnion(districts), col = "grey", border = "transparent", 
      main = "N farmers per 0.25 degree grid cell")
