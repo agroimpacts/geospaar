@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-11-02" />
+<meta name="date" content="2017-11-03" />
 
 <title>Unit 2 - Working with Raster Data</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Unit 2 - Working with Raster Data</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-11-02</em></h4>
+<h4 class="date"><em>2017-11-03</em></h4>
 
 
 <div id="TOC">
@@ -387,7 +387,6 @@ farmers2 &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, <s
 <span class="kw">coordinates</span>(farmers2) &lt;-<span class="st"> </span><span class="er">~</span>lon +<span class="st"> </span>lat
 farmers2$ct &lt;-<span class="st"> </span><span class="dv">1</span>  <span class="co"># assign value of 1 to each farmers</span>
 farmersr &lt;-<span class="st"> </span><span class="kw">rasterize</span>(farmers2, zamr2, <span class="dt">field =</span> <span class="st">&quot;ct&quot;</span>, <span class="dt">fun =</span> sum)
-
 
 <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>))
 <span class="kw">plot</span>(<span class="kw">gUnaryUnion</span>(districts), <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;transparent&quot;</span>, 
