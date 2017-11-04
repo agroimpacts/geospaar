@@ -1031,8 +1031,20 @@ We'll start off this section doing some terrain analysis, with a few little asid
 
 First we need a digital elevation model. `raster` has a very nice function that allows us to download several different gridded geographic datasets, which includes DEMs:
 
-```{r dem}
+```{r dem, eval=FALSE}
 dem <- getData(name = "alt", country = "ZMB", path = "../external/unit2/data/")
+plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
+```
+
+```{r, eval = FALSE, echo = FALSE}
+png("fig/zamdem.png", height = 400, width = 600)
+plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
+dev.off()
+save(dem, file = "inst/extdata/dem.rda")
+```
+
+```{r, echo = FALSE}
+load(system.file("extdata/dem.rda", package = "geospaar"))
 plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 ```
 
