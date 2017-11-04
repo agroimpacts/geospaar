@@ -1037,9 +1037,6 @@ plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 ```
 
 ```{r, eval = FALSE, echo = FALSE}
-png("fig/zamdem.png", height = 400, width = 600)
-plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
-dev.off()
 save(dem, file = "inst/extdata/dem.rda")
 ```
 
