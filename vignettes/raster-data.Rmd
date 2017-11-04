@@ -49,7 +49,7 @@ pre { /* Code block - determines code spacing between lines */
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', fig.height = 4, 
-                      fig.width = 5, cache=TRUE)
+                      fig.width = 5)
 ```
 
 # Introduction{#rasterintro}
@@ -1128,7 +1128,7 @@ In Block 2 we calculate slope, aspect, flow direction, and the topographic rugge
 
 Interpolating between point values is a fairly common GIS analysis. The `interpolate` function of raster allows you to do this using a number of different types of models, such as kriging and inverse distance weighting. We are going to demonstrate both approaches, drawing on functions provided by the `gstat` package (please install it):
 
-```{r interpolate}
+```{r interpolate, eval = FALSE}
 # install.packages("gstat")
 library(gstat)
 
@@ -1166,15 +1166,27 @@ ordkrig <- gstat(id = "rain", formula = rain ~ 1, data = rainsamp, model= m)
 ordkrigr <- interpolate(object = r, model = ordkrig)
 ordkrigrmsk <- mask(x = ordkrigr, mask = raintotalb)
 
-
 # Block 6
 raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
 names(raininterp) <- c("Actual rain", "IDW rain", "Kriged rain")
 par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
 plot(rainsamp, pch = 20, cex = 0.5)
 for(i in 1:3) plot_noaxes(raininterp[[i]], main = names(raininterp)[i])
-
 ```
+
+```{r, eval = FALSE, echo = FALSE}
+png("fig/interpolate.png", height = 400, width = 600)
+raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
+names(raininterp) <- c("Actual rain", "IDW rain", "Kriged rain")
+par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
+plot(rainsamp, pch = 20, cex = 0.5)
+for(i in 1:3) plot_noaxes(raininterp[[i]], main = names(raininterp)[i])
+dev.off()
+```
+
+
+![](fig/interpolate.png)
+
 
 This example is reasonably complex, both conceptually and with respect to code. We will refer you to other, non-R literature to explain how  [interpolation](http://gisgeography.com/inverse-distance-weighting-idw-interpolation/) and [kriging](http://gisgeography.com/kriging-interpolation-prediction/) work, and confine our explanations to the code. 
 
@@ -1192,11 +1204,18 @@ Block 6 is the now familiar stack and plot.
 
 <span style="color:blue">Exercise 15</span><a name="exercise15"></a>: ___Using just the code in blocks 1-3 as your template, create IDW interpolations using the original 1000 randomly sampled points, and then two new ones based on 1) 500 and 2) 250 randomly selected points. Create a 4 panel plot by a) stacking, in this order, `raintotalb`, the 1000 point IDW, the 500 point IDW, and the 250 IDW, b) naming the layers of the stack, c) using a single call to `plot_noaxes`. Use "zlim = c(0, 150)". There are two ways of doing this: i) the hard way, by copying, pasting, and changing code blocks 2-3 for each version of the IDW; ii) the elegant way, by creating the three IDWs in an `lapply`. Note: if you choose the elegant way, to make the stack, you will first have to stack the list of three idws, and then stack that with `raintotalb`___ [Exercise index](#unit4exercises)
 
+```{r, echo = FALSE}
+# rebuild raintotalb
+raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
+names(raintotalb) <- "rain"
+```
+
+
 ## Distance
 
 If you want to calculate how far any point on a grid is from a particular point or points, `raster` offers a few functions for finding euclidean distances:
 
-```{r, fig.width=6, fig.height=4}
+```{r, fig.width=6.5, fig.height=4}
 # Block 1
 set.seed(1)
 randsamp <- sampleRandom(raintotalb, size = 10, xy = TRUE)
