@@ -12,7 +12,7 @@
 
 <meta name="author" content="Lyndon Estes, Zhiwen Zhu" />
 
-<meta name="date" content="2017-11-02" />
+<meta name="date" content="2017-11-04" />
 
 <title>Unit 2 - Working with Vector Data</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Unit 2 - Working with Vector Data</h1>
 <h4 class="author"><em>Lyndon Estes, Zhiwen Zhu</em></h4>
-<h4 class="date"><em>2017-11-02</em></h4>
+<h4 class="date"><em>2017-11-04</em></h4>
 
 
 <div id="TOC">
@@ -179,9 +179,9 @@ pre { /* Code block - determines code spacing between lines */
 <div id="installations" class="section level2">
 <h2><span class="header-section-number">2.2</span> Installations</h2>
 <p>Let’s start by loading the following packages.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(sp)
-<span class="kw">library</span>(rgdal)
-<span class="kw">library</span>(geospaar)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(geospaar)
+<span class="kw">library</span>(sp)
+<span class="kw">library</span>(rgdal)</code></pre></div>
 <p><code>sp</code> you should already know about from your ASDAR reading. <code>rgdal</code> is something you probably haven’t looked into much yet, so what is it? This is a package that, according to <code>rgdal</code>’s DESCRIPTION file:</p>
 <pre><code>Provides bindings to the Geospatial Data Abstraction Library ('GDAL') (&gt;= 1.6.3) and access to projection/transformation operations from the 'PROJ.4' library. The 'GDAL' and 'PROJ.4' libraries are external to the package, and, when installing the package from source, must be correctly installed first. Both 'GDAL' raster and 'OGR' vector map data can be imported into R, and 'GDAL' raster data and 'OGR' vector data exported.</code></pre>
 <p>That means that <code>rgdal</code> allows us to call these external libraries that give us the ability to read in a wide range of raster and vector formats, provided we have these libraries already installed on our computer.</p>
@@ -231,13 +231,14 @@ pre { /* Code block - determines code spacing between lines */
 <p>So that shows you, in a very crude way, where these points lie in space, given that <code>farmers$lon</code> (the longitude) is exactly analogous to the x coordinate of a scatter plot, and <code>farmers$lat</code> (latitude) is the y coordinate. But it is still not a spatial object. So, let’s convert it to one, and then plot it again.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coordinates</span>(farmers) &lt;-<span class="st"> </span><span class="er">~</span>lon +<span class="st"> </span>lat
 <span class="kw">head</span>(farmers)</code></pre></div>
-<pre><code>##           coordinates     uuid       date pl ra
-## 1 (27.2559, -16.9257) 009a8424 2016-10-31 NA  0
-## 2 (26.9425, -16.5036) 00df166f 2016-10-31 NA  0
-## 3  (24.782, -13.1991) 019d99f9 2016-10-31 NA  0
-## 4 (27.2537, -16.9137) 02671a00 2016-10-31 NA  0
-## 5  (27.0849, -15.407) 02be9843 2016-10-31 NA  0
-## 6 (26.8255, -16.6044) 0360d642 2016-10-31 NA  0</code></pre>
+<pre><code>## class       : SpatialPointsDataFrame 
+## features    : 6 
+## extent      : 24.782, 27.2559, -16.9257, -13.1991  (xmin, xmax, ymin, ymax)
+## coord. ref. : NA 
+## variables   : 4
+## names       :     uuid,       date, pl, ra 
+## min values  : 009a8424, 2016-10-31, NA,  0 
+## max values  : 0360d642, 2016-10-31, NA,  0</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(farmers, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>)</code></pre></div>
 <p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 <p>Now, a few things about the code above and results above. <strong><em>First</em></strong>, if you compare the result of <code>head (farmers)</code> to the previous version, you will see the “lat” and “lon” columns have disappeared and are replaced by the “coordinates” column. <strong><em>Next</em></strong>, notice how <code>plot</code> is used. It applies to the entire object <code>farmers</code>, and the output plot looks somewhat different than the previous version. This is the result of having promoted <code>farmers</code> from a <code>data.frame</code> to a spatial object, and the plot function operates differently on a spatial object than it does for ordinary vectors. <strong><em>Third</em></strong>, the promotion was accomplished by the first line of code in the block above. There are a few things about that line that might seem curious: the “~” and the lack of quotes around the column names on the right hand side of the operator (<code>&lt;-</code>); the function being applied to an object on the left hand side of the assignment operator (<code>coordinates(farmers)</code>). You have seen the latter aspect before in Unit 1, but we never really talked about it (for example, when changing a <code>data.frame</code>’s column names: <code>colnames(dat) &lt;- c(&quot;a&quot;, &quot;b&quot;)</code>). Suffice to say, this sort of syntax means you are modifying the properties of an existing object (in this case, we are changing a <code>data.frame</code> into something spatial).</p>
@@ -511,17 +512,10 @@ districts_area /<span class="st"> </span><span class="dv">10</span>^<span class=
 <p>We can also calculate the distances between spatial features. To do that, we are going to make use of another <code>rgeos</code> function first, <code>gCentroid</code>, which we will use to find the coordinates of the centroid of each district, and then plot the on top of the districts themselves.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dist_cent &lt;-<span class="st"> </span><span class="kw">gCentroid</span>(<span class="dt">spgeom =</span> districts_alb, <span class="dt">byid =</span> <span class="ot">TRUE</span>)  <span class="co"># get centroids</span>
 <span class="kw">head</span>(dist_cent)</code></pre></div>
-<pre><code>## SpatialPoints:
-##           x        y
-## 0  785106.2 -1660583
-## 1  804531.9 -1323770
-## 2 -265603.0 -1561110
-## 3  314886.9 -1748525
-## 4  427605.7 -1035133
-## 5  289890.4 -1461477
-## Coordinate Reference System (CRS) arguments: +proj=aea +lat_1=20
-## +lat_2=-23 +lat_0=0 +lon_0=25 +x_0=0 +y_0=0 +ellps=WGS84 +units=m
-## +no_defs</code></pre>
+<pre><code>## class       : SpatialPoints 
+## features    : 6 
+## extent      : -266719.8, 830861.6, -2088839, -1035133  (xmin, xmax, ymin, ymax)
+## coord. ref. : +proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot centroids on districts</span>
 <span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))
 <span class="kw">plot</span>(districts_alb, <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>)

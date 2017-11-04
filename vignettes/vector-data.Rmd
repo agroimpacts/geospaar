@@ -77,9 +77,9 @@ We present here a mix of explanation with code and exercises to help you learn i
 
 Let's start by loading the following packages.
 ```{r, warning=FALSE, message=FALSE}
+library(geospaar)
 library(sp)
 library(rgdal)
-library(geospaar)
 ```
 
 `sp` you should already know about from your ASDAR reading. `rgdal` is something you probably haven't looked into much yet, so what is it?  This is a package that, according to `rgdal`'s DESCRIPTION file: 
