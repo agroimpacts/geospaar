@@ -499,11 +499,11 @@ axis(side = 1, at = 1:3, labels = c("Distr. means", "Random", "Strat. Random"))
 #  plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 
 ## ---- eval = FALSE, echo = FALSE-----------------------------------------
+#  dem <- dem * 1
 #  save(dem, file = "data/dem.rda")
 
 ## ---- echo = FALSE-------------------------------------------------------
 data(dem)
-# load(system.file("extdata/dem.rda", package = "geospaar"))
 plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 
 ## ----demarea-------------------------------------------------------------

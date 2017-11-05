@@ -1037,12 +1037,12 @@ plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 ```
 
 ```{r, eval = FALSE, echo = FALSE}
+dem <- dem * 1
 save(dem, file = "data/dem.rda")
 ```
 
 ```{r, echo = FALSE}
 data(dem)
-# load(system.file("extdata/dem.rda", package = "geospaar"))
 plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 ```
 
@@ -1260,7 +1260,7 @@ Block 4 plots those distance grids (converting distance to km), and the points t
 
 Although there are many, many more analyses and capabilities we could illustrate with rasters, we will end this section with a relatively simple modeling example. In this, we will use ordinary linear regression to try model rainfall values collected at point locations, based on their correlations with certain predictors.  
 
-First, we will use `getData` to download the Worldclim global precipitation layer (at a resolution of 2.5 minutes of a degree), then `crop` the data to Zambia's extent, sum the resulting cropped monthly values into a single annual value, mask the result, and then save it so that it becomes available as a lazy load with the `geospaar` package. The code for doing this is below, which doesn't execute as part of this vignette.  
+First, we will use `getData` to download the Worldclim global precipitation layer (at a resolutMion of 2.5 minutes of a degree), then `crop` the data to Zambia's extent, sum the resulting cropped monthly values into a single annual value, mask the result, and then save it so that it becomes available as a lazy load with the `geospaar` package. The code for doing this is below, which doesn't execute as part of this vignette.  
 ```{r, eval = FALSE}
 wcprec <- getData("worldclim", var = "prec", res = 2.5, path = p_data)
 zamprec <- crop(wcprec, y = districts)
