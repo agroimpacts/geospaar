@@ -1,0 +1,207 @@
+---
+title: "Geospatial Analysis with R"
+author: "Lyndon Estes & Zhiwen Zhu"
+date: "November 6, 2017"
+output:
+  slidy_presentation: 
+    default:
+    css: custom.css
+    fig_height: 4
+    fig_width: 6
+subtitle: Class 19
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(repos = c(CRAN = "http://ftp.ussg.iu.edu/CRAN/"))
+```
+## Today
+
+- Exercises from readings
+- Unit wrap-up
+
+## Exercises from reading
+
+### Rapporteurs
+
+```{r, echo = FALSE}
+student_names <- read.csv(file = "students.csv", stringsAsFactors = FALSE)$name
+
+set.seed(1)
+sel_names <- student_names[sample(1:length(student_names), size = 6, 
+                                  replace = FALSE)]
+monday_names <- c("Sarah Gates", "Ali Filipovic")
+student_names2 <- student_names[!student_names %in% c(sel_names, monday_names)]
+
+set.seed(100)
+sel_names <- student_names2[sample(1:length(student_names2), size = 3)]
+
+student_names3 <- student_names2[!student_names2 %in% sel_names]
+```
+
+```{r}
+set.seed(1001)
+sel_names <- student_names3[sample(1:length(student_names3), size = 5)]
+sel_names
+
+student_names4 <- student_names3[!student_names3 %in% sel_names]
+set.seed(1001)
+sel_names <- student_names4[sample(1:length(student_names4), size = 4)]
+sel_names
+
+```
+
+## Exercise Datasets
+
+```{r}
+library(geospaar)
+library(raster)
+zamr <- raster(x = extent(districts), crs = crs(districts), res = res(dem))
+values(zamr) <- 1:ncell(zamr)
+zamr_alb <- projectRaster(from = zamr, res = 1000, crs = crs(roads), 
+                          method = "ngb")
+demalb <- projectRaster(from = dem, to = zamr_alb)  # default is bilinear
+
+chirpsz <- mask(x = chirps, mask = districts)
+districts$ID <- 1:length(districts)
+raintot <- calc(chirpsz, sum)
+
+raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
+names(raintotalb) <- "rain"
+
+zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
+names(zamprecalb) <- "rain"
+elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
+```
+
+## Exercise 14
+
+Crop `demalb` down to the extent of district 42 (bear in mind that `districts` needs to be in the same projection as `demalb`, so transform it first). Then calculate slope, aspect, and TPI on the cropped DEM. Plot the results so that they appear in 3 side by side panels
+
+## Exercise 15
+ Using just the code in blocks 1-3 (in section 6.3 of reading) as your template, create IDW interpolations using the original 1000 randomly sampled points, and then two new ones based on 1) 500 and 2) 250 randomly selected points. Create a 4 panel plot by a) stacking, in this order, `raintotalb`, the 1000 point IDW, the 500 point IDW, and the 250 IDW, b) naming the layers of the stack, c) using a single call to plot_noaxes. Use “zlim = c(0, 150)”. There are two ways of doing this: i) the hard way, by copying, pasting, and changing code blocks 2-3 for each version of the IDW; ii) the elegant way, by creating the three IDWs in an lapply. 
+ 
+## Exercise 16
+
+Select districts 15, 20, 25, 30, 35, 40, 45, and 50 out of `districts`. Convert the resulting subset of districts to Albers projection. Use `distance` or `distanceFromPoints` to calculate the distances from any point in Zambia to the centroids of those selected districts
+
+## Exercise 17
+Redo the maps above (made in section 6.5), but use a new random draw of just 25 points to collect the predictors. Redo it again, but this time use the district centroids (think `gCentroid`) as the points (`pts`), bearing in mind that you have to extract a rainfall value from zamprecalb as an extra step in this case. How much more poorly do these two models do than the one with denser observations?
+
+## What we covered in Unit 2 - ___Vectors___
+
+- reading/writing
+- `sp` data classes/structures
+- create your own spatial objects
+- projections
+- calculate spatial properties
+- subsetting
+- intersects/intersection (extract/over)
+- differencing/erasing
+- unions
+- buffering
+    
+## What we covered in Unit 2 - ___Rasters___
+
+- reading/writing
+- raster structures (Layer/Brick/Stack)
+- create your own dummy rasters
+- projections/transformations
+- aggregating/disaggregating/resampling
+- raster statistics, global, local, Z-dimension
+- algebra 
+- subsetting: layer extraction/cropping/masking
+- basic classification/categorization
+- distance
+- terrain analysis
+
+## What we covered in Unit 2 - ___Vectors + Rasters___
+
+- sampling and extraction
+- vectors to rasters and back again
+- modeling, spatial and non-spatial
+    - interpolation, kriging, regression prediction onto rasters
+- combined plotting
+ 
+## What we did not cover
+
+- more advanced spatial modeling capabilities
+    - distribution modelling (`dismo`), point pattern analysis (`spatial`, `splancs`), spatial regression models
+    - geostatistics (`nlme`, `spdep`, `splm`)
+- Simple features (`sf`) replacing S4 `Spatial*` classes provided by `sp`
+- Remote sensing oriented capabilities
+    - Handling very large data (`gdalUtils`, `doMc`, `foreach`, using `raster` with chunks)
+    - classes for satellite images: `landsat`, `modis`, and `satellite` packages
+    - visualization: `rasterVis`
+    - classifications 
+        - unsupervised and supervised (e.g. `randomForest`)
+        - More advanced machine learning: see CRAN Machine Learning Task View[link](https://cran.r-project.org/web/views/MachineLearning.html)
+    - all in one: `RSToolbox`
+
+## What we did not cover 2
+
+- Use R to access other GIS
+    - `rpostgis`, `spgrass6`/`rgrass7`, `RSAGA`, `RPyGeo`, `RQGIS`
+- See Cran Spatial Task View [link](`https://cran.r-project.org/web/views/Spatial.html`) for much more
+- Invalid geometries
+
+## Invalid geometries
+```{r}
+library(sp)
+crds <- data.frame(x = c(1, 2, 2, 1, 1), y = c(1, 1, 2, 1, 0.5))
+p <- Polygons(srl = list(Polygon(coords = crds)), ID = "1")
+spoly <- SpatialPolygons(Srl = list(p))
+rgeos::gIsValid(spoly)
+
+plot(spoly, col = rgb(1, 0, 0, alpha = 0.5), main = "Invalid")
+```
+
+### Invalid geometries 2
+
+```{r}
+spolyfix <- rgeos::gBuffer(spoly, width = 0)  # sometimes fixes it
+
+par(mfrow = c(1, 2))
+plot(spoly, col = rgb(1, 0, 0, alpha = 0.5), main = "Invalid")
+plot(spolyfix, col = rgb(0, 0, 1, alpha = 0.5), ylim = bbox(spoly)[2, ], 
+     main = "Fixed")
+
+```
+
+## `sp` versus `sf`
+
+```{r}
+fnm <- system.file("extdata/districts.shp", package = "geospaar")
+system.time(dists_sf <- sf::read_sf(dsn = fnm))
+system.time(districts <- rgdal::readOGR(dsn = fnm, layer = "districts", 
+                                        verbose = FALSE))
+```
+
+## `sp` versus `sf` 2
+
+```{r}
+dists_sf
+districts
+```
+
+## `sp` versus `sf` 3
+
+```{r}
+par(mfrow = c(1, 2))
+plot(dists_sf)
+plot(districts)
+```
+
+
+
+ 
+
+    
+    
+    
+    
+    
+    
+    
+    
+
