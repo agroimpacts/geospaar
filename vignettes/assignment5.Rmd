@@ -86,7 +86,7 @@ Create a subset of `districts` by extracting  districts 22, 26, 53, and 54. Call
 
 ### Task 2
 
-Disaggregate `s[[1]]` to a resolution of 0.025&deg;, using bilinear interpolation, calling the result `s2_1d`. Select all areas of `s2_1d` that have values > 35, creating a new raster `s2_1gt35`. Set the values of `s2_1gt35` that equal 0 to NA. Then convert the resulting raster into `SpatialPolygons` (call the result `s2poly`). Plot the resulting polygons over `s2_1gt35`. 
+Disaggregate `s[[1]]` to a resolution of 0.025&deg;, using bilinear interpolation, calling the result `s2_1d`. Select all areas of `s2_1d` that have values > 35, creating a new raster `s2_1gt35`. Set the values of `s2_1gt35` that equal 0 to NA. Then convert the resulting raster into `SpatialPolygons` (call the result `s2poly`). Plot the resulting polygons over `s2_1d`. 
 
 ![](fig/a5-t2.png)
 
