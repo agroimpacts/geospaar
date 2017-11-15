@@ -69,6 +69,31 @@ Briefly describe, as bullet points, the outcomes you expect for each of your pri
 For this last assignment, it doesn't make sense that team members do separate work in different branches of the repo, with the exception of cases where data fetching and wrangling tasks needed to describe and visualize the data are partitioned between members. In this case, team members should have separate vignettes in their respective branches describing the data gathering and processing steps to date. Otherwise, the expectation is that this assignment is presented as a jointly written vignette that builds with the package in the master branch. Please put your initials next to sections that you were responsible for writing. If you want to get really advanced, you can each jointly work on a version of overview in your own branches, and then do a merge and reconcile of your differing version in the master branch. 
 
 
+# Assessment
+
+For this final assignment, assessment will be out of 50 points using simplified and somewhat different categories: 
+
+1. Quality of plan:
+    - No plan (analysis/coding approach and timelines) provided: 0 pts
+    - Plan (analysis/coding approach and timelines) is provided but mostly unworkable, many holes or inconsistencies in logic or approach: 7.5 pts
+    - Probably workable plan, but with a fair number of holes or inconsistencies that need to be addressed: 15 pts
+    - A pretty well thought-out and workable plan, with just a handful of holes or inconsistencies remain: 22.5 pts
+    - Excellent, well thought plan, no obvious flaws in approach: 30 pts
+
+2. Structure and completeness: 
+    - Assignment does not at all follow required structure or provide requested information: 0 pts
+    - Assignment barely follows required structure or provide requested information: 2.5 pts
+    - Assignment partially follows structure and provides part of the information: 5 pts 
+    - Assignment mostly follows structure and provides most of the required information: 7.5 pts
+    - Assignment perfectly follows structure and provideds all the required information: 10 pts
+
+3. Reproducibility:
+    - Doesn't work at all/no R package structure: 0 pts
+    - Runs after numerous fixes: 2.5 pts
+    - Runs after several fixes: 5 pts
+    - Runs after one or two fixes: 7.5 pts
+    - Runs out of the box: 10 pts
+    
 
 
 
