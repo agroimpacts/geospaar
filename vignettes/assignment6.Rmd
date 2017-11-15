@@ -1,0 +1,78 @@
+---
+title: "Assignment 6"
+author: "Lyndon Estes and Zhiwen Zhu"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Assignment 6}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', fig.height = 4, 
+                      fig.width = 5)
+```
+
+# Overview{#overview}
+
+This assignment focuses on your research projects.
+
+# Due date
+
+__*Monday, Nov 20* at midnight__, via the normal GitHub submission route
+
+# Set-up
+## Git/GitHub
+
+We are saying goodbye to the repos/packages we used for assignments 1-5 (e.g. your version of `xyza1`). Start a new package with a Git/GitHub repo, naming it something short but descriptive of the project you are doing. Ideally, this should be a private repo under the agroimpacts organization, but if you are doing it under your own GitHub name, that is okay also, but you will have to tell us where that is so that we can add it to our repo watch lists. 
+
+If there is more than one of you contributing to the project, you should: each have your own branch, where you will develop your component of the project. These separate branches should be established at the time of the submission for this assignment. Name each of your branches with your initials. 
+
+## R package
+
+As with your previous assignments, your work should be structured as an R package. That does not mean that you will necessarily need to be writing functions that are native to the package (i.e. documented functions living in the R folder that build with the package), but you should be writing your project up and showing your code and analysis within vignettes.  
+
+# Tasks
+
+For this assignment, you should write a single vignette called "overview.Rmd", which has the following sections: 
+
+## Summary
+
+A brief (up to 250 words) description of the project, and a bullet point or enumerated list of its primary objectives. 
+
+## Approach and Method
+
+An outline of the analytical methods and code you plan to use, including the names of key packages that you will draw on. This section should be composed of the following sub-sections: 
+
+### Data
+A brief (~250 words) description **and** visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset.  
+
+### Code
+
+A bullet point summary of the analysis and coding approach that you propose to follow. For teams, this section should include a description of which member will be responsible for each bullet point. 
+
+### Timelines
+
+Provide a timeline for when each portion of the analysis will be completed. These timelines should be constructed relative to the time period of presentations (during the last two weeks of class) and final project submission (during exam week). For teams, names should be associated with each step on the timeline. 
+
+## Anticipated outcomes
+
+Briefly describe, as bullet points, the outcomes you expect for each of your primary project objectives
+
+# An additional note for teams
+
+For this last assignment, it doesn't make sense that team members do separate work in different branches of the repo, with the exception of cases where data fetching and wrangling tasks needed to describe and visualize the data are partitioned between members. In this case, team members should have separate vignettes in their respective branches describing the data gathering and processing steps to date. Otherwise, the expectation is that this assignment is presented as a jointly written vignette that builds with the package in the master branch. Please put your initials next to sections that you were responsible for writing. If you want to get really advanced, you can each jointly work on a version of overview in your own branches, and then do a merge and reconcile of your differing version in the master branch. 
+
+
+
+
+
+
+
+
+
