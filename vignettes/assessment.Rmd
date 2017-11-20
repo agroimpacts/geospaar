@@ -77,7 +77,51 @@ kable(DF, align = "r")
 ```
 
 ## For presentations
-___[Under construction]___
+
+Herewith some guidance regarding the final presentations:
+
+### Time
+
+Presentations should last 7 minutes per person: that is, if you are working on a project on your own, you should expect to present for 7 minutes, with an additional 3 minutes to field questions. If you are part of a two-person team, each person should plan to present for up to 7 minutes, and you will jointly have 6 minutes to field questions. 
+
+### Medium
+
+Present your material using RMarkdown slides. Use the `geospaar` slides as a template. That means you should make a "slides" folder under the vignettes folder of your package, and you should commit your slides .Rmd file that lives in the folder to git/GitHub. 
+
+Since your time limit is 7 minutes, you should plan to have 5-7 slides at most. 
+
+Group presentations should have a single set of slides in the master branch of their package, with each member presenting the portion of slides most relevant to their work. One possible way to split up the presentation could be as follows: 
+
+- Team Member A presents the introduction and the part of methods that A will be undertaking, and the results expected/already produced from those methods 
+- Team Member B presents the part of methods that B will be undertaking, any expected or achieved results from those methods, and then present the final way forward section
+
+Other ways of splitting up the presentation equitably are possible. Please see me if you would like to follow a different approach. See the next section for more details on presentation structure and content.
+
+> Note: to create the html of slides, the knit button on RStudio doesn't always make the html output appear in the folder where you want it. To overcome this, I use the following commands: 
+
+>```{r, eval = FALSE}
+setwd(dir = "vignettes/slides")
+rmarkdown::render(input = "myslides.Rmd", output_file = "myslides.html")
+```
+
+
+### Structure and content
+
+Your presentation should be structured as follows: 
+
+- 1-3 slides introducing your project, what questions you are answering, and why it is of interest
+- 2-4 slides describing the data and methods, focusing particularly on planned coding approach, including the primary packages you intend to use, and any planned functions you might write as part of your own project package. 
+    - You should show visuals of the primary input datasets you are using in this section, which may be maps or, if relevant, plots of key summary statistics (e.g. histograms, bar plots, xy scatter plots), or both. 
+- 2-4 slides describing your anticipated results, and illustrating any partial steps towards those results, or any completed results you already have. 
+- 1-3 slides describing the way forward to complete the project, including:
+    - Any challenges that need to be overcome
+    - What new aspect of R programming you learned from your project, i.e. something that you weren't introduced to during Units 1 and 2 of the course, and which might be of interest to your peers. 
+
+If you are working on your own, use the lower end of the slide range as your guide. If you are working as part of a two-person team, the upper end is the target amount of slides.  If you are presenting as a group of more than two people, let's discuss the structure. 
+
+### Assessment
+
+Rubric under construction
 
 ## For final paper/report
 ___[Under construction]___
