@@ -180,4 +180,143 @@ kable(DF)
 
 
 ## For final paper/report
-___[Under construction]___
+
+The following are the requirements and assessment approach for the final project:
+
+### Overall scope
+
+The purpose of the final product is to provide an overview of the results of the project you have been working on during the final unit of the class, building on the work you will have already presented in class during one of the last four sessions. The nature of this product can vary according to the type of project you are pursuing, which I would broadly define into two groups: 
+
+1. Those that are more focused on developing a package that provides a set of R functions that will be more broadly useful; 
+
+2. Those that are more analytical in nature, i.e. using R to answer particular questions of interest. 
+
+In the former case, we will want to see a good presentation of worked examples presented in your package vignette(s). In the latter case, your package vignette(s) should give an informative overview of your key findings and (if applicable) way forward for the project. Some projects may fall somewhere in between these two extremes.    
+
+### Structure and content
+
+Regardless of the type of project you are developing, you will submit it as an R package, as we have been doing all semester. That R package should be fully reproducible, i.e.
+
+```{r, eval = FALSE}
+devtools::install_github("agroimpacts/yourproject", build_vignettes = TRUE)
+browseVignettes("yourproject")
+```
+
+Works perfectly and gives us results that contain everything we need to evaluate the project. Datasets that are too large to be committed to the package repo should be linked to, but the code used to process them should be clear, and any figures built from them should be committed to the repo and incorporated in your package vignettes. Vignettes will contain the material we are most interested in, but we will also examine your DESCRIPTION, NAMESPACE, function documentation (if applicable), i.e. the key components of making an R package and delivering it in a reproducible manner. 
+
+Jointly authored vignettes in group projects should have team member initials indicating which section each member worked on which section. Otherwise, separately authored ones should have team member titles at the top.  
+
+As stated before, if there are clear, separable tasks that lend themselves to separate development efforts, team members should work on those and make frequent commits within their own repo branches. 
+
+R code should follow the [style](http://adv-r.had.co.nz/Style.html)) we have been using all along. 
+
+The main item in your package that we will assess is/are the package vignette/vignettes. 
+
+### Vignette(s)
+
+You can choose to have one or several vignettes, depending on how much sense it makes to break down the information into separate documents. Regardless, your vignette or vignettes should contain the following information (the names of the headings can vary though according to what makes sense)
+
+#### Introduction (or Overview)
+A more detailed and informative overview of the project's purpose and objectives than what your provided in assignment 6. Approximate maximum length of 400 (individual) to 800 (team, assuming a single package vignette) words.  
+
+#### Methods (or Approach)
+
+For a more analytical project, provide a complete description of the methods you used to undertake the analysis, complete with informative illustrations and summaries of the input datasets. Approximate maximum length of 400 (individual) to 800 words. 
+
+For a project that is more tools-oriented, use this section to describe the purpose and rationale of the functions/capabilities you are developing, what other packages/software/tools it is building on, and provide informative illustrations and summaries of the dataset(s) you are using to demonstrate your functions. Same approximate length. 
+
+#### Results (Worked Examples)
+
+For analytical projects, describe and illustrate your results, using standard scientific reporting conventions: 1) plan on having 2-4 figures; 2) a similar number of statistical summaries; 3) describe the results in your figures and tables in (up to) 400-800 words (range refers to individual versus team efforts). 
+
+For tools-oriented projects, provide and illustrate 2-4 worked examples of how to use the functions in your package, with descriptive accompanying text that will help users to understand what the functions do and how to apply them (up to 400-800 words; range refers to individual versus team efforts). 
+
+#### Discussion
+
+For analytical projects, briefly provide your interpretation of the results, any uncertainties/difficulties encountered, and any next steps to be taken. Up to 400-800 words (range refers to individual versus team efforts).
+
+For tools-oriented projects, describe any limitations of the package, improvements that can be made, and any plans to undertake these. Up to 400-800 words (range refers to individual versus team efforts).  
+
+### Assessment
+
+Assessment is out of 70 pts (note that there a minimum points floor, which assumes that a final project has been submitted), and will be based on four categories: 
+
+- **Quality** evaluates the **content** of the material in your package, focusing on the information and ideas conveyed in your descriptions, figures, and tables. How well did you understand and execute the project, and how well did you convey what you did? 
+- **Progress** evaluates whether you achieved the objectives put forward in your Assignment 6 and final presentation, focusing more on the latter due to course corrections (and incorporating any necessary changes we discussed)
+- **Clarity** examines the clarity of the writing (is it easy to understand, no typos or missed words), the visual aspects of figures (does the color choice make sense, legend sensible, size appropriate, text readable?), formatting (did html lists end up as lists? do headings make sense?), and code syntax. This basically covers the stylistic components of your vignettes and code.
+- **Reproducibility** relates to the now familiar criteria about whether your package builds for another user without error, and with browsable vignettes.  
+
+
+```{r, echo = FALSE, message = FALSE}
+# library(dplyr)
+# html_table_width <- function(kable_output, width){
+#   width_html <- paste0(paste0('<col width="', width, '">'), collapse = "\n")
+#   sub("<table>", paste0("<table>\n", width_html), kable_output)
+# }
+quality <- c(paste("Objectives/methods/results/interpretations unclear,", 
+                   "poor understanding conveyed", 
+                   "replete with analytical/methodological errors", 
+                   "Findings/interpretations/examples absent"), 
+             paste("Objectives/methods/results/interpretations cloudy,", 
+                   "understanding of project less than half",
+                   "many analytical/methodological errors", 
+                   "Findings/interpretations/examples present but weak/wrong"), 
+             paste("Objectives/methods/results/interpretations 50% clear,", 
+                   "project about 50% understood", 
+                   "some analytical/methodological errors", 
+                   "Findings/interpretations/examples about half wrong"),
+             paste("Objectives/methods/results/interpretations 75% clear,", 
+                   "project about 75% understood", 
+                   "few analytical/methodological errors", 
+                   "Findings/interpretations/examples interesting/correct"),
+             paste("Objectives/methods/results/interpretations crystal clear,", 
+                   "project completely understood", 
+                   "no obvious analytical/methodological errors", 
+                   "Findings/interpretations/examples novel/really well done"))
+pts1 <- c(10, 15, 20, 25, 30)
+progress <- c("None since presentation", "Only a little", "Modest progress", 
+              "Project mostly complete", "Much greater than expected")
+pts2 <- c(5, 7.5, 10, 12.5, 15)
+clarity <- c(paste("Vignette(s) a complete mess,",
+                   "graphics absent/totally confusing,",
+                   "text a word salad,",
+                   "narrative impossible to follow", 
+                   "code a mess/doesn't follow style"),
+             paste("Vignette(s) more unclear than clear;", 
+                   "graphics present but hard to decipher;", 
+                   "text somewhat confusing;", 
+                   "narrative hard to follow", 
+                   "code messy/mostly doesn't follow style"), 
+             paste("Vignette(s) not unreasonable; graphics so-so,", 
+                   "not spectacular, maybe hard to decipher;",
+                   "text still a bit distracting, causes some confusion;",
+                   "narrative mostly clear", 
+                   "code sloppy/half follows style"), 
+             paste("Vignette(s) good;", 
+                   "graphics mostly clear, no major questions;",
+                   "text understood and gets the job done;", 
+                   "narrative clear", 
+                   "code clear/mostly follows style"), 
+             paste("Vignette(s) outstanding; graphics spectacular,", 
+                   "tell a clear and easily understood story supporting text;", 
+                   "text crystal clear and right amount;", 
+                   "gripping narrative", 
+                   "code tight, perfect style"))
+pts3 <- c(5, 7.5, 10, 12.5, 15)
+reproducibility <- c("Can't be built/no R package structure", 
+                     "Runs after many fixes", "Runs after 4-6 fixes",
+                     "Runs after 1-3 fixes",
+                     "Runs out of the box/with no fixes needed")
+pts4 <- c(3, 5, 7, 8.5, 10)
+
+DF <- cbind.data.frame(quality, pts1, progress, pts2, clarity, pts3,
+                       reproducibility, pts4, stringsAsFactors = FALSE)
+colnames(DF) <- c("Quality", "QPts", "Progress", "PrPts", "Clarity",
+                  "Cpts", "Reproducbility", "RPts")
+y <- knitr::kable(DF, format = "html")
+kableExtra::column_spec(y, column = 1:8, width = "10em")
+# kable(DF[, 3:4], format = "html") %>% html_table_width(c(50, 20))
+# kable(DF[, 5:6], format = "html") %>% html_table_width(c(50, 20))
+# kable(DF[, 7:8], format = "html") %>% html_table_width(c(50, 20))
+# kable(DF, align = "r") 
+```
