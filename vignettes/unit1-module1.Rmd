@@ -1,0 +1,75 @@
+---
+title: "Unit 1: Module 1"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Unit 1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 38px;
+  <!-- color: DarkRed; -->
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  <!-- color: DarkBlue; -->
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  <!-- color: DarkBlue; -->
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  <!-- font-family: "Times New Roman", Times, serif; -->
+  <!-- color: DarkBlue; -->
+}
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+# Introduction{#unit1mod1intro}
+
+This unit has two general focus areas: 
+
+1. A overview of the R language, its history, use, strengths, weaknesses, and evolutionary trajectory. 
+
+2. An introduction to the concepts and skills of reproducibility
+
+The first focus area primarily entails reading and watching online resources. The second requires the same plus hands-on work with Rstudio, `R`'s industry-standard [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment), and [git](https://git-scm.com) and [GitHub](https://github.com), which are two tools that are critical to the mission of reproducibility. 
+
+
+# `R` overview
+
+There is a vast amount of material online about R. We have selected a few resources from among these for you to read and/or watch, so that you get a sense about the language and what it does. _You should complete these assignments by the first class_. 
+
+Roger Peng (Johns Hopkins University) provides a nice history and overview of `R` in this 16 minute [youtube video](https://www.youtube.com/watch?v=STihTnVSZnI) that introduces his own `R` course. This provides some insight into R system the advantages and disadvantages (e.g. memory-dependence) of R, the freedoms associated with using `R`, as well as the basic system design and package ecosystem. 
+
+Hadley Wickham's [introduction section](http://adv-r.had.co.nz/Introduction.html) to his book [*Advanced R*](http://adv-r.had.co.nz) provides a nice bullet-point summary of `R`'s advantages and disadvantages.  
+
+Please also visit the `R`'s [homepage](https://www.r-project.org), the center of the R universe, and particularly [CRAN](http://lib.stat.cmu.edu/R/CRAN/), where official `R` packages live (actually the link provided is the closest CRAN mirror site, which lives at Carnegie Mellon University).
+
+Finally, you might have heard of the `python` programming language, and wonder why you are learning `R`. Good question. You can't throw a rock without hitting a python versus R comparison, and here's [one of the more recent examples of this genre](https://medium.com/@data_driven/python-vs-r-for-data-science-and-the-winner-is-3ebb1a968197). Please have a look, but basically each language has a lot of similarities, and one would do very well to learn both. To this I would add something I have yet to find, which is a comparison of R and python for their ability to handle spatial data. Both languages can do it, but my own personal (and admittedly biased and unscientific) sense is that R's capabilities to do standalone spatial analysis are more developed than python's. I think this advantage will continue to grow now that development of the `sf` package (vector data) is well underway, and the new `stars` package (rasters) is starting to move. 
+
+On the other hand, python seems to be preferred for machine learning applications on remote sensing data, and gives the ability to programmatically work with geospatial platforms like [Google's Earth Engine](https://developers.google.com/earth-engine/python_install), QGIS, ArcGIS, and the new [Radiant Earth platform](https://pypi.org/project/radiantearth/). So, really, there is a case for learning both languages, and developments such as the new [`reticulate` package](https://rstudio.github.io/reticulate/) from Rstudio make it increasingly possible to use both languages in more integrated fashion, as the need arises. That's a subject for another time (and not this class), but just one more reason why we should think about `R` and `python` rather than `R` or `python`. 
+
+# The tools and concepts of reproducibility
+
