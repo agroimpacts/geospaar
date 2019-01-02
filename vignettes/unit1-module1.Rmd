@@ -1,14 +1,16 @@
 ---
-title: "Unit 1: Module 1"
+title: "Unit 1 - Module 1"
 date: "`r Sys.Date()`"
-output: 
-  rmarkdown::html_vignette:
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
     fig_caption: yes
     number_sections: yes
     toc_depth: 3
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Unit 1}
+  %\VignetteIndexEntry{Unit 1: Module 1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -46,6 +48,15 @@ pre { /* Code block - determines code spacing between lines */
 }
 </style>
 
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(knitr)
+```
+
+
 # Introduction{#unit1mod1intro}
 
 This unit has two general focus areas: 
@@ -55,7 +66,6 @@ This unit has two general focus areas:
 2. An introduction to the concepts and skills of reproducibility
 
 The first focus area primarily entails reading and watching online resources. The second requires the same plus hands-on work with Rstudio, `R`'s industry-standard [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment), and [git](https://git-scm.com) and [GitHub](https://github.com), which are two tools that are critical to the mission of reproducibility. 
-
 
 # `R` overview
 
@@ -71,8 +81,11 @@ Finally, you might have heard of the `python` programming language, and wonder w
 
 On the other hand, python seems to be preferred for machine learning applications on remote sensing data, and gives the ability to programmatically work with geospatial platforms like [Google's Earth Engine](https://developers.google.com/earth-engine/python_install), QGIS, ArcGIS, and the new [Radiant Earth platform](https://pypi.org/project/radiantearth/). It is also preferred, it seems, for setting up production workflows. So, really, there is a case for learning both languages, and developments such as the new [`reticulate` package](https://rstudio.github.io/reticulate/) from Rstudio make it increasingly possible to use both languages in more integrated fashion, as the need arises. That's a subject for another time (and not this class), but just one more reason why we should think about `R` and `python` rather than `R` or `python`. 
 
+[Back to top](#unit1mod1intro)
+
 # The tools and concepts of reproducibility
 
+## Reproducibility
 The first set of skills we are going to learn in this course are not related to R, but more generally to programs and concepts that foster *reproducibility*. What is that? A good working definition of the term, as it relates to scientific computing, is: 
 
 > the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results.
@@ -83,5 +96,111 @@ Reproducibility is a useful concept/mindset to learn, regardless of whether you 
 
 A great deal more about reproducibiity is written in the aforementioned book. You should read [this paper](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003285) in PLOS Computational Biology, which lays out 10 rules for reproducibility.  
 
+## The tools of reproducibility
+### Version control and `git`
 However, we are going to dive in and go straight to learning some of the tools of reproducibility. First, we are going to learn about `git`. `git` is version control software. Working with version control basically entails maintaining a single set of files (generally code files, but also other kind of documents, but typically not large binary images, such as rasters) for a project, and making changes to those files as you go in a way that keeps those changes out of sight, but makes it easy to recover past changes if you need them. For example, the file that we used to create this html document is called `unit1-module.Rmd` (it's an Rmarkdown file, which we will be learning more about shortly) is under version control.  I have made many edits to it as I created it, but I have only one version of it visible in the file system. Previous versions of and changes to the file can be found in the prior *commits*.  
+
+The image below illustrates version control--this shows Rstudio's interface to `git`, comparing the text in the paragraph above to the text in the previous committed version of this file: the pink shows the older paragraph, the green the newer one (I changed just a few lines in there)  
+
+```{r out.width = "60%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-1.png") 
+```
+<!-- ![](fig/u1m1-1.png) -->
+
+So, that is a small taste of version control. If you have ever worked with Google Docs, it does its own form of version control--you can look back at previous edits and changes. Using `git` is a bit more explicit and deliberate than that--you have to make commits manually, changes aren't saved automatically, but that's okay, and it helps us choose how much we want to change before committing the file version. 
+
+So why are we using it here? We want to avoid the common practice of many people when they are updating project documents:  make a file, name it something, make a bunch of changes, decide you want to keep the previous version -> make a new copy of the file -> append the date to the filename to track the changes.  Before long you end up with a cluttered directory that might look something like this: 
+
+```bash
+├── my_folder
+    ├── somefile.txt
+    ├── Somefile_jan 20 2018.txt
+    ├── somefile_2 Feb2018.txt
+    ├── somefile_jan12018.txt
+```
+
+You can't remember what's in each file or when you made a particular change, and you start to hunt. Version control helps us keep folders neat and pruned and edits fairly recoverable, so that we can just a single file (in the example above) called `somefile.txt` and keep track of all the changes made to that file. That's why we are going to use `git` in this class. 
+
+### `git` and GitHub
+`git` is a program that lives on your local machine. You can make commits locally, and just keep things under version control on your local machine. If you want to collaborate, or even work with your project across multiple machines, you can create a remotely stored version of your `git` project (repository) on [GitHub](https://github.com).  GitHub is one of several web services that provides hosting for git repositories. It also provides useful collaboration functionality. We'll come back to this. 
+
+### Packages
+
+Packages are another tool of reproducibility that we will learn to use in this class. Packages are bundles of code and documentation that provide a specific functionality for a particular language. Both `python` and `R` make extensive use of packages, as the utility of both languages depends heavily on user-contributed code. Code contributions are made through packages, which standardize and formalize the user-developed functions so that they work properly within the language, and can be easily used by the broader community. 
+Packages are also useful even if you don't intend to contribute code to the community, as they have a particular structure that can be useful for helping to organize and formalize your thinking, data analysis, and reporting. They can also save you time as they make it much easier to access functions that you have developed for one project and apply them to another. I learned these ideas from reading Hillary Parker's [blog post on personal R packages](https://hilaryparker.com/2013/04/03/personal-r-packages/), as well as Karl Broman's [R package primer](http://kbroman.org/pkg_primer/pages/why.html), and of course Hadley Wickham's [introduction](http://r-pkgs.had.co.nz/intro.html) to his *R packages* book (please read all aforementioned links).
+
+I have adopted the package structure for organizing the analyses and writing of each of my papers. For example, two of my most recent papers are structured as R packages that can be installed as R packages from their GitHub repositories (which can be found [here](https://github.com/agroimpacts/ecoscales) and [here](https://github.com/agroimpacts/croplandbias)). These contain all the code used to do the analyses, create the figures, and full (non-journal formatted) versions of the manuscripts. And (as you may have noticed by now), this class is also structured as an R package.
+
+[Back to top](#unit1mod1intro)
+
+## Setting up your setup
+
+### Installations
+The first thing you need to do is to install `R`, Rstudio, and `git` on the machine that you will be using outside of the classroom (you cannot count on the class computers for this). Ideally, you will set up your projects in a cloud-based folder that you can access from the computers in JC103, for sharing large data files (note: `git` and GitHub are not intended for sharing large data files).
+
+- Install `git` by following [links here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) to get the version for your OS. If you are installing `git` for Windows, install using the default options. 
+- Then install `R` for your OS from Rstudio's link to [CRAN's R downloads](https://cran.rstudio.com) (use default options)
+- And then [download] (https://www.rstudio.com/products/rstudio/download/#download) and install Rstudio (use default options).
+
+### Your first Rstudio project
+
+We are going to get our start with Rstudio and our reproducibility tools by using some of Rstudio's handy built-in capabilities.  We are going to do that by creating a new Rstudio project that has the minimal set of files and folders needed for an R package, as well as its own git repository.  
+
+To do this: 
+
+1. Open up Rstudio
+2. Find the Packages tab, click install, type "devtools" into the "Packages" dialog, and click install.  You will notice a bunch of stuff installing in the console. 
+3. When that is finished, select File > New Project
+4. In the new project dialog that pops up, choose "New Directory", and then in the next page, select the "R package using devtools" option at the very bottom. You will see a screen that looks like this:
+
+```{r out.width = "60%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-2.png") 
+```
+
+5. Here we'll make a couple of decisions:
+    - Name the package using your initials (in lowercase) followed by the three digits of the course (246 or 346, depending on which you are enrolled in), e.g. in my case it would be lde346.  
+    - Under the "Create project as sub-directory of" enter the folder where you want this project to live. Since this choice impacts your file organization, it touches on the broader theme of reproducibility, and should therefore be a carefully considered choice. For example, you might want to choose the folder in which you keep all course-related work, with this folder being a sub-folder of geog246346. I do not suggest your Desktop as a good location, as shown here. 
+    - It is optional whether you want to "Open in a new session" or not.
+    - Choose "Create Project"
+    
+6. You will now have an opened Rstudio project, with the name you selected. You are going to be working in this project for the first two units of the class.  Let's configure Rstudio a bit first. Your first view (assuming this is your first use of Rstudio) will look something like this:
+```{r out.width = "40%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-3.png") 
+```
+
+    Let's modify the pane layout first, by going to Tools > Global Options > Pane Layout, and make it match this: 
+```{r out.width = "40%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-4.png") 
+```
+
+    You can also change the Rstudio theme by going to Tools > Global Options > Appearance (I personally prefer light text on dark backgrounds). Also check the Tools > Terminal tab, and make sure that either "Bash" (Mac/Linux) or "Git Bash" (Windows) are enabled in the "New terminals open with" dialog.
+
+    You should also see a terminal tab next to the console tab:
+```{r out.width = "40%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-5.png") 
+```
+
+    Last thing under Global Options to modify: > Code > Display > Check Show Margin tab, which should have 80 in the margin column value box. 
+    
+7. Now let's set up some project options that will make our lives easier when build packages. Go to Tools > Project Options, and make it look like this (i.e. check "Generate documentation with Roxygen" and check all boxes in the dialog after click the Configure button): 
+
+```{r out.width = "50%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-6.png") 
+```
+
+Okay, we are basically set-up with the full set of tools you need. Before our next module, we are going to do one more thing, which will allow you to more easily browse this course's content. 
+
+[Back to top](#unit1mod1intro)
+
+
+
+
+
+
+
+
+
+
+
+
 
