@@ -21,6 +21,7 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  fig.align = "center",
   comment = "#>"
 )
 library(knitr)
@@ -72,7 +73,7 @@ However, we are going to dive in and go straight to learning some of the tools o
 
 The image below illustrates version control--this shows Rstudio's interface to `git`, comparing the text in the paragraph above to the text in the previous committed version of this file: the pink shows the older paragraph, the green the newer one (I changed just a few lines in there)  
 
-```{r out.width = "60%", fig.align='center', echo=FALSE}
+```{r out.width = "60%", fig.align='center', echo=FALSE, fig.cap = "\\label{fig:fig1} Figure"}
 include_graphics("fig/u1m1-1.png") 
 ```
 <!-- ![](fig/u1m1-1.png) -->
@@ -160,9 +161,255 @@ include_graphics("fig/u1m1-6.png")
 
 Okay, we are basically set-up with the full set of tools you need. We are now going to learn to work with `git`. 
 
+[Back to top](#unit1mod1intro)
 
-### Install `geospaar` package
+# Using `git` and GitHub
 
+Before we get started with some hands on work with `git`, it is important to understand a bit more about version control than the very brief overview we provided in above. Read the good [explanation of version control systems](https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control) in the [Pro Git book](https://git-scm.com/book/en/v2), which tells us that `git` is a distributed version control system. [Getting Started - Git Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics) explains to us exactly how `git` works and how it is different from other version control softwares. Another important concept to learn is _branching_, which is explained in [this chapter](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell), and which, in essence, is a way of isolating specific changes you want to make to your code from the main body of your code (which might need to be preserved as is so others can keep using it without it breaking), or, as the book says: 
+
+> Branching means you diverge from the main line of development and continue to do work without messing with that main line
+
+Another post on [git branching](https://nvie.com/posts/a-successful-git-branching-model/) (and merging, which we will come back to) has a more effective schematic for showing the concept and why it is used. 
+
+<p align="center">
+  <img width="350" height="465" src="https://nvie.com/img/git-model@2x.png">
+</p>
+
+This schematic is oriented towards software development projects. For the purposes of this class, however, you will use a simplified version of this structure to separate your assignments from one another. 
+
+## `git` configuration
+
+If you have just installed `git` on your computer, before we can use it, we need to do a little bit of configuration.  You can either use your terminal (mac/linux), `git bash` terminal (Windows), or the terminal RStudio provides to do this. So, choose the best one of those for you, and then, at the prompt enter:
+
+```bash
+git config --global user.name "YOUR GITHUB USER NAME"
+git config --global user.email "EMAIL ADDRESS LINKED TO YOUR GITHUB ACCOUNT"
+```
+
+Replace the prompt text in the above commands with your GitHub user name and email address associated with your GitHub account, respectively. 
+
+## Your first commit
+Let's start to use `git` now. We are going to do this using Rstudio's `git` interface, and the project you just created in the previous section. So open that project (mine is lde346.Rproj, which is found in the lde346 folder on my computer--I can open it and Rstudio up by double-clicking the .Rproj file).
+
+Once in there, click on the "Files" tab, and you will see your directory structure, which should look like what you see in the image below.
+
+```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="New Rstudio package project file structure (yellow arrow) and git tab (orange arrow). Rstudio's Editor theme is 'Idle Fingers'."}
+include_graphics("fig/u1m1-7.png") 
+```
+
+
+You will also notice the `git` tab in lower left of the image, which has a listing of the same files with yellow boxes with question marks in them under the status section.  This is Rstudio's GUI interface to `git`. You can get the same information by going to Rstudio's terminal tab (upper right), and typing at the prompt in there: `git status`, which gives this output:
+
+```bash
+$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        .Rbuildignore
+        .Rhistory
+        .gitignore
+        DESCRIPTION
+        NAMESPACE
+        lde346.Rproj
+
+nothing added to commit but untracked files present (use "git add" to track)
+```
+
+The yellow boxes in the `git` GUI are telling us that those files are currently untracked by `git`, i.e. they are not committed to the `git` repo, so if we make any changes to those files, `git` won't know anything about those changes.  So where is the `git` repo, and how do we let it know it should start tracking a file?
+
+The repo itself is a hidden file (it begins with a ".") that lives in the top level of your project directory.  Most file systems by default do not show hidden directories, so if you want to see it, you either have to tell your file explorer to show hidden items, or you can see what's there using a handy command in terminal: `ls -a`, which roughly means list all files in this directory.  
+
+```bash
+$ ls -a
+.   .Rbuildignore  .Rproj.user  .gitignore   NAMESPACE  lde346.Rproj
+..  .Rhistory      .git         DESCRIPTION  R
+```
+
+Note the .git. That's folder that contains all the inner workings of a `git` project, which we won't go into but if you are interested you can explore with `ls .git`, which show you the contents.  
+
+To get `git` to track your files, the easiest is to simply check the boxes in the GUI.  For example, check the boxes next to the files ".gitignore", "DESCRIPTION", "NAMESPACE", and the .Rproj file.  You will see the yellow checkmarks changed to green boxes with "A" in them, meaning the files have been staged for a commit.  This is equivalent to going back to terminal, and running the command (note I am using the .Rproj filename for my example):
+
+```bash
+git add .gitignore DESCRIPTION NAMESPACE lde346.Rproj
+```
+
+I don't really want `git` to track the .Rbuildignore and .Rhistory files, so I want to add these to the .gitignore file, which essentially means `git` will not track those files and they will no longer appear in the `git` GUI with yellow boxes with question marks next to them. To add that, shift-click on the file names (not the check boxes) in the GUI, and then right-click, and choose "ignore" in the dialog that pops up.  That will bring up another box that lists those two files below .Rproj.user.  Click save on the dialog. Immediately you will notice in the GUI that those two files have disappeared, and .gitignore has a blue box with "M" appear next the green A box. That means that the file has been staged to be committed, and has been modified since it was staged.  The check in the box next to it has been replaced by solid blue, meaning the modification has not been staged--to stage it, click the box again, and the blue M will disappear.
+
+We are not ready to make our first commit. So, press the "Commit" button in the GUI, and up will pop a big box, showing the files you added, and giving you a dialog to leave a commit message. The message you put in there should be concise but informative as to what changes you are committing to the repo.
+
+```{r out.width = "60%", fig.align='center', echo=FALSE, fig.cap="RStudio `git` commit window with message"}
+include_graphics("fig/u1m1-8.png") 
+```
+
+The bottom pane shows the changes being made within the particular file that is selected in the upper left pane (the .gitignore file in this example). The highlighting is green, which means that the lines in questions are being added. If this was a previously committed file that had been changed, you would see a light red line above it that shows the text/code that was in the prior version that is being replaced. You can refer back to the first figure for an example of that, but we can also do the same here with some modifications and a second commit. First though, let's make the commit by simply pressing the "Commit" button in the dialog. Once that is done, you will see a smaller dialog pop-up and tell you the commits that were made, assuming nothing went wrong. Close it when done. Note, that this whole GUI-based commit process (not including the staging) is analagous to running the fulling command in terminal:
+
+```bash
+git commit -m "First commit of lde346 project."
+```
+
+Now, let's make a change. Go to the file dialog, and double-click the DESCRIPTION file to open it. This is a key part of an R package.  Mine has the following text
+
+```
+Package: lde346
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+Depends: R (>= 3.5.2)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+```
+
+Change the Title line to something informative, e.g. "GEOG246-346 coursework", and replace the entire Authors@R line with two new lines:
+
+```
+Author: Your Name
+Maintainer: Your Name <your.email@domain.com>
+```
+
+Just for ease. Replace the "Description" with something longer, such as "Package for GEOG246-346 class assignments". 
+
+Once those are done, save the changes, and then go back to the `git` GUI, where you will see a blue M next to the DESCRIPTION file.  Commit the changes with a meaningful message (e.g. "Editing name and purpose in DESCRIPTION"). You will see in the commit dialog how the changes are recorded (old text in red, new in green), and once committed that 4 deletions and 5 insertions were recorded. 
+
+So, that's how changes are tracked and committed in a local `git` repo. You can use the "History" button in the `git` GUI to see the history of your commits and all the changes that they entailed, which you should explore on your own. 
+
+## Syncing your repo using GitHub
+Now that you know the basics of `git` commits on your local machine, you'll want to push your project repo to a remote repo hosted on GitHub, and then keep it synchronized with GitHub. There are a few steps we will have to go through to do that. 
+
+[Back to top](#unit1mod1intro)
+
+### SSH keys
+First, you will need to create an SSH private-public key pair on your computer, if you don't have one already, and then add that key to GitHub (you will need to do this for each computer you want to connect to GitHub).  The most direct set of instructions, which revolve around RStudio, are found [here](http://r-pkgs.had.co.nz/git.html#git) (and this is generally a greeat resource covering how to work with `git`, GitHub, and `R`/Rstudio) here. To wit, use the following command in the R console:
+
+```{r, eval = FALSE}
+file.exists("~/.ssh/id_rsa.pub")
+```
+
+If the answer is "False", then you will need to create a new SSH key.  The easiest way to do that is to go into RStudio Tools > Global Options > Git/SVN and click "Create RSA key". Leave the passphrase empty, and click through. Press the View public key button above the SSH RSA Key dialog, and copy the text of the key.  Then follow steps 2-8 [in this GitHub document](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/#platform-mac) to add the SSH key to your GitHub account. 
+
+If you already have an existing SSH key, then I suggest [following these instructions](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) here to get it. 
+
+Once you have that set up, test your SSH connection following [steps 1-4 here](https://help.github.com/articles/testing-your-ssh-connection/), but in place of Step 1 simply go into RStudio's terminal. 
+
+[Back to top](#unit1mod1intro)
+
+### Create new private repo on GitHub
+
+For class assignments, we want to take use private GitHub repositories for assignments, to make them viewable only by select people (you and the course instructore). That means we will have to work through a GitHub organization account. You should already have received an invitation to the agroimpacts organization--if you haven't, ask me for an invite. 
+
+Once you have received your invite, log into GitHub. Find the dropdown box on the left that shows your user name, click on it, and then select the agroimpacts organization. Once in the organization, click on "Create Repository". You will see a dialog that looks like this (except the "Repository name" field will at first be empty):
+
+```{r out.width = "60%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-9.png") 
+```
+
+Add the repository that matches the name of your local one (i.e. the name of your RStudio project folder), and then leave the rest of the fields as they look in this image, then click "Create Repository". That will bring up another page where you will see your new repository name at the top, followed by "Give access to the people you work with", and then three packages of commands. You want the middle one below the text "…or push an existing repository from the command line". Copy those two commands and paste them into RStudio's terminal (make sure RStudio is opened in your project though).
+
+```bash
+git remote add origin https://github.com/agroimpacts/lde346.git
+git push -u origin master
+```
+
+Note that if you have just set up your SSH keys in RStudio, you might be prompted to enter your GitHub user name and password after the second command.
+
+Now, go back to the GitHub repository, and refresh the page, and you will see your committed files in there. 
+
+We are nearly done with setup. The last thing we will do is add this repository to a secret team that only you and course instructors have access to. To that end, within your new repo, click the "Settings" tab at the top, followed by the "Collaborators and Teams" link at the left, then "Create New Team", name it with your name, add a description ("GEOG246346 assignments"), and set it to secret. That will take you into the page for the new team. Add members besides yourself (course instructors), send them the invites, and then click on the Repositories tab at the top right, click the green "Add repository button", search for it by name, and add it to the team. Change the team permissions to "Write". 
+
+That now makes your repo (and any others you might add to it) secret to just you and the course instructors.
+
+[Back to top](#unit1mod1intro)
+
+### Synchronizing with your remote repo
+
+Now that you have a remote repository, you will want to keep it synchronized. The meets that every time you make a commit in your local repo, you should follow it with a push, to make sure the change is committed onto GitHub.  
+
+You will notice now, if you look back in RStudio's `git` GUI, that the push and pull buttons, which were previously greyed out, are now live. So, that means we can interact with the GitHub repo. Let's first do a push. Reopen your DESCRIPTION file, and change this line:
+
+```
+Version: 0.0.0.9000
+```
+
+To 
+```
+Version: 0.0.1
+```
+
+Commit the change with a meaningful message ("Updated package version number"), and then once you have done that, press the "Push" button (which you can access either from the big commit dialog, or in the main `git` GUI of RStudio). If you go to your repo on GitHub, you will see your new commit message next to your use icon, above the list of files.  Have a look at the file itself on GitHub to see that the change is in fact now shown on GitHub. 
+
+So that was a "push". What about a "pull"? A pull is done when a change is made on your GitHub repo that is not on your local repo (i.e. your remote repo is ahead of your local repo). How might that happen? In cases where the remote repo is synced to another local repo on another computer, either because you have connected it to a different computer (e.g. your lab computer), or because another person who has access to it has. The act of creating a new local copy of a remote repo is called [cloning](https://git-scm.com/book/en/v1/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository). 
+
+In cases where your local repo is behind your remote repo, you can do use the Pull button to bring your remote up to date.  That should usually be enough, although conflicts might arise between your local and remote repo, particularly in cases where the remote is much further ahead.  We won't deal with that right now, however.  
+
+[Back to top](#unit1mod1intro)
+
+### Cloning the remote repo
+
+Instead, let's look at how we can use RStudio to create a new project from your remote repo, which you can use to have the project on both your home and lab computer, so you can make changes from either location.  This is quite simple.  
+
+- On the new machine, which I am assuming already has RStudio set up, complete with `git` and ssh keys connected to your GitHub account, you would simply go to File > New Project > Version Control > Git, 
+- Copy into the "Repository name" dialog at the top the full repo path, which you get by going to the repo's main page on GitHub and pressing the big green "Clone or Download" dialog, and copying the resulting URL string. Note you choose to clone using either HTTPs or SSH, which each give slightly different links. You might have to trial and error to get the one that works, but try SSH to start. 
+- In the second box (directory name), use the same name as the repo (e.g. lde346), and then choose the directory where you want it live. 
+- Check open project in new session, and then voila, you have a local version of the repo fully set up.   
+
+You now have two local copies of the repo, so when you make a change on one, push it to the remote (on GitHub), and then pull the new changes down to the other.  
+
+<span style="color:red">Another note: you can spoof the process described above by simply cloning the GitHub repo on the computer you used to set it up into a different target directory. If you do that, I recommend that, once you have completed the task and closed out of the relevant RStudio session, that you delete the resulting project folder (to avoid confusion).</span> 
+
+[Back to top](#unit1mod1intro)
+
+### Branching
+
+The last thing we are going to do is to set up a new branch in our repo. There is a whole set of instructions how to do that via terminal commands in the [branching and merging section](help.html#branching-and-merging) of the package help vignette. However, setting up a new branch and syncing it with the remote repo is fairly trivial in newer versions of Rstudio.
+
+- Enter the `git` GUI
+- Press New Branch, add a new branch name, e.g. "test"
+- Make sure the "Sync branch with remote" box is checked
+- Click "Create"
+
+The new branch will be added locally and to the remote, and you will be changed into the new branch on your local machine. 
+
+Similarly, if the new branch was created from one local machine, and there is another local machine that doesn't yet have it, you can use the same New Branch dialog, but use the Add Remote button to enter the name of remote branch you want and create it locally.  
+
+Now you can switch back and forth between branches using the dropdown dialog to the right of the New Branch button (or in terminal, `git checkout <branchname>). However, if you make a change to tracked files in the branch you are in and try to switch to another before committing them, you won't be able to. You have to commit changes first. 
+
+To delete the branch, you have to use the terminal (use the RStudio terminal): 
+```bash
+git branch -d test
+git push origin --delete test
+```
+The first command deletes the local branch (named test), the second that branch on the remote repo. 
+
+[Back to top](#unit1mod1intro)
+
+#### Branching and class assignments
+We are going to use branching in this class to keep track of assignments. For the current assignment, you will work in your master branch, making commits as you go.  When you are ready to submit the assignment, you will create a new branch called "ax", where "x" is replaced by the assigmnent number (e.g. "a1" for assignment 1). You will park that branch, and then switch back to master so you can start working on the next assignment. 
+
+### Merging
+We will leave the topic of merging for now, but basically merging is quite useful when a small change on one branch (generally a side branch created for the purpose of developing a new feature or fixing a bug) needs to be incorporated into another.  An example might be like this: 
+
+- Create a new branch off of master branch called "fix/description", which in our example is to fix several typos in our DESCRIPTION file
+- Make the typo fixes to the version of DESCRIPTION in the new fix/description branch, and commit them.  
+- Switch back to master branch (or `git checkout master`)
+- Merge the changes
+
+    ```bash
+    `git merge fix/description`
+    ```
+
+- Push the changes to remote, and then pull to other local repos
+- If that is the only time you will use the branch, then delete it (locally and to remote)
+
+In reality, that might be too small of a change to make a whole branch for, but it is useful for illustrating the concept. 
+
+## Best practices
+
+There is a lot written on this, but for now please read the ones provided [here](http://r-pkgs.had.co.nz/git.html#commit-best-practices) in Hadley Wickham's [R packages book](http://r-pkgs.had.co.nz/). The main idea is that commits should be frequent and cover a particular problem, rather than sprawling and involving many files. 
 
 [Back to top](#unit1mod1intro)
 

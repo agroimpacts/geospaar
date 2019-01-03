@@ -32,7 +32,7 @@ Help and how-to for certain things we will be using in this class.
 
 This is necessary for using `devtools::install_github()` to install private packages, such as the class R package
 
-1. Go into your github account, click settings:
+1. Go into your github account, click settings, and then developer settings:
 
 ```{r, out.width = "70%", fig.align='center', echo=FALSE}
 knitr::include_graphics("fig/pat1.png")
@@ -69,7 +69,7 @@ knitr::include_graphics("fig/pat5.png")
 
     ```
 
-## Branching and merging
+## Branching and merging{#branching-and-merging}
 
 A very useful reference for basic branching and merging can be found [here](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)
 
