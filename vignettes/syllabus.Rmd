@@ -1,51 +1,20 @@
 ---
 title: "Geography 246/346 Syllabus"
 date: "`r Sys.Date()`"
-output: 
-  rmarkdown::html_vignette:
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
     fig_caption: yes
     number_sections: yes
     toc_depth: 3
     toc: yes
+    css: unit.css
 vignette: >
   %\VignetteIndexEntry{Syllabus}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-<style type="text/css">
-
-body{ /* Normal  */
-      font-size: 12px;
-  }
-td {  /* Table  */
-  font-size: 12px;
-}
-h1.title {
-  font-size: 38px;
-  <!-- color: DarkRed; -->
-}
-h1 { /* Header 1 */
-  font-size: 28px;
-  <!-- color: DarkBlue; -->
-}
-h2 { /* Header 2 */
-    font-size: 22px;
-  <!-- color: DarkBlue; -->
-}
-h3 { /* Header 3 */
-  font-size: 18px;
-  <!-- font-family: "Times New Roman", Times, serif; -->
-  <!-- color: DarkBlue; -->
-}
-code.r{ /* Code block */
-    font-size: 12px;
-}
-pre { /* Code block - determines code spacing between lines */
-    font-size: 14px;
-}
-</style>
-
 
 ```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -60,9 +29,8 @@ Originally developed for statistics, free and open source R is now one of the mo
 
 ## Meeting Time/Place
 
-Jonas Clark 103, MW 12-13.15
-
-Jonas Clark 105 (TA office hours), F 16-17.50
+- Jonas Clark 103, MW 12-13.15
+- Jonas Clark 105 (TA office hours), F 16-17.50
 
 ## Office Hours
 Instructor | Office | Office hours
@@ -223,78 +191,49 @@ These last two weeks will be used to give final presentations, which will cover 
 The following are some helpful resources that you may wish to follow-up on as you learn R. 
 
 ## Books etc
-[The R Inferno](http://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
-
-[Efficient R Programming](https://csgillespie.github.io/efficientR/index.html#building-the-book)
-
-[Swirl Stats](http://swirlstats.com) and the `swirl` package
-
-```{r, eval = FALSE}
-install.packages("swirl")
-library(swirl)
-```
-
+- [The R Inferno](http://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
+- [Efficient R Programming](https://csgillespie.github.io/efficientR/index.html#building-the-book)
+- [Swirl Stats](http://swirlstats.com) and the `swirl` package
 
 ## The intertubes
-
-### Websites
-
-__R general__
+### R general
     
-[CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
+- [CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
+- [R Exercises](http://www.r-exercises.com)
+- [ROpenSci](https://ropensci.org)
+- [Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
+- [Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
+- [R mailing lists/listservs](https://www.r-project.org/mail.html)
+- [Speeding up R](http://www.noamross.net/blog/2013/4/25/faster-talk.html)
+- [tidyverse tutorial video](https://www.youtube.com/watch?v=9q7gssUP8UA)
 
-[R Exercises](http://www.r-exercises.com)
+### Advanced analytics
+- [Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/)
+- [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/)
+- [Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
+- [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
 
-[ROpenSci](https://ropensci.org)
+### Reproducibility
+- [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
+- [Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
+- [Tools for Reproducible Research](http://kbroman.org/Tools4RR/)
+- [manuscriptPackage](https://github.com/jhollist/manuscriptPackage): An R package that provides a package template for ___writing a Latex manuscript using Rmarkdown___, complete with citations. 
 
-[Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
-
-[Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
-
-[R mailing lists/listservs](https://www.r-project.org/mail.html)
-
-[Speeding up R](http://www.noamross.net/blog/2013/4/25/faster-talk.html)
-
-[tidyverse tutorial video](https://www.youtube.com/watch?v=9q7gssUP8UA)
-
-__Advanced analytics__
-
-[Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/)
-
-[Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/)
-
-[Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
-
-[Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
-
-__Reproducibility__
-
-[Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
-
-[Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
-
-[Tools for Reproducible Research](http://kbroman.org/Tools4RR/)
-
-[manuscriptPackage](https://github.com/jhollist/manuscriptPackage): An R package that provides a package template for ___writing a Latex manuscript using Rmarkdown___, complete with citations. 
-
-__R versus python__
+### R versus python
 
 This is a big topic, but I will post some links here as I find them. 
 
-[Why I'll stick with R](https://md.ekstrandom.net/blog/2016/04/using-r/)
+- [Why I'll stick with R](https://md.ekstrandom.net/blog/2016/04/using-r/)
 
-__R spatial__
-[A short R spatial tutorial](https://pakillo.github.io/R-GIS-tutorial/), with some good examples for connecting to Google Maps. 
+### R spatial
+- [A short R spatial tutorial](https://pakillo.github.io/R-GIS-tutorial/), with some good examples for connecting to Google Maps. 
+- [Another R spatial tutorial](https://cran.r-project.org/doc/contrib/intro-spatial-rl.pdf), with `ggplot2` and `tmap`
 
-[Another R spatial tutorial](https://cran.r-project.org/doc/contrib/intro-spatial-rl.pdf), with `ggplot2` and `tmap`
+### Blogs/twitter to follow
 
-### Blogs/tweeps to follow
-
-[R-bloggers](https://www.r-bloggers.com/)
-
-[R-spatial](http://r-spatial.org/)
-
-[\@RLangTip](https://twitter.com/RLangTip)
+- [R-bloggers](https://www.r-bloggers.com/)
+- [R-spatial](http://r-spatial.org/)
+- [\@RLangTip](https://twitter.com/RLangTip)
 
 
 

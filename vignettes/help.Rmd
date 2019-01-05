@@ -4,12 +4,13 @@ subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
   prettydoc::html_pretty:
-    theme: cayman
+    theme: architect
+    highlight: github
     fig_caption: yes
     number_sections: yes
     toc_depth: 3
     toc: yes
-    css: other.css
+    css: unit.css
 vignette: >
   %\VignetteIndexEntry{Help}
   %\VignetteEngine{knitr::rmarkdown}

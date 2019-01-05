@@ -1,13 +1,16 @@
 ---
 title: "Assessment"
-author: "Lyndon Estes"
+subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
-output: 
-  rmarkdown::html_vignette:
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
     fig_caption: yes
     number_sections: yes
     toc_depth: 3
     toc: yes
+    css: unit.css
 vignette: >
   %\VignetteIndexEntry{Assessment}
   %\VignetteEngine{knitr::rmarkdown}
@@ -20,10 +23,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
+__[In revision]__
+
+
 # Grading
-
-__[Under construction]__
-
 ## Overall
 
 Final letter grades will be assigned as follows
@@ -208,7 +211,7 @@ Jointly authored vignettes in group projects should have team member initials in
 
 As stated before, if there are clear, separable tasks that lend themselves to separate development efforts, team members should work on those and make frequent commits within their own repo branches. 
 
-R code should follow the [style](http://adv-r.had.co.nz/Style.html)) we have been using all along. 
+R code should follow the [style](http://adv-r.had.co.nz/Style.html) we have been using all along. 
 
 The main item in your package that we will assess is/are the package vignette/vignettes. 
 
