@@ -1,0 +1,30 @@
+---
+title: "Guide to Vignettes"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Guide to Vignettes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Organizational
+- [Syllabus](syllabus.html)
+- [Assessment Criteria](assessment.html)
+- [List of Potential Projects](projects.html)
+- [Help](help.html)
+
+## Materials
+- [Unit 1](unit1.html) - Overview
+  - [Module 1](unit1-module1.html) - A general overview of R and an introduction to reproducibility tools
+  - [Module 2](unit1-module2.html) - Basic `R` programming concepts and skills
+  - [Module 3](unit1-module2.html) - Data analysis and visualization with `R` 
+
+- [Unit 2](unit2.html) - Overview
+  - [Module 1](unit2-module1.html) - Working with vector data
+  - [Module 2](unit2-module2.html) - Working with raster data

@@ -25,7 +25,13 @@ knitr::opts_chunk$set(
 library(knitr)
 ```
 
-# Overview
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
+# Overview{#overview}
 Help and how-to for certain things we will be using in this class.
 
 # Github-related{#github-related}
@@ -69,6 +75,12 @@ knitr::include_graphics("fig/pat5.png")
                    auth_token = "the-token-you-just-generated-pasted-here"))
 
     ```
+
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ## Branching and merging{#branching-and-merging}
 
@@ -147,6 +159,13 @@ include_graphics("fig/branches.png")
     git push --all -u 
     ```
 
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
 ## RStudio and GitHub
 
 1. I can push and pull to my repo from the command line, but Rstudio's git push and pull buttons are greyed out. How do I fix that? The answer can be found [here](https://landeco2point0.wordpress.com/2014/07/22/things-i-forget-pushpull-greyed-out-in-rstudio/). You can fix this and bring the buttons back to life if you do this, from the shell:
@@ -157,4 +176,9 @@ include_graphics("fig/branches.png")
     
     Note the -u flag. That should fix it. 
 
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***
 

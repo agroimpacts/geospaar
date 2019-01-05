@@ -27,6 +27,11 @@ knitr::opts_chunk$set(
 library(knitr)
 ```
 
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
 
 # Introduction{#unit1mod1intro}
 
@@ -52,7 +57,11 @@ Finally, you might have heard of the `python` programming language, and wonder w
 
 On the other hand, python seems to be preferred for machine learning applications on remote sensing data, and gives the ability to programmatically work with geospatial platforms like [Google's Earth Engine](https://developers.google.com/earth-engine/python_install), QGIS, ArcGIS, and the new [Radiant Earth platform](https://pypi.org/project/radiantearth/). It is also preferred, it seems, for setting up production workflows. So, really, there is a case for learning both languages, and developments such as the new [`reticulate` package](https://rstudio.github.io/reticulate/) from Rstudio make it increasingly possible to use both languages in more integrated fashion, as the need arises. That's a subject for another time (and not this class), but just one more reason why we should think about `R` and `python` rather than `R` or `python`. 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 # The tools and concepts of reproducibility
 
@@ -110,7 +119,11 @@ Packages are also useful even if you don't intend to contribute code to the comm
 
 I have adopted the package structure for organizing the analyses and writing of each of my papers. For example, two of my most recent papers are structured as R packages that can be installed as R packages from their GitHub repositories (which can be found [here](https://github.com/agroimpacts/ecoscales) and [here](https://github.com/agroimpacts/croplandbias)). These contain all the code used to do the analyses, create the figures, and full (non-journal formatted) versions of the manuscripts. And (as you may have noticed by now), this class is also structured as an R package.
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ## Setting up your setup
 
@@ -169,7 +182,11 @@ include_graphics("fig/u1m1-6.png")
 
 Okay, we are basically set-up with the full set of tools you need. We are now going to learn to work with `git`. 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 # Using git and GitHub
 
@@ -204,7 +221,6 @@ Once in there, click on the "Files" tab, and you will see your directory structu
 ```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="New Rstudio package project file structure (yellow arrow) and git tab (orange arrow). Rstudio's Editor theme is 'Idle Fingers'."}
 include_graphics("fig/u1m1-7.png") 
 ```
-
 
 You will also notice the `git` tab in lower left of the image, which has a listing of the same files with yellow boxes with question marks in them under the status section.  This is Rstudio's GUI interface to `git`. You can get the same information by going to Rstudio's terminal tab (upper right), and typing at the prompt in there: `git status`, which gives this output:
 
@@ -289,7 +305,11 @@ So, that's how changes are tracked and committed in a local `git` repo. You can 
 ## Syncing your repo using GitHub
 Now that you know the basics of `git` commits on your local machine, you'll want to push your project repo to a remote repo hosted on GitHub, and then keep it synchronized with GitHub. There are a few steps we will have to go through to do that. 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### SSH keys
 First, you will need to create an SSH private-public key pair on your computer, if you don't have one already, and then add that key to GitHub (you will need to do this for each computer you want to connect to GitHub).  The most direct set of instructions, which revolve around RStudio, are found [here](http://r-pkgs.had.co.nz/git.html#git) (and this is generally a greeat resource covering how to work with `git`, GitHub, and `R`/Rstudio) here. To wit, use the following command in the R console:
@@ -304,7 +324,11 @@ If you already have an existing SSH key, then I suggest [following these instruc
 
 Once you have that set up, test your SSH connection following [steps 1-4 here](https://help.github.com/articles/testing-your-ssh-connection/), but in place of Step 1 simply go into RStudio's terminal. 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Create new private repo on GitHub
 
@@ -331,7 +355,11 @@ We are nearly done with setup. The last thing we will do is add this repository 
 
 That now makes your repo (and any others you might add to it) secret to just you and the course instructors.
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Synchronizing with your remote repo
 
@@ -354,7 +382,11 @@ So that was a "push". What about a "pull"? A pull is done when a change is made 
 
 In cases where your local repo is behind your remote repo, you can do use the Pull button to bring your remote up to date.  That should usually be enough, although conflicts might arise between your local and remote repo, particularly in cases where the remote is much further ahead.  We won't deal with that right now, however.  
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Cloning the remote repo
 
@@ -369,7 +401,11 @@ You now have two local copies of the repo, so when you make a change on one, pus
 
 <span style="color:red">Another note: you can spoof the process described above by simply cloning the GitHub repo on the computer you used to set it up into a different target directory. If you do that, I recommend that, once you have completed the task and closed out of the relevant RStudio session, that you delete the resulting project folder (to avoid confusion).</span> 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Branching
 
@@ -393,7 +429,11 @@ git push origin --delete test
 ```
 The first command deletes the local branch (named test), the second that branch on the remote repo. 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 #### Branching and class assignments
 We are going to use branching in this class to keep track of assignments. For the current assignment, you will work in your master branch, making commits as you go.  When you are ready to submit the assignment, you will create a new branch called "ax", where "x" is replaced by the assigmnent number (e.g. "a1" for assignment 1). You will park that branch, and then switch back to master so you can start working on the next assignment. 
@@ -419,9 +459,19 @@ In reality, that might be too small of a change to make a whole branch for, but 
 
 There is a lot written on this, but for now please read the ones provided [here](http://r-pkgs.had.co.nz/git.html#commit-best-practices) in Hadley Wickham's [R packages book](http://r-pkgs.had.co.nz/). The main idea is that commits should be frequent and cover a particular problem, rather than sprawling and involving many files. 
 
-[Back to top](#unit1mod1intro)
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
+# Building an R package
 
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 
 

@@ -21,6 +21,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
 
 # Overview {#unit1overview}
 
@@ -46,5 +52,8 @@ This section is broken into three modules (the materials can be accessed by foll
 
 **Module 3**: Data analysis and visualization with `R`. 
 
-<a href="#top">Back to top</a>
-
+***
+<center>
+[Back to top](#unit1overview) || [Back to **vignette index**](toc.html)
+</center>
+***
