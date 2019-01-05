@@ -9,9 +9,7 @@ Description: This package contains the course materials for Geospatial
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Imports: rgdal, 
-    rgeos
-Suggests: knitr,
-    rmarkdown
+Imports: 
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
