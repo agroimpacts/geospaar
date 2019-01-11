@@ -112,7 +112,7 @@ include_graphics("fig/u1m1-tweet.png")
 ```
 
 
-### Packages
+### Packages{#packages}
 
 Packages are another tool of reproducibility that we will learn to use in this class. Packages are bundles of code and documentation that provide a specific functionality for a particular language. Both `python` and `R` make extensive use of packages, as the utility of both languages depends heavily on user-contributed code. Code contributions are made through packages, which standardize and formalize the user-developed functions so that they work properly within the language, and can be easily used by the broader community. 
 Packages are also useful even if you don't intend to contribute code to the community, as they have a particular structure that can be useful for helping to organize and formalize your thinking, data analysis, and reporting. They can also save you time as they make it much easier to access functions that you have developed for one project and apply them to another. I learned these ideas from reading Hillary Parker's [blog post on personal R packages](https://hilaryparker.com/2013/04/03/personal-r-packages/), as well as Karl Broman's [R package primer](http://kbroman.org/pkg_primer/pages/why.html), and of course Hadley Wickham's [introduction](http://r-pkgs.had.co.nz/intro.html) to his *R packages* book (please read all aforementioned links).
@@ -134,7 +134,7 @@ The first thing you need to do is to install `R`, Rstudio, and `git` on the mach
 - Then install `R` for your OS from Rstudio's link to [CRAN's R downloads](https://cran.rstudio.com) (use default options)
 - And then [download] (https://www.rstudio.com/products/rstudio/download/#download) and install Rstudio (use default options).
 
-### Your first Rstudio project
+### Your first Rstudio project{#your-first-rstudio-project}
 
 We are going to get our start with Rstudio and our reproducibility tools by using some of Rstudio's handy built-in capabilities.  We are going to do that by creating a new Rstudio project that has the minimal set of files and folders needed for an R package, as well as its own git repository.  
 
@@ -467,12 +467,308 @@ There is a lot written on this, but for now please read the ones provided [here]
 
 # Building an R package
 
+We have already created the basics for setting up a package, using RStudio's built-in tools, in section [3.2.1 above](#your-first-rstudio-project). We are now going to actually start the process of converting your project into a very simple R package. 
+
+We'll start by learning a bit more about R packages.  First, I will direct you to [a section](http://r-pkgs.had.co.nz/package.html#package) in the R packages book to read. When you are done with that, please direct your attention to the structure of the project you created (in my case, lde346). It contains several folder and files (already discussed a bit above): 
+
+```{r out.width = "20%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-10.png") 
+```
+
+The one folder (R) and two of the files (DESCRIPTION and NAMESPACE) are critical to building an R package. The DESCRIPTION file provides the package's metadata, which is described in detail [here](http://r-pkgs.had.co.nz/description.html#description) (read this section). The NAMESPACE is described in detail [here](http://r-pkgs.had.co.nz/description.html#description), but as that section said it is a complicated topic that we won't touch now, and the approach we are using to building packages updates that file automatically (you shouldn't mess with it), so we will leave for now and come back to it later on. The R folder is the place where the functions that are the core of your package, along with their documentation, live. There are a few other folders that are important for R packages (as we will use them in this class), which are "data", "inst", "man", "vignettes". Those have not yet been made, so we will revisit them to discuss what they do as they appear in our package making workflow.  
+
+You can create your first R package quite easily, as the folder is currently structured. If you look right next to the `git` tab in your RStudio interface, you will see a "Build" tab. Click on that, and then click on the "Install and restart" button. That will go ahead and build the package. You can confirm the package was built and installed if you browse in the "Packages" tab (in the lower right pane in our current setup), and browse down and find your package named listed alphabetically. Click on that. You will see the contents of the help pages for your package. Since you have no functions in your R folder, and no documentation for those functions, you have no help pages. Let's remedy that. 
+
+```{r out.width = "90%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-11.png") 
+```
+
+If you are using R in Windows, and have a new install, you will probably see the warning as shown above about installing RTools. Go to the link it shows and install the latest version of Rtools3X.exe. 
+
+## Your first package function
+We'll learn more about exactly what a function is in the next module, but for now it is sufficient to know that a function provides a convenient way for repeating an operation without having to keep re-writing a longer set of commands, or as it is put [here](https://r4ds.had.co.nz/functions.html) (in Hadley Wickham's R for Data Science book):
+
+> You should consider writing a function whenever you’ve copied and pasted a block of code more than twice.
+
+For example, let's say you want to analyze a number and, then, depending on the value of the number, print out a specific message. That's what the code below does. 
+
+```{r}
+x <- 7
+if(x < 5) {
+  print("Too low!") 
+} else if(x > 5 & x < 10) {
+  print("Just right!!! :)")
+} else {
+  print("Too high!")
+}
+```
+
+If you had to repeat this analysis multiple times throughout the course of the larger analysis, you would have to copy and paste the 7 lines of code as many times as you needed it.  That's tedious, and possibly error prone. Better to write one function that condenses this operation.  
+```{r}
+my_number_checker <- function(x) {
+  if(x < 5) {
+    print("Too low!") 
+  } else if(x > 5 & x < 10) {
+    print("Just right!!! :)")
+  } else {
+    print("Too high!")
+  }
+}  
+```
+
+That wraps everything up into a single function, which you then execute (after compiling the function, i.e. executing the lines of the code in the session you are in) as follows:
+```{r}
+my_number_checker(1)
+my_number_checker(7)
+my_number_checker(11)
+```
+
+The lines above show how the code can be re-run three times to check three different values, needing just 12 lines (the function itself plus the three separate executions of it) versus 24 as originally written (3 copies of the `if`-`else` statements and `x` with three different values). 
+
+A function can be written in any script, and then live only in that script. But what if you want to reuse that function some day? You'll have to find that script and copy it to your new script. If there is any possibility of that, then you should follow Hillary Parker's [advice](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/) to make an R package: 
+
+>  so that you don’t have to keep thinking to yourself, “I really should just make an R package with these functions so I don’t have to keep copy/pasting them like a ... luddite.” Seriously, it doesn’t have to be about sharing your code (although that is an added benefit!). It is about saving yourself time. (n.b. this is my attitude about all reproducibility.)
+
+She goes on to provide a handy tutorial for using `devtools` commands to create a package, which I followed in creating my first package. In our case, we have started out with an RStudio project, so we will proceed a bit differently, but basically follow her tutorial from step 2 onwards, using the example function we created above. So, in RStudio, go to File > New File > R script (or CTRL(CMD, if Mac)-Shift-N), and copy the full body (all 9 lines) of `my_number_checker` function above into the file, and then save it into the R folder of your project as `my_number_checker.R` 
+
+Straightforward, but now, as Hillary points out, you will need to add documentation so that you can understand what your function does. First, you will have to install the `roxygen2` package, if you don't already have it. Next, copy and paste the lines below *above* the body of the function in `my_number_checker.R`:
+
+```
+#' A number-checking function
+#'
+#' @description This function allows you to test whether a number falls into the
+#' Goldilocks range (5-9) or not
+#' @param x A number
+#' @export
+#' @examples
+#' my_number_checker(1)
+#' my_number_checker(7)
+#' my_number_checker(11)
+```
+
+The first line provides a basic short description of the function, the second a longer description, the one beginning with `@param` describes a function argument and what value it takes as input. `@export` means that the function will be exported from the package namespace (we'll get into this later), so that it can be called directly without having to refer to the package name, i.e. when you load the package you can run it as:
+
+```{r, eval = FALSE}
+my_number_checker(1)
+```
+
+As opposed to
+```{r, eval = FALSE}
+lde346::my_number_checker(1)
+```
+
+If you don't specify `@export`. The `@examples` show examples of how to use the function. Also, note the `#'` at the beginning of the line--this is a comment marker that is unique to R function documentation compiled by `roxygen2`, and is different from the normal `#` that `R` (as well as `python` and some other languages) use for commenting code--that is, for adding text into scripts that are ignored by the program when executing. In this case, the `roxygen2` package reads these lines and converts them into .Rd files, which contain the text of the package help pages. Let's create those now, but going to Build > Install and Restart.  That is all you need to do to build the package.  You could also execute these commands in the R console: 
+
+```{r, eval = FALSE}
+devtools::document()
+devtools::install()
+```
+
+Which do the same thing. Your package will have built, and you will then see under the package manual that you have a help page for `my_number_checker`.  Click on it, and it will look like this: 
+
+```{r out.width = "90%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-12.png") 
+```
+
+Now look at the Files tab--you will see that there is now a "man" (manual) folder, which contains the file `my_number_checker.Rd`, which has the following text in it:
+
+```
+% Generated by roxygen2: do not edit by hand
+% Please edit documentation in R/my_number_checker.R
+\name{my_number_checker}
+\alias{my_number_checker}
+\title{A number-checking function}
+\usage{
+my_number_checker(x)
+}
+\arguments{
+\item{x}{A number}
+}
+\description{
+This function allows you to test whether a number falls into the Goldilocks
+range (5-9) or not
+}
+\examples{
+my_number_checker(1)
+my_number_checker(7)
+my_number_checker(11)
+}
+```
+
+That is the help page text in the format that is required by R. That is much more complex, but `roxygen2` converted it for you using its much simpler syntax.
+
+So, that is a very basic package.  Let's commit that to `git` and GitHub.  You will note the modification of NAMESPACE, as well as yellow ?s next to the R and man folders in the `git` dialog. Check all of those, commit, and push. Note that the R folder made its first appearance in the `git` interface now--it never appeared before `git` ignore empty folders. 
+
 ***
 <center>
 [Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
 </center>
 ***
 
+## Your first vignette
+We are going to do one more thing before wrapping up this section, which is to create a package vignette. What is a vignette? A vignette provides Long-form documentation of your `R` package, describing the functions in a more detail, providing worked examples, etc. You can find the vignette(s) for a package using the `browseVignettes` command, if they are provided (they don't have to be), or often by browsing the help directory for the package. For example, we can look at `roxygen2`'s vignettes:
+
+```{r, eval = FALSE}
+browseVignettes("roxygen2")
+```
+
+Vignettes are also useful for connecting R packages to the broader pursuit of reproducibility. For example, you can use them to document the entire analytical workflow for a peer-review paper (as shown in the two examples [above](#packages) I provided above). Or they can be used to deliver the materials for an R course, as we are doing here. 
+
+In this class, you will learn to use vignettes to document the work you do in an assignment, including any code that you write that does not need to be reused (and therefore converted into an assignment). 
+
+### RMarkdown
+We write vignettes using RMarkdown files, which provide a way of mixing text,  code, and the output of that code into a variety of document formats, including html, pdf, Word, and various presentation formats. The vignette you are reading now is written in RMarkdown, and you can learn a great deal about how it works by reading the corresponding .Rmd file. But first, have a read of [Rstudio's Overview of Rmarkdown](http://rmarkdown.rstudio.com/)--click "Get Started" and then go through all the linked sections (Introduction through Cheatsheets). This will give a pretty thorough overview of RMarkdown and what it can do. Make sure you pay extra attention to the section on [Code Chunks](https://rmarkdown.rstudio.com/lesson-3.html), particularly "Chunk Options", which control the display and output of the code in your Rmd file. 
+
+You can pull up a template for an RMarkdown file by going to File > New File > RMarkdown (a new RStudio install might tell you to update some packages first, which you should do). Name it "Test" in the dialog it brings up, and then save it to your project directory, and then press the "Knit" button at the top of the RStudio window.  That will create the html output in a special new window.  Delete test.Rmd and test.html when you are finished (we don't want to track these). 
+
+Vignettes require extra yaml front matter (that's the part between the two sets of --- at the top of the RMarkdown file) then the two lines in the template Rmd you just made. These extra lines are used in compiling the Rmd file as a package vignette, and you will also need to run a fairly specific command to build the vignettes along with your package, so that you will find them when you run `browseVignettes()`. The front matter looks like this:
+
+```
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```
+
+Vignettes also have to be placed within the "vignettes" folder, which you don't yet have for your project. You could manually make that folder (Files > New Folder), but there is an R package `usethis` that provides a convenient function (`use_vignette`, which used to be part of `devtools`, but has since been moved) for making a vignette folder, template vignette, and some additional modifications needed for vignettes within a single command. 
+
+Okay, so let's run this command
+```{r, eval=FALSE}
+usethis::use_vignette(name = "my_first_vignette")
+```
+
+That should run, but if for some reason the `usethis` package is not already installed already (it should have been), it won't work, so  Packages > Install > "usethis" (or, in console, `install.packages("usthis")`) will get it. 
+
+The command above will produce the following output:
+```
+> usethis::use_vignette(".")
+✔ Adding 'knitr' to Suggests field in DESCRIPTION
+✔ Setting VignetteBuilder field in DESCRIPTION to 'knitr'
+✔ Adding 'rmarkdown' to Suggests field in DESCRIPTION
+✔ Creating 'vignettes/'
+✔ Adding '*.html', '*.R' to 'vignettes/.gitignore'
+✔ Adding 'inst/doc' to '.gitignore'
+✔ Creating 'vignettes/my_first_vignette.Rmd'
+● Modify 'vignettes/my_first_vignette.Rmd'
+```
+
+That tells us it made three modifications to the DESCRIPTION file (have a look at the file, better yet use the `git` commit interface to see how DESCRIPTION has changed), created the vignettes folder, added some files to .gitignore, and then created the actual vignette document itself (`my_first_vignette.Rmd`), which it says we should modify. Open that up and look at it, and you will see it has a bunch of text and code in it. Go ahead and knit it to see what it looks like.  
+
+Now modify it. Start by changing the yaml front matter:
+
+```
+---
+title: "Overview of the lde346 Package"
+author: "Lyndon Estes"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```
+
+Note the places where I have changed the information to make it say something relevant to my package (lde346). Please do the same for your package using its name.  
+
+Let's move down to the text. You will see this code chunk after the yaml:
+```{r out.width = "50%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-13.png") 
+```
+
+Keep that, but then replace everything after it to read something like this (make sure to change the package name where needed to match yours, including in the R code chunk call to `library()`:
+
+```{r out.width = "70%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-14.png") 
+```
+
+Go ahead and knit that, and see the result. The chunk should execute and produce the relevant output. 
+
+Commit and push the additions/changes, including the new vignette, which was previously untracked. Note that the html file for the vignette does not show up in the `git` interface, because `use_vignette()` added any html file in the vignettes folder to the .gitignore file. Vignettes as supposed to build with the package, so no need to track changes to the html since the Rmd is the source file, and more clearly shows the changes (since it is basically a text file, which is most human-readable).
+
+### Build your package with the vignette
+
+To get the vignette to knit and install with your package, go into the R console, and run:
+
+```{r, eval = FALSE}
+devtools::document()
+devtools::install(build_vignettes = TRUE)
+```
+
+You should see output that looks very similar to the following in your console:
+```{r, eval = FALSE}
+√  checking for file 'C:\Users\Administrator\Desktop\lde346/DESCRIPTION' ...
+-  preparing 'lde346': (438ms)
+√  checking DESCRIPTION meta-information ...
+-  installing the package to build vignettes
+√  creating vignettes (1.9s)
+   Warning in as.POSIXlt.POSIXct(x, tz) :
+     unable to identify current timezone 'C':
+   please set environment variable 'TZ'
+-  checking for LF line-endings in source and make files and shell scripts
+-  checking for empty or unneeded directories
+-  building 'lde346_0.0.1.tar.gz'
+   
+Running "C:/PROGRA~1/R/R-35~1.2/bin/x64/Rcmd.exe" INSTALL \
+  "C:\Users\ADMINI~1\AppData\Local\Temp\2\RtmpYrAZzD/lde346_0.0.1.tar.gz" --install-tests 
+|arning in strptime(xx, f, tz = tz) :
+ unable to identify current timezone 'C':
+please set environment variable 'TZ'
+* installing to library 'C:/Program Files/R/R-3.5.2/library'
+* installing *source* package 'lde346' ...
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+'lde346'ting help for package     finding HTML links ...
+ done
+-y_number_checker                       html  
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded
+*** arch - i386
+*** arch - x64
+* DONE (lde346)
+In R CMD INSTALL
+Reloading attached lde346
+```
+
+And then if you run in console:
+```{r, eval = FALSE}
+browseVignettes("lde346")  # replace with your package name
+```
+
+An html index with your vignette listed in it will pop-up, and you can click through to read your vignette rendered as a local webpage. Pretty cool, no? 
+
+One more way we are going to try this. Checking whether your package can be installed locally. We are going to use another `devtools` function:
+
+```{r, eval = FALSE}
+devtools::install_github("agroimpacts/lde346", build = TRUE, 
+                         auth_token = "paste_your_github_token_here",
+                         build_opts = c("--no-resave-data", "--no-manual"))
+```
+
+One other tweak: in your DESCRIPTION you will see this line:
+```
+Depends: R (>= 3.5.2)
+```
+
+The number might be lower than this, reflecting the version of R you were using when creating the package. I recommend it be set to (>= 3.0.0), to allow older versions of R to build the package. 
+
+Okay, that's a wrap for this unit.  
+
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 
 
