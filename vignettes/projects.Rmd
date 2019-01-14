@@ -23,7 +23,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 __[In revision]__
 
-# Overview
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
+# Overview{#overview}
 
 Each student will undertake an R-based final project for this class. This project could be one related to your own thesis work, which we will discuss and agree upon. Alternatively, you can choose to undertake one of the projects listed below. Some of these are individual projects, some of their you will work on as part of a team. 
 
@@ -49,12 +55,17 @@ Use the SMS survey and co-located sensor rainfall data to identify mid-season dr
 #### Evaluate the skill of gridded weather products
 Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS's Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors' incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?  
 
-
 #### Quantify Zambia's maize planting season
 Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. How long was the season from planting to harvest?  What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?
 
 #### Predicting farmers' reported yields
 The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
+
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
 
@@ -78,6 +89,12 @@ The [Mapping Africa](http://mappingafrica.princeton.edu) project that uses a cro
 
 This exercise will involve extensive work with vector data. The results will give us important information about how reliable the crowdsourcing data are for understanding the characteristics of cropland throughout Sub-Saharan Africa. 
 
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***
+
 ## Help defeat gerrymandering
 ### Implement a Shiny interface
 
@@ -97,3 +114,8 @@ The goal is to demonstrate how redistricters gerrymander congressional districts
 
 There is a strong perception that gerrymandering can be foiled by GIS techniques, using things such as a compactness metric (e.g. perimeter/area ratio) as a standard to prove or prevent gerrymandering. However, such standards cannot be applied in law. One reason has to do with how perimeters are measured. That requires GIS, yet the scale and density with which the polygon defining a district has a large impact on perimeter values. The goal here would be to write an R package to demonstrate and visualize how such variations in polygon delineation can impact perimeter:area ratios. This could be done quite simply with the creation of toy polygons and the use of introduced errors into node x,y coordinates. If successful and compelling, it could have an important impact on policy. 
 
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***

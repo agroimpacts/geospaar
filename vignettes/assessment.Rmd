@@ -25,8 +25,14 @@ library(knitr)
 
 __[In revision]__
 
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
 
-# Grading
+
+# Grading{#grading}
 ## Overall
 
 Final letter grades will be assigned as follows
@@ -79,6 +85,12 @@ for(i in colnames(DF)[c(2, 4, 6)]) DF[, i] <- as.numeric(DF[, i])
 kable(DF, align = "r")
 ```
 
+***
+<center>
+[Back to top](#grading) || [Back to **vignette index**](toc.html)
+</center>
+***
+
 ## For presentations
 
 Herewith some guidance regarding the final presentations:
@@ -107,6 +119,11 @@ setwd(dir = "vignettes/slides")
 rmarkdown::render(input = "myslides.Rmd", output_file = "myslides.html")
 ```
 
+***
+<center>
+[Back to top](#grading) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Structure and content
 
@@ -121,6 +138,12 @@ Your presentation should be structured as follows:
     - What new aspect of R programming you learned from your project, i.e. something that you weren't introduced to during Units 1 and 2 of the course, and which might be of interest to your peers. 
 
 If you are working on your own, use the lower end of the slide range as your guide. If you are working as part of a two-person team, the upper end is the target amount of slides.  If you are presenting as a group of more than two people, let's discuss the structure. 
+
+***
+<center>
+[Back to top](#grading) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ### Assessment
 
@@ -181,6 +204,11 @@ kable(DF)
 # kable(DF[, 3:4], align = "r")
 ```
 
+***
+<center>
+[Back to top](#grading) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 ## For final paper/report
 
@@ -323,3 +351,9 @@ kableExtra::column_spec(y, column = 1:8, width = "10em")
 # kable(DF[, 7:8], format = "html") %>% html_table_width(c(50, 20))
 # kable(DF, align = "r") 
 ```
+
+***
+<center>
+[Back to top](#grading) || [Back to **vignette index**](toc.html)
+</center>
+***
