@@ -32,7 +32,7 @@ Note that the code below reflects recent changes to the `devtools` package (vers
 library(devtools)
 install_github("agroimpacts/geospaar", build = TRUE, 
                auth_token = "the-token-you-just-generated-pasted-here",
-               force = TRUE, build_opts = c("--no-resave-data", "--no-manual")
+               force = TRUE, build_opts = c("--no-resave-data", "--no-manual"))
 # install_github("agroimpacts/geospaar", build_vignettes = TRUE, 
 #                auth_token = "the-token-you-just-generated-pasted-here")
 ```
