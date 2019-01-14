@@ -12,6 +12,11 @@ install.packages("devtools")
 library(devtools)
 ```
 
+Add these ones as well, while you are at it:
+```R  
+install.packages(c("knitr", "kableExtra", "prettydoc"))
+```
+
 #### 2. Get a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) for GitHub
 
 - Go into your GitHub account, and click settings, and then (on the left)  developer settings 
