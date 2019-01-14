@@ -27,10 +27,14 @@ library(devtools)
 
 #### 3. install the `geospaar` package
 
+Note that the code below reflects recent changes to the `devtools` package (versions > 2), which has changed the options for building vignettes. If you have an older version of `devtools`, try uncomment and then run the version that is currently commented out.
 ```R
- library(devtools)
- install_github("agroimpacts/geospaar", build_vignettes = TRUE, 
-                auth_token = "the-token-you-just-generated-pasted-here")
+library(devtools)
+install_github("agroimpacts/geospaar", build = TRUE, 
+               auth_token = "the-token-you-just-generated-pasted-here",
+               force = TRUE, build_opts = c("--no-resave-data", "--no-manual")
+# install_github("agroimpacts/geospaar", build_vignettes = TRUE, 
+#                auth_token = "the-token-you-just-generated-pasted-here")
 ```
 
 #### 4. Browse the course materials
