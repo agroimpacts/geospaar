@@ -1,0 +1,253 @@
+---
+title: "Unit 1 - Module 2"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 5
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1: Module 2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+```
+
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
+# Introduction{#unit1mod2intro}
+
+In this module, we will begin to learn about the R language, starting with the different types of R objects, and how and where (in environments) they interact with one another. As I was trained as an ecologist, I find it helpful to think of how the language functions in ecological terms. First, we can think of R *objects* (data and functions that are held in memory) as being like species (plant or animal) with their own classification system, or taxonomy, and these objects are found in and interact within different environments (note: this conceptual framework is not the same as the "R ecosystem" terminology you might see online (e.g. [this](https://fg2re.sellorm.com)), which refers to the array of user-contributed packages and R-related tools, e.g. RStudio).   
+
+So let's first look at R's species. 
+
+## A taxonomy of R
+The Linnean system of biological classification groups species hierarchically, from Kingdom all the way down to species (and even sub-species), according to the figure below ([source](https://bioelevenncuevas.files.wordpress.com/2012/10/01_14classifyinglife_l.jpg)). 
+
+```{r out.width = "30%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m2-1.jpg") 
+```
+
+We can adapt the lower end of the hierarchy to classify R's objects (and probably most any other programming language), borrowing the organization from family, genus, and species. In fact, we could use the higher level organization if we wanted to classify R itself within the context of other analytical tools and programming methods: 
+
+-------- ----------------------------------------------
+Domain   Analog; digital
+Kingdom  Calculator; Mainframe; Desktop; Laptop; Phone 
+Phylum   Windows; Mac; Linux
+Class    Interpreted; Compiled
+Order    Python; Ruby; Perl; R
+Family   S3; S4; RC
+Genus    vector; matrix; data.frame; array; list; function
+Species  logical; integer; character; boolean; closure
+-------- ----------------------------------------------
+
+Admittedly the classifications I give above this might not be that sound, but our focus here is on Family, Genus, Species, which are internal to `R`. Here we liken taxonomic family to the set of *classes* that define the different types of objects in R. "But wait", you say, "that's confusing! Why don't you map taxonomic class to R classes?" I know, I know, but I wanted to use the whole hierarchy, and it felt better to use class to distinguish programming languages (into interpreted versus compiled). Plus I didn't want to have to jump over Order, which I would have struggled to fill with this analogy. 
+
+Moving on, Family maps onto R structures, and Species onto types, primarily to data types. My organization of these topics is pieced together from several sources of information that are online (classes [1](http://adv-r.had.co.nz/OO-essentials.html), [2](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming); structures [3](http://adv-r.had.co.nz/Data-structures.html), [4](https://www.rspatial.org/intr/3-basic-data-structures.html); types: [5](https://www.rspatial.org/intr/2-basic-data-types.html)), and it is based on the level of complexity inherent in the object.
+
+### Species (data types)
+Let's start with the simplest level first, the species in our taxonomic analogy. Here we refer to the types of data that we work with (in R or any language). Types are actually assigned to any R object, even ones that we are more complex, as the `typeof` function (run `?typeof` to see) will show you, but here we are thinking only of the types of data, which are logical, integer, double, character, NULL, and the less used (at least for this class) complex and raw.
+
+```{r}
+typeof(FALSE)
+typeof(1L)
+typeof(1)
+typeof("a")
+typeof(NULL)
+as.raw(1)
+typeof(as.raw(1))
+```
+
+What is `raw`? According to `?raw`:
+
+> The raw type is intended to hold raw bytes
+
+### Genus (data structures and functions)
+One level up from data types are structures and functions. I liken these to the genus level because there both are designed to do something with data--either hold the data or do something to, with, or on the data, and they each of these can have many forms. For example, a vector is a type of data structure, which can be either an atomic vector or a list, and any of these can hold multiple data types. So let's look at structures first. 
+
+#### Data structures
+##### One dimensional
+I have already mentioned the most basic structure, which is a *vector*. An atomic vector is a one-dimensional object that contains a single data type:
+```{r}
+a <- c("a", "b", "c", "d")
+a
+b <- 1:10
+b
+d <- TRUE
+d
+```
+
+The object `a` is a character vector with four elements, `b` is an integer vector with 10 elements, and d is logical vector with one element.  To strain the taxonomic example here, you can think of each of these vectors as a genus that contains just one species. A *list*, on the other hand, can be thought of a genus containing multiple species, as it can contain many different data types within a single object. 
+
+```{r}
+l <- list("a", 1, 0.5, TRUE)
+l
+str(l)
+```
+
+##### Two or more dimensions
+Notice that each of the data types is maintained in the list (which we put together using the `list` function), and we can verify the type of data in the list using the `str` function. If we try to put together these same mix of types into an atomic vector using the `c` (concatenate) function, we don't get the same results.
+
+```{r}
+l <- c("a", 1, 0.5, TRUE)
+l
+str(l)
+```
+
+It coerces everything to a character data type.  
+
+There are several structures that have two or more dimensions. There are the  `matrix`, the `data.frame`, and the `array`. The first two are two-dimensional, in that they consist of rows and columns, and the third can have an arbitrary number of dimensions. 
+
+```{r}
+m <- cbind(v1 = 1:4, v2 = 1:4)
+m
+str(m)
+m2 <- cbind(v1 = c("a", "b"), c("c", "d"))
+m2
+str(m2)
+DF <- data.frame(v1 = 1:4, v2 = as.numeric(1:4), v3 = c("a", "b", "c", "d"))
+DF
+str(DF)
+arr <- array(c(1:4, 1:4), dim = c(2, 2, 2))
+arr
+str(arr)
+```
+
+A `matrix` can only hold a single data type (like an atomic vector, if you try to mix types it will coerce them all to one kind--so a matrix is a genus that can only hold one species). A `data.frame`, which is actually a special kind of `list` that binds vectors containing the same number of elements into columns (so that they can have the same number of rows), can mix data types (a genus with multiple species). An `array`, on the other hand, can only have one data type despite being able to have more than one dimensions.
+
+Let's turn back to the `list` now, since we just mentioned it into the context of the `data.frame`. A list is very versatile, and can contain any kind of R object. 
+```{r}
+l2 <- list(m, m2, DF, arr, c, list)
+l2
+str(l2)
+```
+
+We can put all the matrices, data.frames, and array we just made into a list, as well as some of the functions we were using to make those objects (`c`, `list`). 
+
+#### Functions
+That brings us now to functions. I know it is perhaps strained to think of a function as a genus, but functions are a kind of structure and functions can be organized into different groups, so it is not entirely crazy to think of functions as being analogous(ish) to Genus. So what are the functional genera?
+
+##### Primitives
+ The first genus consists of *primitive* functions, of which `c` and `list` are two examples, but also ones like `sum`. Primitive functions are actually `C` functions that are called directly by `R` that contain no `R` code:
+
+```{r}
+c
+sum
+list
+```
+
+By running the function without parentheses, you can see what type of function they are. You can also get a complete list of `R`'s primitive functions by running `names(methods:::.BasicFunsList)`. 
+
+##### Operators
+*Operators* are another kind of functional genus, such as the usual mathematical symbols `+`, `-`, `/`, `*`, and logical ones such as `>`, `<`, and `|`, plus a number of others, some of which are listed [here](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators). This list overlaps heavily, with the list of *primitives*, so might even be considered more properly a sub-genus of it, although there are non-primitive operators in existence, such as `?`. 
+
+```{r}
+5 * 5
+(10 + 2) / 5
+(10 > 5) & (5 < 6)
+```
+
+##### Control structures
+There are a number of functions that `R` shares with other languages, which are (to paraphrase from [here](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Control-structures)) used to control the sequence in which statements (e.g. `a <- 1 + 10`) are evaluated. There are functions such as `for`, `while`, `if`, `else`, `break`, etc. 
+```{r}
+a <- c(1, 11)
+for(i in a) {
+  if(i < 10) {
+    print(paste(i, "is less than 10"))
+  } else {
+    print(paste(i, "is bigger than 10"))
+  }
+}
+
+i <- 0
+while(i < 5) {
+  print(i^10)
+  i <- i + 1
+}
+```
+
+The code above uses several common control structures. `if` and `else` are conditional operators, determining whether a statement gets evaluated or not depending on a defined condition. `for` and `while` are different kinds of loops. Of particular interest are another set of looping statements that are native to `R`, which are known as `*apply` functions. We will get into all these in later sections, but for now here is a taste of one of them (`lapply`). 
+
+```{r}
+lapply(c(1, 11), function(x) {
+  if(x < 10) {
+    paste(x, "is less than 10")
+  } else {
+    paste(x, "is bigger than 10")
+  }
+})
+```
+
+##### Base, package, and user-defined functions
+Beyond the primitives, `R` ships with a number of already built functions,  including various commonly used statistical functions. 
+
+```{r}
+mean
+sample
+sd
+```
+
+Three are provided above, two of which (`mean` and `sample`) are part of base `R`, i.e. they are built into the language itself, and one of which comes from the `stats` package, which is one of R's core packages (basically it loads when you open `R`). You will note above that the packages are eferred to next to the term "namespace". We will hear more about that in the next sections. 
+
+In addition to these core packages, there are many, many (>10,000) user contributed packages, most of which can be installed from [CRAN](https://cran.r-project.org) using the `install.packages` command, or RStudio's Packages interface. One example we have already used a fair bit (because you are reading this) is the `install_github` function from the `devtools` package. 
+
+And then, of course, there are user-defined functions, a much, much larger universe, like the grains of sand on a beach (or the largest genus of them all). These are all the functions users make for themselves in their various scripts and never put into packages. For example:
+```{r}
+my_random_function <- function(x) (x * 10) - 2 + 10^2
+my_random_function(c(2, 4, 100))
+```
+
+##### Generic functions
+This is the last genus of functions we will describe, as it sets us up to think next about classes (the Family).  Generics are functions that have a common name and generally do the same thing, but produce different outputs depending on what *class* (Family) of object they are applied to. Three widely used generics are `print`, `plot`, and `summary`. Let's look at two examples of `summary`
+
+```{r}
+a <- 1:10
+b <- sample(1:100, 10)
+summary(a)
+summary(lm(a ~ b))
+```
+
+Here we see that `summary` applied to a vector of integers provides mean and quantile values, while it provides a summary of regression fit when applied to a the output of a linear model (`lm`) fit to vector `a` and 10 randomly selected numbers between 1 and 100. 
+
+We can see which classes use the `summary` generic by running the `method` function:
+```{r}
+methods(summary)
+```
+
+Quite a list (and much longer for `print`)! The notation above is `<generic_function>.<class>`. Generics can also be understood within the context of *object-oriented programming*, which is an important aspect of `R` and `python`. We get into this more below. 
+
+### Family (classes)
+
+## Environments
+
+
+***
+<center>
+[Back to top](#unit1mod2intro) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+
+
+
+
+
+
