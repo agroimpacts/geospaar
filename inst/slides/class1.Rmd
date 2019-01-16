@@ -4,7 +4,7 @@ subtitle: Class 1
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/geospaar-theme.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class1.css"]
     nature:
       highlightStyle: github
       highlightLines: true
