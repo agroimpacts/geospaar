@@ -249,7 +249,7 @@ This explanation nicely explains how OOP differs from the alternative programmin
 The main takeaway here is that a class defines different types of objects and what methods are associated them (so to me this feels like a higher level of organization, which makes it like a taxonomic family). Here is where R gets confusing, because it actually has three types of OO systems, S3, S4, and RC, and (not quite OO) the "base types", which are the primitives from `C` we described above.  I'll let you read the description of each of those and how they differ in the Advanced R link I just gave you ([here it is again](http://adv-r.had.co.nz/OO-essentials.html#oo-answers)), and it is good to understand them.  Here I will highlight a few things about them that I think are important to know, particularly with respect to understanding `R`'s geospatial capabilities.  
 
 - First, it is useful to appreciate the connection between generic functions, which work with both S3 and S4 classes. If you have ever worked with python, you end up doing something like this:
-  ```{python}
+  ```
   import os
   os.getcwd()
   ```
