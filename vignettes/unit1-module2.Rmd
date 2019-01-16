@@ -234,6 +234,37 @@ methods(summary)
 Quite a list (and much longer for `print`)! The notation above is `<generic_function>.<class>`. Generics can also be understood within the context of *object-oriented programming*, which is an important aspect of `R` and `python`. We get into this more below. 
 
 ### Family (classes)
+Finally we arrive at classes, which in our (hopefully still useful) analogy is akin to a taxonomic family. To better understand classes (and why they are likened to a taxonomic family, a higher level of organization than genus and species), we need to learn about object-oriented programming (OOP), in which classes are a central concept. 
+
+#### OOP
+The best short explanation I have seen for what OOP is comes from a `python` [guide](https://python.swaroopch.com/oop.html): 
+
+> In all the programs we wrote till now, we have designed our program around functions i.e. blocks of statements which manipulate data. This is called the procedure-oriented way of programming. There is another way of organizing your program which is to combine data and functionality and wrap it inside something called an object. This is called the object oriented programming paradigm. Most of the time you can use procedural programming, but when writing large programs or have a problem that is better suited to this method, you can use object oriented programming techniques.
+
+> Classes and objects are the two main aspects of object oriented programming. A class creates a new type where objects are instances of the class. An analogy is that you can have variables of type int which translates to saying that variables that store integers are variables which are instances (objects) of the int class.
+
+This explanation nicely explains how OOP differs from the alternative programming paradigm (procedural programming). Another useful bit of explanation on OOP is from [Advanced R](http://adv-r.had.co.nz/OO-essentials.html#oo-answers):
+
+> Central to any object-oriented system are the concepts of class and method. A class defines the behaviour of objects by describing their attributes and their relationship to other classes. The class is also used when selecting methods, functions that behave differently depending on the class of their input. Classes are usually organised in a hierarchy: if a method does not exist for a child, then the parent’s method is used instead; the child inherits behaviour from the parent.
+
+The main takeaway here is that a class defines different types of objects and what methods are associated them (so to me this feels like a higher level of organization, which makes it like a taxonomic family). Here is where R gets confusing, because it actually has three types of OO systems, S3, S4, and RC, and (not quite OO) the "base types", which are the primitives from `C` we described above.  I'll let you read the description of each of those and how they differ in the Advanced R link I just gave you ([here it is again](http://adv-r.had.co.nz/OO-essentials.html#oo-answers)), and it is good to understand them.  Here I will highlight a few things about them that I think are important to know, particularly with respect to understanding `R`'s geospatial capabilities.  
+
+- First, it is useful to appreciate the connection between generic functions, which work with both S3 and S4 classes. If you have ever worked with python, you end up doing something like this:
+```{python}
+import os
+os.getcwd()
+```
+
+
+Now, here is where it gets more complicated
+
+
+```{r}
+!isS4(lm)
+!isS4(lm)
+!is.object(mean)
+```
+
 
 ## Environments
 
