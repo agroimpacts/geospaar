@@ -1,0 +1,73 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 2
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class2.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, eval = FALSE}
+library(ggmap)
+gkey <- "***REMOVED***"
+load("external/data/gkey.rda")
+m <- get_googlemap(center = c(-71.8229, 42.2511), zoom = 17, maptype = "hybrid",
+                   key = gkey)
+mp <- ggmap(m, extent = "device")
+ggsave(filename = "inst/slides/figures/clark.png", plot = mp, 
+       bg = "transparent", width = 4, height = 4, units = "in", dpi = 300)
+
+```
+
+---
+- Installation progress/trouble-shooting
+- `R` packages
+- `git` / GitHub
+- Tips and tricks for productivity
+
+---
+# R packages
+
+- File structure
+- Where packages live
+- library versus package
+- Exported functions, loading packages
+
+---
+## Types of packages
+
+```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="http://r-pkgs.had.co.nz/package.html"}
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
+```
+
+---
+## Installing packages
+
+```{r out.width = "90%", fig.align='center', echo=FALSE, fig.cap="http://r-pkgs.had.co.nz/package.html"}
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/installation.png") 
+```
+
+---
+
+# git / GitHub
+
+- Commits, pushes, pulls
+- Branching
+- Merging
+
+---
+# Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- Posting guide
+
