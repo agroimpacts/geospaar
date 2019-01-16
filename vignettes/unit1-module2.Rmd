@@ -230,7 +230,6 @@ We can see which classes use the `summary` generic by running the `method` funct
 ```{r}
 methods(summary)
 ```
-
 Quite a list (and much longer for `print`)! The notation above is `<generic_function>.<class>`. Generics can also be understood within the context of *object-oriented programming*, which is an important aspect of `R` and `python`. We get into this more below. 
 
 ### Family (classes)
@@ -250,20 +249,19 @@ This explanation nicely explains how OOP differs from the alternative programmin
 The main takeaway here is that a class defines different types of objects and what methods are associated them (so to me this feels like a higher level of organization, which makes it like a taxonomic family). Here is where R gets confusing, because it actually has three types of OO systems, S3, S4, and RC, and (not quite OO) the "base types", which are the primitives from `C` we described above.  I'll let you read the description of each of those and how they differ in the Advanced R link I just gave you ([here it is again](http://adv-r.had.co.nz/OO-essentials.html#oo-answers)), and it is good to understand them.  Here I will highlight a few things about them that I think are important to know, particularly with respect to understanding `R`'s geospatial capabilities.  
 
 - First, it is useful to appreciate the connection between generic functions, which work with both S3 and S4 classes. If you have ever worked with python, you end up doing something like this:
-```{python}
-import os
-os.getcwd()
-```
+  ```{python}
+  import os
+  os.getcwd()
+  ```
+
+  Where the method (the function `getcwd`) appears after the object (`os`), because it belongs to the class. The generic functions in R are defined for the class, and when you execute it behaves in a manner specific to the class--assuming a generic has been defined explicitly for the class of object to which you are trying to apply it. If a class generic method doesn't exist, R will apply the default version of the function (e.g. `print.default()`).  
 
 
-Now, here is where it gets more complicated
-
-
-```{r}
-!isS4(lm)
-!isS4(lm)
-!is.object(mean)
-```
+<!-- ```{r} -->
+<!-- !isS4(lm) -->
+<!-- !isS4(lm) -->
+<!-- !is.object(mean) -->
+<!-- ``` -->
 
 
 ## Environments

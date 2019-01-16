@@ -69,5 +69,5 @@ knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/installation.png")
 - Tab completion and shortcuts
 - Reusing code
 - Code syntax
-- Posting guide
+- [Posting guide](https://www.r-project.org/posting-guide.html)
 
