@@ -485,7 +485,7 @@ include_graphics("fig/u1m1-11.png")
 
 If you are using R in Windows, and have a new install, you will probably see the warning as shown above about installing RTools. Go to the link it shows and install the latest version of Rtools3X.exe. 
 
-## Your first package function
+## Your first package function{#your-first-package-function}
 We'll learn more about exactly what a function is in the next module, but for now it is sufficient to know that a function provides a convenient way for repeating an operation without having to keep re-writing a longer set of commands, or as it is put [here](https://r4ds.had.co.nz/functions.html) (in Hadley Wickham's R for Data Science book):
 
 > You should consider writing a function whenever you’ve copied and pasted a block of code more than twice.
