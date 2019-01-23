@@ -48,9 +48,11 @@ This section is broken into three modules (the materials can be accessed by foll
 
 [**Module 1**](unit1-module1.html): A general overview of R and an introduction to reproducibility tools. 
 
-**Module 2**: Basic `R` programming concepts and skills. 
+[**Module 2**](unit1-module2.html): Fundamental `R` concepts 
 
-**Module 3**: Data analysis and visualization with `R`. 
+**Module 3**: Introduction to `R` programming 
+
+**Module 4**: Data analysis and visualization with `R` 
 
 ***
 <center>
