@@ -358,7 +358,7 @@ Environments in `R` are actually lists, which are nested in ways such that objec
 
 1. The global environment
 2. The package environment
-3. The function environment
+3. The execution environment
 
 ### The global environment
 
@@ -442,13 +442,94 @@ library(dplyr)
 
 This matters because when because when such package conflicts arise, you have to call the function you want using the `packagename::function_name` format, e.g. `raster::intersect` in the last example, otherwise a call to just `intersect` will give you `dplyr::intersect`, which won't be able to operate on a raster. 
 
-That is why it package developers are [encouraged](http://r-pkgs.had.co.nz/namespace.html) to export functions sparingly:
+That is why package developers are [encouraged](http://r-pkgs.had.co.nz/namespace.html) to export functions sparingly:
 
 > Generally, you want to export a minimal set of functions; the fewer you export, the smaller the chance of a conflict. While conflicts aren’t the end of the world because you can always use :: to disambiguate, they’re best avoided where possible because it makes the lives of your users easier.
 
 Package functions can always be left as functions internal to the package, that is, they exist in the package's namespace environment. Such internal functions might be used by one of the exported functions. You can actually access such functions from outside the package by using the ::: operator, although this is not recommended.  
 
 ### The function environment
+The last environment we will discuss is the *function environment*, which actually has three more environmental terms associated with it: the *enclosing environment*, the *binding environment*, and the **execution environment**, according to [this section](http://adv-r.had.co.nz/Environments.html#function-envs) in one version of Advanced R. We won't worry about the first two, except to note that the enclosing environment is the one in which the function was created--so if you define a function in a script but don't add it to a package, it will be enclosed by the global environment.     
+
+The **execution environment** is important to know for everyday programming purposes (in my opinion, at any rate). It is a temporary environment that is created within functions when they are executed. Here's a short demonstration of how the function environment differs from the global environment. 
+
+```{r}
+x <- 10
+f <- function() {
+  x <- 20
+  return(x)
+}
+
+x
+f()
+```
+
+Here `x` is an integer vector (value 10) and `f` is a function that specifies an integer vector `x` (value 20) inside the function body. It returns the value of this internal variable `x` out of the function body on execution, not the value of the globally defined `x` (10). This is because the execution environment is separate from the enclosing environment, and a new, clean environment is created each time the function is executed (called) and then discarded on completion.
+
+You can modify what's going on inside the execution environment using a global variable, although this is probably not a great idea. 
+
+```{r, error = TRUE}
+x <- 10
+f <- function() {
+  x <- 20 * x
+  return(x)
+}
+f()
+
+x <- 10
+f <- function(x) {
+  x <- 20 * x
+  return(x)
+}
+f()
+f(x)
+f(10)
+f(x = x)
+```
+
+The first example shows that if you specify `x` in the global environment and then assign the value 20 * `x` in the function body to create `x`, the answer returned is 200 (20 * 10). In the second example, we define the function `f` as having an argument `x`, and then try execute `f()` as we did before. That fails, because you have to assign a value `x` to the argument, so we have to specify a value in the function `()` to run, so `f()` fails to run. How about `f(x)`. That works, because now you are telling the `f` that you want to input the value stored in the global variable `x`, which is the same as running `f(10)`. `f(x)` is shorthand for the more correct `f(x = x)` (passing the value of global variable `x` to argument x). 
+
+The upshot of this all is that `f` on each execution is returning the same value, which is the result of a single execution where a new environment is created on each execution.  
+
+You can see that it is a different environment on each execution with the following modification:
+```{r}
+x <- 10
+f <- function(x) {
+  x <- 20 * x
+  environment()
+}
+f(x)
+f(10)
+f(x = x)
+```
+
+The function is modified to return the value from `environment`, which returns the name of the execution environment, which is simply a complicated hex-string. Note, however, that the string changes on each execution, indicating that the environment is not the same. 
+
+**This is important to know because you cannot modify the value of a global object from within a function's execution environment.** 
+
+The only way to do that is using a control structure such as a for loop. 
+```{r}
+x <- 10
+for(i in 1:3) {
+  x <- 20 * x
+  print(x)
+  print(environment())
+}
+x
+```
+
+Note that the value of `x` gets updated it each iteration, and the environment inside the `{}` is still part of the global environment (and thus not the execution environment of a function).
+
+Okay, so that's it for environments, and actually for this whole module. There is no formal assignment for this module, just some questions to answer. 
+
+#### Question to answer
+1. What are the data types in `R`?
+2. What is the difference between a `matrix` and `data.frame`? 
+3. What do a `data.frame` and a `list` have in common?
+4. What is a generic function, and how does it relate to object-oriented programming? 
+5. What is one difference between S3 and S4 object-oriented systems? 
+6. If you create the object `a <- 1:10` in the R console, what environment would you find the object in? 
+7. How many times does the execution environment in a function get reused? 
 
 ***
 <center>
