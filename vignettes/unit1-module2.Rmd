@@ -271,76 +271,77 @@ The main takeaway here is that a class defines different types of objects and wh
 
 - **R methods are idosyncratic relative to other OO languages**. If you have ever worked with `python`, you likely have done something like this:
 
-  ```python
-  >>> import numpy as np
-  >>> v = np.array([0, 1, 2, 3])
-  >>> v.mean()
-  1.5
-  ```
+    ```python
+    >>> import numpy as np
+    >>> v = np.array([0, 1, 2, 3])
+    >>> v.mean()
+    1.5
+    ```
 
-  Where the method (the function `mean`) appears after the object (`v`, a 1-dimensional numpy array, equivalent to an `R` integer vector), because it belongs to the class. In `R`, methods are applied *to* the object, and the appropriate version of the generic function is then applied for the particular class of object: 
+    Where the method (the function `mean`) appears after the object (`v`, a 1-dimensional numpy array, equivalent to an `R` integer vector), because it belongs to the class. In `R`, methods are applied *to* the object, and the appropriate version of the generic function is then applied for the particular class of object: 
 
-  ```{r}
-  v <- 0:3
-  mean(v)
-  ```
+    ```{r}
+    v <- 0:3
+    mean(v)
+    ```
   If a class-specific variant of the generic hasn't been defined, `R` applies the default version of the function. That's the case here, where `mean.default` is used because this is just a simple integer vector.
   
-  ```{r}
-  class(v)
-  ```
+    ```{r}
+    class(v)
+    ```
   
-  This is important to know because sometimes you might find that the generic function you need and expect isn't there for you: 
+    This is important to know because sometimes you might find that the generic function you need and expect isn't there for you: 
   
-  ```{r, error = TRUE}
-  rst <- raster::raster(nrow = 10, ncol = 10, vals = 1:100)
-  plot(rst)
-  ```
+    ```{r, error = TRUE}
+    rst <- raster::raster(nrow = 10, ncol = 10, vals = 1:100)
+    plot(rst)
+    ```
   
-  The example above jumps a bit ahead of where we are currently, but it shows what happens when a generic function is not available for a particular class. Here we created an object of class `raster` (we will be seeing much more of these in Unit 2), and tried to `plot` it (i.e. map the raster). The method for plotting a raster is `plot.raster`, so when you call the generic function `plot` and apply it to `rst` (`plot(rst)`), it will map the raster `rst`.  However, in this example the `plot` method for rasters is not available because the `raster` package was not loaded. `R` was instead trying to apply `plot.default` to  object `rst`, which has a very different structure than a class that `plot.default` is able to handle, e.g:
+    The example above jumps a bit ahead of where we are currently, but it shows what happens when a generic function is not available for a particular class. Here we created an object of class `raster` (we will be seeing much more of these in Unit 2), and tried to `plot` it (i.e. map the raster). The method for plotting a raster is `plot.raster`, so when you call the generic function `plot` and apply it to `rst` (`plot(rst)`), it will map the raster `rst`.  However, in this example the `plot` method for rasters is not available because the `raster` package was not loaded. `R` was instead trying to apply `plot.default` to  object `rst`, which has a very different structure than a class that `plot.default` is able to handle, e.g:
+
   
-  ```{r, fig.width = 5}
-  mat <- cbind(x = 1:10, y = 11:20)
-  plot(mat)
-  ```
+    ```{r, fig.width = 5}
+    mat <- cbind(x = 1:10, y = 11:20)
+    plot(mat)
+    ```
+    
+    So let's look at the two structures of each object. Here's the class and structure of the object `mat`:
   
-  So let's look at the two structures of each object. Here's the class and structure of the object `mat`:
+    ```{r}
+    class(mat)
+    str(mat)
+    ```
+    
+    Pretty simple. Here is the same for object `rst`:
   
-  ```{r}
-  class(mat)
-  str(mat)
-  ```
+    ```{r}
+    class(rst)
+    str(rst)
+    ```
+    
+    Much more complicated! This is an object of class `raster`, which uses the S4 OO system. It has a number of "slots", which holds information about the raster object, in this case 12 upper-level slots, most of which contain several sub-slots. You can access the information in an S4 object's slots in two ways, using either the `@` operator or the `slot` function: 
   
-  Pretty simple. Here is the same for object `rst`:
+    ```{r}
+    rst@extent
+    slot(rst, "extent")
+    ```
   
-  ```{r}
-  class(rst)
-  str(rst)
-  ```
-  
-  Much more complicated! This is an object of class `raster`, which uses the S4 OO system. It has a number of "slots", which holds information about the raster object, in this case 12 upper-level slots, most of which contain several sub-slots. You can access the information in an S4 object's slots in two ways, using either the `@` operator or the `slot` function: 
-  
-  ```{r}
-  rst@extent
-  slot(rst, "extent")
-  ```
-  
-  Here we are pulling out the information on `rst`'s extent, which is itself an object with a class definition. 
+    Here we are pulling out the information on `rst`'s extent, which is itself an object with a class definition. 
   
 - **S3 and S4 classes are accessed in different ways**. Although both make use of generics functions in the same way, their slots are accessed differently. In the previous example using `lm` in the [Generic functions](#generic-functions) section, `lm(a ~ b)` is an S3 object:
   
-  ```{r}
-  lm_ab <- lm(a ~ b)  
-  str(lm_ab)
-  ```
+    ```{r}
+    lm_ab <- lm(a ~ b)  
+    str(lm_ab)
+    ```
   
-  An S3 object is really just a list, and you access information in the list using the `$` operator.
+    An S3 object is really just a list, and you access information in the list using the `$` operator.
   
-  ```{r}
-  lm_ab$coefficients
-  ```
+    ```{r}
+    lm_ab$coefficients
+    ```
   
-  That gives us the linear model's coefficients. 
+    That gives us the linear model's coefficients. 
   
 - **S3 and S4 are both used in defining `R` spatial objects**. As we have seen in the example above, rasters are based on the S4 system, while the two main packages providing vector operations, `sp` and `sf`, respectively use the S4 and S3 system.  Even though `sf` is newer and intended to replace `sp`, it makes use of `R`'s older S3 system. So, from our perspective, we want to have some understanding of both of these systems because we will eventually want to extract information from (and put it into) spatial objects, and the way in which we do that will differ according to the OO system the defines the class.   
 

@@ -196,9 +196,9 @@ Before we get started with some hands on work with `git`, it is important to und
 
 Another post on [git branching](https://nvie.com/posts/a-successful-git-branching-model/) (and merging, which we will come back to) has a more effective schematic for showing the concept and why it is used. 
 
-<p align="center">
-  <img width="350" height="465" src="https://nvie.com/img/git-model@2x.png">
-</p>
+```{r out.width = "50%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m1-branching.png") 
+```
 
 This schematic is oriented towards software development projects. For the purposes of this class, however, you will use a simplified version of this structure to separate your assignments from one another. 
 
@@ -777,22 +777,22 @@ For the first assignment of this class, you are going to do the following:
 - Add a new function to your package. We will use Hillary Parker's cat_function as the template, which we find in her package writing [tutorial/post](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/). 
 - Paste that into a new R script (source) file. Make it first conform to the R style guide, so that it looks like this:
 
-  ```{r, eval = FALSE}
-  #' A Cat Function
-  #' @description This function allows you to express your love of cats.
-  #' @param love Do you love cats? Defaults to TRUE.
-  #' @export
-  #' @examples
-  #' cat_function()
-  cat_function <- function(love = TRUE) {
-    if(love == TRUE){
-  print("I love cats!")
-    } else {
-  print("I am not a cool person.")
+    ```{r, eval = FALSE}
+    #' A Cat Function
+    #' @description This function allows you to express your love of cats.
+    #' @param love Do you love cats? Defaults to TRUE.
+    #' @export
+    #' @examples
+    #' cat_function()
+    cat_function <- function(love = TRUE) {
+      if(love == TRUE){
+        print("I love cats!")
+      } else {
+        print("I am not a cool person.")
+      }
     }
-  }
-```
-
+    ```
+    
 - Change the function so that it is now the `squirrel_function`. Change the main argument (the param) to "admire", update the documentation to reflect changes from cats to squirrels, in all places that it seems relevant, and edit the first `print` statement to read "I strongly admire squirrels!", and the second to read "I do not belong to the squirrel fan club." 
 - Save the file in the R/ folder so that it has the same name as the function (with .R extenstion).
 - Update your vignette so that it demonstrates how the `squirrel_function` is used. 
@@ -800,6 +800,11 @@ For the first assignment of this class, you are going to do the following:
 - Once complete, create a new branch called "a1" in your local repo. Push that branch to GitHub as well.  Then switch back into (i.e. checkout) your master branch. 
 - You are done. 
 
+***
+<center>
+[Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 
 
