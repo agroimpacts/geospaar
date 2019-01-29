@@ -1,0 +1,110 @@
+---
+title: "Unit 1 - Module 3"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 5
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1: Module 3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+```
+
+# Introduction to programming in R
+
+Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a somewhat high level overview of `R`'s structure. Now we are going down to the business of learning how to use it.
+
+## How R is evolving and how it affects us
+Before starting, we need to turn back to natural history for another metaphor, specifically evolution. `R` is a language that has been undergoing fairly substantial changes recently, with clear development trajectories within the language, much like the evolution of species.
+
+```{r out.width = "40%", fig.align='center', echo=FALSE, fig.cap="An (approximate) lineage of R packages/objects involved in data handling and graphics."}
+include_graphics("fig/u1m3-1.png") 
+```
+
+The graphic above is crude and almost certainly not correct in some respects, but it serves to illustrate what I think are key changes that are leading to changes in how we program in `R`.  Many of these changes are being driven by the ["tidyverse"](https://www.tidyverse.org), which is:
+
+> ...an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. 
+
+These include most prominently the packages `dplyr` and `ggplot2`, which respectively provide methods for manipulating data sets and producing graphics.  These packages are designed around a fairly different syntax than that of  original (base) `R`, and are becoming increasingly dominant within the `R` commmunity. They are becoming so dominant in fact that a number of leadings lights in the R field argue that `R` beginners should be taught first using the tidyverse packages, and avoid base `R` and much of the programmatic concepts that are needed to go with it. The argument is summarized [here](http://varianceexplained.org/r/teach-tidyverse/). 
+
+The argument is appealing, but since this is a course on `Geospatial Analysis with R`, we unfortunately have no choice but to learn base `R`, because many spatial packages are built with base `R` functions and don't yet work with the tidyverse. 
+
+Also unfortunately, we also need to learn some tidyverse, at least `dplyr`, because the rapidly maturing `sf` package, the replacements for `sp`, which provides spatial vector functionality in `R`, is designed to work with the tidyverse. 
+
+So we are going to learn aspects of both.  
+
+Before diving in, I want to illustrate how different syntaxes can look along some of `R`'s evolutionary trajectories. We'll focus on data manipulation.
+
+```{r}
+library(tibble)
+library(data.table)
+
+# a data.frame with 1000 rows and randomly assigned groups and values...
+set.seed(1)
+d <- data.frame(a = sample(letters[1:7], size = 1000, replace = TRUE), 
+                b = runif(n = 1000, min = 0, max = 20))
+head(d)
+# ...converted to a tibble
+d_tb <- as_tibble(d)
+d_tb
+
+# ...converted to a data.table
+d_dt <- data.table(d)
+d_dt
+```
+
+The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced data.frames that have vastly improved performance in terms of processing times and memory handling, compared to the good old `data.frame`, as well as a whole suite of functions designed to manipulate them that differ markedly from the ways in which data.frames are manipulated. The first thing to note is that the generic `print` functions (note you are implictly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines.  Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
+
+The real differences come with the syntax for manipulating these datasets. Let's take a brief look at how we might operate on the three objects, by calculating the mean of variable "b" according to the categorical groups defined in "a". 
+
+Here's how we would do it most efficiently with the `data.frame`:
+```{r}
+aggregate(d$b, list(d$a), mean)
+```
+
+And with the `tibble`. For this we load up `dplyr`, which provides the functions designed to work with this. 
+```{r}
+library(dplyr)
+d_tb %>% group_by(a) %>% summarize(mean(b))
+```
+
+And finally the `data.table`:
+```{r}
+d_dt[, mean(b), by = a][order(a)]
+```
+
+Three fairly different syntaxes for doing the same thing. These are ordered in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on `tibble` and that will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames or souped-up data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
+
+```{r, error=TRUE}
+d[, mean(b), by = a][order(a)]
+d_tb[, mean(b), by = a][order(a)]
+```
+
+`data.table` is extremely powerful, and is the tool of choice for working with extremely large tabular datasets (it seems to have heavy uptake in quantitative finance, for example), and by some [measures](https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping) beats out `pandas` in `python` However, the syntax is much more arcane, and, more importantly, not really part of `R`'s spatial packages, so we won't learn it further (but it is well worth learning). 
+
+`dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough dplyr and a few other tidyverse functions so that we can get ready for these changes. 
+
+
+
+
+
+
+
+
+
