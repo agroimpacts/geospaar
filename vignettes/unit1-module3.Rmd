@@ -1,0 +1,378 @@
+---
+title: "Unit 1 - Module 3"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1: Module 3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+```
+
+# Introduction to programming in R
+
+Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a somewhat high level overview of `R`'s structure. Now we are going down to the business of learning how to use it.
+
+## How R is evolving and how it affects us
+Before starting, we need to turn back to natural history for another metaphor, specifically evolution. `R` is a language that has been undergoing fairly substantial changes recently, with clear development trajectories within the language, much like the evolution of species.
+
+```{r out.width = "40%", fig.align='center', echo=FALSE, fig.cap="An (approximate) lineage of R packages/objects involved in data handling and graphics."}
+include_graphics("fig/u1m3-1.png") 
+```
+
+The graphic above is crude and almost certainly not correct in some respects, but it serves to illustrate what I think are key changes that are leading to changes in how we program in `R`.  Many of these changes are being driven by the ["tidyverse"](https://www.tidyverse.org), which is:
+
+> ...an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. 
+
+These include most prominently the packages `dplyr` and `ggplot2`, which respectively provide methods for manipulating data sets and producing graphics.  These packages are designed around a fairly different syntax than that of  original (base) `R`, and are becoming increasingly dominant within the `R` commmunity. They are becoming so dominant in fact that a number of leadings lights in the R field argue that `R` beginners should be taught first using the tidyverse packages, and avoid base `R` and much of the programmatic concepts that are needed to go with it. The argument is summarized [here](http://varianceexplained.org/r/teach-tidyverse/). 
+
+The argument is appealing, but since this is a course on `Geospatial Analysis with R`, we unfortunately have no choice but to learn base `R`, because many spatial packages are built with base `R` functions and don't yet work with the tidyverse. 
+
+Also unfortunately, we also need to learn some tidyverse, at least `dplyr`, because the rapidly maturing `sf` package, the replacements for `sp`, which provides spatial vector functionality in `R`, is designed to work with the tidyverse. 
+
+So we are going to learn aspects of both.  
+
+Before diving in, I want to illustrate how different syntaxes can look along some of `R`'s evolutionary trajectories. We'll focus on data manipulation.
+
+```{r}
+library(tibble)
+library(data.table)
+
+# a data.frame with 1000 rows and randomly assigned groups and values...
+set.seed(1)
+d <- data.frame(a = sample(letters[1:7], size = 1000, replace = TRUE), 
+                b = runif(n = 1000, min = 0, max = 20))
+head(d)
+# ...converted to a tibble
+d_tb <- as_tibble(d)
+d_tb
+
+# ...converted to a data.table
+d_dt <- data.table(d)
+d_dt
+```
+
+The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced data.frames that have vastly improved performance in terms of processing times and memory handling, compared to the good old `data.frame`, as well as a whole suite of functions designed to manipulate them that differ markedly from the ways in which data.frames are manipulated. The first thing to note is that the generic `print` functions (note you are implictly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines.  Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
+
+The real differences come with the syntax for manipulating these datasets. Let's take a brief look at how we might operate on the three objects, by calculating the mean of variable "b" according to the categorical groups defined in "a". 
+
+Here's how we would do it most efficiently with the `data.frame`:
+```{r}
+aggregate(d$b, list(d$a), mean)
+```
+
+And with the `tibble`. For this we load up `dplyr`, which provides the functions designed to work with this. 
+```{r}
+library(dplyr)
+d_tb %>% group_by(a) %>% summarize(mean(b))
+```
+
+And finally the `data.table`:
+```{r}
+d_dt[, mean(b), by = a][order(a)]
+```
+
+Three fairly different syntaxes for doing the same thing. These are ordered in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on `tibble` and that will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames or souped-up data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
+
+```{r, error=TRUE}
+d[, mean(b), by = a][order(a)]
+d_tb[, mean(b), by = a][order(a)]
+```
+
+`data.table` is extremely powerful, and is the tool of choice for working with extremely large tabular datasets (it seems to have heavy uptake in quantitative finance, for example), and by some [measures](https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping) beats out `pandas` in `python` However, the syntax is much more arcane, and, more importantly, not really part of `R`'s spatial packages, so we won't learn it further (but it is well worth learning). 
+
+`dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough dplyr and a few other tidyverse functions so that we can get ready for these changes. 
+
+## Setting up for practice
+In this module, you will be asked to answer questions and practice coding along the way. To aid this process: 
+
+- Create a new folder called "notebooks" in your class Rstudio project, as a top level folder. 
+- Open a new Rmarkdown file. Save it into the notebooks folder, calling it `geog246346_unit1module3_practice.Rmd`. Adjust the title as needed, and delete the text and chunks below. Keep one chunk, but delete the code in it, as a starting point for code
+- Type answers to questions, take notes, etc, outside the code chunks. Put practice code inside the `R` code chunks. Remember, you can execute code line by line within chunks to test it out, execute a single chunk, or knit the code all at once (note: when you knit, the code is executed in a new environment environment than the one you use when executing line by line)
+
+# Indexing
+
+You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. 
+
+### One-dimensional data structures
+
+#### Vectors
+Recall that a vector is a 1-dimensional object. An atomic vector can contain only one data type.   
+```{r}
+a <- 1:10
+b <- a
+names(b) <- letters[1:10]
+```
+
+Here we define the vector a, which has values 1:10, and make a copy of `a` called `b`. We then assign names to each of the values in the vector `b`. The names are the first 10 letters of the alphabet, which `R` provides in a built-in vector called `letters` (there is also `LETTERS`--type that into the console and execute it to check it out). Note the operation here: we apply the `names` function (run `?names` to see what this function does) to `b`, and then *assign* to it the vector of letter from `letters` using `<-`, R's assignment operator (you could also use `=`, but we don't because we follow the `R` style guide [here](http://adv-r.had.co.nz/Style.html), and for reasons detailed [here](https://colinfay.me/r-assignment/) it is better to stick with `<-` for assignment). 
+
+Note that this code also gives out first instruction in indexing. Note that we use `[]` with `letters`, `()`. That's because `letters` is a vector from which we are extracting a subset of values, as opposed to an object to which we are applying a function, in which case we would enclose the object with `()`--as we did with `names(a)`.  
+
+So now that `a` is an object, we also extract values from it, using the same `[]` notation and values that specify particular index positions. 
+
+```{r}
+a[1] # 1
+a[4:5] # 2
+a[c(1, 5, 10)] # 3
+a[length(a)] # 4
+a[-1] # 5
+a[-c(1, 3)] # 6
+```
+
+In the code above, we extract from `a`:
+
+1. The 1st element
+2. The 4th and 5th elements. Since 
+3. The 1st, 5th, and 10th elements
+4. The last element
+5. The 2nd through 10th elements
+6. The 2nd and fourth through 10th elements
+
+We use integers within the `[]` to indicate the *position* of the element(s) we want to pull out of `a`. If we want more than 1 element, we can specify a range of indices using `:` if the positions are contiguous/adjacent, i.e. `4:5`. If they are discontiguous, then we have to concatenate the indices using `c()`, separating the integers specifying the index positions by commas, i.e. `c(1, 5, 10)`. Lastly, we can grab the last element and the last element only using the index the final index number (10), or, as os often the cases in large vectors, where we might not know the exact total number of elements (and thus the index number of the final element), we can use the `length` function to find out how long (how many elements are in) the vector is, i.e. `length(a)`, which returns the value 10 in this case into the `[]`. 
+
+In examples 5 and 6 we use negative indicing to drop element the first element and 1st and third elements, yielding the remaining elements in the vector. 
+
+You can also use the names of elements in the vector, if it has names assigned, as is the case with `b` (which you can also index into with integers)
+```{r, error=TRUE}
+b["a"]
+b[c("d", "e")]
+b[c("a", "e", "j")]
+b["j"]
+b[-"a"]
+b[-c("a", "c")]
+```
+
+The above recreates exactly what we did with integer indices, but using the element names instead. However, we see that negative indexing is not possible with names.  
+
+We can also index using logical operators to select elements of vectors based on their values. 
+
+```{r}
+a[a > 5]  # 1
+a[a >= 2 & a < 7]  # 2  
+a[a == 7 | a == 2]  # 3
+a[a %in% c(1, 10)]  # 4
+b[b %in% 2:3]  # 5
+```
+
+In the above we use logical operators to select values from `a` and `b` based on their values. Let's translate what the above are doing exactly. 
+
+1. Select from `a` all values of `a` that greater than 5
+2. Select from `a` all values of `a` that are greater than or equal to 2 and less than 7
+3. Select from `a` all values of `a` that 7 or equal 2
+4. Select from `a` all values of `a` that occur within a vector containing 1 and 10 (this is the same as: select from `a` all values of `a` that equal 1 or equal 10)
+5. Select from `b` all values of `b` that occur within a vector containing 2 and 3
+
+Let's look at two aspects of this syntax, starting within the logical operations within the `[]`.  What are those doing? 
+
+```{r}
+a > 5
+a >= 2 & a < 7
+a == 7 | a == 2
+a %in% c(1, 10)
+b %in% 2:3
+```
+
+Those operations are testing whether each value in the vector meets the particular condition (`TRUE`) or not (`FALSE`), e.g. is thise value of `a` greater than 5 or not? When those tests are done inside the `[]`, the resulting values that are `TRUE` are the ones selected from the vector. The `FALSE`s are ignored. 
+
+We can recover the index positions from the logicals using the `which` function: 
+```{r}
+which(a > 5)
+which(b %in% 2:3)
+```
+
+You can check that by comparing the index values to the positions of the `TRUE` values in the corresponding logical results (the 1st and 5th examples) above that. 
+
+#### Lists
+
+A list is a vector that can contain multiple data types. It can be named or unnamed. 
+```{r}
+l <- list(1, 1:10, c("a", "b", "c", "d"))  # unnamed list
+l2 <- l
+names(l2) <- letters[1:3]  # named list
+l 
+l2
+```
+
+`l` is an unnamed list, `l2` has names assigned to each element. The results above give some insights into how to index into lists. Lists are indexed from within `[[]]` as well as `[]`:
+
+```{r}
+# Chunk 1
+
+l[[1]]  # 1
+l[1]  # 2
+l[2:3]  # 3
+l[[2:3]]  # 4
+l[[length(l)]] # 5
+l[length(l)]  # 6
+```
+
+- #1 (**reference is to comment to right of the code**) pulls out the contents of the element of list `l`
+- #2 pulls the first element of list `l` into a list of length 1
+- #3 pulls the second and third elements of `l` into a two-element list
+- #4 tries **but fails** to pull the second and third elements of `l` to see their contents--it only returns the contents of element 2
+- #5 pulls out the contents of the last element of `l` 
+- #6 pulls the last element of list `l` into a list of length 1
+
+So list indexing by `[[]]` is different than by `[]`. 
+
+We can also index by name:
+
+```{r, error=TRUE}
+# Chunk 2
+l2[["a"]]  # 1
+l2["a"]  # 2
+l2[c("a", "b")]  # 3
+l2[[c("a", "b")]]  # 4
+l2[["c"]]  # 5
+l2["c"]  # 6
+l2$c  # 7
+l2$a  #8
+```
+
+Note that 1-6 just above (Chunk 2) recreate the previous 1-6 (Chunk 1) using integer indices, except Chunk 2 #4 shows the error resulting from trying to pull the contents of two list elements out of the list simultaneously. Chunk 2 #7 and #8 are new however, as they use the `$` operator to pull out the contents of the element by name. `l2$c` is the same as `l2[["c"]]`. 
+
+One more thing with list indexing we will look at: indexing specific elements within list elements:
+
+```{r}
+# Block 3
+names(l2$c) <- letters[1:4]
+l[[2]][2:3]  # 1
+l2$b[2:3]  # 2
+l[2][[1]][2:3]  # 3
+l2["b"][[1]][2:3]  # 4
+l[[3]][c(1, 4)] # 5
+l2$c[c(1, 4)] # 6
+l2$c[c("a", "d")] # 7
+l2["c"][["c"]][c("a", "d")] # 8
+l[2:3][3]  # 9 (doesn't work)
+```
+
+In Chunk 3 above, we are indexing into a specific list element, and then indexing into values within the selected vectors. First thing we do is assign names (a, b, c, d) to vector `c` in `l2` (the 3rd element). 
+
+- In #1-#4 you see various ways how you can select elements 2 and 3 from the second list element (either `l` or `l2`)
+- #5-#8 show how we get extract elements 1 and 4 from the list's 3 element 
+- **Pay close attention to #3, #4, and #8, which each have three sets of brackets**
+- Lastly we see #9, which produces a NULL because it is not possible to index into two separate list elements 
+
+#### Indexing to change values
+We have just seen how you can select values from vectors and lists. Now we look at using indices to change values within objects.  Fairly straightforward, and mostly entails doing the indexing on the left-hand side of the `<-`:
+
+```{r}
+# Chunk 1
+set.seed(1)
+a <- sample(0:100, size = 10, replace = TRUE)
+names(a) <- letters[1:10]
+b <- a  # copy we will modify
+l <- list(e = 1, f = 1:10, g = a)
+l2 <- l  # copy we will modify
+l
+```
+
+In the first two lines of Chunk 1, we are using the `sample` function to select a 10 integers at random from a vector of integers (0-100). We preceed that call with `set.seed(1)`, which ensures that each time we run this code we get the same numbers drawn (**use `?set.seed` to learn more about random seeds, and `?sample` to learn about the arguments passed to the function**). Random number generation is an important aspect of learning how to code, particularly for setting up __self-contained, reproducible examples__ that you can use to ask others for help. 
+
+```{r, error = TRUE}
+# Chunk 2
+b[1] <- -99  # 1
+a
+b["j"] <- "z"  # 2
+a
+b
+b[c("b", "f")] <- 9999  # 3
+a
+b
+b[3:4] <- c(-1, -2)  # 4
+a
+b
+b[5:length(b)] <- 10000:10001  # 5
+a
+b
+b[length(b) - 1] <- 0:10  # 6
+```
+
+Looking at the above, we are indexing the same way we did in the previous section, but in this case we are assigning new values to overwrite the existing ones in those index positions. Note that the number of replacements can be less than or equal to, but not exceed, the number of elements you index:
+
+- #1-#3 shows how you replace 1 or more elements with a single value
+- #4 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value)
+- #5 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life) 
+- Finally, #6 shows what you cannot do, and tells you why
+
+Now let's replace list elements:
+
+```{r}
+# Chunk 3
+l2[[1]] <- c(1, 4)  # 1
+l[[1]]
+l2[[1]]
+l2$f[c(1, 10)] <- c(-1, 1000)  # 2
+l$f
+l2$f
+l2[[3]][letters[1:4]] <- 1:4  # 3
+l[[3]]
+l2[[3]]
+l2$myfun <- function(x) x * 10  # 4
+l
+l2
+```
+
+In Chunk 3 above, we compare changes to elements of the copy list `l2` to the relevant elements of the original list `l`:
+
+- #1 Replaces `l2`'s first element, a single element vector, with a two-element vector
+- #2 Replaces the 1st and 10th element of the vector in the `l2` element named `f` with -1 and 1000, respectively
+- #3 Replaces elements named a, b, c, and d in the vector held in `l2`'s third element. 
+- #4 Assigns a fourth element to `l2` named `myfun`, which is a function we defined on the right of the operator. 
+
+```{r}
+# Chunk 4
+l2$myfun(l2$f)
+```
+
+We'll leave you to figure out what is happening in Chunk 4 for the questions below. 
+
+
+#### Practice
+
+1. Answer the following questions:
+
+- In 2.0.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
+- In 2.0.1.2, Chunk 3 #2, #3, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
+- In 2.0.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
+- In 2.0.1.4 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
+
+2. Coding practice:
+
+- Create a vector `a`, with values 20:30, a vector `b` holding all letters in the alphabet.
+- Assign letters as the names for vector `a`, such that `a[1]` gets the name "a", `a[2]` gets named "b", etc.  
+- Combine those vectors in to a list `l`, assigning names `a` and `b` to the two list elements 
+- Select from `a` as follows:
+  - All values `>=` 26
+  - The 1st and 7th element
+  - The last element and the second to last element (extra marks if you use `length` to find both index numbers)
+- Select from `b` the values named "a", "c", and "g"
+- Select from `l`:
+  - The first element by integer index
+  - The first element by integer index, so that it returns as a 1-element list
+  - All values in the element named `a` that are `<` than 25
+  - All values in the element named `a` that are equal to 25
+  - All values in the second element that are contained in the vector of letters `c(d, e, f)`
+
+
+
+
+
