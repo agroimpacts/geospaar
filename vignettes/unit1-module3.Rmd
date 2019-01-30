@@ -100,6 +100,155 @@ d_tb[, mean(b), by = a][order(a)]
 
 `dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough dplyr and a few other tidyverse functions so that we can get ready for these changes. 
 
+# Indexing
+
+You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. 
+
+### One-dimensional data structures
+
+#### Vectors
+Recall that a vector is a 1-dimensional object. An atomic vector can contain only one data type.   
+```{r}
+a <- 1:10
+b <- a
+names(b) <- letters[1:10]
+```
+
+Here we define the vector a, which has values 1:10, and make a copy of `a` called `b`. We then assign names to each of the values in the vector `b`. The names are the first 10 letters of the alphabet, which `R` provides in a built-in vector called `letters` (there is also `LETTERS`--type that into the console and execute it to check it out). Note the operation here: we apply the `names` function (run `?names` to see what this function does) to `b`, and then *assign* to it the vector of letter from `letters` using `<-`, R's assignment operator (you could also use `=`, but we don't because we follow the `R` style guide [here](http://adv-r.had.co.nz/Style.html), and for reasons detailed [here](https://colinfay.me/r-assignment/) it is better to stick with `<-` for assignment). 
+
+Note that this code also gives out first instruction in indexing. Note that we use `[]` with `letters`, `()`. That's because `letters` is a vector from which we are extracting a subset of values, as opposed to an object to which we are applying a function, in which case we would enclose the object with `()`--as we did with `names(a)`.  
+
+So now that `a` is an object, we also extract values from it, using the same `[]` notation and values that specify particular index positions. 
+
+```{r}
+a[1] # 1
+a[4:5] # 2
+a[c(1, 5, 10)] # 3
+a[length(a)] # 4
+a[-1] # 5
+a[-c(1, 3)] # 6
+```
+
+In the code above, we extract from `a`:
+
+1. The 1st element
+2. The 4th and 5th elements. Since 
+3. The 1st, 5th, and 10th elements
+4. The last element
+5. The 2nd through 10th elements
+6. The 2nd and fourth through 10th elements
+
+We use integers within the `[]` to indicate the *position* of the element(s) we want to pull out of `a`. If we want more than 1 element, we can specify a range of indices using `:` if the positions are contiguous/adjacent, i.e. `4:5`. If they are discontiguous, then we have to concatenate the indices using `c()`, separating the integers specifying the index positions by commas, i.e. `c(1, 5, 10)`. Lastly, we can grab the last element and the last element only using the index the final index number (10), or, as os often the cases in large vectors, where we might not know the exact total number of elements (and thus the index number of the final element), we can use the `length` function to find out how long (how many elements are in) the vector is, i.e. `length(a)`, which returns the value 10 in this case into the `[]`. 
+
+In examples 5 and 6 we use negative indicing to drop element the first element and 1st and third elements, yielding the remaining elements in the vector. 
+
+You can also use the names of elements in the vector, if it has names assigned, as is the case with `b` (which you can also index into with integers)
+```{r, error=TRUE}
+b["a"]
+b[c("d", "e")]
+b[c("a", "e", "j")]
+b["j"]
+b[-"a"]
+b[-c("a", "c")]
+```
+
+The above recreates exactly what we did with integer indices, but using the element names instead. However, we see that negative indexing is not possible with names.  
+
+We can also index using logical operators to select elements of vectors based on their values. 
+
+```{r}
+a[a > 5]  # 1
+a[a >= 2 & a < 7]  # 2  
+a[a == 7 | a == 2]  # 3
+a[a %in% c(1, 10)]  # 4
+b[b %in% 2:3]  # 5
+```
+
+In the above we use logical operators to select values from `a` and `b` based on their values. Let's translate what the above are doing exactly. 
+
+1. Select from `a` all values of `a` that greater than 5
+2. Select from `a` all values of `a` that are greater than or equal to 2 and less than 7
+3. Select from `a` all values of `a` that 7 or equal 2
+4. Select from `a` all values of `a` that occur within a vector containing 1 and 10 (this is the same as: select from `a` all values of `a` that equal 1 or equal 10)
+5. Select from `b` all values of `b` that occur within a vector containing 2 and 3
+
+Let's look at two aspects of this syntax, starting within the logical operations within the `[]`.  What are those doing? 
+
+```{r}
+a > 5
+a >= 2 & a < 7
+a == 7 | a == 2
+a %in% c(1, 10)
+b %in% 2:3
+```
+
+Those operations are testing whether each value in the vector meets the particular condition (`TRUE`) or not (`FALSE`), e.g. is thise value of `a` greater than 5 or not? When those tests are done inside the `[]`, the resulting values that are `TRUE` are the ones selected from the vector. The `FALSE`s are ignored. 
+
+We can recover the index positions from the logicals using the `which` function: 
+```{r}
+which(a > 5)
+which(b %in% 2:3)
+```
+
+You can check that by comparing the index values to the positions of the `TRUE` values in the corresponding logical results (the 1st and 5th examples) above that. 
+
+#### Lists
+
+A list is a vector that can contain multiple data types. It can be named or unnamed. 
+```{r}
+l <- list(1, 1:10, c("a", "b", "c", "d"))  # unnamed list
+l2 <- l
+names(l2) <- letters[1:3]  # named list
+l 
+l2
+```
+
+`l` is an unnamed list, `l2` has names assigned to each element. The results above give some insights into how to index into lists. Lists are indexed from within `[[]]` as well as `[]`:
+
+```{r}
+l[[1]]  # 1
+l[1]  # 2
+l[2:3]  # 3
+l[[2:3]]  # 4
+l[[length(l)]] # 5
+l[length(l)]  # 6
+```
+
+1. Pull out the contents of the element of list `l`
+2. Pull the first element of list `l` into a list of length 1
+3. Pull the second and third elements of `l` into a two-element list
+4. (Try) pull the second and third elements of `l` to see their contents. Only see the results of element 2. *This is incorrect*. 
+5. Pull out the contents of the last element of `l` 
+6. Pull the last element of list `l` into a list of length 1
+
+So list indexing by `[[]]` is different than by `[]`. 
+
+We can also index by name:
+
+```{r, error=TRUE}
+l2[["a"]]  # 1
+l2["a"]  # 2
+l2[c("a", "b")]  # 3
+l2[[c("a", "b")]]  # 4
+l2[["c"]]  # 5
+l2["c"]  # 6
+l2$c  # 7
+l2$a  #8
+```
+
+Note that 1-6 just above recreate the previous 1-6 using integer indices, except 4 in this most recent shows the error resulting from trying to pull the contents of two list elements out of the list simultaneously. 7 and 8 are new however, as they use the `$` operator to pull out the contents of the element by name. `l2$c` is the same as `l2[["c"]]`. 
+
+
+#### Using indices to change values
+
+
+
+#### Vector practice Questions
+
+Answer the following questions. 
+
+What class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
+
 
 
 
