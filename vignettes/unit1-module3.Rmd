@@ -8,7 +8,7 @@ output:
     highlight: github
     fig_caption: yes
     number_sections: yes
-    toc_depth: 5
+    toc_depth: 4
     toc: yes
     css: unit.css
 vignette: >
@@ -206,6 +206,8 @@ l2
 `l` is an unnamed list, `l2` has names assigned to each element. The results above give some insights into how to index into lists. Lists are indexed from within `[[]]` as well as `[]`:
 
 ```{r}
+# Chunk 1
+
 l[[1]]  # 1
 l[1]  # 2
 l[2:3]  # 3
@@ -226,6 +228,7 @@ So list indexing by `[[]]` is different than by `[]`.
 We can also index by name:
 
 ```{r, error=TRUE}
+# Chunk 2
 l2[["a"]]  # 1
 l2["a"]  # 2
 l2[c("a", "b")]  # 3
@@ -236,21 +239,82 @@ l2$c  # 7
 l2$a  #8
 ```
 
-Note that 1-6 just above recreate the previous 1-6 using integer indices, except 4 in this most recent shows the error resulting from trying to pull the contents of two list elements out of the list simultaneously. 7 and 8 are new however, as they use the `$` operator to pull out the contents of the element by name. `l2$c` is the same as `l2[["c"]]`. 
+Note that 1-6 just above (Chunk 2) recreate the previous 1-6 (Chunk 1) using integer indices, except Chunk 2 #4 shows the error resulting from trying to pull the contents of two list elements out of the list simultaneously. Chunk 2 #7 and #8 are new however, as they use the `$` operator to pull out the contents of the element by name. `l2$c` is the same as `l2[["c"]]`. 
 
+One more thing with list indexing we will look at: indexing specific elements within list elements:
 
-#### Using indices to change values
+```{r}
+# Block 3
+names(l2$c) <- letters[1:4]
+l[[2]][2:3]  # 1
+l2$b[2:3]  # 2
+l[2][[1]][2:3]  # 3
+l2["b"][[1]][2:3]  # 4
+l[[3]][c(1, 4)] # 5
+l2$c[c(1, 4)] # 6
+l2$c[c("a", "d")] # 7
+l2["c"][["c"]][c("a", "d")] # 8
+l[2:3][3]  # 9 (doesn't work)
+```
 
+In Chunk 3 above, we are indexing into a specific list element, and then indexing into values within the selected vectors. First thing we do is assign names (a, b, c, d) to vector `c` in `l2` (the 3rd element). In #1-#4 you see various ways how you can select elements 2 and 3 from the second list element (either `l` or `l2`). #5-#8 show how we get extract elements 1 and 4 from the list's 3 element. **Pay close attention to #2, #3, and #8 which both have a lot of brackets.**  Lastly we see #9, which produces a NULL because it is not possible to index into two separate list elements. 
+
+#### Indexing to change values
+We have just seen how you can select values from vectors and lists. Now we look at using indices to change values within objects.  Fairly straightforward, and mostly entails doing the indexing on the left-hand side of the `<-`:
+
+```{r}
+# Chunk 1
+set.seed(1)
+a <- sample(0:100, size = 10, replace = TRUE)
+names(a) <- letters[1:10]
+b <- a  # copy we will modify
+l <- list(e = 1, f = 1:10, g = a)
+l2 <- l  # copy we will modify
+l
+```
+
+In the first two lines of Chunk 1, we are using the `sample` function to select a 10 integers at random from a vector of integers (0-100). We preceed that call with `set.seed(1)`, which ensures that each time we run this code we get the same numbers drawn (**use `?set.seed` to learn more about random seeds, and `?sample` to learn about the arguments passed to the function**). Random number generation is an important aspect of learning how to code, particularly for setting up __self-contained, reproducible examples__ that you can use to ask others for help. 
+
+```{r, error = TRUE}
+# Chunk 2
+b[1] <- -99  # 1
+a
+b
+b[c("b", "f")] <- 9999  # 2
+a
+b
+b[3:4] <- c(-1, -2)  # 3
+a
+b
+b[length(b) - 1] <- 0:10  # 4
+```
+
+```{r}
+# Chunk 3
+b["j"] <- "z"  # 4
+b
+l2[[1]] <- c(1, 4)  # 5
+l2[[1]]
+l2$f[c(1, 10)] <- c(-1, 1000)  # 6
+l2$f
+l2[[3]][letters[1:4]] <- 1:4   # 7
+l2[[3]]
+l2$myfun <- function(x) x * 10  # 8
+l
+l2
+
+```
 
 
 #### Vector practice Questions
 
 Answer the following questions. 
 
-What class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
+1. In 2.0.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
 
+2. In 2.0.1.2, Chunk 3 #2, #3, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
 
-
+3. In 2.0.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
 
 
 
