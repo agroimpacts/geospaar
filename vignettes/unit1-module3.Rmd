@@ -286,24 +286,31 @@ b
 b[3:4] <- c(-1, -2)  # 3
 a
 b
-b[length(b) - 1] <- 0:10  # 4
+b[5:length(b)] <- 10000:10001  # 4
+a
+b
+b[length(b) - 1] <- 0:10  # 5
 ```
+
+Looking at the above, we are indexing the same way we did in the previous section, but in this case we are assigning new values to overwrite the existing ones in those index positions. Note that the number of replacements can be less than or equal to, but not exceed, the number of elements you index--#1-#2 shows how you replace 1 or more elements with a single value, #3 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value), and #4 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life). Finally, #5 shows what you cannot do, and tells you why. 
+
+Now let's replace list elements:
 
 ```{r}
 # Chunk 3
-b["j"] <- "z"  # 4
+b["j"] <- "z"  # 1
 b
-l2[[1]] <- c(1, 4)  # 5
+l2[[1]] <- c(1, 4)  # 2
 l2[[1]]
-l2$f[c(1, 10)] <- c(-1, 1000)  # 6
+l2$f[c(1, 10)] <- c(-1, 1000)  # 3
 l2$f
-l2[[3]][letters[1:4]] <- 1:4   # 7
+l2[[3]][letters[1:4]] <- 1:4   # 4
 l2[[3]]
-l2$myfun <- function(x) x * 10  # 8
+l2$myfun <- function(x) x * 10  # 5
 l
 l2
-
 ```
+
 
 
 #### Vector practice Questions
