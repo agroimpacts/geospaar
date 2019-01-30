@@ -100,6 +100,13 @@ d_tb[, mean(b), by = a][order(a)]
 
 `dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough dplyr and a few other tidyverse functions so that we can get ready for these changes. 
 
+## Setting up for practice
+In this module, you will be asked to answer questions and practice coding along the way. To aid this process: 
+
+- Create a new folder called "notebooks" in your class Rstudio project, as a top level folder. 
+- Open a new Rmarkdown file. Save it into the notebooks folder, calling it `geog246346_unit1module3_practice.Rmd`. Adjust the title as needed, and delete the text and chunks below. Keep one chunk, but delete the code in it, as a starting point for code
+- Type answers to questions, take notes, etc, outside the code chunks. Put practice code inside the `R` code chunks. Remember, you can execute code line by line within chunks to test it out, execute a single chunk, or knit the code all at once (note: when you knit, the code is executed in a new environment environment than the one you use when executing line by line)
+
 # Indexing
 
 You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. 
@@ -216,12 +223,12 @@ l[[length(l)]] # 5
 l[length(l)]  # 6
 ```
 
-1. Pull out the contents of the element of list `l`
-2. Pull the first element of list `l` into a list of length 1
-3. Pull the second and third elements of `l` into a two-element list
-4. (Try) pull the second and third elements of `l` to see their contents. Only see the results of element 2. *This is incorrect*. 
-5. Pull out the contents of the last element of `l` 
-6. Pull the last element of list `l` into a list of length 1
+- #1 (**reference is to comment to right of the code**) pulls out the contents of the element of list `l`
+- #2 pulls the first element of list `l` into a list of length 1
+- #3 pulls the second and third elements of `l` into a two-element list
+- #4 tries **but fails** to pull the second and third elements of `l` to see their contents--it only returns the contents of element 2
+- #5 pulls out the contents of the last element of `l` 
+- #6 pulls the last element of list `l` into a list of length 1
 
 So list indexing by `[[]]` is different than by `[]`. 
 
@@ -257,7 +264,12 @@ l2["c"][["c"]][c("a", "d")] # 8
 l[2:3][3]  # 9 (doesn't work)
 ```
 
-In Chunk 3 above, we are indexing into a specific list element, and then indexing into values within the selected vectors. First thing we do is assign names (a, b, c, d) to vector `c` in `l2` (the 3rd element). In #1-#4 you see various ways how you can select elements 2 and 3 from the second list element (either `l` or `l2`). #5-#8 show how we get extract elements 1 and 4 from the list's 3 element. **Pay close attention to #2, #3, and #8 which both have a lot of brackets.**  Lastly we see #9, which produces a NULL because it is not possible to index into two separate list elements. 
+In Chunk 3 above, we are indexing into a specific list element, and then indexing into values within the selected vectors. First thing we do is assign names (a, b, c, d) to vector `c` in `l2` (the 3rd element). 
+
+- In #1-#4 you see various ways how you can select elements 2 and 3 from the second list element (either `l` or `l2`)
+- #5-#8 show how we get extract elements 1 and 4 from the list's 3 element 
+- **Pay close attention to #3, #4, and #8, which each have three sets of brackets**
+- Lastly we see #9, which produces a NULL because it is not possible to index into two separate list elements 
 
 #### Indexing to change values
 We have just seen how you can select values from vectors and lists. Now we look at using indices to change values within objects.  Fairly straightforward, and mostly entails doing the indexing on the left-hand side of the `<-`:
@@ -279,50 +291,86 @@ In the first two lines of Chunk 1, we are using the `sample` function to select 
 # Chunk 2
 b[1] <- -99  # 1
 a
-b
-b[c("b", "f")] <- 9999  # 2
+b["j"] <- "z"  # 2
 a
 b
-b[3:4] <- c(-1, -2)  # 3
+b[c("b", "f")] <- 9999  # 3
 a
 b
-b[5:length(b)] <- 10000:10001  # 4
+b[3:4] <- c(-1, -2)  # 4
 a
 b
-b[length(b) - 1] <- 0:10  # 5
+b[5:length(b)] <- 10000:10001  # 5
+a
+b
+b[length(b) - 1] <- 0:10  # 6
 ```
 
-Looking at the above, we are indexing the same way we did in the previous section, but in this case we are assigning new values to overwrite the existing ones in those index positions. Note that the number of replacements can be less than or equal to, but not exceed, the number of elements you index--#1-#2 shows how you replace 1 or more elements with a single value, #3 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value), and #4 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life). Finally, #5 shows what you cannot do, and tells you why. 
+Looking at the above, we are indexing the same way we did in the previous section, but in this case we are assigning new values to overwrite the existing ones in those index positions. Note that the number of replacements can be less than or equal to, but not exceed, the number of elements you index:
+
+- #1-#3 shows how you replace 1 or more elements with a single value
+- #4 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value)
+- #5 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life) 
+- Finally, #6 shows what you cannot do, and tells you why
 
 Now let's replace list elements:
 
 ```{r}
 # Chunk 3
-b["j"] <- "z"  # 1
-b
-l2[[1]] <- c(1, 4)  # 2
+l2[[1]] <- c(1, 4)  # 1
+l[[1]]
 l2[[1]]
-l2$f[c(1, 10)] <- c(-1, 1000)  # 3
+l2$f[c(1, 10)] <- c(-1, 1000)  # 2
+l$f
 l2$f
-l2[[3]][letters[1:4]] <- 1:4   # 4
+l2[[3]][letters[1:4]] <- 1:4  # 3
+l[[3]]
 l2[[3]]
-l2$myfun <- function(x) x * 10  # 5
+l2$myfun <- function(x) x * 10  # 4
 l
 l2
 ```
 
+In Chunk 3 above, we compare changes to elements of the copy list `l2` to the relevant elements of the original list `l`:
+
+- #1 Replaces `l2`'s first element, a single element vector, with a two-element vector
+- #2 Replaces the 1st and 10th element of the vector in the `l2` element named `f` with -1 and 1000, respectively
+- #3 Replaces elements named a, b, c, and d in the vector held in `l2`'s third element. 
+- #4 Assigns a fourth element to `l2` named `myfun`, which is a function we defined on the right of the operator. 
+
+```{r}
+# Chunk 4
+l2$myfun(l2$f)
+```
+
+We'll leave you to figure out what is happening in Chunk 4 for the questions below. 
 
 
-#### Vector practice Questions
+#### Practice
 
-Answer the following questions. 
+1. Answer the following questions:
 
-1. In 2.0.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
+- In 2.0.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
+- In 2.0.1.2, Chunk 3 #2, #3, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
+- In 2.0.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
+- In 2.0.1.4 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
 
-2. In 2.0.1.2, Chunk 3 #2, #3, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
+2. Coding practice:
 
-3. In 2.0.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
-
+- Create a vector `a`, with values 20:30, a vector `b` holding all letters in the alphabet.
+- Assign letters as the names for vector `a`, such that `a[1]` gets the name "a", `a[2]` gets named "b", etc.  
+- Combine those vectors in to a list `l`, assigning names `a` and `b` to the two list elements 
+- Select from `a` as follows:
+  - All values `>=` 26
+  - The 1st and 7th element
+  - The last element and the second to last element (extra marks if you use `length` to find both index numbers)
+- Select from `b` the values named "a", "c", and "g"
+- Select from `l`:
+  - The first element by integer index
+  - The first element by integer index, so that it returns as a 1-element list
+  - All values in the element named `a` that are `<` than 25
+  - All values in the element named `a` that are equal to 25
+  - All values in the second element that are contained in the vector of letters `c(d, e, f)`
 
 
 
