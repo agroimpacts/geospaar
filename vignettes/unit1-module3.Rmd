@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 library(knitr)
 ```
 
-# Introduction to programming in R
+# Introduction to R programming{#introduction-to-r-programming}
 
 Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a somewhat high level overview of `R`'s structure. Now we are going down to the business of learning how to use it.
 
@@ -51,7 +51,7 @@ So we are going to learn aspects of both.
 
 Before diving in, I want to illustrate how different syntaxes can look along some of `R`'s evolutionary trajectories. We'll focus on data manipulation.
 
-```{r}
+```{r, eval=FALSE}
 library(tibble)
 library(data.table)
 
@@ -60,13 +60,54 @@ set.seed(1)
 d <- data.frame(a = sample(letters[1:7], size = 1000, replace = TRUE), 
                 b = runif(n = 1000, min = 0, max = 20))
 head(d)
+#>   a          b
+#> 1 b 10.6161759
+#> 2 c 13.6972181
+#> 3 e  7.6656679
+#> 4 g 19.0997600
+#> 5 b  2.3671316
+#> 6 g  0.7820011
+
 # ...converted to a tibble
 d_tb <- as_tibble(d)
 d_tb
+#> # A tibble: 1,000 x 2
+#>    a          b
+#>    <fct>  <dbl>
+#>  1 b     10.6  
+#>  2 c     13.7  
+#>  3 e      7.67 
+#>  4 g     19.1  
+#>  5 b      2.37 
+#>  6 g      0.782
+#>  7 g     10.1  
+#>  8 e     11.6  
+#>  9 e     16.8  
+#> 10 a     13.1  
+#> # … with 990 more rows
 
 # ...converted to a data.table
 d_dt <- data.table(d)
 d_dt
+#>       a         b
+#>    1: b 10.616176
+#>    2: c 13.697218
+#>    3: e  7.665668
+#>    4: g 19.099760
+#>    5: b  2.367132
+#>   ---            
+#>  996: f 15.500565
+#>  997: e  1.381404
+#>  998: b  4.818985
+#>  999: b  4.856037
+#> 1000: b  7.742260
+```
+```{r, echo = FALSE}
+library(tibble)
+set.seed(1)
+d <- data.frame(a = sample(letters[1:7], size = 1000, replace = TRUE), 
+                b = runif(n = 1000, min = 0, max = 20))
+d_tb <- as_tibble(d)
 ```
 
 The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced data.frames that have vastly improved performance in terms of processing times and memory handling, compared to the good old `data.frame`, as well as a whole suite of functions designed to manipulate them that differ markedly from the ways in which data.frames are manipulated. The first thing to note is that the generic `print` functions (note you are implictly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines.  Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
@@ -85,8 +126,16 @@ d_tb %>% group_by(a) %>% summarize(mean(b))
 ```
 
 And finally the `data.table`:
-```{r}
+```{r, eval = FALSE}
 d_dt[, mean(b), by = a][order(a)]
+#>    a        V1
+#> 1: a 10.204565
+#> 2: b  9.349255
+#> 3: c  9.838504
+#> 4: d 10.043368
+#> 5: e  9.998252
+#> 6: f 10.203975
+#> 7: g  9.061001
 ```
 
 Three fairly different syntaxes for doing the same thing. These are ordered in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on `tibble` and that will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames or souped-up data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
@@ -100,6 +149,7 @@ d_tb[, mean(b), by = a][order(a)]
 
 `dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough dplyr and a few other tidyverse functions so that we can get ready for these changes. 
 
+
 ## Setting up for practice
 In this module, you will be asked to answer questions and practice coding along the way. To aid this process: 
 
@@ -107,9 +157,16 @@ In this module, you will be asked to answer questions and practice coding along 
 - Open a new Rmarkdown file. Save it into the notebooks folder, calling it `geog246346_unit1module3_practice.Rmd`. Adjust the title as needed, and delete the text and chunks below. Keep one chunk, but delete the code in it, as a starting point for code
 - Type answers to questions, take notes, etc, outside the code chunks. Put practice code inside the `R` code chunks. Remember, you can execute code line by line within chunks to test it out, execute a single chunk, or knit the code all at once (note: when you knit, the code is executed in a new environment environment than the one you use when executing line by line)
 
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
 # Indexing
 
-You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. 
+You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. Indexing is also referred to as subsetting, because when we extract values we are selecting a subset of an object. 
 
 ### One-dimensional data structures
 
@@ -128,12 +185,23 @@ Note that this code also gives out first instruction in indexing. Note that we u
 So now that `a` is an object, we also extract values from it, using the same `[]` notation and values that specify particular index positions. 
 
 ```{r}
-a[1] # 1
-a[4:5] # 2
-a[c(1, 5, 10)] # 3
-a[length(a)] # 4
-a[-1] # 5
-a[-c(1, 3)] # 6
+# #1
+a[1]
+#
+# #2
+a[4:5]
+#
+# #3
+a[c(1, 5, 10)]
+#
+# #4
+a[length(a)]
+#
+# #5
+a[-1]
+#
+# #6
+a[-c(1, 3)]
 ```
 
 In the code above, we extract from `a`:
@@ -164,11 +232,20 @@ The above recreates exactly what we did with integer indices, but using the elem
 We can also index using logical operators to select elements of vectors based on their values. 
 
 ```{r}
-a[a > 5]  # 1
-a[a >= 2 & a < 7]  # 2  
-a[a == 7 | a == 2]  # 3
-a[a %in% c(1, 10)]  # 4
-b[b %in% 2:3]  # 5
+# #1
+a[a > 5]
+#
+# #2
+a[a >= 2 & a < 7]
+#
+# #3
+a[a == 7 | a == 2]
+#
+# #4
+a[a %in% c(1, 10)]
+#
+# #5
+b[b %in% 2:3]
 ```
 
 In the above we use logical operators to select values from `a` and `b` based on their values. Let's translate what the above are doing exactly. 
@@ -214,13 +291,23 @@ l2
 
 ```{r}
 # Chunk 1
-
-l[[1]]  # 1
-l[1]  # 2
-l[2:3]  # 3
-l[[2:3]]  # 4
-l[[length(l)]] # 5
-l[length(l)]  # 6
+# #1
+l[[1]]
+#
+# #2
+l[1]
+#
+# #3
+l[2:3]
+#
+# #4
+l[[2:3]]
+#
+# #5
+l[[length(l)]]
+#
+# #6
+l[length(l)]
 ```
 
 - #1 (**reference is to comment to right of the code**) pulls out the contents of the element of list `l`
@@ -236,14 +323,29 @@ We can also index by name:
 
 ```{r, error=TRUE}
 # Chunk 2
-l2[["a"]]  # 1
-l2["a"]  # 2
-l2[c("a", "b")]  # 3
-l2[[c("a", "b")]]  # 4
-l2[["c"]]  # 5
-l2["c"]  # 6
-l2$c  # 7
-l2$a  #8
+# #1
+l2[["a"]]
+#
+# #2
+l2["a"]
+#
+# #3
+l2[c("a", "b")]
+#
+# #4
+l2[[c("a", "b")]]
+#
+# #5
+l2[["c"]]
+#
+# #6
+l2["c"]
+#
+# #7
+l2$c
+#
+# #8
+l2$a
 ```
 
 Note that 1-6 just above (Chunk 2) recreate the previous 1-6 (Chunk 1) using integer indices, except Chunk 2 #4 shows the error resulting from trying to pull the contents of two list elements out of the list simultaneously. Chunk 2 #7 and #8 are new however, as they use the `$` operator to pull out the contents of the element by name. `l2$c` is the same as `l2[["c"]]`. 
@@ -253,15 +355,33 @@ One more thing with list indexing we will look at: indexing specific elements wi
 ```{r}
 # Block 3
 names(l2$c) <- letters[1:4]
-l[[2]][2:3]  # 1
-l2$b[2:3]  # 2
-l[2][[1]][2:3]  # 3
-l2["b"][[1]][2:3]  # 4
-l[[3]][c(1, 4)] # 5
-l2$c[c(1, 4)] # 6
-l2$c[c("a", "d")] # 7
-l2["c"][["c"]][c("a", "d")] # 8
-l[2:3][3]  # 9 (doesn't work)
+#
+# #1
+l[[2]][2:3]
+#
+# #2
+l2$b[2:3]
+#
+# #3
+l[2][[1]][2:3]
+#
+# #4
+l2["b"][[1]][2:3]
+#
+# #5
+l[[3]][c(1, 4)]
+#
+# #6
+l2$c[c(1, 4)]
+#
+# #7
+l2$c[c("a", "d")]
+#
+# #8
+l2["c"][["c"]][c("a", "d")]
+#
+# #9
+l[2:3][3]  # doesn't work
 ```
 
 In Chunk 3 above, we are indexing into a specific list element, and then indexing into values within the selected vectors. First thing we do is assign names (a, b, c, d) to vector `c` in `l2` (the 3rd element). 
@@ -289,44 +409,63 @@ In the first two lines of Chunk 1, we are using the `sample` function to select 
 
 ```{r, error = TRUE}
 # Chunk 2
-b[1] <- -99  # 1
+# #1
+b[1] <- -99 
 a
-b["j"] <- "z"  # 2
-a
-b
-b[c("b", "f")] <- 9999  # 3
-a
-b
-b[3:4] <- c(-1, -2)  # 4
+# 
+# #2
+b["j"] <- "z" 
 a
 b
-b[5:length(b)] <- 10000:10001  # 5
+# 
+# #3
+b[c("b", "f")] <- 9999
 a
 b
-b[length(b) - 1] <- 0:10  # 6
+# 
+# #4
+b[3:4] <- c(-1, -2)
+a
+b
+# 
+# #5
+b[5:length(b)] <- 10000:10001 
+a
+b
+# 
+# #6
+b[length(b) - 1] <- 0:10  
 ```
 
 Looking at the above, we are indexing the same way we did in the previous section, but in this case we are assigning new values to overwrite the existing ones in those index positions. Note that the number of replacements can be less than or equal to, but not exceed, the number of elements you index:
 
-- #1-#3 shows how you replace 1 or more elements with a single value
+- #1-#3 shows how you replace 1 or more elements with a single value. Notice how in #2 that replacing the named element "j" with a character ("z") coerced the entire vector to a character type 
 - #4 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value)
-- #5 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life) 
+- #5 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life). Notice also that over-writing the "z" value at the tail of the vector (introduced in #2) do not result in the vector being coerced back to an integer type 
 - Finally, #6 shows what you cannot do, and tells you why
 
 Now let's replace list elements:
 
 ```{r}
 # Chunk 3
-l2[[1]] <- c(1, 4)  # 1
+# 
+# #1
+l2[[1]] <- c(1, 4)
 l[[1]]
 l2[[1]]
-l2$f[c(1, 10)] <- c(-1, 1000)  # 2
+# 
+# #2
+l2$f[c(1, 10)] <- c(-1, 1000)
 l$f
 l2$f
-l2[[3]][letters[1:4]] <- 1:4  # 3
+# 
+# #3
+l2[[3]][letters[1:4]] <- 1:4
 l[[3]]
 l2[[3]]
-l2$myfun <- function(x) x * 10  # 4
+# 
+# #4
+l2$myfun <- function(x) x * 10  
 l
 l2
 ```
@@ -372,7 +511,386 @@ We'll leave you to figure out what is happening in Chunk 4 for the questions bel
   - All values in the element named `a` that are equal to 25
   - All values in the second element that are contained in the vector of letters `c(d, e, f)`
 
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
 
+## Two-dimensional structures
+The two-dimensional structures of greatest interest to us are the `matrix` and `data.frame`. Indexing into these works in a similar fashion as with 1-d structures, in that you can index with integers, by name, and logically. However, in this case your setup is `[r, c]`, where indexing is done row (r) and column (c). 
+
+### matrix
+Let's start with a 5 row, 3-column integer matrix: 
+
+```{r}
+# Chunk 1
+m <- cbind(1:5, 11:15, 21:25)
+m
+#
+# #1
+m[1, 1]  
+#
+# #2
+m[2, 2]
+#
+# #3
+m[1:2, 2:3]
+#
+# #4
+m[c(1, 4), c(1, 3)]
+#
+# #5
+m[-1, -3]
+#
+# #6
+m[-c(1:4), -c(1:2)]
+
+```
+
+In #1, row 1, column 1 is selected, #2 is row 2, column 2, #3 is rows 1 and 2, columns 2 and 3, #4 is rows 1 and 4 and columns 2 and 3, while #5 and #6 are dropping different combinations of rows and columns, returning the remaining rows and columns. 
+
+Now let's do it with names: 
+```{r, error=TRUE}
+# Chunk 2
+colnames(m) <- letters[1:3]
+rownames(m) <- letters[1:5]
+m
+#
+# #1
+m["a", "a"]
+# 
+# #2
+m[c("a", "d"), c("a", "b")]
+#
+# #3
+m[letters[c(1, 5)], letters[1:2]]
+#
+# #4
+m["a", -c("5")]
+#
+# #5
+m["a", -(colnames(m) == "a")]
+#
+# #6
+m[-which(rownames(m) %in% c("a", "b", "c")), "a"]
+```
+
+In Chunk2 we assign names to the 5 rows and 3 columns of `m`, and use those names to extract different parts of the matrix. This should be fairly how this works by now, although in #3 you will notice how we use indexing into the `letters` vector to extract the actual row and column names, so that we don't see them. #4 shows that you can't use negative indexing on a column name (and also not on a row name). #5 and #6 shows how you could do negative indexing though: 
+
+- Use `colnames(m)` to return the vector of `m`'s column names
+- Use the `==` operator to find which column names match `a`
+- Wrap in `()` and apply `-` to the result, which drops the column names meeting the `TRUE` condition
+
+The same is done on row names in #6. 
+
+A matrix value can also be accessed with a single vector:
+```{r}
+# Chunk 3
+# #1
+m[1:5]
+#
+# #2
+m[6:10]
+#
+# #3
+m[11:15]
+#
+# #4
+m[1:15]
+#
+# #5
+m[length(m)]
+```
+
+Looking at the examples above, you can see that the order of indexing is by row then column. 
+
+How about by logical indexing? We already sort of got a start with that in Chunk 1 (#5 and #6), but let's have a look:
+
+```{r}
+# Chunk 4
+# #1
+m[m[, 1] == 3, 1:3]
+#
+# #2
+m[m[, 2] > 11, 3]
+#
+# #3
+m[(m[, 1] > 3) & (m[, 2] < 15), 3]
+#
+# #4
+m[(m[, "a"] > 3) & (m[, "b"] < 15), 2:3]
+#
+# #5
+m[!m[, "a"] %in% 3:5, 1:3]
+```
+
+In Chunk 4 #1 we search in `m`'s first column for the row that holds the value 3, and then use that to select the values on that row in columns 1-3, which is the equivalent of `m[3, ]` (because the values in `m[, 1]` correspond to the row numbers). #2 looks for all values >11 in column 2, but selects the values from column 3.  #3 searches for values >3 in column 1 and values <15 in column 2, pulling out values from column 3. #4 does the same search using column names rather than column index integers, but pulls out values from columns 2 and 3. Finally, #5 introduces the operator `!`, which, when combined with `%in%` is used to identify the rows in column a (1) that do not match the values 3, 4, or 5, and then subset the values in columns 1-3 (a, b, and c).
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+### data.frame
+
+We now know that a `data.frame` is a matrix that contains more than one data type. It is also a column-bound list. When it comes to indexing, `data.frame` is very similar to `matrix`, but also has some differences. 
+
+```{r}
+set.seed(1)
+d <- data.frame(a = letters[1:4], b = 1:4, c = runif(n = 4, min = 0, max = 20))
+d
+str(d)
+set.seed(1)
+d2 <- data.frame(a = letters[1:4], b = 1:4, 
+                 c = runif(n = 4, min = 0, max = 20), 
+                 stringsAsFactors = FALSE)
+str(d2)
+```
+
+#### A word on factors
+One thing to point out about `data.frame` is that it typically defaults to treating a character variable as a **factor**. Here is a [definition](https://www.stat.berkeley.edu/~s133/factors.html):
+
+> Conceptually, factors are variables in R which take on a limited number of different values; such variables are often refered to as categorical variables. One of the most important uses of factors is in statistical modeling; since categorical variables enter into statistical models differently than continuous variables, storing data as factors insures that the modeling functions will treat such data correctly.
+>
+> Factors in R are stored as a vector of integer values with a corresponding set of character values to use when the factor is displayed. The factor function is used to create a factor. The only required argument to factor is a vector of values which will be returned as a vector of factor values. Both numeric and character variables can be made into factors, but a factor's levels will always be character values. You can see the possible levels for a factor through the levels command.
+
+I usually don't use them, and prefer to have non-numeric represented as characters, so I often as the `stringsAsFactors = FALSE` argument when creating a data.frame that has character variables. You can also do this to change it from factor to character:
+
+```{r}
+d$a <- as.character(d$a)
+str(d)
+```
+
+#### Indexing differences compared to matrix
+
+Because `data.frame`s are lists: 
+```{r}
+is.list(d)
+```
+
+They are indexed differently. The first major difference is that `$` and `[[` can be used on a `data.frame`:
+
+```{r, error = TRUE}
+# Chunk 1
+# #1
+d$a
+#
+# #2
+d[["a"]]
+#
+# #3
+d[[1]]
+#
+# #4
+m$a
+#
+# #5
+m[["a"]]
+#
+# #6
+m[[1]]
+#
+# #7
+m[[1:3]]
+```
+
+See how both `$` and `[[` allow an entire column to be extract from `d` (#1, #2, #3). In comparison, `$` doesn't work with matrix `m` (#4), nor does `[[` (#5-#7), except it can be used with an integer index to extract a single element (#6), but not multiple elements (#7).
+
+The second major difference is that single vector indexing is applied to columns only in `data.frame`s, not by row, column. 
+```{r, error=TRUE}
+# Chunk 1
+# #1
+d[1]
+#
+# #2
+d[c("a", "c")]
+#
+# #3
+d[1:3]
+#
+# #4
+d[1:4]
+```
+
+This is consistent with what saw earlier with 1-d lists, in that `[` can be  used with one- to multi-element vectors to extract multiple list elements (#1, #2, "3"); for `data.frame`s, the list elements are the columns. So if you specify in your indexing vector a value that exceeds the number of columns in the `data.frame`, you get an error (#4), because you are asking for something that doesn't exist. 
+
+Now let's look subsetting `data.frame`s with logical indexing, which is also typically done differently then with a `matrix`:
+```{r}
+# Chunk 3
+# #1
+d[d$a %in% c("a", "c"), "c"]
+#
+# #2
+d[d$a %in% c("a", "c"), c("a", "c")]
+#
+# #3
+d[d$b > 2 & d$c < 18, 1:3]
+#
+# #4
+d[d["b"] > 2 & d["c"] < 18, 1:3]
+#
+# #5
+d[d[, "b"] > 2 & d[, "c"] < 18, 1:3]
+```
+
+Notice how the `$` is used to specify the column name(s) used in logical indexing (#1, #2, #3), which is the more convenient and (I think) common way of logical indexing with `data.frame`s. You can also use the `[x]` (#4) or `[, x]` (#5, same as with `matrix`) syntax.   
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Changing values
+We'll keep this short and sweet, because the concepts are pretty close to what we use for 1-D structures. Here it is for `matrix`:
+
+```{r}
+# Chunk 1
+# #1
+m[1:4, 1:2] <- -9
+m
+#
+# #2
+m[c("d", "e"), "c"] <- 0
+m
+# 
+# #3
+m[m[, "c"] == 0, 3] <- 24:25
+m
+#
+# #4
+m[m == -9] <- c(1:4, 11:14)
+m
+#
+# #5
+m[m < 5] <- "a"
+m
+```
+
+Changes to values in different rows/columns are made with fairly straightforward indexing in #1 and #2. In #3, we reset the change made in #2 by searching in column "c" for the rows containing 0s, and then we specify the column number to make sure that just the 0 values in rows 4 and 5 in column 3 ("c") are replaced with 24 and 25 their original values. A more efficient way of doing that might have been the approach used in #4, where we don't index a column value, and leverage the fact that a `matrix` is simply a vector with two dimensions, searching for all -9 values within in `m`, and then replacing with their original values. We provide the replacement values in the order in which a `matrix` is indexed (by row then column).  Finally, note how replacement with a character (#5) changes the entire matrix to character.   
+
+Here is replacement with a `data.frame`:
+```{r}
+# Chunk 2
+# #1
+d[d$b <= 2, "a"] <- "zzz"
+d
+# 
+# #2
+d[d["a"] == "zzz", "a"] <- letters[1:2]
+#
+# #3
+ds <- d[d$b >= 2 & d$c < 18, 2:3]
+d[d$b >= 2 & d$c < 18, 2:3] <- 11:14
+d
+#
+# #4
+d[d$b >= 11 & d$c <= 14, 2:3] <- ds
+d
+# 
+# #5
+d[[3]] <- 10^d$b
+d
+```
+
+In Chunk 2 above, #1 and #2 should make sense. In #3, we start to get a bit more tricksy. We first create a new `data.frame`, `ds`, which is a logically selected subset of columns `b` and `c`. We then overwrite the same subset in `d` with the vector `11:14`. In #4, we use `ds` to reset `d`. Finally, in #5, we show how the 3rd column of `d` can be replaced using `[[` notation for indexing, and we use the 10 to the power of (`^`) of `d$b` to create the replacement values.  
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Subsetting and replacement with dplyr
+
+Now that we have seen how to index/subset `data.frame`s, we'll look at how that is done with `dplyr`. In a word, it is quite different. First, read about the `dplyr` [grammar](https://dplyr.tidyverse.org), which provides a set of "verbs" that are designed to replace many of the base `R` approaches for manipulating `data.frame`s, including how you index them (you may also wish to read the chapter on [data transformation](https://r4ds.had.co.nz/transform.html) in *R For Data Science*). 
+
+Here we will focus on just indexing and replacement, using a slighly larger version of `d`, noting the `dplyr` works on `data.frame`s as well as `tibble`:
+```{r}
+# Chunk 1
+set.seed(1)
+d <- data.frame(a = letters[1:7], b = 1:7, c = runif(n = 7, min = 0, max = 20))
+d
+#
+# #1
+d %>% filter(a %in% c("a", "e")) %>% select(a, b)
+#
+# #2
+d %>% filter(c > 7 & c < 18) %>% select(-b)
+#
+# #3
+d %>% filter(a == "c")
+# 
+# 4
+d %>% slice(c(1:2, 7))
+```
+
+A bunch of new stuff up there, which is first noticeable in #1: 
+
+- First, there's the `%>%`, which is the "pipe"
+operator, which `dplyr` imports from `magrittr` (a tidyverse package). It passes (or pipes) whatever is on the lefthand side to the operation defined on the right-hand side, which allows one to chain together multiple operations in a single command sequence 
+- We pipe `d` to `dplyr`'s `filter` function, which is used to find rows based on their values. We use the same sort of logical indexing syntax as in our previous subsetting examples, in this case looking for values "a" and "e" in column `a`. However, one difference is that we don't have to wrap `a` in quotes. This is a feature of `dplyr` functions, which makes coding more efficient 
+- Having found the matching rows, we then narrow our selection to just columns `a` and `b` by using the `select` function to pull the columns we want. Note that we don't have to wrap `a` and `b` in quotes, or within a `c()`
+
+In #2 we see how we find values in `c` that fall between 7 and 18, and then select columns `a` and `c` by negative reference on `b`. Note that `dplyr::select` allows the negative reference to be applied right to the column name, which you can't do in a `matrix` or `data.frame`
+
+In #3 using `filter` without `select` simply returns the matching row across all columns. #4 introduces the `slice` function, which lets us select by row number.  
+
+How about replacement? 
+
+```{r}
+# Chunk 2
+# #1
+d %>% mutate(a = ifelse(a %in% c("a", "e"), "zzz", a))
+#
+# #2 
+d %>% mutate(a = ifelse(a %in% c("a", "e"), "zzz", a), 
+             c = ifelse(c > 7 & c < 18, -9999, c))
+#
+# #3
+d %>% mutate(a = ifelse(a %in% c("a", "e"), "zzz", a)) %>%  
+  mutate(c = ifelse(c > 7 & c < 18, -9999, c)) %>% mutate(b = b + 10) %>% 
+  mutate(d = b^2)
+```
+
+`dplyr::mutate` is used to change values in a `data.frame`. In cases where you just want to change a subset of values, and leave the rest of the `data.frame` as is, you combine `mutate` with `ifelse`. 
+
+In #1, we use `mutate` to change the values "a" and "e" in `a` to "zzz". Let's translate into plain language what `ifelse` is doing: *if any of `a`'s values  are the same as those in this vector containing "a" and "e", then change them to "zzz", else just keep the values as they are*. 
+
+In #2 we change values in both `a` and `c`, using two `ifelse` statements in a single call to `mutate`. 
+
+In #3 we chain together four separate calls to update specific rows in `a`, `b`, and `c`, and to add a fourth column `d` (the square of `b`). 
+
+So that's a brief look at subsetting and replacement with `dplyr`. We'll build on that moving forward. 
+
+
+### Practice
+1. Answer the following questions:
+
+- What happens if you update an integer vector with a character? 
+- What happens if you have an integer `matrix` `m` with 10 rows and columns "a" and "b", and you replace the fourth row of "b" with "zzz"? What would happen if `m` is a `data.frame`? 
+- Name two ways that indexing a `data.frame` differs from a `matrix`.
+
+2. Coding practice:
+- Create a matrix `m` with 10 rows and 3 columns. Make the 1st column have values 1:10, the second column 11:20, and the third 21:30
+- Select rows 4 and 5 and columns 2 and 3 from the matrix
+- Name the matrix columns "a", "b", and "c" 
+- Select the values from column "b" that are greater than 14 and less than or equal to 18
+- Convert `m` to a `data.frame` `d` 
+- Select from `d$a` the values >4 and replace them with the value -1
+- Replace the values in column `c` with the first 10 letter of the alphabet
+- Combine `m` and `d` into a list `l`. Select rows 2 and 3 from column `b` from the element containg `d` of list `l`
+- Use `dplyr::filter` to select the values between 14 and 18 from column `b`
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                d
 
 
 
