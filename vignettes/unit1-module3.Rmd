@@ -890,7 +890,21 @@ So that's a brief look at subsetting and replacement with `dplyr`. We'll build o
 [Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
 </center>
 ***
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                d
 
+# Calculating
 
+One of the most basic, but useful, ways we can use `R` data objects is to provide inputs for simple calculations, i.e. to use [`R` as a calculator](http://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R1_GettingStarted/R1_GettingStarted3.html).  
 
+This is reasonably simple. There are of coursea ton of base operators  and functions that allow this: 
+
+```{r}
+a <- 1:10
+log(a)
+exp(log(a))
+10^a
+log10(10^a)
+(a * 100) %% 3
+sqrt(a)
+```
+
+Etc. 
