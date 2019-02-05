@@ -1010,9 +1010,168 @@ This vectorization therefore is advantageous in terms of reducing the amount of 
 </center>
 ***
 
-
-
-
 # Control structures
 
-# Reading and writing data
+Although we just heard about vectorized operations, and how they make it unnecessary for us to write control structures such as loops, we'll end up having to use them eventually. Certains operations just require control structures, or if they aren't essential, they make our code much efficient. 
+
+One nice example: imagine you have 5 different spreadsheets containing data that you need to analyze. It is more efficient to write one block of code  that reads all 5 datasets into a single list object, then to write 5 lines of code that reads each object into it own object (resulting in 5 objects). 
+
+Another example is a case where we need to select two different operations depending on a particular condition. If condition A is met, then we choose operation 1. Otherwise, if condition B is met, we choose operation 2.  
+
+We have already [introduced some of these control structures](unit1-module2.html#control-structures) in Module 2. Now we'll learn how to use them. 
+
+We divide control structures into branching and looping structures, [following rspatial.org](https://www.rspatial.org/intr/9-apply.html). Let's start with looping. 
+
+## Looping
+
+Looping is pretty straight-forward. You have a multi-element or multi-dimensional object, you need to perform a particular operation or set of operations on each dimension or element: 
+
+```{r}
+# Chunk 1
+sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
+for(i in 1:4) {  # for loop with iterator i over vector 1:4
+  stmnt <- paste0(letters[i], " is the ", i, sscript[i],
+                  " letter in the alphabet")
+  print(stmnt)  # print statement
+}
+```
+
+This is a somewhat silly example, but it shows how we iteratively construct a series of unique statements by grabbing values from two different objects. In this case, the two objects are `sscript`, a vector containing different ordinal superscripts, and `letters`. We combine them within a paste statement that sits within a `for` loop, which iterates over a vector `1:4`. The `for` statement has an iterator variable `i` that holds the single value extracted from each iteration over `1:4`, and passes it into the statements inside the `{}`. We use `i` as an index to extract the correct values from `sscript` and `letters`, and then combine them within a `paste0` function, which concatenates the extracted values with text statements. We then have to use `print` to see the resulting statement (if we didn't wrap `stmnt` in `print`, we wouldn't see the result). 
+
+Note that we could actually have vectorized this operation: 
+```{r}
+paste0(letters[1:4], " is the ", 1:4, sscript, " letter in the alphabet")
+```
+
+But there might be cases in which you wouldn't to, say if you wanted to construct a unique title for each plot in a multi-panel plot:
+
+```{r, fig.height=1, fig.width=9}
+# Chunk 2
+sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
+par(mfrow = c(1, 4), mar = c(0, 0, 1, 1))
+for(i in 1:4) {  
+  stmnt <- paste0(letters[i], " is the ", i, sscript[i],
+                  " letter in the alphabet")
+  plot(1:4, rep(3, 4), ylim = c(1, 5), pch = letters[1:4], axes = FALSE,
+       xlab = "", ylab = "", main = stmnt, cex = 2) 
+  points(i, 3, pch = letters[i], col = "red", cex = 2)
+}
+```
+
+That's a silly example of plotting, but I think illustrates a common use case for a `for` loop. In the example above, our statement is passed into the "main" argument of the `print` function, which is used to add a title to a plot. 
+
+How about another example:
+```{r}
+# Chunk 3
+dat_list <- list(data.frame(a = 1:10, b = 21:30), 
+                 data.frame(a = 31:40, b = 41:50),
+                 data.frame(a = 51:60, b = 61:70))
+for(i in dat_list) print(rowSums(i))
+```
+
+Here we combined three `data.frame`s in a list and then iterate over the list elements, and calculate the `rowSums` for each `data.frame`. Note that in this case the iterator `i` contains the entire `data.frame`, not just an index integer, so we apply `rowSums` to `i`. Also see how we do not wrap the `print(rowSums(i))` in `{}` and keep it on the same line. We could also write it these ways:
+```{r}
+# Chunk 4
+for(i in dat_list) {  ### Use this one 
+  print(rowSums(i))
+}
+for(i in dat_list) {print(rowSums(i))}  # not this
+for(i in dat_list)  # nor this  
+  print(rowSums(i))
+for(i in dat_list) # especially not this
+
+  
+  print(rowSums(i))
+for(i in dat_list) # just no
+print(rowSums(i))
+
+```
+
+The first one is the preferred way for writing `for` loops, and should be used for almost all cases. The 1-line variant in Chunk 3 can be used when a single line command that fits on one 80 character-width line is all that is needed. The other four variants in Chunk 4 should not be used, even if they work, particularly the last two. 
+
+I almost never use `while` loops, and we won't have much call for them here, so if you want to see an example, please refer back to the control structures module in [Module 2](unit1-module2.html#control-structures). There are also `break` and `next` structures, which I don't use too much, but I suggest you read about [here](https://www.rspatial.org/intr/10-flow.html#break-and-next) here. `break` gets you out of a loop, and `next` let's you skip iterations.  
+
+## Branching
+
+Branching structures let you choose different paths for your code to follow, given specific conditions. We have already seen these in the first functions we have written, so we will look at some examples within loops, which is where they tend to be most useful:
+
+```{r}
+# Chunk 5
+for(i in 1:20) {
+  if(i %in% seq(5, 20, by = 5)) {
+    print(paste(i, "is divisible by 5"))
+  } 
+  if(i == 10) {
+    print(paste(i, "is halfway to 20"))
+  } 
+  if(i == 20) {
+    print(paste(i, "is the last number. Finished!"))
+  }
+}
+```
+
+Above we iterate over `1:20`, and put in three different `if` statements that trigger different statements depending on the `i` value. Notice, however, that we have two statements printed when `i` is 10 and 20. 
+```{r}
+# Chunk 6
+for(i in 1:10) {
+  if(i < 5) {  # condition 1
+    print(paste(i, "is less than", i + 1))
+  } else if(i >= 5 & i <= 7) {  # condition 2
+    print(paste(i, "is between", i - 1, "and", i + 1))
+  } else {  # remaining conditions
+    print(paste(i, "is greater than", i - 1))
+  }
+}
+```
+
+In this example, we use `else` to make sure that only one statement can be generated for a given number, depending on its value. The first `if` prints a statement for `i` < 5. It only requires an `if`. The second statement uses an `else if` to specify a second condition that triggers a print statement (`i` falling within the set 5-7). The third uses just a single `else`, which means that any values not meeting the first or second condition are printed. 
+There is another way of using `if` and `else` together:
+```{r}
+# Chunk 7
+a <- 1:10
+#
+# #1 
+ifelse(a < 7, "<", ">=")
+# 
+# #2
+b <- ifelse(a < 7, 0, a)
+b
+```
+
+That is the `ifelse` statement, which applies a conditional statement to a vector, and returns the result as applied to each element.  In #1 we see that values of `a` less than 7 are returned with the "<" symbol, while values greater than or equal to 7 have the ">=" returned. #2 shows that you can capture this output in a new vector, which is quite handy when modifying results. Recall from 2.1.4 above that `ifelse` is used in `dplyr::mutate` to change values in an existing `data.frame` variable.  
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+## *apply
+
+### When to use for versus apply
+
+## Practice:
+1. Questions to answer
+2. Coding practice:
+
+- Use the `paste` function to 
+- Copy Chunk 1's code. Change the iterator vector to `1:5` and re-run the code chunk.  What happens? Do you need to make any changes to make a better result? 
+- Copy Chunk 2's code. 
+  - Comment out the lines beginning with `points` and run the code to see what that line does
+  - Delete the "axes = FALSE" part of the call to `plot` and see what does. 
+- Copy Chunk 6's code:
+  - Change the `if` statement within condition 2 such that `i >= 3`. Run it and inspect the result 
+  - Now change the second half of the statement so that `i <= 8`. What's the result? 
+- Create a `for` loop that iterates over a vector 1:20. Insert a condition into it such that it only prints out a result when the iterator's value is 11
+
+```{r}
+
+```
+
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
