@@ -895,16 +895,124 @@ So that's a brief look at subsetting and replacement with `dplyr`. We'll build o
 
 One of the most basic, but useful, ways we can use `R` data objects is to provide inputs for simple calculations, i.e. to use [`R` as a calculator](http://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R1_GettingStarted/R1_GettingStarted3.html).  
 
-This is reasonably simple. There are of coursea ton of base operators  and functions that allow this: 
+This is reasonably simple. There are of course a ton of base operators and functions that allow this: 
 
 ```{r}
 a <- 1:10
-log(a)
-exp(log(a))
-10^a
-log10(10^a)
-(a * 100) %% 3
-sqrt(a)
+log(a)  # natural log
+exp(log(a))  # inverse of natural log
+10^a  # exponents
+log10(10^a)  # log base 10
+(a * 100) %% 3  # modulo (https://en.wikipedia.org/wiki/Modulo_operation)
+sqrt(a)  # square root
+pi * a^2  # areas with built in pi constant
 ```
 
-Etc. 
+Let's look at it though for calculations on different kinds of objects:
+```{r, error=TRUE}
+# Chunk 1
+b <- 1:5
+m <- cbind(v1 = 1:5, v2 = 11:15)
+# 
+m
+m2 <- cbind(c(10, 20), c(5, 10))
+#
+m2
+d <- data.frame(m, v3 = 101:105, v4 = letters[1:nrow(m)],
+                stringsAsFactors = FALSE)
+d
+#
+# #1
+b * m 
+#
+# #2
+b[length(b)] * m
+#
+# #3
+b[c(1, 5)] * m
+#
+# #4
+m * m
+#
+# #5
+m * m2
+#
+# #6
+m * m2[, 1]
+#
+# #7
+#
+d * m
+#
+# #8
+d[, 1:3] * m
+#
+# #9
+d[1, 1:3] * m[nrow(m), 1]
+#
+#10
+d$v1 * m
+#
+# 11
+d$v1 * m2
+```
+
+In Chunk 1 above we define a vector `b` (5 elements), matrices `m` (5 rows, 2 columns) and `m2` (2 rows, 2 columns), and `d`, a `data.frame` (5 rows, 3 integer variables, 1 character variable). 
+
+In #1 we multiply `m` and `b`. Notice that each element of `b` is multiplied with the corresponding row number of each column in `m`, i.e. `b[1]` is multiplied with `m[1, 1]`, `b[2]` with `m[2, 1]`, all the way to `b[5]` with `m[5, 1]`. This matching is repeated for column 2: `b[1] * m[1, 2]`; `b[2] * m[2, 2]`; ...; `b[5] * m[5, 2]`. In #2 we pull out the last element of `b` and multiply `m` by that one number. In #3, we multiply the 1st and 5th element of `b` with `m`. Notice the order of calculations. 
+
+In #4 we multiply `m` by itself. Multiplying a `m2` by `m` fails because the row numbers in both do not match. We can, however, multiply `m` by one column of `m2` (#6), which is dimensionally equivalent to the example in #3. 
+
+Multiplying a `data.frame` that mixes numeric and character data with a numeric matrix (#7) fails, because characters are not calculable. If we drop the character column, however, we see that it works (#8). Note the order of operations here: `d[, 1]` is multiplied with `m[, 1]`, and `d[, 2]` with `m[, 2]`, but `d[, 3]` is multiplied with with `m[, 1]`. The number of columns are mismatched, so `m`'s columns are recycled. This means that dimensional mismatches in terms of column numbers do not prevent calculations between 2-d structures, but row mismatches do. 
+
+In #9 we see we how we can subset values from `d` and `m` and multiply them. #10 shows how we extract a variable from `d` into a vector and multiply that by `m`. #11 shows what happens when a mismatch between the number of vector elements and rows occurs. 
+
+We can also apply base operators/functions to 2-d structures:
+
+```{r}
+log(m)
+d[, 1:3]^2
+sqrt(m2)
+```
+
+There are also four useful function to know that provide row and column summaries of 2-d structures:
+
+```{r}
+# Chunk 2
+rowSums(m)  # sum of each row
+colSums(m)  # sum of each column
+rowMeans(m)  # mean of each row
+colMeans(m)  # mean of each column
+```
+
+The names should be self-explanatory, but the commments next to each line explain what is happening. 
+
+That's just a brief introduction to calculations with `R`. We have shown only a small number of possible calculations that you can apply to a handful of example 1- and 2-d data structures. We will leave it to you to explore others (see questions below).
+
+One thing that is important to point out, which is described well in rspatial.org's [introduction to `R`](https://www.rspatial.org/intr/5-algebra.html), is that we are able to do this calculations without writing control structures because `R` vectorizes these operations. In most other languages you would have to write loops to make sure the calculations were applied across elements in the structure. For example, in `python`, the base language requires this, and if you want to be able to do matrix algebra as we have done here with base `R`, you need to use the `numpy` package. 
+
+This vectorization therefore is advantageous in terms of reducing the amount of code that has to be written. Vectorized operations are also faster, so when you are writing more complex, it is always helpful to try rely on `R` built in vectorization as much as possible. 
+
+## Practice
+1. Answer the following questions:
+
+- In Chunk 1 #3 explain the order of calculations. 
+- In Chunk 1 #8, what would the order of calculations be if m had 3 columns? - In Chunk 1 #9, describe the dimensions of the subsets extracted from `d` and `m`, and the order of calculations. 
+
+2. Coding practice: 
+- Repeat the code in chunk 1, but replace multiplication with division, addition, and subtraction
+- Find the sine and cosine of matrix `m`
+- For the `rowSums`, `colSums`, `rowMeans`, and `colMeans` of the numeric subset of `d`
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+
+
+# Control structures
+
+# Reading and writing data
