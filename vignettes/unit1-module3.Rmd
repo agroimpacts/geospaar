@@ -1146,8 +1146,90 @@ That is the `ifelse` statement, which applies a conditional statement to a vecto
 </center>
 ***
 
+## *apply functions
 
-## *apply
+The `*apply` functions are unique to `R`, and fairly central to the language. `*apply` functions are used to *apply* a function to each element a vector, and return the result as a vector. Because they are applying the function to each vector element, they are a kind of looping function. **Their use is preferred to `for` loops (according to Hadley Wickam's [Advanced R](http://adv-r.had.co.nz/Functionals.html#functionals-loop)), because they improve the quality and (often, but not always) the speed of code.** They also make it much easier to capture the output resulting from the looping operation. 
+
+`*apply` functions are similar to the `map` functions that you get in `python` or `JavaScript` (see [here](https://www.w3schools.com/python/ref_func_map.asp) and [here](https://www.w3schools.com/jsref/jsref_map.asp) for respective definitions in those languages). The tidyverse's `purrr` also  provides an `R` version of [`map`](https://purrr.tidyverse.org/reference/map.html), and there is the base `R` `Map` function as well (which is basically the same as `mapply`). However, we will learn here about `*apply*`, since they are a core part of `R`. 
+
+There are several flavors of `*apply` functions: `apply`, `lapply`, `sapply`, `mapply`, `tapply`, `vapply`. I only really use the first 3, and of those mostly just `lapply`, followed by `sapply`, and then `apply`. I don't touch the other three, so I will focus on those.  
+
+### lapply
+Let's start with `lapply`. `lapply`, according to [Advanced R](http://adv-r.had.co.nz/Functionals.html#lapply), 
+
+> ... takes a function, applies it to each element in a list, and returns the results in the form of a list
+
+Let's use our list of `data.frame`s from the previous section to examine this: 
+
+```{r}
+lapply(dat_list, rowMeans)
+```
+
+It is taking the list `dat_list` and applying the function `rowMeans` to each element (a `data.frame`) in the list, returning the resulting answers in 3-element list. We can also capture the output of that quite easily in an object:
+
+```{r}
+l <- lapply(dat_list, rowMeans)
+l
+```
+
+Contrast that construction with the equivalent `for` loop based construction:
+```{r}
+l <- list()
+for(i in 1:length(dat_list)) l[[i]] <- rowMeans(dat_list[[i]])
+l
+```
+
+The `for` loop requires quite a bit more code. This includes needing to create a new object head of time to catch the output from each iteration. 
+
+You don't have to pass a list to `lapply`. You can pass in any vector:
+
+```{r}
+inverse_log10 <- function(x) 10^x
+lapply(1:4, inverse_log10)
+```
+
+But you will get the output of the function as a list. If you don't want the output as a list, then you could use `sapply` (see the next section), or do this:
+
+```{r}
+unlist(lapply(1:4, inverse_log10))
+```
+
+`unlist` does what it sees--it converts the list back to a vector. 
+
+Sometimes setting up an `lapply` is not so simple as specifying the list/vector and the function you want to apply to it. In this case you need to make use of what is known as an anonymous function:
+```{r}
+# Chunk 8
+dat_list <- lapply(1:length(dat_list), function(x) {
+  d <- dat_list[[x]]
+  d[1:3, 1] <- -99
+  return(d)
+})
+dat_list
+```
+
+The anonymous function here is `function(x)`. An anonymous function is simply one that is not assigned a name (you can read about them [here](http://adv-r.had.co.nz/Functional-programming.html#anonymous-functions) in more detail). The reason we use them is [because](http://adv-r.had.co.nz/Functionals.html): 
+
+> The pieces of x are always supplied as the first argument to f. If you want to vary a different argument, you can use an anonymous function.
+
+That is, because the function is set up as `lapply(x, f)`, if either function `f` or the values of `x` fed to `f` won't do what we want them to do, we might need to specify something a bit more complicated within a new function.  In the example in Chunk 8, the goal was to specify a fixed subset (rows 1-3 in column 1) of each `data.frame` in `dat_list` and change the values to -99. So we created the anonymous function that used the argument x to iterate over the list's integer index so that we could extract and modify each data.frame, return the updated values, and overwrite the original `dat_list` with the new values.  This is using `function(x)` in conceptually the same way as the `i in` in a `for` loop, and, at least for me, is the most common way in which I use anonymous functions with `*apply`. 
+
+You could of course specify your highly customized function that does the modification you want outside the `lapply`:
+```{r}
+# Chunk 9
+dat_modify <- function(x) {
+  x[1:3, 1] <- 999
+  return(x)
+}
+dat_list <- lapply(dat_list, dat_modify)
+dat_list
+```
+
+Which you see is done here (changing the value in the same subset to 999, instead of -99, for contrast), but if it is a once-off function that is doing something highly customized, it is perhaps more readable--and adds less clutter to your environment--to use the anonymous function approach. 
+
+### sapply
+
+### apply
+
 
 ### When to use for versus apply
 
@@ -1164,10 +1246,6 @@ That is the `ifelse` statement, which applies a conditional statement to a vecto
   - Change the `if` statement within condition 2 such that `i >= 3`. Run it and inspect the result 
   - Now change the second half of the statement so that `i <= 8`. What's the result? 
 - Create a `for` loop that iterates over a vector 1:20. Insert a condition into it such that it only prints out a result when the iterator's value is 11
-
-```{r}
-
-```
 
 
 ***
