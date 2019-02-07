@@ -1451,9 +1451,15 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
 As with the previous assignment, this assignment should be delivered as R package that: 
 
 1. Has a vignettes, man, and R folder, with the necessary ingredients in them ("calculations" vignette, R function files, .Rd files for the function documentation) 
+
 2. Has a DESCRIPTION and NAMESPACE file that shows that both your functions are exported. Fill out the DESCRIPTION file with your relevant details, a description of the package, etc. Also, use 3-digit version numbering. 0.0.0 is the initial version of your package. 0.0.X (where X means some integer in a sequence, 1 if this is your first minor update) is the updated version after a minor fix (a small bug corrected or documentation updated), 0.X.0 is an intermediate release (maybe you have added a new function or two), X.0.0 is a major release of a working version of the package. 
-3. Can be installed with browsable vignettes using `install_github`. 4. Code written according to Hadley Wickham's R style guide. 
+
+3. Can be installed with browsable vignettes using `install_github`. 
+
+4. Code written according to Hadley Wickham's R style guide.
+
 5. No extraneous files/folders in your repo. 
+
 6. In writing your vignettes, make sure that the content of objects that result from each assigned task are printed into the vignette, For example, if you are asked to create a two column data.frame:
 
     This is wrong:
@@ -1467,4 +1473,10 @@ As with the previous assignment, this assignment should be delivered as R packag
     a
     ```
 
-7. When complete, park the repo on a new side branch called a2
+7. When complete, park the repo on a new side branch called "a2"
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
