@@ -28,28 +28,26 @@ library(knitr)
 
 # Introduction to R programming{#introduction-to-r-programming}
 
-Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a somewhat high level overview of `R`'s structure. Now we are going down to the business of learning how to use it.
+Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a brief, high-ish level overview of `R`'s structure. Now we get down to the business of learning how to use it.
 
 ## How R is evolving and how it affects us
-Before starting, we need to turn back to natural history for another metaphor, specifically evolution. `R` is a language that has been undergoing fairly substantial changes recently, with clear development trajectories within the language, much like the evolution of species.
+Before starting, we need to turn back to natural history for another metaphor, specifically evolution. `R` is a language that has been undergoing fairly substantial changes recently. There seems to be clear development trajectories within the language, much like the evolution of species.
 
 ```{r out.width = "40%", fig.align='center', echo=FALSE, fig.cap="An (approximate) lineage of R packages/objects involved in data handling and graphics."}
 include_graphics("fig/u1m3-1.png") 
 ```
 
-The graphic above is crude and almost certainly not correct in some respects, but it serves to illustrate what I think are key changes that are leading to changes in how we program in `R`.  Many of these changes are being driven by the ["tidyverse"](https://www.tidyverse.org), which is:
+The graphic above is crude and almost certainly not correct in some respects (e.g. relative age of divergence), but it serves to illustrate what I think are key developments that are changinghow we program in `R`. Many of these changes are being driven by the ["tidyverse"](https://www.tidyverse.org), which is:
 
 > ...an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. 
 
-These include most prominently the packages `dplyr` and `ggplot2`, which respectively provide methods for manipulating data sets and producing graphics.  These packages are designed around a fairly different syntax than that of  original (base) `R`, and are becoming increasingly dominant within the `R` commmunity. They are becoming so dominant in fact that a number of leadings lights in the R field argue that `R` beginners should be taught first using the tidyverse packages, and avoid base `R` and much of the programmatic concepts that are needed to go with it. The argument is summarized [here](http://varianceexplained.org/r/teach-tidyverse/). 
+Most prominent amongst these are the `dplyr` and `ggplot2` packages, which respectively provide methods for manipulating data sets and producing graphics. These packages are designed around a fairly different syntax than that of base `R`, and are increasingly dominating the `R` world. They are becoming so dominant in fact that a number of leading lights in the R field argue that `R` beginners should first be taught using tidyverse packages, and avoid base `R` and much of the programmatic concepts that are needed to go with it. The argument is summarized [here](http://varianceexplained.org/r/teach-tidyverse/). 
 
-The argument is appealing, but since this is a course on `Geospatial Analysis with R`, we unfortunately have no choice but to learn base `R`, because many spatial packages are built with base `R` functions and don't yet work with the tidyverse. 
+The idea is appealing, but since this is a course on `Geospatial Analysis with R`, I believe we have no choice but to learn base `R`, because many spatial packages are built with base `R` functions and don't yet work with the tidyverse. 
 
-Also unfortunately, we also need to learn some tidyverse, at least `dplyr`, because the rapidly maturing `sf` package, the replacements for `sp`, which provides spatial vector functionality in `R`, is designed to work with the tidyverse. 
+At the same time, we also need to learn some tidyverse, at least `dplyr`, because the rapidly maturing `sf` package (the replacement for `sp`, which provides spatial vector functionality in `R`) is designed to work with the tidyverse. 
 
-So we are going to learn aspects of both.  
-
-Before diving in, I want to illustrate how different syntaxes can look along some of `R`'s evolutionary trajectories. We'll focus on data manipulation.
+So we are going to learn aspects of both. Before diving in, I want to illustrate how different syntaxes can look within some of `R`'s evolutionary branches. We'll focus on data manipulation.
 
 ```{r, eval=FALSE}
 library(tibble)
@@ -110,7 +108,7 @@ d <- data.frame(a = sample(letters[1:7], size = 1000, replace = TRUE),
 d_tb <- as_tibble(d)
 ```
 
-The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced data.frames that have vastly improved performance in terms of processing times and memory handling, compared to the good old `data.frame`, as well as a whole suite of functions designed to manipulate them that differ markedly from the ways in which data.frames are manipulated. The first thing to note is that the generic `print` functions (note you are implictly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines.  Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
+The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced `data.frame`s with vastly improved performance in terms of processing times and memory handling, as well as a whole suite of functions designed to manipulate them that differ markedly from original base syntax. The first thing to note is that the generic `print` functions (note you are implictly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines. Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
 
 The real differences come with the syntax for manipulating these datasets. Let's take a brief look at how we might operate on the three objects, by calculating the mean of variable "b" according to the categorical groups defined in "a". 
 
@@ -138,7 +136,7 @@ d_dt[, mean(b), by = a][order(a)]
 #> 7: g  9.061001
 ```
 
-Three fairly different syntaxes for doing the same thing. These are ordered in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on `tibble` and that will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames or souped-up data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
+Three fairly different syntaxes for doing the same thing. These are in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on `tibble` and that will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames or souped-up data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
 
 ```{r, error=TRUE}
 d[, mean(b), by = a][order(a)]
@@ -147,7 +145,7 @@ d_tb[, mean(b), by = a][order(a)]
 
 `data.table` is extremely powerful, and is the tool of choice for working with extremely large tabular datasets (it seems to have heavy uptake in quantitative finance, for example), and by some [measures](https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping) beats out `pandas` in `python` However, the syntax is much more arcane, and, more importantly, not really part of `R`'s spatial packages, so we won't learn it further (but it is well worth learning). 
 
-`dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough dplyr and a few other tidyverse functions so that we can get ready for these changes. 
+`dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough `dplyr` and a few other tidyverse functions so that we can get ready for these changes. 
 
 
 ## Setting up for practice
@@ -890,7 +888,583 @@ So that's a brief look at subsetting and replacement with `dplyr`. We'll build o
 [Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
 </center>
 ***
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                d
+
+# Calculating
+
+One of the most basic, but useful, ways we can use `R` data objects is to provide inputs for simple calculations, i.e. to use [`R` as a calculator](http://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R1_GettingStarted/R1_GettingStarted3.html).  
+
+This is reasonably simple. There are of course a ton of base operators and functions that allow this: 
+
+```{r}
+a <- 1:10
+log(a)  # natural log
+exp(log(a))  # inverse of natural log
+10^a  # exponents
+log10(10^a)  # log base 10
+(a * 100) %% 3  # modulo (https://en.wikipedia.org/wiki/Modulo_operation)
+sqrt(a)  # square root
+pi * a^2  # areas with built in pi constant
+```
+
+Let's look at it though for calculations on different kinds of objects:
+```{r, error=TRUE}
+# Chunk 1
+b <- 1:5
+m <- cbind(v1 = 1:5, v2 = 11:15)
+# 
+m
+m2 <- cbind(c(10, 20), c(5, 10))
+#
+m2
+d <- data.frame(m, v3 = 101:105, v4 = letters[1:nrow(m)],
+                stringsAsFactors = FALSE)
+d
+#
+# #1
+b * m 
+#
+# #2
+b[length(b)] * m
+#
+# #3
+b[c(1, 5)] * m
+#
+# #4
+m * m
+#
+# #5
+m * m2
+#
+# #6
+m * m2[, 1]
+#
+# #7
+#
+d * m
+#
+# #8
+d[, 1:3] * m
+#
+# #9
+d[1, 1:3] * m[nrow(m), 1]
+#
+#10
+d$v1 * m
+#
+# 11
+d$v1 * m2
+```
+
+In Chunk 1 above we define a vector `b` (5 elements), matrices `m` (5 rows, 2 columns) and `m2` (2 rows, 2 columns), and `d`, a `data.frame` (5 rows, 3 integer variables, 1 character variable). 
+
+In #1 we multiply `m` and `b`. Notice that each element of `b` is multiplied with the corresponding row number of each column in `m`, i.e. `b[1]` is multiplied with `m[1, 1]`, `b[2]` with `m[2, 1]`, all the way to `b[5]` with `m[5, 1]`. This matching is repeated for column 2: `b[1] * m[1, 2]`; `b[2] * m[2, 2]`; ...; `b[5] * m[5, 2]`. In #2 we pull out the last element of `b` and multiply `m` by that one number. In #3, we multiply the 1st and 5th element of `b` with `m`. Notice the order of calculations. 
+
+In #4 we multiply `m` by itself. Multiplying a `m2` by `m` fails because the row numbers in both do not match. We can, however, multiply `m` by one column of `m2` (#6), which is dimensionally equivalent to the example in #3. 
+
+Multiplying a `data.frame` that mixes numeric and character data with a numeric matrix (#7) fails, because characters are not calculable. If we drop the character column, however, we see that it works (#8). Note the order of operations here: `d[, 1]` is multiplied with `m[, 1]`, and `d[, 2]` with `m[, 2]`, but `d[, 3]` is multiplied with with `m[, 1]`. The number of columns are mismatched, so `m`'s columns are recycled. This means that dimensional mismatches in terms of column numbers do not prevent calculations between 2-d structures, but row mismatches do. 
+
+In #9 we see we how we can subset values from `d` and `m` and multiply them. #10 shows how we extract a variable from `d` into a vector and multiply that by `m`. #11 shows what happens when a mismatch between the number of vector elements and rows occurs. 
+
+We can also apply base operators/functions to 2-d structures:
+
+```{r}
+log(m)
+d[, 1:3]^2
+sqrt(m2)
+```
+
+There are also four useful function to know that provide row and column summaries of 2-d structures:
+
+```{r}
+# Chunk 2
+rowSums(m)  # sum of each row
+colSums(m)  # sum of each column
+rowMeans(m)  # mean of each row
+colMeans(m)  # mean of each column
+```
+
+The names should be self-explanatory, but the commments next to each line explain what is happening. 
+
+That's just a brief introduction to calculations with `R`. We have shown only a small number of possible calculations that you can apply to a handful of example 1- and 2-d data structures. We will leave it to you to explore others (see questions below).
+
+One thing that is important to point out, which is described well in rspatial.org's [introduction to `R`](https://www.rspatial.org/intr/5-algebra.html), is that we are able to do this calculations without writing control structures because `R` vectorizes these operations. In most other languages you would have to write loops to make sure the calculations were applied across elements in the structure. For example, in `python`, the base language requires this, and if you want to be able to do matrix algebra as we have done here with base `R`, you need to use the `numpy` package. 
+
+This vectorization therefore is advantageous in terms of reducing the amount of code that has to be written. Vectorized operations are also faster, so when you are writing more complex, it is always helpful to try rely on `R` built in vectorization as much as possible. 
+
+## Practice
+1. Answer the following questions:
+
+- In Chunk 1 #3 explain the order of calculations. 
+- In Chunk 1 #8, what would the order of calculations be if m had 3 columns? - In Chunk 1 #9, describe the dimensions of the subsets extracted from `d` and `m`, and the order of calculations. 
+
+2. Coding practice: 
+- Repeat the code in chunk 1, but replace multiplication with division, addition, and subtraction
+- Find the sine and cosine of matrix `m`
+- For the `rowSums`, `colSums`, `rowMeans`, and `colMeans` of the numeric subset of `d`
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+# Control structures
+
+Although we just heard about vectorized operations, and how they make it unnecessary for us to write control structures such as loops, we'll end up having to use them eventually. Certains operations just require control structures, or if they aren't essential, they make our code much efficient. 
+
+One nice example: imagine you have 5 different spreadsheets containing data that you need to analyze. It is more efficient to write one block of code  that reads all 5 datasets into a single list object, then to write 5 lines of code that reads each object into it own object (resulting in 5 objects). 
+
+Another example is a case where we need to select two different operations depending on a particular condition. If condition A is met, then we choose operation 1. Otherwise, if condition B is met, we choose operation 2.  
+
+We have already [introduced some of these control structures](unit1-module2.html#control-structures) in Module 2. Now we'll learn how to use them. 
+
+We divide control structures into branching and looping structures, [following rspatial.org](https://www.rspatial.org/intr/9-apply.html). Let's start with looping. 
+
+## Looping
+
+Looping is pretty straight-forward. You have a multi-element or multi-dimensional object, you need to perform a particular operation or set of operations on each dimension or element: 
+
+```{r}
+# Chunk 1
+sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
+for(i in 1:4) {  # for loop with iterator i over vector 1:4
+  stmnt <- paste0(letters[i], " is the ", i, sscript[i],
+                  " letter in the alphabet")
+  print(stmnt)  # print statement
+}
+```
+
+This is a somewhat silly example, but it shows how we iteratively construct a series of unique statements by grabbing values from two different objects. In this case, the two objects are `sscript`, a vector containing different ordinal superscripts, and `letters`. We combine them within a paste statement that sits within a `for` loop, which iterates over a vector `1:4`. The `for` statement has an iterator variable `i` that holds the single value extracted from each iteration over `1:4`, and passes it into the statements inside the `{}`. We use `i` as an index to extract the correct values from `sscript` and `letters`, and then combine them within a `paste0` function, which concatenates the extracted values with text statements. We then have to use `print` to see the resulting statement (if we didn't wrap `stmnt` in `print`, we wouldn't see the result). 
+
+Note that we could actually have vectorized this operation: 
+```{r}
+paste0(letters[1:4], " is the ", 1:4, sscript, " letter in the alphabet")
+```
+
+But there might be cases in which you wouldn't to, say if you wanted to construct a unique title for each plot in a multi-panel plot:
+
+```{r, fig.height=1, fig.width=9}
+# Chunk 2
+sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
+par(mfrow = c(1, 4), mar = c(0, 0, 1, 1))
+for(i in 1:4) {  
+  stmnt <- paste0(letters[i], " is the ", i, sscript[i],
+                  " letter in the alphabet")
+  plot(1:4, rep(3, 4), ylim = c(1, 5), pch = letters[1:4], axes = FALSE,
+       xlab = "", ylab = "", main = stmnt, cex = 2) 
+  points(i, 3, pch = letters[i], col = "red", cex = 2)
+}
+```
+
+That's a silly example of plotting, but I think illustrates a common use case for a `for` loop. In the example above, our statement is passed into the "main" argument of the `print` function, which is used to add a title to a plot. 
+
+How about another example:
+```{r}
+# Chunk 3
+dat_list <- list(data.frame(a = 1:10, b = 21:30), 
+                 data.frame(a = 31:40, b = 41:50),
+                 data.frame(a = 51:60, b = 61:70))
+for(i in dat_list) print(rowSums(i))
+```
+
+Here we combined three `data.frame`s in a list and then iterate over the list elements, and calculate the `rowSums` for each `data.frame`. Note that in this case the iterator `i` contains the entire `data.frame`, not just an index integer, so we apply `rowSums` to `i`. Also see how we do not wrap the `print(rowSums(i))` in `{}` and keep it on the same line. We could also write it these ways:
+```{r}
+# Chunk 4
+for(i in dat_list) {  ### Use this one 
+  print(rowSums(i))
+}
+for(i in dat_list) {print(rowSums(i))}  # not this
+for(i in dat_list)  # nor this  
+  print(rowSums(i))
+for(i in dat_list) # especially not this
+
+  
+  print(rowSums(i))
+for(i in dat_list) # just no
+print(rowSums(i))
+
+```
+
+The first one is the preferred way for writing `for` loops, and should be used for almost all cases. The 1-line variant in Chunk 3 can be used when a single line command that fits on one 80 character-width line is all that is needed. The other four variants in Chunk 4 should not be used, even if they work, particularly the last two. 
+
+I almost never use `while` loops, and we won't have much call for them here, so if you want to see an example, please refer back to the control structures module in [Module 2](unit1-module2.html#control-structures). There are also `break` and `next` structures, which I don't use too much, but I suggest you read about [here](https://www.rspatial.org/intr/10-flow.html#break-and-next) here. `break` gets you out of a loop, and `next` let's you skip iterations.  
+
+## Branching
+
+Branching structures let you choose different paths for your code to follow, given specific conditions. We have already seen these in the first functions we have written, so we will look at some examples within loops, which is where they tend to be most useful:
+
+```{r}
+# Chunk 5
+for(i in 1:20) {
+  if(i %in% seq(5, 20, by = 5)) {
+    print(paste(i, "is divisible by 5"))
+  } 
+  if(i == 10) {
+    print(paste(i, "is halfway to 20"))
+  } 
+  if(i == 20) {
+    print(paste(i, "is the last number. Finished!"))
+  }
+}
+```
+
+Above we iterate over `1:20`, and put in three different `if` statements that trigger different statements depending on the `i` value. Notice, however, that we have two statements printed when `i` is 10 and 20. 
+```{r}
+# Chunk 6
+for(i in 1:10) {
+  if(i < 5) {  # condition 1
+    print(paste(i, "is less than", i + 1))
+  } else if(i >= 5 & i <= 7) {  # condition 2
+    print(paste(i, "is between", i - 1, "and", i + 1))
+  } else {  # remaining conditions
+    print(paste(i, "is greater than", i - 1))
+  }
+}
+```
+
+In this example, we use `else` to make sure that only one statement can be generated for a given number, depending on its value. The first `if` prints a statement for `i` < 5. It only requires an `if`. The second statement uses an `else if` to specify a second condition that triggers a print statement (`i` falling within the set 5-7). The third uses just a single `else`, which means that any values not meeting the first or second condition are printed. 
+There is another way of using `if` and `else` together:
+```{r}
+# Chunk 7
+a <- 1:10
+#
+# #1 
+ifelse(a < 7, "<", ">=")
+# 
+# #2
+b <- ifelse(a < 7, 0, a)
+b
+```
+
+That is the `ifelse` statement, which applies a conditional statement to a vector, and returns the result as applied to each element.  In #1 we see that values of `a` less than 7 are returned with the "<" symbol, while values greater than or equal to 7 have the ">=" returned. #2 shows that you can capture this output in a new vector, which is quite handy when modifying results. Recall from 2.1.4 above that `ifelse` is used in `dplyr::mutate` to change values in an existing `data.frame` variable.  
+
+### Practice
+- Use the `paste` function to 
+- Copy Chunk 1's code. Change the iterator vector to `1:5` and re-run the code chunk.  What happens? Do you need to make any changes to make a better result? 
+- Copy Chunk 2's code. 
+  - Comment out the lines beginning with `points` and run the code to see what that line does
+  - Delete the "axes = FALSE" part of the call to `plot` and see what does. 
+- Copy Chunk 6's code:
+  - Change the `if` statement within condition 2 such that `i >= 3`. Run it and inspect the result 
+  - Now change the second half of the statement so that `i <= 8`. What's the result?
+- Create a `for` loop that iterates over a vector 1:20. Insert a condition into it such that it only prints out a result when the iterator's value is 11
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## *apply functions
+
+The `*apply` functions are unique to `R`, and fairly central to the language. `*apply` functions are used to *apply* a function to each element a vector, and return the result as a vector. Because they are applying the function to each vector element, they are a kind of looping function. **Their use is preferred to `for` loops (according to Hadley Wickam's [Advanced R](http://adv-r.had.co.nz/Functionals.html#functionals-loop)), because they improve the quality and (often, but not always) the speed of code.** They also make it much easier to capture the output resulting from the looping operation. 
+
+`*apply` functions are similar to the `map` functions that you get in `python` or `JavaScript` (see [here](https://www.w3schools.com/python/ref_func_map.asp) and [here](https://www.w3schools.com/jsref/jsref_map.asp) for respective definitions in those languages). The tidyverse's `purrr` also  provides an `R` version of [`map`](https://purrr.tidyverse.org/reference/map.html), and there is the base `R` `Map` function as well (which is basically the same as `mapply`). However, we will learn here about `*apply*`, since they are a core part of `R`. 
+
+There are several flavors of `*apply` functions: `apply`, `lapply`, `sapply`, `mapply`, `tapply`, `vapply`. I only really use the first 3, and of those mostly just `lapply`, followed by `sapply`, and then `apply`. I don't touch the other three, so I will focus on those.  
+
+### lapply
+Let's start with `lapply`. `lapply`, according to [Advanced R](http://adv-r.had.co.nz/Functionals.html#lapply), 
+
+> ... takes a function, applies it to each element in a list, and returns the results in the form of a list
+
+Let's use our list of `data.frame`s from the previous section to examine this: 
+
+```{r}
+lapply(dat_list, rowMeans)
+```
+
+It is taking the list `dat_list` and applying the function `rowMeans` to each element (a `data.frame`) in the list, returning the resulting answers in 3-element list. We can also capture the output of that quite easily in an object:
+
+```{r}
+l <- lapply(dat_list, rowMeans)
+l
+```
+
+Contrast that construction with the equivalent `for` loop based construction:
+```{r}
+l <- list()
+for(i in 1:length(dat_list)) l[[i]] <- rowMeans(dat_list[[i]])
+l
+```
+
+The `for` loop requires quite a bit more code. This includes needing to create a new object head of time to catch the output from each iteration. 
+
+You don't have to pass a list to `lapply`. You can pass in any vector:
+
+```{r}
+inverse_log10 <- function(x) 10^x
+lapply(1:4, inverse_log10)
+```
+
+But you will get the output of the function as a list. If you don't want the output as a list, then you could use `sapply` (see the next section), or do this:
+
+```{r}
+unlist(lapply(1:4, inverse_log10))
+```
+
+`unlist` does what it sees--it converts the list back to a vector. 
+
+Sometimes setting up an `lapply` is not so simple as specifying the list/vector and the function you want to apply to it. In this case you need to make use of what is known as an anonymous function:
+```{r}
+# Chunk 8
+dat_list <- lapply(1:length(dat_list), function(x) {
+  d <- dat_list[[x]]
+  d[1:3, 1] <- -99
+  return(d)
+})
+dat_list
+```
+
+The anonymous function here is `function(x)`. An anonymous function is simply one that is not assigned a name (you can read about them [here](http://adv-r.had.co.nz/Functional-programming.html#anonymous-functions) in more detail). The reason we use them is [because](http://adv-r.had.co.nz/Functionals.html): 
+
+> The pieces of x are always supplied as the first argument to f. If you want to vary a different argument, you can use an anonymous function.
+
+That is, because the function is set up as `lapply(x, f)`, if either function `f` or the values of `x` fed to `f` won't do what we want them to do, we might need to specify something a bit more complicated within a new function.  In the example in Chunk 8, the goal was to specify a fixed subset (rows 1-3 in column 1) of each `data.frame` in `dat_list` and change the values to -99. So we created the anonymous function that used the argument x to iterate over the list's integer index so that we could extract and modify each data.frame, return the updated values, and overwrite the original `dat_list` with the new values.  This is using `function(x)` in conceptually the same way as the `i in` in a `for` loop, and, at least for me, is the most common way to use anonymous functions with `*apply`. 
+
+You could of course specify your highly customized function that does the modification you want outside the `lapply`:
+```{r}
+# Chunk 9
+dat_modify <- function(x) {
+  x[1:3, 1] <- 999
+  return(x)
+}
+dat_list <- lapply(dat_list, dat_modify)
+dat_list
+```
+
+Which you see is done here (changing the value in the same subset to 999, instead of -99, for contrast), but if it is a once-off function that is doing something highly customized, it can be more readable--and add less clutter to your environment--to use the anonymous function approach. 
+
+Here's a slightly more complicated example, annotated with comments:
+```{r}
+# Chunk 10
+dat_list2 <- c(dat_list, mean)  # add another element to dat_list
+lapply(1:length(dat_list2), function(x) {  
+  d <- dat_list2[[x]]  # extract element of list
+  if(is.data.frame(d)) {  # check if it is a data.frame
+    d[d == 999] <- NA  # convert any 999 values to NA 
+    o <- c(colSums(d, na.rm = TRUE), # column sums, dropping NAs
+           "total" = sum(d, na.rm = TRUE)) #  sum dropping NAs
+  } else { # if it is not a data.frame, make an error statement
+    o <- paste("Operation not valid for a", class(d))  
+  }
+  return(o)  # return result
+})
+```
+
+In this example, we create a new list by concatenating a function to the existing `dat_list` list (yes, `c()` works for adding elements to lists). We then use `lapply` to iterate over each element of that list, using an anonymous function. We set up a conditional statement to check whether the extract list element `d` is a `data.frame` (`is.data.frame`), and, if the answer to that is TRUE, we then identify the values in `d` that equal 999, and set them to `NA`, and then calculate both the column sums and total sum of `d`, using the argument `na.rm = TRUE` to drop `NA` values from the calculations. If `d` is not a `data.frame`, then we note which class the element's object is and say that the operation is not valid. 
+
+So, there are several functions and control structures being applied to the elements of `dat_list2`, so we need the flexibility of an anonymous function. 
+
+One more example:
+```{r}
+# Chunk 11
+flist <- list(mean, sd, range)
+lapply(1:3, function(x) flist[[x]](unlist(dat_list[[1]])))
+```
+
+The first step above entails creating a list of three functions that we want to apply to the first element of `dat_list`. So we use the anonymous function to iterate over the functions in `flist`, and apply them to `dat_list[[1]]`. Note the `unlist()` that we wrap around it--we do that because `mean` and `sd` can't be applied to lists (and a `data.frame` is a list), so we convert it to a vector first.  
+
+### sapply
+`sapply` is an `lapply` that figures out which data structure it should return its output in. It tries to find the most compact possible form and return that as output
+```{r}
+# Chunk 12
+# #1 
+sapply(dat_list, rowSums)
+#
+# #2 
+sapply(dat_list, colSums)
+#
+# #3
+sapply(1:3, function(x) sum(unlist(dat_list[[x]])))
+#
+# #4 
+sapply(1:3, function(x) flist[[x]](unlist(dat_list[[1]])))
+```
+
+In #1, we use `sapply` to apply `rowSums` to dat_list. It produces a matrix that holds the row sums from each `data.frame` in `dat_list` in a separate column.  #2 apply `colSums`, returning 2X3 matrix in which the columns again hold the results for each `data.frame`, while the rows hold the column sums for each column from each data.frame. #4 uses `sapply` with an anonymous function to iterate over `dat_list` and `unlist` each data.frame so that `sum` can be applied to it. Since the answer for each iteration is a single number, the output is produced as a vector of length 3 (1 element per list element). Finally, we reuse the code in Chunk 11, swapping in  `sapply` for `lapply`, and apply `flist` again. The first two elements of `flist` (`mean` and `sd`) produce a single output, but the third (`range`) produces two values (the minimum and maximum). That means the dimensions of the results from each iteration are not equal. `sapply` thus returns a list because elements of unequal dimensions cannot be combined into a matrix or a vector.  
+
+### apply
+This is a fairly restrictive form of this family (in my opinion), which is mainly used to apply functions over the rows or columns of 2-D structures. 
+
+```{r}
+# Chunk 13
+dat <- dat_list[[2]]
+# 
+# #1
+apply(X = dat, MARGIN = 1, FUN = sum)
+#
+# #2
+apply(X = dat, MARGIN = 2, FUN = sum)
+#
+# #3
+apply(dat, 2, mean)
+#
+# #4
+apply(dat, 2, range)
+#
+# #5
+apply(dat, 1, function(x) sum(x) / sum(dat))
+```
+
+We start by extracting one `data.frame` from `dat_list`, and then use various flavors of `apply` on that. In #1 and #2, we use the argument names for clarity (use `?apply`) to view them.  #1 applies sum to each row of `dat`, #2 to each column (i.e. the exact same thing as `rowSums` and `colSums`).  #3 takes the row means (i.e. the analog to `rowMeans`), and #4 the range of values in each column. In the last case, `apply` is more useful because there is no `rowRanges` function that provides a simpler version.  In #5 we use an anonymous function to take the row sums of `dat` and divide them by the total sum of `dat`, which gives us a weighted mean. 
+
+### When should I use for versus *apply?
+
+We have already heard that `*apply` is preferred in `R`, but `for` is still useful, and different use`R`s answers will vary. My own personal answer to this is to use an `*apply` if you want to capture the output of a looping operation in an object (i.e. in most cases), and use `for` when you don't need to catch it. For me, this typically relates to when I need to make multi-panel plots using base `R` graphics, e.g. 
+
+```{r, fig.width=8, fig.height=3}
+par(mfrow = c(1, 3))
+for(i in 1:3) {
+  dat <- dat_list[[i]]
+  dat[dat > 100] <- mean(unlist(dat))
+  plot(dat, pch = 20, col = c("red", "orange", "blue")[i], 
+       main = paste("Element", i), xlim = c(0, 60), ylim = c(20, 70))
+}
+```
 
 
+### Practice
+For this practice section, please install, attach, and initiate the `swirl` package using this code:
+```{r, eval = FALSE}
+install.packages("swirl")
+library(swirl)
+swirl()
+```
 
+Answer the question it prompts:
+```
+What shall I call you?
+```
+Then 
+```
+| Please choose a course, or type 0 to exit swirl.
+```
+Select Option `1: R Programming`
+```
+| Please choose a lesson, or type 0 to return to course menu.
+```
+Select Option `10: lapply and sapply`. Work through the whole unit, then escape out of `swirl` when finished, and do the remaining practice exercises:
+
+- Copy and run Chunk 3's code to recreate `dat_list`. Copy Chunk 10's code and:
+  - Set `na.rm = FALSE` in the call to `colSums`
+  - Re-run the code to check how the answer changes. 
+- Copy Chunk 11's code. Remove the `unlist()` around `dat_list[[1]]`. Re-run the code and see what happens. 
+- Write an `lapply` to apply the functions `mean` and `sd` to `dat_list`
+- Do the same for `sapply`
+- Write an `lapply` with an anonymous function that iterates through `dat_list`, selecting the 3rd column, rows 1 and 2 from each `data.frame`, and then `sum` that subset.  
+
+***
+<center>
+[Back to top](#introduction-to-r-programming) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+# Unit Assignment 
+
+## Set-up
+Make sure you are working in the master branch of your project. Create a new vignette named "module3.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd"
+
+## Create a new package function
+Create a new function within your package, using `roxygen2` notation to write help files (as done for your Assignment 1 function), and save the function in a separate .R file for each, named the same as the function contained therein
+
+Name the new function `mycalc`, which will take three arguments, "x", "y", and "fun", which stands for "function". Arguments "x" and "y" will be vectors or matrices, while argument "fun" will have four possible values: "sum", "subtract", "divide", "multiply". Function `mycalc` will use conditional statements to choose the correct calculation to make based on the value you argument value given to oper. For example, if you pass to "x" a vector `1:5`, and to "y" a vector `c(5, 2, 3, 10, 2)`, and set "fun" to "divide", you should get:  
+    
+    
+```{r, echo = FALSE}
+1:5 / c(5, 2, 3, 10, 2)
+```
+
+Here's are a related function that can be adapted for this purpose:
+
+```{r, warning=FALSE, error = TRUE}
+somewhat_related_function <- function(x, fun) {
+  if(fun == "log") {
+    o <- log(x)
+  } else if(fun == "square") {
+    o <- x^2
+  } else if(fun == "cube") {
+    o <- x^3
+  } else if(fun == "sqrt") {
+    o <- sqrt(x)
+  } else {
+    o <- paste("Not a recognized function")
+  }
+  return(o)
+}
+
+# Examples
+a <- c(1, 10, 100, 1000)
+b <- cbind(a, b = log10(a))
+somewhat_related_function(x = a, "log")
+somewhat_related_function(x = b, "square")
+somewhat_related_function(x = b, "cube")
+somewhat_related_function(x = a, "sqrt")
+somewhat_related_function(x = a, "log10")
+```
+    
+So you have to adapt the function by 1) adding a second argument for y, 2) changing the operations performed within the conditional statements, 3) the values of the arguments that "fun" responds to, as well as 4) the function name. 
+
+## Vignette tasks
+1. Create the following vectors: 
+    - An integer vector of length 20, to be named `v1`, using the `sample` function to randomly select 20 values from 0 through 100, use the option "replace = TRUE" (which means that you can the same value randomly selected more than one time)
+    - A second integer vector (named `v2`), also of length 20, but selecting 20 values from the range 1:10. 
+    - A numeric vector of length 20 (named `v3`), using the `runif` function with the minimum set to 0 and the maximum to 1. 
+    - A character vector of length 20 (named `v4`), using randomly selected values from the built-in dataset `LETTERS`. You will use `v2` to select the values out of `LETTERS` (this means that you are using `v2` as an __index__). 
+    - In making `v1, v2, v3`, you will use the `set.seed` function so that you can get the exact same results each time you run your code to make them. Use a seed value of 1.
+
+2. Create a matrix `m1` from `v1` and `v2`, by binding the two vectors together as ___columns___. Create another (`m2`) from `v2` and `v3`, again by binding columns. Create a third (`m3`) by binding `v3` and `v4 `. 
+
+3. Create a `data.frame` (named `DF`) by bindings the columns of `v1`, `v2`, `v3`, and `v4`. 
+    - Question: why shouldn't you use the name "df" to name this object?  
+    - Change the column names of `DF` to "a", "b", "c", and "grp". 
+    - Question: why is it okay to rename a column in `DF` "c", but not to rename `v3` that name? 
+    - Look at the `str` of `DF`. What kind of data type is "grp"? What are two ways you can change it from a factor to a character? (Hint: one is when you create it, one is after you have created it. Both answers are available in the vignette) 
+
+4. Demonstrate the use of your new function: 
+    - Use `mycalc` to sum and divide the following pairs of objects:
+        - `v1`, `v2`
+        - `v2`, `v3`
+        - `v3`, `v4`
+        - `m1`, `m1`
+        - `m1`, `m2`
+        - `m2`, `m3`. 
+    - Capture the output of each operation in objects `d1` through `d6` for the divisions, and `s1` through `s6` for the sums. 
+    - Using `mycalc` with `DF`:
+        - Multiply row1, column1 by row1, column2
+        - Multiply rows 1-10, column 1-3 by rows1-10, columns 1-3
+        - Divide the values in columns "a" and "b" by the values in column "c" and of `DF` corresponding to "grp" values "E". In selecting the columns, use their names, rather than their index numbers, to select them
+    - Repeat the last of the aforementioned calculations, but this time do not use `mycalc`. Simply do it using the two `DF` subsets with the `/` operator
+
+5. Demonstrate the use of `*apply`:
+    - Combine `v1`, `m2`, and `m3` into a list `l`
+    - Write an `lapply` that applies `sum` to `l`. This one does not need an anonymous function 
+    - Now write an `lapply` that iterates over the elements of `l`, and uses your `myfunc` to multiply each element of `l` by `v2`
+    - Hints:
+        - You will need to use an anonymous function (`function(x)`)
+        - The interior of your function (i.e. the part between `({})` will look like this: `l[[x]] * v2`
+    - Do the same but with `sapply`
+
+    
+## Assignment output
+
+As with the previous assignment, this assignment should be delivered as R package that: 
+
+1. Has a vignettes, man, and R folder, with the necessary ingredients in them ("calculations" vignette, R function files, .Rd files for the function documentation) 
+2. Has a DESCRIPTION and NAMESPACE file that shows that both your functions are exported. Fill out the DESCRIPTION file with your relevant details, a description of the package, etc. Also, use 3-digit version numbering. 0.0.0 is the initial version of your package. 0.0.X (where X means some integer in a sequence, 1 if this is your first minor update) is the updated version after a minor fix (a small bug corrected or documentation updated), 0.X.0 is an intermediate release (maybe you have added a new function or two), X.0.0 is a major release of a working version of the package. 
+3. Can be installed with browsable vignettes using `install_github`. 4. Code written according to Hadley Wickham's R style guide. 
+5. No extraneous files/folders in your repo. 
+6. In writing your vignettes, make sure that the content of objects that result from each assigned task are printed into the vignette, For example, if you are asked to create a two column data.frame:
+
+    This is wrong:
+    ```{r}
+    a <- cbind.data.frame(a = 1:10, b = 1:10)
+    ```
+
+    This is right:
+    ```{r}
+    a <- cbind.data.frame(a = 1:10, b = 1:10)
+    a
+    ```
+
+7. When complete, park the repo on a new side branch called a2

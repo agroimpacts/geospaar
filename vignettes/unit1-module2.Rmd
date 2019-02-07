@@ -178,7 +178,7 @@ By running the function without parentheses, you can see what type of function t
 (10 > 5) & (5 < 6)
 ```
 
-##### Control structures
+##### Control structures{#control-structures}
 There are a number of functions that `R` shares with other languages, which are (to paraphrase from [here](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Control-structures)) used to control the sequence in which statements (e.g. `a <- 1 + 10`) are evaluated. There are functions such as `for`, `while`, `if`, `else`, `break`, etc. 
 ```{r}
 a <- c(1, 11)

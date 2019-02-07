@@ -50,7 +50,7 @@ This section is broken into three modules (the materials can be accessed by foll
 
 [**Module 2**](unit1-module2.html): Fundamental `R` concepts 
 
-**Module 3**: Introduction to `R` programming 
+[**Module 3**](unit1-module3.html): Introduction to `R` programming 
 
 **Module 4**: Data analysis and visualization with `R` 
 
