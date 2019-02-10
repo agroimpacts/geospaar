@@ -204,12 +204,12 @@ a[-c(1, 3)]
 
 In the code above, we extract from `a`:
 
-1. The 1st element
-2. The 4th and 5th elements. Since 
-3. The 1st, 5th, and 10th elements
-4. The last element
-5. The 2nd through 10th elements
-6. The 2nd and fourth through 10th elements
+- Line #1: The 1st element
+- Line #2: The 4th and 5th elements. Since 
+- Line #3: The 1st, 5th, and 10th elements
+- Line #4: The last element
+- Line #5: The 2nd through 10th elements
+- Line #6: The 2nd and fourth through 10th elements
 
 We use integers within the `[]` to indicate the *position* of the element(s) we want to pull out of `a`. If we want more than 1 element, we can specify a range of indices using `:` if the positions are contiguous/adjacent, i.e. `4:5`. If they are discontiguous, then we have to concatenate the indices using `c()`, separating the integers specifying the index positions by commas, i.e. `c(1, 5, 10)`. Lastly, we can grab the last element and the last element only using the index the final index number (10), or, as os often the cases in large vectors, where we might not know the exact total number of elements (and thus the index number of the final element), we can use the `length` function to find out how long (how many elements are in) the vector is, i.e. `length(a)`, which returns the value 10 in this case into the `[]`. 
 
@@ -248,11 +248,11 @@ b[b %in% 2:3]
 
 In the above we use logical operators to select values from `a` and `b` based on their values. Let's translate what the above are doing exactly. 
 
-1. Select from `a` all values of `a` that greater than 5
-2. Select from `a` all values of `a` that are greater than or equal to 2 and less than 7
-3. Select from `a` all values of `a` that 7 or equal 2
-4. Select from `a` all values of `a` that occur within a vector containing 1 and 10 (this is the same as: select from `a` all values of `a` that equal 1 or equal 10)
-5. Select from `b` all values of `b` that occur within a vector containing 2 and 3
+- Line #1: Select from `a` all values of `a` that greater than 5
+- Line #2: Select from `a` all values of `a` that are greater than or equal to 2 and less than 7
+- Line #3: Select from `a` all values of `a` that 7 or equal 2
+- Line #4: Select from `a` all values of `a` that occur within a vector containing 1 and 10 (this is the same as: select from `a` all values of `a` that equal 1 or equal 10)
+- Line #5: Select from `b` all values of `b` that occur within a vector containing 2 and 3
 
 Let's look at two aspects of this syntax, starting within the logical operations within the `[]`.  What are those doing? 
 
@@ -308,12 +308,10 @@ l[[length(l)]]
 l[length(l)]
 ```
 
-- #1 (**reference is to comment to right of the code**) pulls out the contents of the element of list `l`
-- #2 pulls the first element of list `l` into a list of length 1
-- #3 pulls the second and third elements of `l` into a two-element list
-- #4 tries **but fails** to pull the second and third elements of `l` to see their contents--it only returns the contents of element 2
-- #5 pulls out the contents of the last element of `l` 
-- #6 pulls the last element of list `l` into a list of length 1
+- Line #1: the example code pulls out the contents of the element of list `l` - Line #2: pulls the first element of list `l` into a list of length 1
+- Line #3: pulls the second and third elements of `l` into a two-element list - Line #4: tries **but fails** to pull the second and third elements of `l` to see their contents--it only returns the contents of element 2
+- Line #5: pulls out the contents of the last element of `l`
+- Line #6: pulls the last element of list `l` into a list of length 1
 
 So list indexing by `[[]]` is different than by `[]`. 
 
@@ -385,7 +383,7 @@ l[2:3][3]  # doesn't work
 In Chunk 3 above, we are indexing into a specific list element, and then indexing into values within the selected vectors. First thing we do is assign names (a, b, c, d) to vector `c` in `l2` (the 3rd element). 
 
 - In #1-#4 you see various ways how you can select elements 2 and 3 from the second list element (either `l` or `l2`)
-- #5-#8 show how we get extract elements 1 and 4 from the list's 3 element 
+- Lines #5-#8 show how we get extract elements 1 and 4 from the list's 3 element 
 - **Pay close attention to #3, #4, and #8, which each have three sets of brackets**
 - Lastly we see #9, which produces a NULL because it is not possible to index into two separate list elements 
 
@@ -437,9 +435,9 @@ b[length(b) - 1] <- 0:10
 
 Looking at the above, we are indexing the same way we did in the previous section, but in this case we are assigning new values to overwrite the existing ones in those index positions. Note that the number of replacements can be less than or equal to, but not exceed, the number of elements you index:
 
-- #1-#3 shows how you replace 1 or more elements with a single value. Notice how in #2 that replacing the named element "j" with a character ("z") coerced the entire vector to a character type 
-- #4 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value)
-- #5 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life). Notice also that over-writing the "z" value at the tail of the vector (introduced in #2) do not result in the vector being coerced back to an integer type 
+- Lines #1-#3 show how you replace 1 or more elements with a single value. Notice how in #2 that replacing the named element "j" with a character ("z") coerced the entire vector to a character type 
+- Line #4 how you replace two elements with two different values (the first element indexed gets the first value, the second element gets the second value)
+- Line #5 shows how you replace 6 elements' values with two values--the effects in this latter case is that the replacement values are alternated (probably not something you would want to do in real life). Notice also that over-writing the "z" value at the tail of the vector (introduced in #2) do not result in the vector being coerced back to an integer type 
 - Finally, #6 shows what you cannot do, and tells you why
 
 Now let's replace list elements:
@@ -470,10 +468,10 @@ l2
 
 In Chunk 3 above, we compare changes to elements of the copy list `l2` to the relevant elements of the original list `l`:
 
-- #1 Replaces `l2`'s first element, a single element vector, with a two-element vector
-- #2 Replaces the 1st and 10th element of the vector in the `l2` element named `f` with -1 and 1000, respectively
-- #3 Replaces elements named a, b, c, and d in the vector held in `l2`'s third element. 
-- #4 Assigns a fourth element to `l2` named `myfun`, which is a function we defined on the right of the operator. 
+- Line #1 replaces `l2`'s first element, a single element vector, with a two-element vector
+- Line #2 replaces the 1st and 10th element of the vector in the `l2` element named `f` with -1 and 1000, respectively
+- Line #3 replaces elements named a, b, c, and d in the vector held in `l2`'s third element. 
+- Line #4 Assigns a fourth element to `l2` named `myfun`, which is a function we defined on the right of the operator. 
 
 ```{r}
 # Chunk 4
@@ -1046,7 +1044,7 @@ But there might be cases in which you wouldn't to, say if you wanted to construc
 ```{r, fig.height=1, fig.width=9}
 # Chunk 2
 sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
-par(mfrow = c(1, 4), mar = c(0, 0, 1, 1))
+par(mfrow = c(1, 4), mar = c(0, 0, 1, 0.5))
 for(i in 1:4) {  
   stmnt <- paste0(letters[i], " is the ", i, sscript[i],
                   " letter in the alphabet")
