@@ -1363,7 +1363,7 @@ Select Option `10: lapply and sapply`. Work through the whole unit, then escape 
 # Unit Assignment 
 
 ## Set-up
-Make sure you are working in the master branch of your project. Create a new vignette named "module3.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd"
+Make sure you are working in the master branch of your project. Create a new vignette named "module3.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 
 
 ## Create a new package function
 Create a new function within your package, using `roxygen2` notation to write help files (as done for your Assignment 1 function), and save the function in a separate .R file for each, named the same as the function contained therein
@@ -1425,10 +1425,10 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Use `mycalc` to sum and divide the following pairs of objects:
         - `v1`, `v2`
         - `v2`, `v3`
-        - `v3`, `v4`
+        - `v1`, `v3`
         - `m1`, `m1`
         - `m1`, `m2`
-        - `m2`, `m3`. 
+        - `m2`, `m3` 
     - Capture the output of each operation in objects `d1` through `d6` for the divisions, and `s1` through `s6` for the sums. 
     - Using `mycalc` with `DF`:
         - Multiply row1, column1 by row1, column2
@@ -1437,7 +1437,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Repeat the last of the aforementioned calculations, but this time do not use `mycalc`. Simply do it using the two `DF` subsets with the `/` operator
 
 5. Demonstrate the use of `*apply`:
-    - Combine `v1`, `m2`, and `m3` into a list `l`
+    - Combine `v1`, `m1`, and `m2` into a list `l`
     - Write an `lapply` that applies `sum` to `l`. This one does not need an anonymous function 
     - Now write an `lapply` that iterates over the elements of `l`, and uses your `myfunc` to multiply each element of `l` by `v2`
     - Hints:
@@ -1464,16 +1464,25 @@ As with the previous assignment, this assignment should be delivered as R packag
 
     This is wrong:
     ```{r}
-    a <- cbind.data.frame(a = 1:10, b = 1:10)
+    a <- data.frame(a = 1:10, b = 1:10)
     ```
 
     This is right:
     ```{r}
-    a <- cbind.data.frame(a = 1:10, b = 1:10)
+    a <- data.frame(a = 1:10, b = 1:10)
     a
     ```
 
-7. When complete, park the repo on a new side branch called "a2"
+7. Set up the code chunks in your vignette to look like this:
+
+    ````markdown
+    `r ''````{r, error = TRUE}
+    ```
+    ````
+
+    That will allow any code errors (and there are some intentional ones you will find) to be recorded in vignette output without causing the knit to fail
+
+8. When complete, park the repo on a new side branch called "a2"
 
 ***
 <center>
