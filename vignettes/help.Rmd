@@ -111,7 +111,7 @@ include_graphics("fig/branches.png")
 
 3. Delete a local branch (if you created one by accident, from shell). Don't do this to your master branch. 
 
-    ```{bash, eval = FALSE}
+    ```bash
     git branch -d <branchname>
     ```
 
@@ -123,6 +123,7 @@ include_graphics("fig/branches.png")
     ```
 
 5. Delete a remote branch
+
     ```bash
     git push origin --delete <branchname>
     ```
