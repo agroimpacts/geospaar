@@ -1,6 +1,6 @@
 ---
 title: "Geospatial Analysis with R"
-subtitle: Class 8
+subtitle: Class 9
 output:
   xaringan::moon_reader:
     lib_dir: libs
