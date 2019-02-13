@@ -67,7 +67,6 @@ str(m)
 dat <- data.frame(m, V4 = sample(letters[1:5], size = 10, replace = TRUE))
 dat
 ```
-
 ---
 ## 1-d Indexing/subsetting/replacing 
 - Select the 1st, 2nd, and 10th elements from `a`
@@ -83,6 +82,19 @@ dat
 - Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l` 
 
 ---
+
+```{r, eval = FALSE}
+a[c(1, 2, 10)]
+a[c("V1", "V2", "V3")]
+a[(length(a) - 1)] <- "sasquatch"
+b[b %in% c("k", "n", "e")]
+which(b %in% c("k", "n", "e"))
+d[1:5] * d[(length(d) - 4):length(d)]
+d[d > 100]
+length(d[d > 100])
+d[d >= 90 & d <= 110] <- 100
+```
+---
 ## 2-d Indexing/subsetting/replacing
 - Select the first 10 values from `m`, using a single vector and no row or column information
 - Use a single vector to select the last row, column value from `m`
@@ -93,79 +105,20 @@ dat
 - Subset the first two rows and columns of `dat` into a new data.frame `datss`. 
 - Replace `dat` rows 1:2, column 1:2 with the values -1:-4
 - Reset the part of `dat` you just changed with the values in `datss`
-
----
-## Summarizing datasets
-- Calculate the row and column sums of both `m` and `dat`. 
-- Calculate the overall means and sums of all values in each dataset
-- From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable. 
----
-## Index into lists
-
-- Select from `l`'s first element the 1st and 5th elements
-- Do the same, using the element name and `[[]]` to get the first element of `l`
-- Do the same, using `$` and the element name to get the first element
-- Do the same, using `[]` and the element name to get the first element
-- Select the last element of the last element of `l` (tricky without absolute indexing)
-
 ---
 
-## Control structures
-### Branching
-```{r}
-a <- 5
-if(a > 10) {
-  print("Greater than 10!")
-} else {
-  print("Less than or equal to 10")
-}
+```{r, eval = FALSE}
+m[1:10, ]
+m[length(m)]
+m[length(m)] <- -99
+m[3, 1:2] <- m[3, 1:2] * 10
+m[3, c("V1", "V2")] <- m[3, c("V1", "V2")] / 10
+dat$V3^2
+dat[, 3]^2
+dat[["V3"]]^2
+dat["V3"]^2
+dat[, "V3"]^2
+datss <- dat[1:2, 1:2]
+dat[1:2, 1:2] <- -1:-4
+dat[1:2, 1:2] <- datss
 ```
-
-### Looping
-```{r}
-b <- 1:3
-for(i in b) print(i)
-```
-
----
-
-### *apply
-
-- A special form of looping
-- Intended for *applying* a function to data
-
-```{r}
-l2 <- l[c("a", "d")]
-lapply(l2, mean)
-```
-
----
-### *apply
-
-- Key uses: 
-  - Return results of loop directly into object
-  - Use with anonymous functions to pass an iterator, often into more complex procedures
-  
-```{r}
-# Simple
-o <- lapply(1:2, function(x) l2[[x]])
-o
-```
-
----
-```{r}
-# More complex
-o2 <- lapply(1:5, function(x) {
-  l2[[1]][x] - l2[[2]][x]
-})
-o2
-```
-
----
-
-- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
-- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
-- Do the same as above, but use an `lapply` that assigns output to `o`
-- Do the same as above, but use `sapply` instead of `lapply`
-
-
