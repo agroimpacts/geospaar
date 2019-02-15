@@ -1,2 +1,3 @@
+^external$
 ^.*\.Rproj$
 ^\.Rproj\.user$
