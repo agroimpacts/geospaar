@@ -1,0 +1,242 @@
+---
+title: "Unit 1 - Module 4"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1: Module 4}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+```
+
+# Data analysis and visualization{#data-analysis-and-visualization}
+
+We are now moving onto the final module of this unit. We'll learn now about manipulating, analyzing, and visualizing data. We'll start now to work more with `tidyverse` approachs now, as this is where it comes into its own. 
+
+For this module we will be using the following packages:
+
+```{r}
+library(dplyr)
+library(tidyr)
+```
+
+
+# Data preparation
+The first thing we need is some data to work with. R comes with many built-in  datasets, but when you are out in the wild and working on your own with `R`, you are generally going to get your datasets from somewhere else. That means that you will need to read them into `R`. Once you have read them in, you will often need to clean them up and rearrange them before they are ready to analyze. This section focuses on reading in and organizing your data in `R`. We are going to work with files in the commonly used csv data format. 
+
+## Reading in and writing out data
+We are going to work with three csv files that I downloaded from [FAOStat](http://www.fao.org/faostat/en/#home), one of the primary sources for agricultural census data. The data I downloaded represent the planted areas and harvest quantities of maize, wheat, and sorghum for the years 1961-2017 for Zambia and South Africa. They are bundled up here with `geospaar`, so you can access them by reading them in as `system.file`s. 
+
+We can easily read in each file using base `R`'s `read.csv` function, which is widely used.  However, we are going to skip straight to a more powerful csv reader provided by the tidyverse's [`readr`](https://readr.tidyverse.org) package. Even more powerful is `data.table::fread`, which is excellent (and as far as I know, still the fastest on the market) for reading in very large csv files, but we are sticking with the tidyverse. First, for grins, here is how you would use `read.csv`
+
+```{r}
+library(geospaar)
+f <- system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
+maize <- read.csv(f)
+head(maize)
+```
+
+Now the `readr` way
+```{r}
+maize <- readr::read_csv(f)
+maize
+```
+
+That reads it in as a tibble, rather than a `data.frame`, but remember that a `tibble` is an enhanced `data.frame`.  
+
+Right away we can see that the data look kind of messy. There isn't anything I see in that preview that tells us much about the data. `readr` at least gives a summary of data columns and their type on read in. So let's inspect what's there:
+```{r, message=FALSE}
+library(dplyr)
+maize %>% slice(1)  # same as maize[1, ]  
+```
+
+That's the first row of data from `maize`, using `dplyr::slice` instead of `maize[1, ]` to get it. We don't need everything in there. We are interested in just a few columns actually. We'll get to how we select those data in the next section. 
+
+Let's get all three datasets read in first:
+
+```{r}
+# Chunk 1
+# #1
+fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
+          full.names = TRUE)
+fs
+# #2
+crops <- lapply(fs, readr::read_csv)
+```
+
+We used good old `lapply` to read all three files into a list (#2), after we used the `dir` function  with `system.file` to retrieve the paths to the three csvs (#1). Let's break that down:
+
+```{r}
+# Chunk 2
+# #1
+system.file("extdata/", package = "geospaar")
+#
+# #2
+dir(system.file("extdata/", package = "geospaar"))
+#
+# #3
+dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT")
+#
+# #4
+dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
+    full.names = TRUE)
+```
+
+In #1, we get the file path to the extdata/ folder in the `geospaar` installed package. #2 gives shows us the names of all the files in there. #3 shows us narrows the listed files down to those whose names contains "FAOSTAT", and then #4 returns the full file paths for each. 
+
+So that's a quick introduction to how one can construct a file path and read in table data stored in a csv. 
+
+Let's say we want to write out some data:
+```{r}
+# Chunk 3
+# #1
+set.seed(1)
+dat <- tibble(a = sample(1:10), b = rnorm(10))
+# #2
+td <- tempdir()
+# #3
+readr::write_csv(dat, path = file.path(td, "dummy.csv"))
+# #4
+readr::read_csv(file.path(td, "dummy.csv"))
+```
+
+In #1 we do the usual creation of dummy data, but we replace `data.frame` with `tibble`, the enhanced `data.frame`--note we could have used `data.frame`. #2 creates a temporary directory, which allows me to do something to code this demonstration in a way that will run on your computer (i.e. you won't have to create a directory with a name and path that matches one on my computer for this code to execute at install time). #3 uses `readr::write_csv` to write it onto disk, and we read it back in in #4. 
+
+## Tidying your data
+As we have already seen, our three crop datasets are messy. Columns we don't need and not sure if we want the row structure as it is. So we have to prepare our data. This introduces the concept of *tidy* data, which is the foundational concept for the tidyverse.  There is a whole paper written on the tidy data concept by Hadley Wickham, which is [here](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html). To quote the key principles:
+
+> Tidy data is a standard way of mapping the meaning of a dataset to its structure. A dataset is messy or tidy depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data:
+
+> 1. Each variable forms a column.
+
+> 2. Each observation forms a row.
+
+> 3. Each type of observational unit forms a table.
+
+> ...Messy data is any other arrangement of the data.
+
+Please do read that site to get a full understanding of it, as we are going to be reorganizing our data according to these principles. 
+
+Let's start by getting rid of some of the extraneous variables in our data. We'll start with just the `maize` dataset, which we read in on its own above. Having already looked at it, we know there are a bunch of columns we don't need, so we will pull out the essentials:
+
+```{r}
+# Chunk 4
+# dplyr selection
+maize <- maize %>% dplyr::select(Item, Area, Element, Year, Value)
+# base R (not run)
+# maize <- maize[, c("Item", "Area", "Element", "Year", "Value")]
+```
+
+Which reduces `maize` down to the columns *Item* (crop name), the *Area* (country), the *Element* (variable, the *Year*, and the *Value* of the variable. Note that we used `dplyr::select` (note the `::` specification here, due to a namespace conflict with `raster::select`) to grab the columns we wanted, instead of the base `R` way of selection (shown commented out).
+
+*Year* and *Value* store numeric values, but *Item*, *Area*, and *Element* are categorical (character). So let's look at what values are stored in them:  
+
+```{r}
+# Chunk 5
+maize %>% distinct(Item, Area, Element)
+# unique(maize[c("Item", "Area", "Element")])
+```
+
+We use the `distinct` function to select out the unique values contained in each of those columns. You could do this in base `R` also, which is also shown in the commented out code. 
+
+This exercise tells us something. We have one violation of the tidy principles. *Item* and *Area* seem correct, they are storing variables: crop name and country name. *Element*, on the other hand, contains:
+
+> Multiple variables are stored in one column
+
+Which is one of the [definitions](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) of messy data. 
+
+So we need to reshape the dataset. How? Well, the values "Area harvested" and "Production" in *Element* are both stored in the neighboring *Value* column. We need to make two new columns out of values in *Value*, pulling out the ones corresponding to *Element* "Production" into one new column, and *Element* "Area harvested" into another. This is called spreading:
+```{r, message=FALSE}
+# Chunk 6
+maize <- maize %>% spread(key = Element, value = Value)
+maize
+```
+
+We use `tidyr::spread` to do that, using *Element* as the key, and *Value* as the column holding the values. The inverse procedure is called gathering, where re-organize columns into a key-value pairs. 
+```{r}
+# Chunk 7
+maize %>% gather(key = Element, value = Value, `Area harvested`, Production)
+```
+
+Here we use `tidyr::gather` to reshape `maize` back to its original form. We have two arguments, "key", which is the name for new variable that will hold the key, and "value", which will hold the data values corresponding to each key. We then give the column names that we want to gather into key-value pairs. Gathering is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
+
+We still need to clean it some more though. Note in the `gather` operation above how *Area harvested* has backticks around it. That's because it has a space in the variable name, which is bad practice. We also should remove capitals. 
+```{r}
+# Chunk 8
+maize %>% rename(crop = Item, country = Area, year = Year, 
+                 harv_area = `Area harvested`, prod = Production)
+```
+
+So that's fairly straightforward. We use `dplyr::rename` to assign a new name for each column, and we then give them more informative column names.  That's the most direct way of renaming. There are more programmatic ways of doing it, but we will circle back to that later on. For now, we want to update all of our datasets:
+```{r}
+# Chunk 9
+# 
+# #1
+crops[[1]] %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+  spread(key = Element, value = Value) %>% 
+  rename(crop = Item, country = Area, year = Year, 
+                 harv_area = `Area harvested`, prod = Production)
+#
+# #2
+lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+    spread(key = Element, value = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production)
+})
+#
+# #3
+do.call(rbind, lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+    spread(key = Element, value = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production)
+}))
+```
+
+Lots of stuff happening up in Chunk 9. In #1, we are accessing the first element of `crops`, the maize `tibble`, and applying all three operations chained together with `%>%`: the `select`, `spread`, and `rename`. In #2, we are doing that within an `lapply`, so we get all at once. In #3, we combine all three tidied crop `tibble`s into a single large `tibble`, so that *crop* is now a variable with three values. We use the function `do.call` and `rbind` to do that last step. `do.call` basically says "do this function call", which is `rbind`, `rbind` is being done to the results of the `lapply`. Or, broken down:
+```{r}
+# Chunk 10
+crops2 <- lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+    spread(key = Element, value = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production)
+})
+crops_df <- do.call(rbind, crops2)
+set.seed(1)
+crops_df %>% sample_n(., size = 10)
+```
+
+That separates the `lapply` and the `do.call(rbind` steps. The final line uses `dplyr::sample_n` to select 10 rows at random, which reveals observations of all three crop types. 
+
+## Practice
+
+### Code
+1. Re-create the dummy `tibble` in Chunk #3 above, and write it out to a csv using `readr::write_csv`, to any directory convenient for you (e.g. into your notebooks/ folder), calling it "my_dummy_file.csv".
+
+2. Use `dir` to list files in the directory you write it into matching the word "dummy", and then read it back in using `readr::read_csv`. 
+
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
