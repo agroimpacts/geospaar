@@ -1,5 +1,5 @@
 ---
-title: "Unit 1 - Module 1"
+title: "Unit 1 Module 1"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
@@ -12,7 +12,7 @@ output:
     toc: yes
     css: unit.css
 vignette: >
-  %\VignetteIndexEntry{Unit 1: Module 1}
+  %\VignetteIndexEntry{Unit 1 Module 1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
