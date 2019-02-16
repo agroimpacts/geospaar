@@ -12,7 +12,7 @@ output:
     toc: yes
     css: unit.css
 vignette: >
-  %\VignetteIndexEntry{Unit 1: Module 4}
+  %\VignetteIndexEntry{Unit 1 Module 4}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -37,6 +37,7 @@ library(dplyr)
 library(tidyr)
 ```
 
+For this module, we will start making extensive use of `%>%`. You will save yourself much time by using the keyboard shortcut for inserting that operator, which is `CMD + shift + m` on Mac, `ctrl + shift + m` on Windows.
 
 # Data preparation
 The first thing we need is some data to work with. R comes with many built-in  datasets, but when you are out in the wild and working on your own with `R`, you are generally going to get your datasets from somewhere else. That means that you will need to read them into `R`. Once you have read them in, you will often need to clean them up and rearrange them before they are ready to analyze. This section focuses on reading in and organizing your data in `R`. We are going to work with files in the commonly used csv data format. 
@@ -119,8 +120,18 @@ readr::read_csv(file.path(td, "dummy.csv"))
 
 In #1 we do the usual creation of dummy data, but we replace `data.frame` with `tibble`, the enhanced `data.frame`--note we could have used `data.frame`. #2 creates a temporary directory, which allows me to do something to code this demonstration in a way that will run on your computer (i.e. you won't have to create a directory with a name and path that matches one on my computer for this code to execute at install time). #3 uses `readr::write_csv` to write it onto disk, and we read it back in in #4. 
 
-## Tidying your data
-As we have already seen, our three crop datasets are messy. Columns we don't need and not sure if we want the row structure as it is. So we have to prepare our data. This introduces the concept of *tidy* data, which is the foundational concept for the tidyverse.  There is a whole paper written on the tidy data concept by Hadley Wickham, which is [here](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html). To quote the key principles:
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+## Getting your data clean and in shape
+As we have already seen, our three crop datasets are messy. Columns we don't need and not sure if we want the row structure as it is. So we have to prepare our data. 
+
+### Tidy data
+This introduces the concept of *tidy* data, which is the foundational concept for the tidyverse.  There is a whole paper written on the tidy data concept by Hadley Wickham, which is [here](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html). To quote the key principles:
 
 > Tidy data is a standard way of mapping the meaning of a dataset to its structure. A dataset is messy or tidy depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data:
 
@@ -134,6 +145,7 @@ As we have already seen, our three crop datasets are messy. Columns we don't nee
 
 Please do read that site to get a full understanding of it, as we are going to be reorganizing our data according to these principles. 
 
+### Selecting
 Let's start by getting rid of some of the extraneous variables in our data. We'll start with just the `maize` dataset, which we read in on its own above. Having already looked at it, we know there are a bunch of columns we don't need, so we will pull out the essentials:
 
 ```{r}
@@ -162,21 +174,35 @@ This exercise tells us something. We have one violation of the tidy principles. 
 
 Which is one of the [definitions](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) of messy data. 
 
-So we need to reshape the dataset. How? Well, the values "Area harvested" and "Production" in *Element* are both stored in the neighboring *Value* column. We need to make two new columns out of values in *Value*, pulling out the ones corresponding to *Element* "Production" into one new column, and *Element* "Area harvested" into another. This is called spreading:
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Reshaping
+So we need to reshape the dataset. How? Well, the values "Area harvested" and "Production" in *Element* are both stored in the neighboring *Value* column. We need to make two new columns out of values in *Value*, pulling out the ones corresponding to *Element* "Production" into one new column, and *Element* "Area harvested" into another. This is called **spreading**, or going from long (or tall) to wide:
 ```{r, message=FALSE}
 # Chunk 6
 maize <- maize %>% spread(key = Element, value = Value)
 maize
 ```
 
-We use `tidyr::spread` to do that, using *Element* as the key, and *Value* as the column holding the values. The inverse procedure is called gathering, where re-organize columns into a key-value pairs. 
+We use `tidyr::spread` to do that, using *Element* as the key, and *Value* as the column holding the values. The inverse procedure is called **gathering**, where columns are re-organized into key-value pairs: 
 ```{r}
 # Chunk 7
 maize %>% gather(key = Element, value = Value, `Area harvested`, Production)
 ```
 
-Here we use `tidyr::gather` to reshape `maize` back to its original form. We have two arguments, "key", which is the name for new variable that will hold the key, and "value", which will hold the data values corresponding to each key. We then give the column names that we want to gather into key-value pairs. Gathering is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
+Here we use `tidyr::gather` to reshape `maize` back to its original form. We have two arguments, "key", which is the name for new variable that will hold the key, and "value", which will hold the data values corresponding to each key. We then give the column names that we want to gather into key-value pairs. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
 
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Renaming
 We still need to clean it some more though. Note in the `gather` operation above how *Area harvested* has backticks around it. That's because it has a space in the variable name, which is bad practice. We also should remove capitals. 
 ```{r}
 # Chunk 8
@@ -184,36 +210,63 @@ maize %>% rename(crop = Item, country = Area, year = Year,
                  harv_area = `Area harvested`, prod = Production)
 ```
 
-So that's fairly straightforward. We use `dplyr::rename` to assign a new name for each column, and we then give them more informative column names.  That's the most direct way of renaming. There are more programmatic ways of doing it, but we will circle back to that later on. For now, we want to update all of our datasets:
+So that's fairly straightforward. We use `dplyr::rename` to assign a new name for each column, and we then give them more informative column names.  That's the most direct way of renaming. There are more programmatic ways of doing it, but we will circle back to that later on. 
+
+### Chaining/piping
+Okay, so we have just seen a bunch of data tidying steps above. This is a good point to talk about combining operations. It is advantageous to combine operations when we have to do several things to get a desired outcome, but have no need to keep the results of intermediate steps, as in this case--we have to make several fixes to these data, but only care about their final tidied version. We can combine our tidying operations so that they are executed all at once using `dplyr`/`tidyr` pipes:
+
 ```{r}
 # Chunk 9
-# 
-# #1
 crops[[1]] %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
   spread(key = Element, value = Value) %>% 
   rename(crop = Item, country = Area, year = Year, 
                  harv_area = `Area harvested`, prod = Production)
-#
-# #2
+```
+
+We grab the first element of `crops`, the maize `tibble`, and apply all three operations sequentially by chaining them together with `%>%`, the pipe operator. This means we are piping the results of each operation to the next: the results from `select` are piped to `spread`, and then the results of those two to `rename`.  
+
+**Important note:** chaining/piping is not something unique to data tidying, as it applies to operations throughout the tidyverse.
+
+Now that we have our pipes set up, we can apply them to all three datasets in an `lapply`: 
+
+```{r}
+# Chunk 10
 lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
     spread(key = Element, value = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = `Area harvested`, prod = Production)
 })
-#
-# #3
-do.call(rbind, lapply(crops, function(x) {
+```
+
+The tidying is now done, although we haven't saved the results to a new object yet. We'll do that next. 
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Combining datasets (and operations)
+Oftentimes when one is working with data, there is a need to combine several datasets into one. These three datasets are one such example--we don't really need to keep our three `tibble`s as separate elements in a list, as it might be easier to perform any further manipulations of the data if we combine them all into one big `tibble`. We'll look at two ways of joining tables. 
+
+#### Binding
+Now we'll bind all three `tibble`s into a single large one:
+
+```{r}
+# Chunk 11
+crops_df <- do.call(rbind, lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
     spread(key = Element, value = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = `Area harvested`, prod = Production)
 }))
+crops_df
 ```
 
-Lots of stuff happening up in Chunk 9. In #1, we are accessing the first element of `crops`, the maize `tibble`, and applying all three operations chained together with `%>%`: the `select`, `spread`, and `rename`. In #2, we are doing that within an `lapply`, so we get all at once. In #3, we combine all three tidied crop `tibble`s into a single large `tibble`, so that *crop* is now a variable with three values. We use the function `do.call` and `rbind` to do that last step. `do.call` basically says "do this function call", which is `rbind`, `rbind` is being done to the results of the `lapply`. Or, broken down:
+Building on Chunk10, we apply the tidying procedure and then join the three tidied `tibble`s into one long one (`crops_df`) using `do.call` and `rbind` to do that last step. `do.call` basically says "do this function call", which is `rbind`, `rbind` is being done to the results of the `lapply`. Or, broken down:
 ```{r}
-# Chunk 10
+# Chunk 12
 crops2 <- lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
     spread(key = Element, value = Value) %>% 
@@ -221,19 +274,267 @@ crops2 <- lapply(crops, function(x) {
            harv_area = `Area harvested`, prod = Production)
 })
 crops_df <- do.call(rbind, crops2)
+# crops_df <- rbind(crops2[[1]], crops2[[2]], crops2[[3]])
 set.seed(1)
-crops_df %>% sample_n(., size = 10)
+crops_df %>% sample_n(., size = 20)
 ```
 
-That separates the `lapply` and the `do.call(rbind` steps. The final line uses `dplyr::sample_n` to select 10 rows at random, which reveals observations of all three crop types. 
+The above shows the `lapply` and the `do.call(rbind` steps separately. Note the commented out line, which shows an alternate, less programmatic way of binding the three tables. The final line uses `dplyr::sample_n` to select 20 rows at random, which reveals that the new large `tibble` contains observations of all three crop types. 
+
+Another note: there is actually a pure tidyverse way of doing the full set of steps, using `purrr`'s set of `map*` functions to replace the `lapply`, but we will leave that aside for now.  
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+#### Merging/joining
+So we just saw how to combine datasets by binding them by rows. Oftentimes you want to combine them by adding a variable or variables from one dataset into another, using one or common variables as the key(s) for joining. In base `R`, this is done with the `merge` function, but with `dplyr` we use the `*_join` functions. 
+
+We'll start with some dummy datasets to illustrate, and then use our own crop data to show a more complicated join using two variables. 
+
+```{r}
+# Chunk 13
+set.seed(1)
+t1 <- tibble(v1 = paste0("N", 1:5), v2 = rnorm(5))
+t1
+t2 <- tibble(v1 = paste0("N", 1:5), v3 = runif(5))
+t2
+t3 <- tibble(v1 = paste0("N", 1:7), v4 = sample(1:100, 7))
+             # v5 = letters[sample(1:26, 7)])
+t3
+t4 <- tibble(v1 = paste0("N", c(1:2, 4:7, 11)), 
+             v5 = letters[sample(1:26, 7)])
+t4
+```
+
+We make four `tibble`s, each having a common variable *v1* but three unique variables (*v2*, *v3*, *v4*, *v5*). 
+
+There are several different ways to do joins, and a matching function for each. Please read about those functions (`?dplyr::join`).
+
+The simplest join case is between `t1` and `t2`, which can be done as:
+```{r}
+# Chunk 13
+# #1
+left_join(x = t1, y = t2, by = "v1")
+#
+# #2 
+inner_join(x = t1, y = t2, by = "v1")
+#
+# #3 
+right_join(x = t1, y = t2, by = "v1")
+# 
+# #
+full_join(x = t1, y = t2, by = "v1")
+
+```
+
+We use `inner_join`, `left_join`, `right_join`, or `full_join` to merge together `t1` and `t2`, getting identical results because the two joins have have the same number of rows and a unique key value per row on the join variable (*v1*). The results begin to diverge when we have differing numbers of rows:
+
+```{r}
+# Chunk 14
+# #1
+inner_join(x = t1, y = t3, by = "v1")
+#
+# #2
+left_join(x = t1, y = t3, by = "v1")
+#
+# #3
+right_join(x = t1, y = t3, by = "v1")
+# 
+# #4 
+full_join(x = t1, y = t3, by = "v1")
+```
+
+In #1 and #2, `t1` and `t3` produce identical results using either `inner_join` or `left_join`, even though they do slightly different things:
+
+- `?inner_join`: 
+
+    > ...return all rows from x where there are matching values in y, and all columns from x and y.
+
+- `?left_join`:
+
+    > ...return all rows from x, and all columns from x and y. Rows in x with no match in y will have NA values in the new columns. 
+
+Since `t1` is the *x* object, and `t3` is the `y`, both join functions drop the two extra rows in `t3` because they have no matches in `t1`. 
+
+That contrasts with #3, where we use a `right_join`, which returns (from `?right_join`):
+
+> all rows from y, and all columns from x and y. Rows in y with no match in x will have NA values in the new columns. 
+
+So we the unmatched rows from `t3` (the last two) in the joined result are filled with NAs in the *v2* column that came in from `t1`. `full_join` produces the same result, because it returns (from `?full_join`):
+
+> return all rows and all columns from both x and y. Where there are not matching values, returns NA for the one missing.
+
+You get the same results in the last two because the values in `t1`'s *v1* column are a subset of `t3`'s *v1* values. Let's see what happens when both the values in both join columns each have values not shared by the other:  
+
+```{r}
+# Chunk 15
+# #1
+inner_join(x = t3, y = t4, by = "v1")
+#
+# #2
+left_join(x = t3, y = t4, by = "v1")
+#
+# #3
+right_join(x = t3, y = t4, by = "v1")
+# 
+# #4 
+full_join(x = t3, y = t4, by = "v1")
+```
+
+Each of the four results produces a different output (and it is left to you to describe why in the practice questions below). 
+
+Right, so that is an introduction to some different types of joins, and their varying behavior. We can join all four together using pipes:
+
+```{r}
+# Chunk 15
+full_join(t1, t2) %>% full_join(., t3) %>% full_join(., t4)
+```
+
+That is the most inclusive join of all four `tibble`s. Notice that we dropped the argument names, and the join variable is automatically found.  
+
+We are now going to end by doing a more complicated join based on three columns, using our crop data: 
+
+```{r}
+# Chunk 16
+# #1
+yields <- crops_df %>% mutate(yield = prod / harv_area) %>% 
+  dplyr::select(crop, country, year, yield)
+yields %>% slice(1:2)
+# 
+# #2
+crop_ylds <- left_join(x = crops_df, y = yields, 
+                       by = c("crop", "country", "year"))
+#
+# 3
+crop_ylds <- left_join(crops_df, yields) 
+crop_ylds
+```
+
+First, we make a new `tibble` that calculates crop yields from production and harvested area (yield = production / harvest area). We use the `mutate` function (more on that in section 2.2.8) to create the new variable, and select just *crop*, *country*, *year*, and *yield* to make a new `yields` `tibble`.  
+
+We then use a `left_join` to merge `yields` onto `crops_df`. We specify three columns in this case, because there is no one variable that provides a unique key, nor is there two variables that do. However, the values in *crop*, *country*, and *year* do provide a unique combination for each row, so we join on those. #2 makes that explicit, but we see in #3 that `left_join` handles this for us automatically if we don't. 
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+### Arranging
+That last line on Chunk #12 (`crops_df %>% sample_n(., size = 20)`) gives an opportunity to introduce another aspect of data organizing, which is sorting. Note that the years are out of order in that final random draw. We can rearrange that so that they are sequential:
+```{r}
+# Chunk 17
+set.seed(1)
+# 
+# #1
+crops_df %>% sample_n(., size = 20) %>% arrange(year)
+# 
+# #2
+crops_df %>% sample_n(., size = 20) %>% arrange(country, year)
+# 
+# #3
+crops_df %>% sample_n(., size = 20) %>% arrange(crop, country, year)
+# 
+# #4
+crops_df %>% sample_n(., size = 20) %>% arrange(crop, country, -year)
+```
+
+We are taking the same random sample in each example above, ordering the resulting outputs differently in each case: #1 orders ascending by year (oldest to most recent); #2 orders ascending first by country than by year; #3 ascending by crop, country, and year; #4 by ascending by crop and country, but descending by year (note the `-` sign).
+
+We can also sort our crop dataset:
+```{r, error = TRUE}
+# Chunk 18
+# #1
+crops_df %>% arrange(desc(year), country, desc(crop))
+#
+# #2
+crops_df %>% arrange(-year, country, -crop)
+# crops_df %>% arrange(-year, country, desc(crop))
+```
+
+In #1 we sort first by *year*, in descending order (`desc()` does the same as `-`, meaning it arranges in descending order), then *country* alphabetically, and then by *crop* in reverse alphabetical order. Note that in #2 we can't use the `-` to do the reverse sort on *crop*, but the first `-` on year is valid. The commented out variant would work if run.    
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Mutating
+The last thing we will look at in this section is *mutation*, which uses the `mutate` function. That is, we use it to change the `data.frame` tibble by either altering existing variables or adding new ones. This brings us back to our `crops_df`. In Chunk 16 we created a new `yields` `tibble` so that we could demonstrate a merge with our `crops_df`.  That was an entirely unnecessary operation, because if I wanted to create a separate *yield* column for `crops_df`, I could have just done this:
+
+```{r}
+# Chunk 19
+crop_ylds <- crops_df %>% mutate(yields = prod / harv_area)
+crop_ylds
+```
+
+Thereby avoiding the joining process entirely and doing in one step what we did in two steps in Chunk 16. That is courtesy of the `mutate` function.  
+
+We can also use `mutate` to help us modify existing rows. Let's do that. I don't like having the full country name in the `tibble`, particularly with spaces in the name.  Let's shorten those. 
+```{r}
+# Chunk 20
+set.seed(1)
+crop_ylds %>% 
+  mutate(country = ifelse(country == "South Africa", "ZAF", country), 
+         country = ifelse(country == "Zambia", "ZMB", country)) %>% 
+  sample_n(5)
+set.seed(1)
+crop_ylds %>% 
+  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
+  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
+  sample_n(5)
+```
+
+In #1 we use the `mutate` function with `ifelse` to change all values that match "South Africa" to "ZAF", otherwise let them be, and all values matching "Zambia" to "ZMB", otherwise leave them be. In this case, we wrap both arguments in a single `mutate` call, separated by a comma.  We could also use separate `mutate` calls for each change, as we do in #2. In both cases we sample 5 rows to show that the changes were made for both countries. 
+
+We'll wrap it all up now: 
+```{r}
+# Chunk 21
+crop_ylds <- crop_ylds %>% 
+  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
+  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
+  mutate(crop = tolower(crop))
+set.seed(1)
+crop_ylds %>% sample_n(5)
+```
+
+We change all the values in *country*, as before, and then change the *crop* names to lowercase, all in a single statement. 
+
+There are many other ways to `mutate` data, using more advanced pattern matching capabilities and other features.  We will start to see more of those in subsequent sections. 
+
 
 ## Practice
+### Questions
+1. What is the difference between a `tibble` and a `data.frame`? 
+
+2. Given a `tibble` `tb_a`, with columns *a* and *b*, how would extract column *a* using base `R` methods? Using tidyverse methods? 
+
+3. You are given a csv that is organized into 6 rows and 14 columns. The first two columns contain country names (two countries) and district names (three districts per country). The other 12 columns are named by the month of th year, and each month contains the average number of measles cases reported over a 5 year period in that month for each district in each country. Are these data tidy or messy? If messy, how would you rearrange them? 
+
+4. Describe why each of the four outputs from Chunk 15 differs as a function of the `*_join` function used.  
 
 ### Code
 1. Re-create the dummy `tibble` in Chunk #3 above, and write it out to a csv using `readr::write_csv`, to any directory convenient for you (e.g. into your notebooks/ folder), calling it "my_dummy_file.csv".
 
 2. Use `dir` to list files in the directory you write it into matching the word "dummy", and then read it back in using `readr::read_csv`. 
 
+3. Building on the example in Chunk 15, join all 4 `tibble`s together, but replace `full_join` with `left_join`. Do the same again using `right_join`.
+
+4. Rearrange the results of the two joins you just did, using *v5* as the sort. Do an ascending sort on the results of the chained `left_join`, and descending on the `right_join`. 
+
+5. Recreate the `crop_ylds` `tibble`. Skip the part where we created *yields* via a merge, and instead use the approach where we just did a mutate. Don't forget to change the crop capitalization and change the country names also. After you reproduce what it looks like in Chunk 21, use `mutate` to add a new column *harv_km2* by doing *harv_area* / 100.
+
+6. Now rename the new *harv_km2* variable to *harv_area_km2*, using the `rename` function. 
+
+7. Do all of this in a single pipeline: 1) create a `tibble` with variables *v1* (values 1:10) and *v2* (values 11:20); 2) `rbind` that with another `tibble` with the same variables but with values 11:20 and 20:30 (hint: you will need to wrap the second `tibble` in an `rbind`, e.g. `rbind(., tibble())`); 3) add a new column *v3* to the result of that, which is the square of *v2*; 4) arrange it in descending order of *v3*; 5) capture the result of all that into `my_tb`
+
+8. End by selecting rows 1, 10, and 17 and *v2* and *v3* from `my_tb`, using `slice` and `select`
 
 ***
 <center>

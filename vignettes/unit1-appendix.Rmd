@@ -1,0 +1,111 @@
+---
+title: "Appendix"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1 Module Appendix}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+# Answers to practice
+## Module 1
+
+## Module 2
+
+## Module 3
+### Practice 1
+#### Questions
+1. A `tibble` is an enhanced `data.frame`. Among other features, it provides more information on data types it contains when printing. It can be treated exactly like a `data.frame` though, in terms of indexing and other operations. 
+
+2. Base methods: `tb_a$a`; `tb_a[["a"]]`; `tb_a[, "a"]`. tidyverse, with `tb_a %>% dplyr::select(a)`. Note that that gives back a `tibble` (or `data.frame`, if you have a `data.frame`). To get a vector back, use `tb_a %>% dplyr::pull(a)` 
+
+3. The data are messy, because the "column headers are values, not variable names" (see [here](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html)). We would gather the data in the month rows, setting the month as the key and the mean flu cases as the value. 
+
+4. `inner_join` preserves just the values in x and drops non-matching rows from y. `left_join` fills non-matching values in y with NAs. `right_join` preserves values in y dropping non-matching values in x. `full_join` preserves all non-matching rows in both x and y, filling NAs into non-matched rows. 
+
+#### Code
+1. 
+```{r, eval = FALSE}
+set.seed(1)
+dat <- tibble(a = sample(1:10), b = rnorm(10))
+td <- "/path/where/you/want/to/write" # REPLACE THIS WITH YOUR OWN!!!!
+readr::write_csv(dat, path = file.path(td, "dummy.csv"))
+```
+
+2. 
+```{r, eval = FALSE}
+td <- "/path/where/you/want/to/write" # REPLACE THIS WITH YOUR OWN!!!!
+readr::read_csv(file.path(td, "dummy.csv"))
+```
+
+3. Recreate `tibble`s first
+```{r, eval = FALSE}
+# Chunk 13
+set.seed(1)
+t1 <- tibble(v1 = paste0("N", 1:5), v2 = rnorm(5))
+t2 <- tibble(v1 = paste0("N", 1:5), v3 = runif(5))
+t3 <- tibble(v1 = paste0("N", 1:7), v4 = sample(1:100, 7))
+             # v5 = letters[sample(1:26, 7)])
+t4 <- tibble(v1 = paste0("N", c(1:2, 4:7, 11)), 
+             v5 = letters[sample(1:26, 7)])
+```
+
+Then do joins:
+```{r, eval = FALSE}
+left_join(t1, t2) %>% left_join(., t3) %>% left_join(., t4)
+right_join(t1, t2) %>% right_join(., t3) %>% right_join(., t4)
+```
+
+4. 
+```{r, eval = FALSE}
+left_join(t1, t2) %>% left_join(., t3) %>% left_join(., t4) %>% arrange(v5)
+right_join(t1, t2) %>% right_join(., t3) %>% right_join(., t4) %>% 
+  arrange(desc(v5))
+```
+
+5.
+```{r, eval=FALSE}
+fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
+          full.names = TRUE)
+crops <- lapply(fs, readr::read_csv)
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+    spread(key = Element, value = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production) %>% 
+}))
+crop_ylds <- crops_df %>% mutate(yields = prod / harv_area)
+crop_ylds <- crop_ylds %>%     
+  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
+  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
+  mutate(harv_km2 = harv_area / 100)
+```
+
+6. 
+```{r}
+crop_ylds %>% rename(harv_area_km2 = harv_km2)
+```
+
+7. 
+```{r, eval=FALSE}
+my_tb <- tibble(v1 = 1:10, v2 = 11:20) %>% 
+  rbind(., tibble(v1 = 11:20, v2 = 21:30)) %>% mutate(v3 = v2^2) %>% 
+  arrange(-v3)
+```
+
+8.
+```{r, eval=FALSE}
+my_tb %>% slice(1, 10, 17) %>% dplyr::select(v2, v3)
+```
+
