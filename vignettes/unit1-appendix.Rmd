@@ -93,7 +93,7 @@ crop_ylds <- crop_ylds %>%
 ```
 
 6. 
-```{r}
+```{r, eval=FALSE}
 crop_ylds %>% rename(harv_area_km2 = harv_km2)
 ```
 
