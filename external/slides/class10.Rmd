@@ -1,0 +1,319 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 10
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+# Today
+
+- A little R/Rmarkdown syntax
+- Control structures (*apply)
+
+---
+
+## Create your own data
+
+- Create three matrices, `m1`, `m2`, `m3`
+  - `m1`: 
+      - Random number seed: `set.seed(100)`
+      - `V1` = 1:20
+      - `V2` 20 random numbers from 1:100
+      - `V3` 20 numbers from `rnorm`, mean = 500, sd = 100)
+  - `m2`: Same variables, but `set.seed(200)`
+  - `m3`: Same variables, but `set.seed(300)`
+- Create vector `v`: 20 random draws from `LETTERS[1:5]`; `set.seed(1)`
+- Create 2 `data.frame`s: `dat1` (`m1` & `v`), `dat2` (`m2` & `v`)
+  - Name the column holding `v` "GRP"
+- Create list `l` combining `m1`, `m2`, `m3`, `dat1`, `dat2`, `v`
+  - Name the list elements the same as the object name.
+  
+---
+```{r}
+set.seed(100)
+m1 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+set.seed(200)
+m2 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+set.seed(300)
+m3 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+set.seed(1)
+v <- sample(LETTERS[1:5], size = 20, replace = TRUE)
+dat1 <- data.frame(m1, "GRP" = v)
+dat2 <- data.frame(m2, "GRP" = v)
+l <- list(m1, m2, m3, dat1, dat2, v)
+names(l) <- c("m1", "m2", "m3", "dat1", "dat2", "v")
+```
+
+---
+
+## Control structures
+- Branching
+
+  - Not usually vectorized
+  - `ifelse` for vectorized branching
+  - often done within looping
+  
+- Looping
+
+  - `for`, `while`
+  - `*apply`
+      - A special form of looping
+      - Intended for *applying* a function to data
+      - Returns results of loop directly into object
+
+---
+
+### lapply
+
+- Apply function to vector, return list
+
+```{r}
+l2 <- l[c("m1", "m2", "m3")]
+lapply(l2, mean)
+```
+
+---
+### sapply
+
+- Apply function to vector, return simplest possible output
+
+```{r}
+l2 <- l[c("m1", "m2", "m3")]
+sapply(l2, mean)
+```
+
+---
+### apply
+- Apply function to margins of array or matrix, return vector, array, or list
+
+```{r}
+apply(l2[[1]], MARGIN = 1, FUN = mean)
+apply(l2[[1]], MARGIN = 2, FUN = mean)
+```
+
+
+---
+### *apply with anonymous functions
+
+- Use anonymous functions to pass an iterator 
+- For more complex operations inside `({})`
+  
+```{r}
+# Simple
+o <- lapply(1:2, function(x) l2[[x]])
+o
+```
+
+---
+```{r}
+# More complex
+o2 <- lapply(1:5, function(x) {
+  l2[[1]][x] - l2[[2]][x]
+})
+o2
+```
+
+---
+### Create data using `lapply`
+
+- Let's recreate our matrix examples
+
+---
+
+### Create data using `lapply`
+
+- Let's recreate our matrix examples
+
+```{r, eval = FALSE}
+seeds <- c(100, 200, 300)  # or 100 * 1:3
+l3 <- lapply(seeds, function(x) {
+  set.seed(x)
+  m <- cbind(V1 = 1:20, 
+             V2 = sample(1:100, size = 20, replace = TRUE), 
+             V3 = rnorm(n = 20, mean = 500, sd = 100))
+})
+names(l3) <- paste0("m", 1:3)
+```
+
+---
+## Check the values
+
+- Let's check them now against original values
+
+```{r, eval = FALSE}
+m1 == l3$m1
+m2 == l3$m2
+all(m1 == l3$m1)
+all(m2 == l3$m2)
+```
+
+- Etc, but we could do this check with a looping function!
+
+---
+## Check using `lapply`
+
+- We know that `l[1:3]` contains `m1`, `m2`, `m3`, and so does `l3`, so
+```{r, eval = FALSE}
+lapply(1:3, function(x) all(l[[x]] == l3[[x]]))
+```
+
+- More compact
+```{r, eval = FALSE}
+sapply(1:3, function(x) all(l[[x]] == l3[[x]]))
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+
+---
+
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+
+---
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+
+o <- list()
+for(i in 1:10) o[[i]] <- i * 10
+
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+
+---
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+
+o <- list()
+for(i in 1:10) o[[i]] <- i * 10
+
+o <- lapply(1:10, function(x) x * 10)
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+
+---
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+
+o <- list()
+for(i in 1:10) o[[i]] <- i * 10
+
+o <- lapply(1:10, function(x) x * 10)
+
+o <- sapply(1:10, function(x) x * 10)
+
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+
+---
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+
+o <- list()
+for(i in 1:10) o[[i]] <- i * 10
+
+o <- lapply(1:10, function(x) x * 10)
+
+o <- sapply(1:10, function(x) x * 10)
+
+sapply(l, is.matrix)
+
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+- Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`
+
+---
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+
+o <- list()
+for(i in 1:10) o[[i]] <- i * 10
+
+o <- lapply(1:10, function(x) x * 10)
+
+o <- sapply(1:10, function(x) x * 10)
+
+sapply(l, is.matrix)
+
+lapply(l[1:5], function(x) colMeans(x[, 1:3]))
+lapply(1:5, function(x) colMeans(l[[x]][, 1:3]))
+```
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+- Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`
+- Do the same, but use conditional to test whether each element of `l` is `matrix`, then calculate `mean`, `sd`.  
+
+---
+
+```{r, eval = FALSE}
+lapply(l, function(x) {
+  if(is.matrix(x)) c("mu" = mean(x), "sd" = sd(x))
+})
+
+sapply(l, function(x) {
+  if(is.matrix(x)) {
+    c("mu" = mean(x), "sd" = sd(x))
+  } else if(is.data.frame(x)) {
+    c("mu" = mean(unlist(x[, 1:3])), "sd" = sd(unlist(x[, 1:3])))
+  } else {
+    c("mu" = NA, "sd" = NA)
+  }
+})
+```
+
