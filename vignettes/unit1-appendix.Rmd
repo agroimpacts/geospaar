@@ -23,7 +23,7 @@ vignette: >
 
 ## Module 2
 
-## Module 3
+## Module 3: Data preparation
 ### Practice 1
 #### Questions
 1. A `tibble` is an enhanced `data.frame`. Among other features, it provides more information on data types it contains when printing. It can be treated exactly like a `data.frame` though, in terms of indexing and other operations. 
@@ -93,7 +93,7 @@ crop_ylds <- crop_ylds %>%
 ```
 
 6. 
-```{r}
+```{r, eval = FALSE}
 crop_ylds %>% rename(harv_area_km2 = harv_km2)
 ```
 
@@ -108,4 +108,10 @@ my_tb <- tibble(v1 = 1:10, v2 = 11:20) %>%
 ```{r, eval=FALSE}
 my_tb %>% slice(1, 10, 17) %>% dplyr::select(v2, v3)
 ```
+
+### Practice 2: Data analysis
+#### Questions
+1. `dplyr::filter`
+2. `group_by(crop, country, y2k)` is doing the splitting, on crop type, then country, and then year. `summarize(...)` is doing the apply using a `mean`. There is no combine line, as it is implicit. 
+3. Chunk 30 adds a `filter` for crop type (selecting out maize), and then simply groups on the *y2k* variable. 
 

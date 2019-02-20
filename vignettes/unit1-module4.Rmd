@@ -28,7 +28,7 @@ library(knitr)
 
 # Data analysis and visualization{#data-analysis-and-visualization}
 
-We are now moving onto the final module of this unit. We'll learn now about manipulating, analyzing, and visualizing data. We'll start now to work more with `tidyverse` approachs now, as this is where it comes into its own. 
+We are now moving onto the final module of this unit. We'll learn now about manipulating, analyzing, and visualizing data. We'll start working with `tidyverse` tools more now. 
 
 For this module we will be using the following packages:
 
@@ -541,3 +541,146 @@ There are many other ways to `mutate` data, using more advanced pattern matching
 [Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+# Data analysis
+Now that we have gotten an introduction to data preparation steps, we will learn about how to analyze it. We have already seen some very basic analyses, in the form of basic algebra and data summaries.  Now we will move onto more advanced data manipulation and analyses. 
+
+## Split-apply-combine
+> Many data analysis problems involve the application of a split-apply-combine strategy, where you break up a big problem into manageable pieces, operate on each piece independently and then put all the pieces back together.
+
+So says Hadley Wickham in a [paper](https://www.jstatsoft.org/article/view/v040i01) that describes this common data analysis strategy and the `plyr` package, which is the forerunner of `dplyr`.  
+
+Long or tall (i.e. tidy) data formats facilitate split-apply-combine (SAC) analyses. Let's come back to our `crop_ylds` dataset to look at this:  
+
+```{r}
+# Chunk 22
+crop_ylds %>% group_by(crop) %>% summarize(mean_yield = mean(yields))
+```
+
+We just did an SAC on the `crop_ylds` data that entailed splitting the dataset by crop type, applying the `mean` function, and then combining the results of that into a summary `tibble`.  We can use an `lapply` and `rbind` to illustrate the inner workings of that SAC:
+
+```{r}
+# Chunk 23
+# #1
+splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
+  dat <- crop_ylds[crop_ylds$crop == x, ]  # here's the split
+  cat("\n")  # add empty line
+  print(paste("Split out", x))  # print statement to mark split  
+  print(dat[1, ])  # print showing first line of split tibble
+  o <- data.frame(crop = x, mean_yield = mean(dat$yields))  # here the apply
+})
+#
+# #2
+do.call(rbind, splt_apply)  # here's the combine
+```
+
+Chunk #1 contains both the split (using base `R` syntax rather than `dplyr`, to avoid mixing syntaxes) and apply parts (see the comments in the code), with some extra print statements added so that we can see how the splits are happening within the `lapply` (by showing the first row of each split-out `tibble`. #2 does the combine, creating the same result produced using `dplyr` in Chunk 22. Given that, you will not `dplyr::group_by` does the splitting work, and `dplyr::summarize` does the applying (of `mean`), and the combine is implicit.
+
+Now let's look at a more complex SAC:
+```{r}
+# Chunk 24
+crop_ylds %>% group_by(crop, country) %>% summarize(mean_yield = mean(yields))
+```
+
+Here we do two splits: the first on crop, the second on country, so after applying and combining we get the mean yield for each crop for each country.  Let's do that with `lapply`:
+```{r}
+# Chunk 25
+# #1
+splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
+  cat("\n")  # add empty line
+  print(paste("Split out", x))  # print to mark outer split
+  cntry_splt_apply <- lapply(unique(crop_ylds$country), function(y) {
+    dat <- crop_ylds[crop_ylds$crop == x & crop_ylds$country == y, ]  # split
+    cat("\n")  # add empty line
+    print(paste("...then split out", y, x))  # print to mark inner split
+    print(dat[1, ])  # print to show 1st line of split tibble
+    o <- data.frame(crop = x, country = y, mean_yield = mean(dat$yields))
+  })
+  do.call(rbind, cntry_splt_apply)
+})
+#
+# #2
+do.call(rbind, splt_apply)
+```
+
+Making this SAC with `lapply` requires an `lapply` nested in an `lapply`. The outer `lapply` splits on crop, and the inner on each country within each crop. `mean` is applied to the split data within the inner `lapply`. 
+
+Right, so that might look daunting, but not to worry--we are just using those `lapply`s for the sake of illustration, and also to show how using `dplyr` pipelines can make things much simpler.  So we'll forge ahead with those.
+
+What happens if we want to do SAC on an even finer range of data within each split, say, calculate mean yields since the year 2000 by crop and by country: 
+
+```{r}
+# Chunk 25
+crop_ylds %>% filter(year >= 2000) %>% group_by(crop, country) %>% 
+  summarize(mean_yield = mean(yields))
+```
+
+We can add `dplyr::filter` with the conditional statement (`year >= 2000`) in it, to select observations since the year 2000, and do the SAC on those. According to `?dplyr::filter`'s function description, we:
+
+> Use filter() to choose rows/cases where conditions are true. Unlike base subsetting with [, rows where the condition evaluates to NA are dropped.
+
+How about pre-2000 mean yields
+
+```{r}
+# Chunk 26
+crop_ylds %>% filter(year < 2000) %>% group_by(crop, country) %>% 
+  summarize(mean_yield = mean(yields))
+```
+
+Same procedure, just a different conditional operator inside `filter`. But maybe we want to compare pre- and post-2000 yields in the same dataset:
+```{r}
+# Chunk 27
+crop_ylds %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
+  group_by(crop, country, y2k) %>% 
+  summarize(mean_yield = mean(yields))
+```
+
+That's a little more complex, and doesn't use `filter`. Instead, we first use `mutate` with `ifelse` to create a new variable (*y2k*), which indicates whether years are before 2000, or 2000 and onward. We then use *y2k* to apply a third split to the data after our crop and country splits, and finally end with the mean yields from our three-way splits. 
+
+That comparison might be easier if we put the pre- and post-2000 yields next to one another. That would require just one more step to do:
+```{r}
+# Chunk 28
+crop_ylds %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
+  group_by(crop, country, y2k) %>% 
+  summarize(mean_yield = mean(yields)) %>% 
+  spread(key = y2k, value = mean_yield)
+```
+
+In this case we just use `spread` with *y2K* as the key, and the mean yields as the value. Much easier to compare, in my opinion, and it shows how much larger post 2000 yields are. Wait, we could calculate how much larger exactly:
+
+```{r}
+# Chunk 29
+crop_ylds %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
+  group_by(crop, country, y2k) %>% 
+  summarize(mean_yield = mean(yields)) %>% 
+  spread(key = y2k, value = mean_yield) %>% 
+  mutate(yield_ratio = `2000_2017` / `1961_2000`)
+```
+
+We use another `mutate` to create another variable that is the ratio of post-2000 and pre-2000 yields. Maybe we are interested in a straight comparison of pre- and post-2000 maize yield differences across all countries:
+```{r}
+# Chunk 30
+crop_ylds %>% filter(crop == "maize") %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>%
+  group_by(y2k) %>% summarize(mean_yield = mean(yields)) %>% 
+  spread(key = y2k, value = mean_yield) %>% 
+  mutate(yield_ratio = `2000_2017` / `1961_2000`)
+```
+
+We leave it to you in the practice questions below to answer how Chunk 30 differs from Chunk 29. 
+
+## Practice
+### Questions
+1. What function can you use to select a range of values from a `tibble`? 
+
+2. Looking at chunk 27, and thinking about split-apply-combine operations, identify which line is responsible for splitting the data, what split(s) is (are) being made, and which line is responsible doing the applying, and what is it applying? Finally, which line is doing the combine?  
+
+3. In Chunk 29, what did we do differently compared to Chunk 28?
+
+
+
+
+
