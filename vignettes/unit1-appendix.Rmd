@@ -152,7 +152,7 @@ crop_ylds %>% filter(crop == "maize") %>% summarize(mu_yld = mean(yields))
 ```
 
 6. South Africa shows larger yields gains (0.061 t/ha/yr versus 0.03 t/ha/yr)
-```{r}
+```{r, eval = FALSE}
 summary(lm(yields ~ year, 
            data = crop_ylds %>% filter(crop == "maize" & country == "ZMB")))
 summary(lm(yields ~ year, 
