@@ -23,7 +23,7 @@ vignette: >
 
 ## Module 2
 
-## Module 3
+## Module 3: Data preparation
 ### Practice 1
 #### Questions
 1. A `tibble` is an enhanced `data.frame`. Among other features, it provides more information on data types it contains when printing. It can be treated exactly like a `data.frame` though, in terms of indexing and other operations. 
@@ -108,4 +108,67 @@ my_tb <- tibble(v1 = 1:10, v2 = 11:20) %>%
 ```{r, eval=FALSE}
 my_tb %>% slice(1, 10, 17) %>% dplyr::select(v2, v3)
 ```
+
+### Practice 2: Data analysis
+#### Questions
+1. `dplyr::filter`
+2. `group_by(crop, country, y2k)` is doing the splitting, on crop type, then country, and then year. `summarize(...)` is doing the apply using a `mean`. There is no combine line, as it is implicit. 
+3. Chunk 30 adds a `filter` for crop type (selecting out maize), and then simply groups on the *y2k* variable. 
+4. It doesn't work when the output of the analysis is not tabular/a list, as with `cor.test` and `lm`.  We can overcome this by 1) creating individual functions that reproduce the component outputs of the analysis (e.g. Chunk 33) and these as a list of functions using `funs` to `summarise_all`, 2) doing the splits outside of the pipeline (e.g. Chunk 36), or 3) using functions such as `do` and `broom::tidy` within the pipeline (e.g. Chunk 39). 
+
+#### Code
+1. 
+```{r, eval = FALSE}
+crop_ylds %>% filter(crop == "sorghum" & country == "ZAF" & year >= 2000)
+crop_ylds[crop_ylds$crop == "sorghum" & crop_ylds$country == "ZAF" & 
+            crop_ylds$year >= 2000, ]
+```
+
+2. 
+```{r, eval = FALSE}
+crop_ylds %>% filter(crop == "sorghum" & country == "ZAF" & year >= 2000) %>% 
+  select(prod, harv_area, yields) %>% summarise_all(funs(mean, sd))
+```
+
+3. 
+```{r, eval = FALSE}
+crop_ylds %>% group_by(crop, country) %>% select(prod, harv_area) %>%
+  summarise_all(funs(mean, sd))
+```
+
+4. 
+```{r, eval = FALSE}
+crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
+  select(yields, harv_area) %>% cor()
+
+dat <- crop_ylds %>% filter(crop == "maize" & country == "ZMB")
+cor.test(dat$harv_area, dat$yields)
+```
+
+5. 
+```{r, eval = FALSE}
+crop_ylds %>% filter(crop == "maize") %>% summarize(mu_yld = mean(yields))
+# 2.07 t/ha
+```
+
+6. South Africa shows larger yields gains (0.061 t/ha/yr versus 0.03 t/ha/yr)
+```{r}
+summary(lm(yields ~ year, 
+           data = crop_ylds %>% filter(crop == "maize" & country == "ZMB")))
+summary(lm(yields ~ year, 
+           data = crop_ylds %>% filter(crop == "maize" & country == "ZAF")))
+
+crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
+  lm(yields ~ year, data = .) %>% summary() 
+crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>% 
+  lm(yields ~ year, data = .) %>% summary()
+```
+
+7. 
+```{r, eval = FALSE}
+crop_ylds %>% filter(crop != "sorghum") %>% group_by(crop, country) %>% 
+  do(prod_ha_lm = lm(yields ~ year, data = .)) %>% 
+  broom::tidy(., prod_ha_lm)
+```
+
 

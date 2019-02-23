@@ -24,11 +24,12 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(knitr)
+options(width = 100)
 ```
 
 # Data analysis and visualization{#data-analysis-and-visualization}
 
-We are now moving onto the final module of this unit. We'll learn now about manipulating, analyzing, and visualizing data. We'll start now to work more with `tidyverse` approachs now, as this is where it comes into its own. 
+We are now moving onto the final module of this unit. We'll learn now about manipulating, analyzing, and visualizing data. We'll start working with `tidyverse` tools more now. 
 
 For this module we will be using the following packages:
 
@@ -541,3 +542,340 @@ There are many other ways to `mutate` data, using more advanced pattern matching
 [Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+# Data analysis
+Now that we have gotten an introduction to data preparation steps, we will learn about how to analyze it. We have already seen some very basic analyses, in the form of basic algebra and data summaries.  Now we will move onto more advanced data manipulation and analyses. 
+
+## Split-apply-combine
+> Many data analysis problems involve the application of a split-apply-combine strategy, where you break up a big problem into manageable pieces, operate on each piece independently and then put all the pieces back together.
+
+So says Hadley Wickham in a [paper](https://www.jstatsoft.org/article/view/v040i01) that describes this common data analysis strategy and the `plyr` package, which is the forerunner of `dplyr`.  
+
+Long or tall (i.e. tidy) data formats facilitate split-apply-combine (SAC) analyses. Let's come back to our `crop_ylds` dataset to look at this:  
+
+```{r}
+# Chunk 22
+crop_ylds %>% group_by(crop) %>% summarize(mean_yield = mean(yields))
+```
+
+We just did an SAC on the `crop_ylds` data that entailed splitting the dataset by crop type, applying the `mean` function, and then combining the results of that into a summary `tibble`.  We can use an `lapply` and `rbind` to illustrate the inner workings of that SAC:
+
+```{r}
+# Chunk 23
+# #1
+splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
+  dat <- crop_ylds[crop_ylds$crop == x, ]  # here's the split
+  cat("\n")  # add empty line
+  print(paste("Split out", x))  # print statement to mark split  
+  print(dat[1, ])  # print showing first line of split tibble
+  o <- data.frame(crop = x, mean_yield = mean(dat$yields))  # here the apply
+})
+#
+# #2
+do.call(rbind, splt_apply)  # here's the combine
+```
+
+Chunk #1 contains both the split (using base `R` syntax rather than `dplyr`, to avoid mixing syntaxes) and apply parts (see the comments in the code), with some extra print statements added so that we can see how the splits are happening within the `lapply` (by showing the first row of each split-out `tibble`. **Note how `unique` is used here--to get a vector of unique crop names that are passed to an anonymous function that iterates over each crop name, which is used with logical indexing to subset (split) out the rows from `crop_ylds` that correspond to that crop.** #2 does the combine, creating the same result produced using `dplyr` in Chunk 22. Given that, you will not `dplyr::group_by` does the splitting work, and `dplyr::summarize` does the applying (of `mean`), and the combine is implicit.
+
+Now let's look at a more complex SAC:
+```{r}
+# Chunk 24
+crop_ylds %>% group_by(crop, country) %>% summarize(mean_yield = mean(yields))
+```
+
+Here we do two splits: the first on crop, the second on country, so after applying and combining we get the mean yield for each crop for each country.  Let's do that with `lapply`:
+```{r}
+# Chunk 25
+# #1
+splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
+  cat("\n")  # add empty line
+  print(paste("Split out", x))  # print to mark outer split
+  cntry_splt_apply <- lapply(unique(crop_ylds$country), function(y) {
+    dat <- crop_ylds[crop_ylds$crop == x & crop_ylds$country == y, ]  # split
+    cat("\n")  # add empty line
+    print(paste("...then split out", y, x))  # print to mark inner split
+    print(dat[1, ])  # print to show 1st line of split tibble
+    o <- data.frame(crop = x, country = y, mean_yield = mean(dat$yields))
+  })
+  do.call(rbind, cntry_splt_apply)
+})
+#
+# #2
+do.call(rbind, splt_apply)
+```
+
+Making this SAC with `lapply` requires an `lapply` nested in an `lapply`. The outer `lapply` splits on crop, and the inner on each country within each crop (using `unique(crop_ylds$country)` to get the vector of country names). `mean` is applied to the split data within the inner `lapply`. 
+
+Right, so that might look daunting, but not to worry--we are just using those `lapply`s to illustrate the splitting, and also to show how using `dplyr` pipelines can make things much simpler. So we'll forge ahead with those.
+
+What happens if we want to do SAC on an even finer range of data within each split, say, calculate mean yields since the year 2000 by crop and by country: 
+
+```{r}
+# Chunk 25
+crop_ylds %>% filter(year >= 2000) %>% group_by(crop, country) %>% 
+  summarize(mean_yield = mean(yields))
+```
+
+We can add `dplyr::filter` with the conditional statement (`year >= 2000`) in it, to select observations since the year 2000, and do the SAC on those. According to `?dplyr::filter`'s function description, we:
+
+> Use filter() to choose rows/cases where conditions are true. Unlike base subsetting with [, rows where the condition evaluates to NA are dropped.
+
+How about pre-2000 mean yields
+
+```{r}
+# Chunk 26
+crop_ylds %>% filter(year < 2000) %>% group_by(crop, country) %>% 
+  summarize(mean_yield = mean(yields))
+```
+
+Same procedure, just a different conditional operator inside `filter`. But maybe we want to compare pre- and post-2000 yields in the same dataset:
+```{r}
+# Chunk 27
+crop_ylds %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
+  group_by(crop, country, y2k) %>% 
+  summarize(mean_yield = mean(yields))
+```
+
+That's a little more complex, and doesn't use `filter`. Instead, we first use `mutate` with `ifelse` to create a new variable (*y2k*), which indicates whether years are before 2000, or 2000 and onward. We then use *y2k* to apply a third split to the data after our crop and country splits, and finally end with the mean yields from our three-way splits. 
+
+That comparison might be easier if we put the pre- and post-2000 yields next to one another. That would require just one more step to do:
+```{r}
+# Chunk 28
+crop_ylds %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
+  group_by(crop, country, y2k) %>% 
+  summarize(mean_yield = mean(yields)) %>% 
+  spread(key = y2k, value = mean_yield)
+```
+
+In this case we just use `spread` with *y2K* as the key, and the mean yields as the value. Much easier to compare, in my opinion, and it shows how much larger post 2000 yields are. Wait, we could calculate how much larger exactly:
+
+```{r}
+# Chunk 29
+crop_ylds %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
+  group_by(crop, country, y2k) %>% 
+  summarize(mean_yield = mean(yields)) %>% 
+  spread(key = y2k, value = mean_yield) %>% 
+  mutate(yield_ratio = `2000_2017` / `1961_2000`)
+```
+
+We use another `mutate` to create another variable that is the ratio of post-2000 and pre-2000 yields. Maybe we are interested in a straight comparison of pre- and post-2000 maize yield differences across all countries:
+```{r}
+# Chunk 30
+crop_ylds %>% filter(crop == "maize") %>% 
+  mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>%
+  group_by(y2k) %>% summarize(mean_yield = mean(yields)) %>% 
+  spread(key = y2k, value = mean_yield) %>% 
+  mutate(yield_ratio = `2000_2017` / `1961_2000`)
+```
+
+We leave it to you in the practice questions below to answer how Chunk 30 differs from Chunk 29. 
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+## Analyses
+Now that we have a sense of how to do split-apply-combine, let's dig a bit more into the analyses that we can do as part of that process. Since `R` was originally designed for statistics, there are many possible analyses we can do with `R`. We'll look at just a few common ones.
+
+### Summaries
+We'll start with some summary statistics outside of SAC. The easiest way to do that in `R` is to use the base `summary` function. 
+
+```{r}
+# Chunk 31
+# #1
+summary(crop_ylds$harv_area)
+#
+# #2
+crop_ylds %>% select(harv_area) %>% summary()
+#
+# #3
+crop_ylds %>% pull(harv_area) %>% summary()
+```
+
+In #1, we use the `summary` function on *harv_area*, pulled out of `crop_ylds` as a vector. #2 does the same thing using `dplyr` verbs. Note how `summary()` appears at the end of the pipeline, and we don't have to give it a variable name because it receives implicitly consumes everything coming out of the upstream pipe (in this case, just *harv_area*).  However, that returns summary output in a `table`, whereas the base method returns a named vector. #3 produces the equivalent of #1, using `dplyr::pull` instead of select. `pull` is the `dplyr` equivalent of `crop_ylds$harv_area`, i.e. it pulls a variable froma `data.frame` or `tibble` into a vector. 
+
+`summary` is giving us a bunch of quantile values and the mean from the vector. We can also use it for more than 1 variable:
+```{r}
+# Chunk 32
+# #1
+summary(crop_ylds[, c("harv_area", "prod")])
+#
+# #2
+crop_ylds %>% select(harv_area, prod) %>% summary()
+```
+
+With #1 showing the base approach, and #2 the `dplyr` method. Fairly straight-forward. How about if we want to do it in an SAC (these approaches are not) where we need to apply some grouping?  
+
+```{r, out.width=8}
+# Chunk 33
+q1 <- function(x) quantile(x, 0.25) 
+q3 <- function(x) quantile(x, 0.75)
+crop_ylds %>% select(crop, country, harv_area, prod) %>% 
+  group_by(crop, country) %>% rename(ha = harv_area, p = prod) %>% 
+  summarise_all(funs(min, q1, med = median, mu = mean, q3, max))
+```
+
+The above is somewhat more complex. We want to calculate `summary` stats for *prod* and *harv_area* by *crop* and *country*, but `dplyr` can't easily produce the tabular output for each groups. Therefore, we separately calculate each statistic in `summary`, and use `summarise_all()` (which applies the summarizing functions to each selected variable), using `funs` to pass each function in to `summarise_all()`. In the first two lines, we specify two custom functions, the first calculates the first quartile (25th percentile), the next calculates the third quartile (75th percentile).  In the pipeline, we also do some renaming gymnastics, changing *harv_area* to *ha* and *prod* to *p*, and then we specify in `funs` some shorter names for the output from `median` and `mean`. These renamings are in service of narrowing the width of output columns.  
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Associations
+Evaluating associations between data variables (e.g. correlations) is one of the most frequent uses for `R`. Lets start with correlations:
+
+```{r}
+# Chunk 34
+# #1
+cor(crop_ylds[, c("prod", "harv_area")])
+# 
+# #2
+crop_ylds %>% select(prod, harv_area) %>% cor()
+# 
+# #3
+cor.test(x = crop_ylds$prod, y = crop_ylds$harv_area)
+#
+# # 4
+crop_ylds %>% group_by(crop, country) %>% summarise(cor = cor(prod, harv_area))
+```
+
+We first apply `stats::cor` using base syntax to calculate the correlation matrix between *prod* and *harv_area* (#1), and then do the same thing with `dplyr`. In #3 we apply the `cor.test` to those two variables, using base syntax, which produces statistics regarding the confidence interval and significance of the correlation coefficient. This is harder to do in `dplyr`, because the output from `cor.test` is not tabular, so we are not doing that here (but there is a tidyverse oriented `corrr` package that should help with that). #4 shows how to use `cor` with `summarize` when grouping by *crop* and *country*. The output is the correlation coefficient for the two variables for each crop and country over the time series (this only works for a two variable correlation analysis--it fails when a third variable is added). Note the negative correlation between maize production and harvested area in South Africa, whereas all the others are generally strongly positive (as they should be--generally the more area you plant to a crop, the more tons of it you produce). We'll come back to that. 
+
+The next step after a correlation is a regression, which quantifies how much a variable Y changes in response to changes in a variable X (or several different X variables). <span style="color:blue">Note: This is not a statistics course, so if you have never seen a regression before, then some of what comes next might be a little opaque. I recommend that you read up on the basics of least squares regression to help understand these examples better. [Here](http://onlinestatbook.com/2/regression/intro.html) is one of many online resources.</span>
+
+Here's our first regression example:
+```{r}
+# Chunk 35
+# #1
+prodha_lm <- lm(prod ~ harv_area, data = crop_ylds)
+prodha_lm
+#
+# #2
+summary(prodha_lm)
+```
+
+In #1 above, we use `R`'s `lm` (linear model) function to fit a regression between *prod* (dependent variable) and *harv_area* (independent variable) across the entire `crop_ylds` dataset. Note the `~`, which is used to specify the left-hand and right-hand sides of the regression formula. The output of `lm` is captured in `prod_lm`, which just specifies the model formula and the regression coefficients. To see more of the model's results, you have to use `summary` on the `prodha_lm`, as we do in #2, which spits out quite a bit, including the model fit (significance of coefficients, R^2^, etc.). 
+
+Given our dataset, this relationship is not that interesting. At the very least, we would want to see the relatinship by crop type, and also by crop and year. That requires some splitting:
+```{r}
+# Chunk 36
+# #1
+maize_lm <- lm(prod ~ harv_area, 
+               data = crop_ylds %>% filter(crop == "maize"))
+#
+# #2
+maize_zm_lm <- lm(prod ~ harv_area, 
+                  data = crop_ylds %>% 
+                    filter(crop == "maize" & country == "ZMB"))
+summary(maize_zm_lm)
+#
+# #3
+maize_za_lm <- lm(prod ~ harv_area, 
+                  data = crop_ylds %>% 
+                    filter(crop == "maize" & country == "ZAF"))
+summary(maize_za_lm)
+```
+
+The first split is simply on crop type (#1), so the regression is maize planted area on production for across countries and years. Notice the use of `dplyr` pipes and verbs to split out the maize observations within the "data" argument of `lm`. The coefficients show us that production increases by roughly **`r  round(summary(maize_lm)$coefficients[2], 2)`** tons per 1 ha increase in planted area. That's interesting, because it sounds pretty close to what you would get if calculated average yield by dividing each production estimate by harvested area and then taking the average. We leave it to you to calculate mean yield in the practice below.   
+
+In #2, we split out Zambian, and in this case we see that Zambian maize production increases by **`r  round(summary(maize_zm_lm)$coefficients[2], 2)`** tons per ha planted area, while #3 shows that South African maize production decreases by **`r round(summary(maize_za_lm)$coefficients[2], 2)`** tons per ha. Remember that negative correlation in Chunk 34 #4 above? In the next section we will take a graphical look at the reasons for this decline. 
+
+We could also fit the `lm` and `summary` at the end of the `dplyr` pipeline:
+```{r}
+# Chunk 37
+crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>% 
+  lm(prod ~ harv_area, data = .) %>% summary()
+```
+
+That is actually more elegant than what the code in Chunk 36. To make this work, we have to use the `.` in the "data" argument within `lm`, which represents the `data.frame`/`tibble` coming in from the upstream part of the pipeline. Note that we don't need the `.` in the `summary` function. **Try run the code above, removing the `.` from within `lm`, to see what happens.** 
+
+I'll end this very brief introduction to analysis with a look at how we could do SAC with regression, so that we can run all country X crop `prod ~ harv_area` regressions. We'll start with a melange of base `R` and `dplyr`:
+```{r}
+# Chunk 38
+crop_country_lms <- lapply(unique(crop_ylds$crop), function(x) {  
+  lms <- lapply(unique(crop_ylds$country), function(y) {
+    dat <- crop_ylds %>% filter(crop == x & country == y)
+    summary(lm(prod ~ harv_area, dat))$coefficients
+  })
+  names(lms) <- unique(crop_ylds$country)
+  return(lms)
+})
+names(crop_country_lms) <- unique(crop_ylds$crop)
+crop_country_lms
+```
+
+This arrangement is similar to what we were doing in Chunk 25, using nested `lapply` to split on crop and country (using `dplyr:filter` instead of base `R` syntax to do the split), but applying `lm` inside the bodies of the `lapply`. We extract only the coefficient table from `summary` of each `lm`, to condense the output.
+
+There is a pure tidyverse way of doing this, which is the last thing to look at here.  It is more involved than previous examples, because the non-tabular (list) output from `lm` prevents use of `lm` within `dplyr::summarise`:
+```{r, eval = FALSE}
+# Chunk 39
+crop_ylds %>% group_by(crop, country) %>% 
+  do(prod_ha_lm = lm(prod ~ harv_area, data = .)) %>% 
+  broom::tidy(., prod_ha_lm)
+#> # A tibble: 12 x 7
+#> # Groups:   crop, country [6]
+#>    crop    country term             estimate    std.error statistic  p.value
+#>    <chr>   <chr>   <chr>               <dbl>        <dbl>     <dbl>    <dbl>
+#>  1 maize   ZAF     (Intercept)  13149213.    1767217.         7.44  7.16e-10
+#>  2 maize   ZAF     harv_area          -1.09        0.440     -2.47  1.65e- 2
+#>  3 maize   ZMB     (Intercept)   -468132.     268160.        -1.75  8.64e- 2
+#>  4 maize   ZMB     harv_area           2.30        0.333      6.90  5.49e- 9
+#>  5 sorghum ZAF     (Intercept)    175944.      35514.         4.95  7.29e- 6
+#>  6 sorghum ZAF     harv_area           0.807       0.138      5.83  2.99e- 7
+#>  7 sorghum ZMB     (Intercept)      2365.       1504.         1.57  1.22e- 1
+#>  8 sorghum ZMB     harv_area           0.575       0.0302    19.0   7.08e-26
+#>  9 wheat   ZAF     (Intercept)   1649090.     197891.         8.33  2.50e-11
+#> 10 wheat   ZAF     harv_area           0.131       0.140      0.936 3.53e- 1
+#> 11 wheat   ZMB     (Intercept)     -6034.       2193.        -2.75  8.02e- 3
+#> 12 wheat   ZMB     harv_area           6.60        0.142     46.4   8.41e-46
+```
+
+This produces a nice output table that lists the coefficients (estimate), standard errors, t-statistic, and p-value for each crop-country model. Each model occupies two lines: one for the model intercept results, one for independent variable results. There are a couple of extra functions, including `do`, which is described by `?do` as:
+
+> ...a general purpose complement to the specialised manipulation functions filter(), select(), mutate(), summarise() and arrange(). You can use do() to perform arbitrary computation, returning either a data frame or arbitrary objects which will be stored in a list. This is particularly useful when working with models: you can fit models per group with do() and then flexibly extract components with either another do() or summarise().
+
+And then there is `broom::tidy`, which is a function from the `broom`, a non-core tidyverse package. The purpose of this function is to take an input and convert it to an output `data.frame`, which is what allows us to produce the messy `lm` output into a nice table at the end of the pipeline above. 
+
+Okay, so that's where we will leave it. Now for some practice. 
+
+## Practice
+### Questions
+1. What function can you use to select a range of values from a `tibble`? 
+
+2. Looking at chunk 27, and thinking about split-apply-combine operations, identify which line is responsible for splitting the data, what split(s) is (are) being made, and which line is responsible doing the applying, and what is it applying? Finally, which line is doing the combine?  
+
+3. In Chunk 29, what did we do differently compared to Chunk 28?
+
+4. What is one limitation of `dplyr::summarise` with respect to analyzing groupings? What can we do to overcome that limitation?  
+
+### Code
+This coding practice assumes you have created the `crop_ylds` dataset to match its form as of Chunk 21.  
+
+1. Use `dplyr` verbs to subset South Africa sorghum yields from the year 2000 onwards. Do the same but use base `R` syntax.
+
+2. Calculate the `mean` and `sd` of *prod*, *harv_area*, and *yields* in the subset you just made, using `dplyr::summarise_all` and `funs`. Chunk 33 is your guide.
+
+3. Now calculate `mean` and `sd` of *harv_area* and *prod* by crops and by country, using `dplyr`. Hint: you will need to use `dplyr::group_by`. Chunk 33 is also a guide. 
+
+4. Use `dplyr` to calculate a correlation table between *yields* and *harv_area* for Zambian maize. Use `cor.test` to evaluate this relationship also. Hint: you will need to use the base `R` approach for this from Chunk 34 #3, but to preserve the subset of Zambia yields, first assign the subset to a new object `dat`.  
+
+5. Use `dplyr` verbs to calculate the average maize yield (across, rather than within, countries). How close is that to the regression coefficient on *harv_area* from Chunk 36 #1?  
+
+6. Use `lm` to fit regression of between Zambia maize *yields* and *year*, with *year* as the independent variable.  Do the same for South Africa maize yields. Use `dplyr` verbs to create the subsets, but use both the base-centric (Chunk 36) and `dplyr` centric (Chunk 37) way of running the `lm`s. Which country shows the largest annual changes in yields?
+
+7. *Challenge:* Adapt the code in Chunk 39 to create regressions between *yields* and *year* by country and crop, but just for maize and wheat
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
