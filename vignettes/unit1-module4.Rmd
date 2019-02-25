@@ -879,3 +879,12 @@ This coding practice assumes you have created the `crop_ylds` dataset to match i
 </center>
 ***
 
+# Data visualization
+Our last section on regressions leads us naturally to the subject of visualization. Until now we have been looking numerical outputs from our `R` code. Graphical representation often conveys more information, and is typically done to help inform numerical analysis.
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
