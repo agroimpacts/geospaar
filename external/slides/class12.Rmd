@@ -1,0 +1,148 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 12
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+### Today
+
+- Team-based practicals:
+  - Wednesday wrap-up
+  - Data preparation
+  - Data analysis
+
+---
+### Start-up
+
+- Shortcuts of the day: CMD/CTRL + Shift + M; ALT + Shift + K
+- Chaining/pipelines 
+```{r, message=FALSE}
+library(dplyr)
+library(tidyr)
+readr::read_csv("~/Desktop/dummy_dataset.csv") %>% 
+  spread(element, value) %>% 
+  mutate(wt_price = Weight / Price) %>% 
+  select(group, Price, Weight, wt_price) %>% 
+  group_by(group) %>% 
+  summarise_all(mean)
+```
+
+
+---
+### Practical 1
+- Use the following `lapply` to create `l`: 
+
+```{r, eval = FALSE}
+seeds <- c(1, 2, 3)  # or 100 * 1:3
+l <- lapply(seeds, function(x) { # lapply with anonymous function
+  set.seed(x)  # what does this do? 
+  # what does this do? 
+  m <- cbind(v1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
+             v3 = sample(1:100, size = 10, replace = TRUE))
+})  # and this
+names(l) <- paste0("m", 1:3)  # and this
+```
+
+- Append a `data.frame` `d` to `l`, which is composed of `l$m1` and `V4`, which is a random draw of size 10 from `letters[1:4]`
+- Use `lapply` and `sapply` to apply 1) `mean` and then 2) `sd` to the first three elements of `l`
+- **Challenge**: Do the above, but apply `mean` and `sd` at the same time `l[[1:3]]`
+
+---
+### Practical 1 answers
+
+Buried in the Rmarkdown
+```{r, echo = FALSE, eval = FALSE}
+# Practical 1
+l$d <- data.frame(l$m1, v4 = sample(letters[1:5], 10, replace = TRUE))
+lapply(l[1:3], mean)
+lapply(l[1:3], sd)
+sapply(l[1:3], mean)
+sapply(l[1:3], sd)
+lapply(1:3, function(x) c("mean" = mean(l[[x]]), "sd" = sd(l[[x]])))
+# lapply(l[1:3], function(x) c("mean" = mean(x), "sd" = sd(x)))
+sapply(1:3, function(x) c("mean" = mean(l[[x]]), "sd" = sd(l[[x]])))
+```
+
+
+---
+### Practical 2
+
+- Use `readr::read_csv` to read `dummy_dataset.csv` into `tb_df`
+- Determine the unique (`distinct`) values in *group* and *element*
+- `spread` `tb_df` so that "Price" and "Weight" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `spread` that includes *group*, then `arrange` by *group*
+- Redo the `spread` that includes *group*, then `arrange` by *group* (ascending) and by *year* (decending)
+- Create (`mutate`) a new column *wt_price* from `weight / price`
+- **Challenge**: Redo the `spread` that includes *group*, `arrange` by *group* and by *year*, with *year* in descending order, `select` out the values of group *a*, and create (`mutate`) the weight:price ratio just for those
+
+---
+
+### Practical 2 answers
+
+Buried in the Rmarkdown
+
+```{r, eval = FALSE}
+tb_df <- readr::read_csv("~/Desktop/dummy_dataset.csv")
+tb_df %>% distinct(group, element)
+# tb_df %>% distinct(group)
+# tb_df %>% distinct(element)
+tb_df %>% spread(key = element, value = value)
+tb_df %>% select(-group) %>% spread(element, value)
+tb_df %>% spread(element, value) %>% arrange(group)
+tb_df %>% spread(element, value) %>% arrange(group, desc(year))
+tb_df %>% spread(element, value) %>% mutate(wt_price = Weight / Price)
+
+# extra
+tb_df %>% spread(element, value) %>% arrange(group, desc(year)) %>%
+  filter(group == "a") %>% mutate(wt_price = Weight / Price)
+```
+
+---
+### Practical 3
+
+- Use split-apply-combine with `dplyr` pipelines to:
+  - Calculate the `mean` *wt_price* by *group*
+  - Calculate the `mean` and `sd` of *wt_price* by *group*
+  - Calculate the `mean` and `sd` of *Weight* and *Price* by *group*
+  - Calculate the `mean` and `sd` of *Weight* and *Price* by *group* and by a new categorical variable *yr_gtlt80*, in which `year > 1980` gets a 1, otherwise a 0. 
+    - You will need to use `ifelse` within `mutate` to make *yr_gtlt80*
+
+---
+### Practical 2 answers
+
+Buried in the Rmarkdown
+
+```{r, echo = FALSE, eval = FALSE}
+tb_dfs <- tb_df %>% spread(element, value) %>% 
+  mutate(wt_price = Weight / Price)
+tb_dfs %>% group_by(group) %>% summarize(wt_price = mean(wt_price))
+tb_dfs %>% group_by(group) %>% 
+  summarize(mu = mean(wt_price), sd = sd(wt_price))
+tb_dfs %>% group_by(group) %>% select(group, Weight, Price) %>% 
+  summarize_all(funs(mean, sd))
+tb_dfs %>% mutate(yr_gtlt80 = ifelse(year > 1980, 1, 0)) %>% 
+  group_by(group, yr_gtlt80) %>% select(group, yr_gtlt80, Weight, Price) %>% 
+  summarize_all(funs(mean, sd))
+```
+
+---
+
+### Data set-up
+```{r, eval = FALSE}
+library(tidyverse)
+set.seed(1)
+tb_df <- tibble(year = rep(1951:2000, 2), 
+                group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
+                value = runif(n = 100, min = 50, max = 100),
+                element = c(rep("Price", 50), rep("Weight", 50)))
+readr::write_csv(tb_df, path = "~/Desktop/dummy_dataset.csv")
+
+
