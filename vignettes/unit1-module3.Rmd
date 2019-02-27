@@ -30,7 +30,7 @@ library(knitr)
 
 Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a brief, high-ish level overview of `R`'s structure. Now we get down to the business of learning how to use it.
 
-## How R is evolving and how it affects us
+## How R is evolving and how it affects us{#how-r-is-evolving-and-how-it-affects-us}
 Before starting, we need to turn back to natural history for another metaphor, specifically evolution. `R` is a language that has been undergoing fairly substantial changes recently. There seems to be clear development trajectories within the language, much like the evolution of species.
 
 ```{r out.width = "40%", fig.align='center', echo=FALSE, fig.cap="An (approximate) lineage of R packages/objects involved in data handling and graphics."}
