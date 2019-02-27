@@ -140,10 +140,15 @@ Buried in the Rmarkdown
 
 ```{r, eval = FALSE}
 dat <- readr::read_csv("~/Desktop/dummy_dataset.csv")
+
 dat2 <- dat %>% spread(key = element, value = value)
+
 dat2 <- dat2 %>% mutate(wt_price = Weight / Price)
+
 dat2 <- dat2 %>% arrange(year, Price)
+
 dat2 <- dat2 %>% mutate(value = ifelse(wt_price < 1, "cheap", "pricy"))
+
 dat3 <- readr::read_csv("~/Desktop/dummy_dataset.csv") %>% 
   spread(key = element, value = value) %>% 
   mutate(wt_price = Weight / Price) %>% 
@@ -187,19 +192,27 @@ Buried in the Rmarkdown
 
 ```{r, echo = FALSE, eval = FALSE}
 dat3 %>% group_by(group) %>% summarize(wt_price_mu = mean(wt_price))
+
 dat3 %>% group_by(group) %>% 
-  summarize(wt_price_mu = mean(wt_price), wt_price_sd = sd(wt_price))
+  summarize(Weight_mu = mean(Weight), Price_mu = mean(Price),
+            Weight_sd = sd(Weight), Price_sd = sd(Price))
+
 dat3 %>% group_by(value, group) %>% 
-  summarize(wt_price_mu = mean(wt_price), wt_price_sd = sd(wt_price))
+  summarize(Weight_mu = mean(Weight), Price_mu = mean(Price),
+            Weight_sd = sd(Weight), Price_sd = sd(Price))
+
 dat3 %>% select(Weight, Price, wt_price) %>% 
-  summarize_all(list(mean, sd))
+  summarize_all(list(mu = mean, sd = sd))
+
 dat3 %>% group_by(value, group) %>% select(Weight, Price, wt_price) %>% 
   summarize_all(list(mean, sd))
+
 dat3 %>% filter(value == "cheap") %>% group_by(group) %>% 
   select(Weight, Price, wt_price) %>% summarize_all(mean)
+
 dat3 %>% lm(Weight ~ Price, data = .) %>% summary()
+
 dat3 %>% group_by(value) %>% do(lm_res = lm(Weight ~ Price, data = .)) %>% 
   broom::tidy(., lm_res)
-
 ```
 
