@@ -33,9 +33,10 @@ We are now moving onto the final module of this unit. We'll learn now about mani
 
 For this module we will be using the following packages:
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 library(tidyr)
+library(ggplot2)
 ```
 
 For this module, we will start making extensive use of `%>%`. You will save yourself much time by using the keyboard shortcut for inserting that operator, which is `CMD + shift + m` on Mac, `ctrl + shift + m` on Windows.
@@ -297,7 +298,7 @@ So we just saw how to combine datasets by binding them by rows. Oftentimes you w
 We'll start with some dummy datasets to illustrate, and then use our own crop data to show a more complicated join using two variables. 
 
 ```{r}
-# Chunk 13
+# Chunk 13a
 set.seed(1)
 t1 <- tibble(v1 = paste0("N", 1:5), v2 = rnorm(5))
 t1
@@ -317,7 +318,7 @@ There are several different ways to do joins, and a matching function for each. 
 
 The simplest join case is between `t1` and `t2`, which can be done as:
 ```{r}
-# Chunk 13
+# Chunk 13b
 # #1
 left_join(x = t1, y = t2, by = "v1")
 #
@@ -372,7 +373,7 @@ So we the unmatched rows from `t3` (the last two) in the joined result are fille
 You get the same results in the last two because the values in `t1`'s *v1* column are a subset of `t3`'s *v1* values. Let's see what happens when both the values in both join columns each have values not shared by the other:  
 
 ```{r}
-# Chunk 15
+# Chunk 15a
 # #1
 inner_join(x = t3, y = t4, by = "v1")
 #
@@ -391,7 +392,7 @@ Each of the four results produces a different output (and it is left to you to d
 Right, so that is an introduction to some different types of joins, and their varying behavior. We can join all four together using pipes:
 
 ```{r}
-# Chunk 15
+# Chunk 15b
 full_join(t1, t2) %>% full_join(., t3) %>% full_join(., t4)
 ```
 
@@ -471,7 +472,7 @@ The last thing we will look at in this section is *mutation*, which uses the `mu
 
 ```{r}
 # Chunk 19
-crop_ylds <- crops_df %>% mutate(yields = prod / harv_area)
+crop_ylds <- crops_df %>% mutate(yield = prod / harv_area)
 crop_ylds
 ```
 
@@ -518,18 +519,18 @@ There are many other ways to `mutate` data, using more advanced pattern matching
 
 3. You are given a csv that is organized into 6 rows and 14 columns. The first two columns contain country names (two countries) and district names (three districts per country). The other 12 columns are named by the month of th year, and each month contains the average number of measles cases reported over a 5 year period in that month for each district in each country. Are these data tidy or messy? If messy, how would you rearrange them? 
 
-4. Describe why each of the four outputs from Chunk 15 differs as a function of the `*_join` function used.  
+4. Describe why each of the four outputs from Chunk 15a differs as a function of the `*_join` function used.  
 
 ### Code
-1. Re-create the dummy `tibble` in Chunk #3 above, and write it out to a csv using `readr::write_csv`, to any directory convenient for you (e.g. into your notebooks/ folder), calling it "my_dummy_file.csv".
+1. Re-create the dummy `tibble` in Chunk 3, and write it out to a csv using `readr::write_csv`, to any directory convenient for you (e.g. into your notebooks/ folder), calling it "my_dummy_file.csv".
 
 2. Use `dir` to list files in the directory you write it into matching the word "dummy", and then read it back in using `readr::read_csv`. 
 
-3. Building on the example in Chunk 15, join all 4 `tibble`s together, but replace `full_join` with `left_join`. Do the same again using `right_join`.
+3. Building on the example in Chunk 15a, join all 4 `tibble`s together, but replace `full_join` with `left_join`. Do the same again using `right_join`.
 
 4. Rearrange the results of the two joins you just did, using *v5* as the sort. Do an ascending sort on the results of the chained `left_join`, and descending on the `right_join`. 
 
-5. Recreate the `crop_ylds` `tibble`. Skip the part where we created *yields* via a merge, and instead use the approach where we just did a mutate. Don't forget to change the crop capitalization and change the country names also. After you reproduce what it looks like in Chunk 21, use `mutate` to add a new column *harv_km2* by doing *harv_area* / 100.
+5. Recreate the `crop_ylds` `tibble`. Skip the part where we created *yield* via a merge, and instead use the approach where we just did a mutate. Don't forget to change the crop capitalization and change the country names also. After you reproduce what it looks like in Chunk 21, use `mutate` to add a new column *harv_km2* by doing *harv_area* / 100.
 
 6. Now rename the new *harv_km2* variable to *harv_area_km2*, using the `rename` function. 
 
@@ -543,7 +544,7 @@ There are many other ways to `mutate` data, using more advanced pattern matching
 </center>
 ***
 
-# Data analysis
+# Analyzing your data
 Now that we have gotten an introduction to data preparation steps, we will learn about how to analyze it. We have already seen some very basic analyses, in the form of basic algebra and data summaries.  Now we will move onto more advanced data manipulation and analyses. 
 
 ## Split-apply-combine
@@ -575,7 +576,7 @@ splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
 do.call(rbind, splt_apply)  # here's the combine
 ```
 
-Chunk #1 contains both the split (using base `R` syntax rather than `dplyr`, to avoid mixing syntaxes) and apply parts (see the comments in the code), with some extra print statements added so that we can see how the splits are happening within the `lapply` (by showing the first row of each split-out `tibble`. **Note how `unique` is used here--to get a vector of unique crop names that are passed to an anonymous function that iterates over each crop name, which is used with logical indexing to subset (split) out the rows from `crop_ylds` that correspond to that crop.** #2 does the combine, creating the same result produced using `dplyr` in Chunk 22. Given that, you will not `dplyr::group_by` does the splitting work, and `dplyr::summarize` does the applying (of `mean`), and the combine is implicit.
+Chunk 23 #1 contains both the split (using base `R` syntax rather than `dplyr`, to avoid mixing syntaxes) and apply parts (see the comments in the code), with some extra print statements added so that we can see how the splits are happening within the `lapply` (by showing the first row of each split-out `tibble`. **Note how `unique` is used here--to get a vector of unique crop names that are passed to an anonymous function that iterates over each crop name, which is used with logical indexing to subset (split) out the rows from `crop_ylds` that correspond to that crop.** #2 does the combine, creating the same result produced using `dplyr` in Chunk 22. Given that, you will not `dplyr::group_by` does the splitting work, and `dplyr::summarize` does the applying (of `mean`), and the combine is implicit.
 
 Now let's look at a more complex SAC:
 ```{r}
@@ -585,7 +586,7 @@ crop_ylds %>% group_by(crop, country) %>% summarize(mean_yield = mean(yields))
 
 Here we do two splits: the first on crop, the second on country, so after applying and combining we get the mean yield for each crop for each country.  Let's do that with `lapply`:
 ```{r}
-# Chunk 25
+# Chunk 25a
 # #1
 splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
   cat("\n")  # add empty line
@@ -611,7 +612,7 @@ Right, so that might look daunting, but not to worry--we are just using those `l
 What happens if we want to do SAC on an even finer range of data within each split, say, calculate mean yields since the year 2000 by crop and by country: 
 
 ```{r}
-# Chunk 25
+# Chunk 25b
 crop_ylds %>% filter(year >= 2000) %>% group_by(crop, country) %>% 
   summarize(mean_yield = mean(yields))
 ```
@@ -640,7 +641,7 @@ crop_ylds %>%
 That's a little more complex, and doesn't use `filter`. Instead, we first use `mutate` with `ifelse` to create a new variable (*y2k*), which indicates whether years are before 2000, or 2000 and onward. We then use *y2k* to apply a third split to the data after our crop and country splits, and finally end with the mean yields from our three-way splits. 
 
 That comparison might be easier if we put the pre- and post-2000 yields next to one another. That would require just one more step to do:
-```{r}
+```{r, warning=FALSE}
 # Chunk 28
 crop_ylds %>% 
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
@@ -679,12 +680,8 @@ We leave it to you in the practice questions below to answer how Chunk 30 differ
 </center>
 ***
 
-
-## Analyses
-Now that we have a sense of how to do split-apply-combine, let's dig a bit more into the analyses that we can do as part of that process. Since `R` was originally designed for statistics, there are many possible analyses we can do with `R`. We'll look at just a few common ones.
-
-### Summaries
-We'll start with some summary statistics outside of SAC. The easiest way to do that in `R` is to use the base `summary` function. 
+## Data summaries
+Now that we have a sense of how to do split-apply-combine, let's dig a bit more into the analyses that we can do as part of that process. Since `R` was originally designed for statistics, there are many possible analyses we can do with `R`. We'll look at just a few common ones, starting with the calculation of summary statistics, outside of SAC. The easiest way to do that in `R` is to use the base `summary` function. 
 
 ```{r}
 # Chunk 31
@@ -729,7 +726,7 @@ The above is somewhat more complex. We want to calculate `summary` stats for *pr
 </center>
 ***
 
-### Associations
+## Associations
 Evaluating associations between data variables (e.g. correlations) is one of the most frequent uses for `R`. Lets start with correlations:
 
 ```{r}
@@ -812,7 +809,7 @@ names(crop_country_lms) <- unique(crop_ylds$crop)
 crop_country_lms
 ```
 
-This arrangement is similar to what we were doing in Chunk 25, using nested `lapply` to split on crop and country (using `dplyr:filter` instead of base `R` syntax to do the split), but applying `lm` inside the bodies of the `lapply`. We extract only the coefficient table from `summary` of each `lm`, to condense the output.
+This arrangement is similar to what we were doing in Chunk 25b, using nested `lapply` to split on crop and country (using `dplyr:filter` instead of base `R` syntax to do the split), but applying `lm` inside the bodies of the `lapply`. We extract only the coefficient table from `summary` of each `lm`, to condense the output.
 
 There is a pure tidyverse way of doing this, which is the last thing to look at here.  It is more involved than previous examples, because the non-tabular (list) output from `lm` prevents use of `lm` within `dplyr::summarise`:
 ```{r, eval = FALSE}
@@ -872,6 +869,518 @@ This coding practice assumes you have created the `crop_ylds` dataset to match i
 6. Use `lm` to fit regression of between Zambia maize *yields* and *year*, with *year* as the independent variable.  Do the same for South Africa maize yields. Use `dplyr` verbs to create the subsets, but use both the base-centric (Chunk 36) and `dplyr` centric (Chunk 37) way of running the `lm`s. Which country shows the largest annual changes in yields?
 
 7. *Challenge:* Adapt the code in Chunk 39 to create regressions between *yields* and *year* by country and crop, but just for maize and wheat
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+# Visualization
+Until now we have been looking numerical outputs from our `R` code. Graphical representation often conveys more information, and is typically done alongside numerical analysis. Our last section on regressions leads us naturally to the subject of visualization, as the most obvious way to assess a linear relationship between two variables is to examine their scatterplots. So let's look at that to start, but first a quick introduction to two different plotting approaches.
+
+## *graphics* graphics versus *grid* graphics 
+Back in [Module 3 1.1](unit1-module3.html#how-r-is-evolving-and-how-it-affects-us) we mentioned that there is a split in `R` plotting methods centered on base `R`'s `graphics` and `grid` packages. `ggplot2` is arguably the most prominent descendant of the latter branch of graphics.  
+
+We are going to learn examples of both approaches in this section. The reasons for this are that:
+
+1. Many spatial packages (including `sf` and the newer `stars`) have generic `plot` functions that have syntax modeled on `graphics::plot`;
+2. The same spatial packages are also moving toward compatibility with `ggplot2`, which is useful to know because that is rapidly becoming a standard.
+
+I would add that it is helpful to know both approaches, because `graphics` based plots are often very good for rapid interactive data exploration, whereas `ggplot` can be helpful for creating more polished, presentation-grade graphics.
+
+## Two-dimensional plots 
+Back to our regression examples. We were exploring relationships between crop production and harvested area. We could get a better sense of that relationship by plotting those two variables against one another. 
+
+### Scatterplots
+We'll start with `graphics::plot`, which `?plot` tells us is a:
+
+> Generic function for plotting of R objects. For more details about the graphical parameter arguments, see par.
+
+There are many, many possible parameters to tune to in making such a plot (which you can find in `?par`), but we will just look a few. Here's a start:
+
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 40
+plot(prod ~ harv_area, data = crop_ylds[crop_ylds$crop == "maize", ])
+```
+
+This is a purely base way of plotting the relationship between *harv_area* on the X axis and versus *prod* on the Y axis for just maize (not distinguishing by country). We set up the relationship between the two variables as a formula, with *prod* on the left-hand side (LHS) and `harv_area` on the right-hand side (RHS) on the equation, and the data, including the subsetting, in "data" argument slot.  
+We could do the same exact thing using the syntax below:
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 41
+# #1
+dat <- crop_ylds[crop_ylds$crop == "maize", ]
+plot(x = dat$harv_area, y = dat$prod)
+#
+# #2
+plot(x = dat$harv_area[dat$crop == "maize"], y = dat$prod[dat$crop == "maize"])
+```
+
+Both are more cumbersome, but note that in both cases we pass our data as separate vectors into the "x" and "y" arguments. We don't show the plots above, but they are each identical to the one in Chunk 40, except for the axis labels.
+
+That's not a particularly appealing plot, so let's dress it up a bit:
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 42a
+plot(prod ~ harv_area, data = crop_ylds[crop_ylds$crop == "maize", ], 
+     pch = 16, cex = 0.7, col = "blue",
+     main = "Maize production versus harvested area",
+     xlab = "Harvested area (ha)",
+     ylab = "Production (tons)")
+```
+
+This adds on to the approach in Chunk 40. We use the "pch" argument to change the type of symbol, "cex" changes the size of the symbol, "col" the color of the symbol, and "main", "xlab", and "ylab" add titles for the top of the plot and the X and Y axis, respectively. 
+
+Looking at th plot, we can see there is a clear positive relationship in the data up to about 3 million ha planted area, and then production seems to decline.  What's going on there? 
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 42b
+# #1
+zmb_maize <- crop_ylds %>% filter(crop == "maize" & country == "ZMB")
+zaf_maize <- crop_ylds %>% filter(crop == "maize" & country == "ZAF")
+# #2
+plot(prod ~ harv_area, data = zmb_maize,      
+     pch = 16, cex = 0.7, col = "blue", 
+     main = "Zambia maize prod vs harv area",
+     xlab = "Harvested area (ha)",
+     ylab = "Production (tons)")
+# #3
+plot(prod ~ harv_area, data = zaf_maize, 
+     pch = 16, cex = 0.7, col = "red", 
+     main = "South Africa maize prod vs harv area",
+     xlab = "Harvested area (ha)",
+     ylab = "Production (tons)")
+```
+
+The difference is caused by different production/harvested area patterns in the two countries in the dataset.  In the examples above, we separately plot each country's maize dataset, using `dplyr::filter` to create two new subsets of the data, which we feed separately to two new `plot` chunks, changing the title and point color in each.  This makes the reason for the original pattern (in Chunk 41) clearer, but is still not ideal.  Better to put both on one plot:
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 43
+# #1
+xl <- crop_ylds %>% filter(crop == "maize") %>% pull(harv_area) %>% range()
+yl <- crop_ylds %>% filter(crop == "maize") %>% pull(prod) %>% range()
+# #2
+plot(prod ~ harv_area, data = zmb_maize, 
+     pch = 16, cex = 0.7, col = "blue", xlim = xl, ylim = yl, 
+     main = "Maize production vs harvested area",
+     xlab = "Harvested area (ha)",
+     ylab = "Production (tons)")
+# #3
+points(prod ~ harv_area, data = zaf_maize, pch = 16, cex = 0.7, col = "red")
+# #4
+legend(x = "topleft", legend = c("Zambia", "South Africa"), 
+       col = c("blue", "red"), pch = 20)
+```
+
+That's much clearer now, and the plot now makes obvious some additional information: 1) South Africa's harvested area of maize is much larger than Zambia's, 2) it's production declined with harvested area (???), 3) Zambia's production and harvested area is much smaller but the two variables have a positive relationship.  
+
+Putting those variables on one plot took a few additional steps. First, we had to make both datasets fit on the same scale. That required fixing the data ranges on the X and Y axis of the plot. `plot` would otherwise automatically set the range to max the first input dataset (Zambian maize). So (in #1) we first figured out the X and Y ranges by using `dplyr`'s `filter`, and `pull` to extract the *harv_area* and *prod* vectors and separately calculate their ranges into new variables (`xl` and `yl`). We then (in #2) passed these in to `plot` to set the "xlim" and "ylim" values (controlling the range of the X and Y axes, respectively). `plot` was applied to the `zmb_maize`. We then used `points` (in #3) to add the `zaf_maize` data to the existing plot. `points` does what it's name says--it adds points to a plot. An existing plot must already be established for `points` to work. The arguments are the same as those used in `plot`.  Finally, in #4, we add a legend so that the reader can distinguish between the two sets of points. The "x" argument says where the legend should be placed in the graph, "legend" asks the legend text, "col" for the point colors, and "pch" for what the point types should be. 
+
+That was a fair bit of work. Could we save some effort with `dplyr` piping? 
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 44
+crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
+  plot(prod ~ harv_area, data = ., 
+       pch = 16, cex = 0.7, col = "blue", xlim = xl, ylim = yl, 
+       main = "Maize production vs harvested area",
+       xlab = "Harvested area (ha)",
+       ylab = "Production (tons)")
+crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>% 
+  points(prod ~ harv_area, data = ., pch = 16, cex = 0.7, col = "red")
+legend(x = "topleft", legend = c("Zambia", "South Africa"), 
+       col = c("blue", "red"), pch = 20)
+```
+
+A little bit, it seems. We can subset the dataset using `filter`, and then pipe each subset to `plot` and `points`, respectively. To do this, we give `.` to the "data" argument in each function in order to receive the piped dataset. 
+
+That's not in ideal pipeline example, however, because `dplyr` pipes are really more designed to work with the tidyverse's plotting tools, i.e. `ggplot2`. 
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+#### Introducing ggplot2
+Now's a good time to introduce `ggplot2`. Let's recreate the first graph as a start:
+
+```{r, fig.width=4, fig.height=3.75}
+# Chunk 45
+library(ggplot2)
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(mapping = aes(x = harv_area, y = prod), col = "blue") +
+  xlab("Harvested area (ha)") + ylab("Production (tons)") + 
+  ggtitle("Maize production vs harvested area")
+```
+
+That's a basic recreation of the same plot, although `ggplot` by default has a grey gridded background (which can be removed if needed). You can see that the syntax is *very* different than it is with `plot`. `ggplot` is based on a "grammar of graphics", on which there a [whole book](https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448/ref=as_li_ss_tl?ie=UTF8&qid=1477928463&sr=8-1&keywords=the+grammar+of+graphics&linkCode=sl1&tag=ggplot2-20&linkId=f0130e557161b83fbe97ba0e9175c431), but also a [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) by Hadley Wickham. There is a lot of information there, but some text from `ggplot2` [tidyverse page](https://ggplot2.tidyverse.org/reference/aes.html) is instructive: 
+
+> ggplot2 is a system for declaratively creating graphics, based on The Grammar of Graphics. You provide the data, tell ggplot2 how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details...It’s hard to succinctly describe how ggplot2 works because it embodies a deep philosophy of visualisation. However, in most cases you start with ggplot(), supply a dataset and aesthetic mapping (with aes()). You then add on layers (like geom_point() or geom_histogram()), scales (like scale_colour_brewer()), faceting specifications (like facet_wrap()) and coordinate systems (like coord_flip()).
+
+There are many functions in `ggplot2` (the package) that control plotting functionality, and we won't go through them all here (the [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf) is a nice resource though). So we will go over just a few core parts, using the example in Chunk 45. We initiated the whole thing from a `dplyr` pipeline that we used to subset the maize part of `crop_ylds`, which we piped to `ggplot`, which (according to `?ggplot`) "intializes a ggplot object". It is empty in this case because it is receiving the piped input, otherwise we would to give a `data.frame` (let's note there that `ggplot` only works with `data.frames`, unlike `plot`, which can work with vectors). 
+
+We then pass that to `geom_point`, using `+`, which is somewhat analogous to `dplyr`'s `%>%`, but in this case is used to build up `ggplot` objects.  `geom_point` is the geometry function for creating scatterplots. There are many different `geom_*` functions in `ggplot2`, one for each kind of plot. We'll see more of those later. 
+
+Inside `geom_point` we use the function `aes` to satisfy the "mapping" argument. Is stands for "aesthetic mapping", which "*...describe how variables in the data are mapped to visual properties (aesthetics) of geoms.*" (from `?aes`). `xlab`, `ylab`, and `ggtitle` should be fairly self-explanatory. 
+
+An alternate was of constructing the same plot is this:
+```{r, eval = FALSE}
+# Chunk 46
+ggplot(data = crop_ylds %>% filter(crop == "maize"), 
+       mapping = aes(x = harv_area, y = prod)) +
+  geom_point(col = "blue") + xlab("Harvested area (ha)") + 
+  ylab("Production (tons)") + ggtitle("Maize production vs harvested area")
+```
+
+That is not run, to save space, but is identical. In this case, insert the `tibble` directly into `ggplot`'s "data" argument, and the `aes` is supplied to the "mapping" argument. We still need to supply the `geom_point` argument, but now we just tell what point color we want ("col" argument). The rest is the same. 
+
+So the above examples just show `ggplot` with *prod* versus *harv* across both countries. How would we distinguish between the countries, as we did in Chunks 43 and 44? By making just two small changes to the code we used in Chunk 45 (same would apply to Chunk 46)
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 47
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = harv_area, y = prod, color = country)) +
+  xlab("Harvested area (ha)") + ylab("Production (tons)") + 
+  ggtitle("Maize production vs harvested area")
+```
+
+All we did here was supply the "color" argument inside `aes`, which in this case is the *country* variable. This means that `geom_point` (note we drop the argument name for "mapping" now, which is fine) will assign a different color to each group of points based on their unique values in *country* variable. It then very conveniently 1) creates a legend, and 2) automatically scales the axes to cover the full data ranges, and, of course, 3) assigns a different color to each point grouping. The other change we made was to remove the "col" argument that was originally outside `aes` in Chunk 45, which assigned a single color to all points. That's a key point to remember: "color" (or "colour"--you have probably already noticed that some tidyverse functions have variants for both UK and US English spellings) is supplied inside `aes` to create differentiated colors, while `col` is used outside, and will map a single color. 
+
+I don't much care for `ggplot` default color palette, so I like to change them:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 48
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = harv_area, y = prod, color = country)) +
+  scale_color_manual(values = c("red", "blue")) + 
+  xlab("Harvested area (ha)") + ylab("Production (tons)") + 
+  ggtitle("Maize production vs harvested area")
+```
+
+Which in this case is done using `scale_color_manual` and the vector of color names pssed to "values". 
+
+### Line plots
+Right, those are some very basic scatter plots we just looked at, and what they are showing is that maize production and harvested area have differing relationships between countries. Let's explore this some more, and look at some acquire some new plotting skills in the process. 
+
+Remembering that yield production/harvested area (tons/ha), and the data we are examining are a time series, we might get a better sense of the data by plotting yield over time:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 49
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = yield, color = country)) +
+  scale_color_manual(values = c("red", "blue")) + 
+  xlab("Year") + ylab("Yield (tons / ha)") + 
+  ggtitle("Maize yields (1961-2017)")
+```
+
+Interesting. It seems that both countries show an increasing trend in yields since 1961, with a more rapid increase after 2000, particularly in South Africa. But the point are noisy, so maybe visualizing these as lines would make things a clearer?
+```{r}
+# Chunk 50
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_line(mapping = aes(x = year, y = yield, color = country)) +
+  scale_color_manual(values = c("red", "blue")) + 
+  xlab("Year") + ylab("Yield (tons / ha)") + 
+  ggtitle("Maize yields (1961-2017)")
+```
+
+That does make things a bit clearer--and it suggests that South African yields diverged from Zambian yields in about the mid-1990s. The lines also better illustrate the between-year variations in yields, which seem to be larger in South Africa than Zambia. All we had to do to make the change was swap out `geom_point` for `geom_line`. 
+
+For comparison, here is how we would do that same plot with `graphics` methods:
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 51
+crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
+  plot(yield ~ year, data = ., type = "l", col = "blue", 
+       ylim = range(crop_ylds %>% filter(crop == "maize") %>% pull(yield)), 
+       main = "Maize yields (1961-2017)")
+crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>% 
+  lines(yield ~ year, data = ., col = "red")
+```
+
+Pretty much the same set-up as Chunk 44, using the `type = "l"` argument in `plot` to plot lines instead of points for the Zambian maize yields, and then the `lines` function (instead of `points`) to add the South African yield time series. 
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+### Points and lines
+Those line comparisons still only give us a visual comparison. Fitting a trend line to the points would make things clearer. We can do that quite easily with `ggplot`:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 52
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = yield, color = country)) +
+  geom_smooth(aes(x = year, y = yield, color = country)) + 
+  scale_color_manual(values = c("red", "blue")) + 
+  xlab("Year") + ylab("Yield (tons / ha)") + 
+  ggtitle("Maize yields (1961-2017)")
+```
+
+The above uses `geom_smooth` to add a best-fitting curve through each country's yield time series. This function defaults to `loess`, which fits a smoothing spline, or local polynomial regression, to the points (see `?loess` for more details). It also provides a confidence interval around that fit. This now shows the steeper yield increase in South Africa starting just before 2000. 
+
+We can also just examine the linear (rather than curvilinear) trends:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 53
+crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = yield, color = country)) +
+  geom_smooth(aes(x = year, y = yield, color = country), method = "lm") + 
+  scale_color_manual(values = c("red", "blue")) + 
+  xlab("Year") + ylab("Yield (tons / ha)") + 
+  ggtitle("Maize yields (1961-2017)")
+```
+
+That gives us a straight line fit through each time series, which is calling on the `lm` function to fit the trendlines, which shows a steeper line over the whole time series. 
+
+With `graphics::plot`, we have to fit the trendlines more explicitly:  
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 54
+zmb_maize <- crop_ylds %>% filter(crop == "maize" & country == "ZMB")
+zaf_maize <- crop_ylds %>% filter(crop == "maize" & country == "ZAF")
+yl <- range(crop_ylds[crop_ylds$crop == "maize", "yield"])
+plot(yield ~ year, data = zmb_maize, pch = 16, col = "blue", 
+     ylim = yl, main = "Maize yields (1961-2017)")
+abline(lm(yield ~ year, data = zmb_maize), col = "blue")
+points(yield ~ year, data = zaf_maize, pch = 16, col = "red")
+abline(lm(yield ~ year, data = zaf_maize), col = "red")
+```
+
+We recreate the two subset `tibble`s `zmb_maize` and `zaf_maize`, create a new variable `yl` containing the range of yields across both datasets, plot points for `zmb_maize`, and use `lm` to fit the regression between `yield` and `year` in `zmb_maize`, then wrap that in the `abline` function, which converts the regression model to a prediction line (i.e. the trendline). We then `points` with `zaf_maize` to add the scatter plot for South African maize, and fit another `abline` on the `lm` for that dataset. That's more involved than the `ggplot` approach. 
+
+## One-dimensional plots
+We have been looking at plots using two variables so far. Now let's look at some of the more commonly used visualizations for single variables. Let's start with  a histogram of sorghum yields, starting first with `ggplot`:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 55
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + geom_histogram(aes(x = yield), fill = "blue", col = "black") +
+  ggtitle("Distribution of sorghum yields")
+```
+
+We grab sorghum out of `crop_ylds`, and then `geom_histogram` with an `aes` mapping *yield* to the x variable. We specify the color for the histogram bar "fill" and the bar outline color ("col") outside of `aes`. The output suggests that we suggest a better bin width.  Indeed, the bars are too narrow and there are data gaps. Let's try again with a different number of bins:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 56
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield), bins = 15, fill = "blue", col = "black") +
+  ggtitle("Distribution of sorghum yields")
+```
+
+We specify that we want 15 bins, rather than the default 30. Looks a bit better. Here's how do it using `graphics::hist`:
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 57
+hist(x = crop_ylds$yield[crop_ylds$crop == "sorghum"], xlab = "yield", 
+     main = "Distribution of sorghum yields", col = "blue")
+```
+
+We'll keep focusing on `ggplot` though.  How about a histogram breaking sorghum yields down by country?
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 58
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield, color = country), bins = 15) +
+  ggtitle("Distribution of sorghum yields")
+```
+
+As with scatter plots, specifying the "color" argument within `aes` separates the bars by country, making stacked histograms.  What about changing the fill, rather than the bar outline color? 
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 59
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield, fill = country), bins = 15) +
+  ggtitle("Distribution of sorghum yields") + 
+  scale_fill_manual(values = c("red", "blue")) 
+```
+
+We specify that `fill = country` in `aes`. Okay, so now it is clear that in polygonal object, we distinguish between "fill" and "color" within `aes` (or "fill" and "col" outside of it). And if we want to change the fill colors from `ggplot`'s defaults, as we did with scatter plots above, we use the `scale_fill_manual` function. 
+
+We could also make this a side-by-side histogram, rather than a stacked one:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 60
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield, fill = country), bins = 15, 
+                 position = "dodge", col = "black") +
+  ggtitle("Distribution of sorghum yields") + 
+  scale_fill_manual(values = c("red", "blue")) 
+```
+
+We achieve that by using the argument `position = "dodge"` (outside of `aes`). We also use `col = "black"` outside of `aes` to add a black line around each box.
+
+So those are histograms.  How about a simpler barplot for counting a categorical variable?  
+```{r, fig.width=4, fig.height=3.75}
+# Chunk 62
+crop_ylds %>% filter(crop == "wheat") %>% 
+  mutate(yld_levels = ifelse(yield < 3, 1, 2)) %>% 
+  mutate(yld_levels = ifelse(yield > 6, 3, yld_levels)) %>% 
+  ggplot() + geom_bar(aes(x = yld_levels), fill = "blue", col = "black") + 
+  xlab("Yield levels")
+```
+
+Here we use `geom_bar` to make a bar plot from the categorical variable *yld_levels*, which we create using `mutate` and `ifelse` to group wheat yields into 3 categories (yield < 3 t/ha; 3-6 t/ha; >6 t/ha). We make the bars blue-filled and outlined with black box. 
+
+Last plot we will show is the boxplot:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 63
+crop_ylds %>% ggplot() + geom_boxplot(aes(x = crop, y = yield)) + xlab(NULL)
+```
+Pretty straightforward. We get a separate boxplot for each crop by specifying *crop* as the "x" argument and *yield* as "y" in `aes` within `geom_boxplot`. Another way to show the distribution of values within a variable. We can also easily distinguish separate boxplots for each country:
+
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 64
+crop_ylds %>% 
+  ggplot() + geom_boxplot(aes(x = crop, y = yield, fill = country)) + 
+  xlab(NULL) + scale_fill_manual(values = c("red", "blue")) 
+```
+
+We simply make *country* the variable on which to "fill" in `aes`, and then change the fill color to red and blue. 
+ 
+## Multi-panel plots
+Thinking back to our scatter plots, there is more to the story regarding the differing yield trends between South Africa and Zambia, and it requires multiple plots to really tell it. Let's have a look at yield, production, and harvested area trends over time to see what's going on:
+
+```{r, eval = FALSE}
+# Chunk 65
+# #1
+p1 <- crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = yield, color = country)) + 
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Yield (tons/ha)") + xlab("") +
+  geom_smooth(aes(x = year, y = yield, color = country))
+p2 <- crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = prod, color = country)) + 
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Production (tons)") + xlab("") +
+  geom_smooth(aes(x = year, y = prod, color = country))
+p3 <- crop_ylds %>% filter(crop == "maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = harv_area, color = country)) + 
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Harvested area (ha)") + xlab("") +
+  geom_smooth(aes(x = year, y = harv_area, color = country))
+# #2
+gp <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
+                         p2 + theme(legend.position = "none"), 
+                         p3 + theme(legend.position = "none"), nrow = 1,
+                         align = "vh", axis = "l")
+# #3
+gp2 <- cowplot::plot_grid(gp, cowplot::get_legend(p1), rel_widths = c(3, 0.3))
+# #4
+ggsave(gp2, filename = "vignettes/fig/u1m4-1.png", width = 9, height = 2.5, 
+       units = "in", dpi = 300)
+```
+```{r out.width = "100%", fig.align='center', echo=FALSE}
+include_graphics("fig/u1m4-1.png") 
+```
+
+This is a bit more advanced, but worth having a look at.  In #1, we replicate our code from Chunk 52, using `aes()` with the "color" argument to create separate plots by *country*. We create one `ggplot` object for each variable *yield*, *prod*, and *harv_area*. We assign each plot to its own object, which prevents it from printing to the graphics device. 
+
+In #2, we use the function `plot_grid` from the `cow_plot` package to arrange the three plots into a single plot. We specify that the plots will fall onto one row (`nrow = 1`), and that it should align the three plots vertically and horizontally (`align = "vh"`) against the left axis (`axis = "l"`). We use an additional argument assigned to each plot object, which tells the plot to render without its legend (`theme(legend.position = "none")`). That is done to prevent three identical legends being created, one for each plot, which would take up valuable plot real estate.  
+
+In #3, we use `cowplot::plot_grid` again, putting the three panel plot object as the first argument, and then use a function to grab the legend from one of the individual plots (`cowplot::get_legend(p1)`), which will make it appear to the right of the three scatter plots. `rel_widths(c(3, 0.3)` specifies the relative width of each plot in the row, so the legend will take <10% of the total plot space (`0.3 / (3 + 0.3)`). 
+
+In #4 we use `ggsave` to write the whole plot to a png, which we then read back in to display within the vignette (see the Rmd code). The reason for that is to avoid making `geospaar` dependent on `cowplot` to build vignettes. So to run this code you will have to `install.packages(cowplot)`. 
+
+So what is the story told by this plot? The most interesting feature is the steep dive in South Africa's maize harvested area beginning around 1990. At the same time, production increased substantially. Those two factors combine to create yield gains that were much larger than Zambia's. The story behind this story is that South Africa heavily subsidized maize production until the 1990s, which encouraged planting in more climatically marginal areas. Following removal of the subsidies, maize farming contracted into more climatically suitable areas, while smaller and less efficient farmers dropped out. The net result was that South Africa has ended up growing more maize on less land, unlike Zambia, which increased its yields but also expanded its harvested area. 
+
+We just showed a more complicated way of making a multi-panel plot. There is a simpler way to do this with `ggplot2` functions, provided that the variables on your two axes don't change between plot panels. We can illustrate this by showing the *yield* time series for each crop:
+```{r, fig.width=8, fig.height=3.75}
+# Chunk 66
+crop_ylds %>% 
+  ggplot(.) + geom_point(aes(x = year, y = yield, color = country)) +
+  geom_smooth(aes(x = year, y = yield, color = country)) + 
+  facet_grid(cols = vars(crop)) +
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Yield (tons/ha)") + xlab("")
+```
+
+In this example, we use `ggplot2::facet_grid` to split the output into three plots, one per crop type, specifying that we want the values in `vars(crop)` to split into columns. For `facet_grid`, you have to wrap the column name in `vars()`. 
+
+We can also specify that by rows:
+```{r, fig.width=3.75, fig.height=7, fig.align="center"}
+# Chunk 67
+crop_ylds %>% 
+  ggplot() + geom_point(aes(x = year, y = yield, color = country)) +
+  geom_smooth(aes(x = year, y = yield, color = country)) + 
+  facet_grid(rows = vars(crop)) +
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Yield (tons/ha)") + xlab("")
+```
+
+So that's it for our visualization section. There are many other graphics we could make, and we will learn some of these as we continue into the spatial unit of the course. 
+
+***
+<center>
+[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Practice
+### Questions
+1. What are some of the primary differences between plots made using the `graphics` package and those made with `ggplot2`? 
+
+2. `ggplot2` seems much prettier and maybe more convenient. So why are we learning about base `graphics` plots as well?   
+
+3. How do the axis labels in the two examples given in Chunk 41 differ from the plot in Chunk 40? How could you change the names of the labels? 
+
+4. You can use `graphics::plot` with `dplyr` pipelines. In order for it to work, what argument and argument value do you have to do to use? 
+
+5. How do you change the point color, point style, and point size in a `graphics::plot`?  
+
+6. What happens when you run `ggplot` without a `geom_*` argument? You can run the code in Chunk 45 with the `geom_point` part removed to check. 
+
+
+### Code
+1. Run the code in Chunk 56 without the "fill" and "col" arguments. Then run it, with just `fill = "red"` (no "col" argument). 
+
+2. Using `crop_ylds`, split out the South Africa wheat data (with `dplyr`) and use `plot` to make a time series between  *year* and *harv_area*, using first points and then lines (hint: use the `type = "l"` argument for lines). Make the points solid blue and the lines blue. Give a title "South Africa Wheat (1961-2017)", and make the axis labels empty for the year axis and "Harvested area (ha)" for the y axis. 
+
+3. Recreate the same two plots (labels, title, colors) using `ggplot`'s `geom_point` and then `geom_line`.
+
+4. Building on the previous, create a `ggplot` that separates the *harv_area* trends by country. Use `geom_line` to show the two trends. Change the default `ggplot` colors to blue for Zambia and red for South Africa (i.e. use `scale_fill_manual`). **Extra**: You will see that the Zambia *harv_area* values are small relative to South Africa's, so it is hard to see how they change over time. Wrap the `log10()` function around *harv_area* in `aes`, and replot for a more informative visualization.
+
+5. Plot just the South Africa wheat time series, but use `geom_points` and `geom_smooth` to plot the point with a smooth trend through it. In other words, use the code you used for the first part of code practice 3 above, but add `geom_smooth`. 
+
+6. Create a histogram from Zambia's wheat planted area. Do it using both `ggplot2` and `graphics::hist` methods. Add titles and informative x axis labels to both. Make the bars blue with black outlines.
+
+7. Let's display wheat, sorghum, and maize harvested areas for South Africa on side-by-side scatter plots, each with a smooth trendline fit through it. That requires adapting Chunk 66's code. Hints: leave out `color = country` in `geom_points` and `geom_smooth`, and use `dplyr` to filter for South African data.    
+
+# Unit Assignment
+## Set-up
+Make sure you are working in the master branch of your project (you should not be working on the a3 branch. Create a new vignette named "module4.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 
+
+There are no package functions to create for this assignment. All work is to be done in the vignette. 
+
+## Vignette tasks
+1. Create three `tibble`s, `t1`, `t2`, `t3`. `t1` has 10 rows, with column `V1` containing values G1 through G10, and `V2` containing `runif` between 75 and 125.  `t2` has 15 rows with `v1` (G1 - G15) and `v3` containing a random selection of `LETTERS` A-F. `t3` has 20 rows (`v1` with G1-G20), and `v4` with numbers from the random normal distribution (`mean` = 100, `sd` = 20). Use a seed of 1 for random numbers. Join `t1`, `t2`, and `t3` within a single pipeline, using:
+  - `left_join`
+  - `right_join`
+  - `full_join`
+  -`inner_join`
+
+2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 19, and 21 are your guides. 
+
+3. Use `dplyr` verbs to select the 5 top-ranked years for total harvested area for South African maize. Do the same for South African maize yields. To do this, you will need to use `filter`, `arrange`, and `slice`. The outputs for each test should be the 5 rows of `crop_ylds` that meet these criteria.
+
+4. Calculate the mean of each crop's yield (across both countries) using SAC based on `dplyr`, as well as an `sapply` using base `R` syntax within the `sapply` to subset on crop (note, subsetting a tibble is a bit different, so use this syntax to do the job within the `sapply`: `mean(crop_ylds[crop_ylds$crop == x, ]$yield)`)  
+
+5. Calculate a correlation matrix between *harv_area* and *yield* for each crop-country combination, using `dplyr` verbs. Arrange the result (negative to positive) by the value of the correlation coefficient. See Chunk 34 for guidance.
+
+6. Create a single scatter plot with `ggplot` that shows the relationship between *harv_area* (x-axis) and *yield* (y-axis) for maize, separated by country on a single plot. Make it a point scatter plot, with a straight trendline fit through each set of points (i.e. `method = "lm"`). You will need to use `geom_point` and `geom_smooth`. Make a title ("Harvested area versus yield") and x ("Harvested area (ha)") and y ("Yield (t/ha)") labels.   
+
+7. Create a single scatter plot with `graphics::plot` that plots just South Africa wheat yields (y-axis) against year (x-axis). Plot the points, and then add a linear trendline to it, by wrapping the `abline` around the `lm` function. Make the points solid grey ("grey") and the `abline` blue. Label the y axis as "Yield (t/ha)". Remove the x-axis label. Give a title: "South African maize (1961-2017)". Chunk 54 is your guide. 
+
+8. Use `ggplot` to make a 5-bin histogram of Zambia's maize yields. The x-label should be "Yield (t/ha)", the title should be "Zambian Maize", and bins should be blue with black outlines. 
+
+
+## Assignment output
+Refer to [Unit 1 Module 3's Assignment output section](unit-module3.html#assignment-output) for submission instructions. The only differences are as follows:
+
+1. Your submission should be on a new side branch "a3";
+2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
+3. Control the width of your plots in 6-8 using the following chunk options:
+
+    ````markdown
+    `r ''````{r, fig.width=4.75, fig.height=3.75, fig.align = "center"}
+    ```
+    ````
+4. For all chunks, suppress messages and warnings by adding `message = FALSE` and `warning = FALSE` to the chunk options, e.g. 
+
+    ````markdown
+    `r ''````{r, warning = FALSE, message = FALSE}
+    ```
+    ````
 
 ***
 <center>
