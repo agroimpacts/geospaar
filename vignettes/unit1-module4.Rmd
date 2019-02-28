@@ -1338,8 +1338,49 @@ So that's it for our visualization section. There are many other graphics we cou
 
 # Unit Assignment
 ## Set-up
+Make sure you are working in the master branch of your project (you should not be working on the a3 branch. Create a new vignette named "module4.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 
+
+There are no package functions to create for this assignment. All work is to be done in the vignette. 
 
 ## Vignette tasks
+1. Create three `tibble`s, `t1`, `t2`, `t3`. `t1` has 10 rows, with column `V1` containing values G1 through G10, and `V2` containing `runif` between 75 and 125.  `t2` has 15 rows with `v1` (G1 - G15) and `v3` containing a random selection of `LETTERS` A-F. `t3` has 20 rows (`v1` with G1-G20), and `v4` with numbers from the random normal distribution (`mean` = 100, `sd` = 20). Use a seed of 1 for random numbers. Join `t1`, `t2`, and `t3` within a single pipeline, using:
+  - `left_join`
+  - `right_join`
+  - `full_join`
+  -`inner_join`
+
+2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 19, and 21 are your guides. 
+
+3. Use `dplyr` verbs to select the 5 top-ranked years for total harvested area for South African maize. Do the same for South African maize yields. To do this, you will need to use `filter`, `arrange`, and `slice`. The outputs for each test should be the 5 rows of `crop_ylds` that meet these criteria.
+
+4. Calculate the mean of each crop's yield (across both countries) using SAC based on `dplyr`, as well as an `sapply` using base `R` syntax within the `sapply` to subset on crop (note, subsetting a tibble is a bit different, so use this syntax to do the job within the `sapply`: `mean(crop_ylds[crop_ylds$crop == x, ]$yield)`)  
+
+5. Calculate a correlation matrix between *harv_area* and *yield* for each crop-country combination, using `dplyr` verbs. Arrange the result (negative to positive) by the value of the correlation coefficient. See Chunk 34 for guidance.
+
+6. Create a single scatter plot with `ggplot` that shows the relationship between *harv_area* (x-axis) and *yield* (y-axis) for maize, separated by country on a single plot. Make it a point scatter plot, with a straight trendline fit through each set of points (i.e. `method = "lm"`). You will need to use `geom_point` and `geom_smooth`. Make a title ("Harvested area versus yield") and x ("Harvested area (ha)") and y ("Yield (t/ha)") labels.   
+
+7. Create a single scatter plot with `graphics::plot` that plots just South Africa wheat yields (y-axis) against year (x-axis). Plot the points, and then add a linear trendline to it, by wrapping the `abline` around the `lm` function. Make the points solid grey ("grey") and the `abline` blue. Label the y axis as "Yield (t/ha)". Remove the x-axis label. Give a title: "South African maize (1961-2017)". Chunk 54 is your guide. 
+
+8. Use `ggplot` to make a 5-bin histogram of Zambia's maize yields. The x-label should be "Yield (t/ha)", the title should be "Zambian Maize", and bins should be blue with black outlines. 
+
+
+## Assignment output
+Refer to [Unit 1 Module 3's Assignment output section](unit-module3.html#assignment-output) for submission instructions. The only differences are as follows:
+
+1. Your submission should be on a new side branch "a3";
+2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
+3. Control the width of your plots in 6-8 using the following chunk options:
+
+    ````markdown
+    `r ''````{r, fig.width=4.75, fig.height=3.75, fig.align = "center"}
+    ```
+    ````
+4. For all chunks, suppress messages and warnings by adding `message = FALSE` and `warning = FALSE` to the chunk options, e.g. 
+
+    ````markdown
+    `r ''````{r, warning = FALSE, message = FALSE}
+    ```
+    ````
 
 ***
 <center>
