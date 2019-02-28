@@ -33,9 +33,10 @@ We are now moving onto the final module of this unit. We'll learn now about mani
 
 For this module we will be using the following packages:
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 library(tidyr)
+library(ggplot2)
 ```
 
 For this module, we will start making extensive use of `%>%`. You will save yourself much time by using the keyboard shortcut for inserting that operator, which is `CMD + shift + m` on Mac, `ctrl + shift + m` on Windows.
@@ -1144,11 +1145,98 @@ abline(lm(yield ~ year, data = zaf_maize), col = "red")
 
 We recreate the two subset `tibble`s `zmb_maize` and `zaf_maize`, create a new variable `yl` containing the range of yields across both datasets, plot points for `zmb_maize`, and use `lm` to fit the regression between `yield` and `year` in `zmb_maize`, then wrap that in the `abline` function, which converts the regression model to a prediction line (i.e. the trendline). We then `points` with `zaf_maize` to add the scatter plot for South African maize, and fit another `abline` on the `lm` for that dataset. That's more involved than the `ggplot` approach. 
 
+## One-dimensional plots
+We have been looking at plots using two variables so far. Now let's look at some of the more commonly used visualizations for single variables. Let's start with  a histogram of sorghum yields, starting first with `ggplot`:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 55
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + geom_histogram(aes(x = yield), fill = "blue", col = "black") +
+  ggtitle("Distribution of sorghum yields")
+```
+
+We grab sorghum out of `crop_ylds`, and then `geom_histogram` with an `aes` mapping *yield* to the x variable. We specify the color for the histogram bar "fill" and the bar outline color ("col") outside of `aes`. The output suggests that we suggest a better bin width.  Indeed, the bars are too narrow and there are data gaps. Let's try again with a different number of bins:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 56
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield), bins = 15, fill = "blue", col = "black") +
+  ggtitle("Distribution of sorghum yields")
+```
+
+We specify that we want 15 bins, rather than the default 30. Looks a bit better. Here's how do it using `graphics::hist`:
+```{r, fig.width=4, fig.height=4.5}
+# Chunk 57
+hist(x = crop_ylds$yield[crop_ylds$crop == "sorghum"], xlab = "yield", 
+     main = "Distribution of sorghum yields", col = "blue")
+```
+
+We'll keep focusing on `ggplot` though.  How about a histogram breaking sorghum yields down by country?
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 58
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield, color = country), bins = 15) +
+  ggtitle("Distribution of sorghum yields")
+```
+
+As with scatter plots, specifying the "color" argument within `aes` separates the bars by country, making stacked histograms.  What about changing the fill, rather than the bar outline color? 
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 59
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield, fill = country), bins = 15) +
+  ggtitle("Distribution of sorghum yields") + 
+  scale_fill_manual(values = c("red", "blue")) 
+```
+
+We specify that `fill = country` in `aes`. Okay, so now it is clear that in polygonal object, we distinguish between "fill" and "color" within `aes` (or "fill" and "col" outside of it). And if we want to change the fill colors from `ggplot`'s defaults, as we did with scatter plots above, we use the `scale_fill_manual` function. 
+
+We could also make this a side-by-side histogram, rather than a stacked one:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 60
+crop_ylds %>% filter(crop == "sorghum") %>%
+  ggplot() + 
+  geom_histogram(aes(x = yield, fill = country), bins = 15, 
+                 position = "dodge", col = "black") +
+  ggtitle("Distribution of sorghum yields") + 
+  scale_fill_manual(values = c("red", "blue")) 
+```
+
+We achieve that by using the argument `position = "dodge"` (outside of `aes`). We also use `col = "black"` outside of `aes` to add a black line around each box.
+
+So those are histograms.  How about a simpler barplot for counting a categorical variable?  
+```{r, fig.width=4, fig.height=3.75}
+# Chunk 61
+crop_ylds %>% filter(crop == "wheat") %>% 
+  mutate(yld_levels = ifelse(yield < 3, 1, 2)) %>% 
+  mutate(yld_levels = ifelse(yield > 6, 3, yld_levels)) %>% 
+  ggplot() + geom_bar(aes(x = yld_levels), fill = "blue", col = "black") + 
+  xlab("Yield levels")
+```
+
+Here we use `geom_bar` to make a bar plot from the categorical variable *yld_levels*, which we create using `mutate` and `ifelse` to group wheat yields into 3 categories (yield < 3 t/ha; 3-6 t/ha; >6 t/ha). We make the bars blue-filled and outlined with black box. 
+
+Last plot we will show is the boxplot:
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 61
+crop_ylds %>% ggplot() + geom_boxplot(aes(x = crop, y = yield)) + xlab(NULL)
+```
+Pretty straightforward. We get a separate boxplot for each crop by specifying *crop* as the "x" argument and *yield* as "y" in `aes` within `geom_boxplot`. Another way to show the distribution of values within a variable. We can also easily distinguish separate boxplots for each country:
+
+```{r, fig.width=4.75, fig.height=3.75}
+# Chunk 62
+crop_ylds %>% 
+  ggplot() + geom_boxplot(aes(x = crop, y = yield, fill = country)) + 
+  xlab(NULL) + scale_fill_manual(values = c("red", "blue")) 
+```
+
+We simply make *country* the variable on which to "fill" in `aes`, and then change the fill color to red and blue. 
+ 
 ## Multi-panel plots
-There is more to this story with the divergent yield trends, and it requires multiple plots to really tell it. Let's have a look at yield, production, and harvested area trends over time to see what's going on:
+Thinking back to our scatter plots, there is more to the story regarding the differing yield trends between South Africa and Zambia, and it requires multiple plots to really tell it. Let's have a look at yield, production, and harvested area trends over time to see what's going on:
 
 ```{r, eval = FALSE}
-# Chunk 55
+# Chunk 63
 # #1
 p1 <- crop_ylds %>% filter(crop == "maize") %>% 
   ggplot() + geom_point(aes(x = year, y = yield, color = country)) + 
@@ -1180,6 +1268,42 @@ ggsave(gp2, filename = "vignettes/fig/u1m4-1.png", width = 9, height = 2.5,
 include_graphics("fig/u1m4-1.png") 
 ```
 
+This is a bit more advanced, but worth having a look at.  In #1, we replicate our code from Chunk 52, using `aes()` with the "color" argument to create separate plots by *country*. We create one `ggplot` object for each variable *yield*, *prod*, and *harv_area*. We assign each plot to its own object, which prevents it from printing to the graphics device. 
+
+In #2, we use the function `plot_grid` from the `cow_plot` package to arrange the three plots into a single plot. We specify that the plots will fall onto one row (`nrow = 1`), and that it should align the three plots vertically and horizontally (`align = "vh"`) against the left axis (`axis = "l"`). We use an additional argument assigned to each plot object, which tells the plot to render without its legend (`theme(legend.position = "none")`). That is done to prevent three identical legends being created, one for each plot, which would take up valuable plot real estate.  
+
+In #3, we use `cowplot::plot_grid` again, putting the three panel plot object as the first argument, and then use a function to grab the legend from one of the individual plots (`cowplot::get_legend(p1)`), which will make it appear to the right of the three scatter plots. `rel_widths(c(3, 0.3)` specifies the relative width of each plot in the row, so the legend will take <10% of the total plot space (`0.3 / (3 + 0.3)`). 
+
+In #4 we use `ggsave` to write the whole plot to a png, which we then read back in to display within the vignette (see the Rmd code). The reason for that is to avoid making `geospaar` dependent on `cowplot` to build vignettes. So to run this code you will have to `install.packages(cowplot)`. 
+
+So what is the story told by this plot? The most interesting feature is the steep dive in South Africa's maize harvested area beginning around 1990. At the same time, production increased substantially. Those two factors combine to create yield gains that were much larger than Zambia's. The story behind this story is that South Africa heavily subsidized maize production until the 1990s, which encouraged planting in more climatically marginal areas. Following removal of the subsidies, maize farming contracted into more climatically suitable areas, while smaller and less efficient farmers dropped out. The net result was that South Africa has ended up growing more maize on less land, unlike Zambia, which increased its yields but also expanded its harvested area. 
+
+We just showed a more complicated way of making a multi-panel plot. There is a simpler way to do this with `ggplot2` functions, provided that the variables on your two axes don't change between plot panels. We can illustrate this by showing the *yield* time series for each crop:
+```{r, fig.width=8, fig.height=3.75}
+# Chunk 64
+crop_ylds %>% 
+  ggplot(.) + geom_point(aes(x = year, y = yield, color = country)) +
+  facet_grid(cols = vars(crop)) +
+  geom_smooth(aes(x = year, y = yield, color = country)) + 
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Yield (tons/ha)") + xlab("")
+```
+
+In this example, we use `ggplot2::facet_grid` to split the output into three plots, one per crop type, specifying that we want the values in `vars(crop)` to split into columns. For `facet_grid`, you have to wrap the column name in `vars()`. 
+
+We can also specify that by rows:
+```{r, fig.width=3.75, fig.height=7, fig.align="center"}
+# Chunk 65
+crop_ylds %>% 
+  ggplot() + geom_point(aes(x = year, y = yield, color = country)) +
+  facet_grid(rows = vars(crop)) +
+  geom_smooth(aes(x = year, y = yield, color = country)) + 
+  scale_color_manual(values = c("red", "blue")) + 
+  ylab("Yield (tons/ha)") + xlab("")
+```
+
+So that's it for our visualization section. There are many other graphics we could make, and we will learn some of these as we continue into the spatial unit of the course. 
+
 ***
 <center>
 [Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
@@ -1192,8 +1316,14 @@ include_graphics("fig/u1m4-1.png")
 
 2. What happens when you run `ggplot` without a `geom_*` argument? 
 
+3. Run the code in chunk 55 without the "fill" and "col" arguments. Then run it, with just `fill = "red"` (no "col" argument),
+
 ### Code
 
+# Unit Assignment
+## Set-up
+
+## Vignette tasks
 
 ***
 <center>
