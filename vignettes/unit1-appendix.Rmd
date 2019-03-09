@@ -241,7 +241,7 @@ crop_ylds %>% filter(crop == "wheat" & country == "ZAF") %>%
 ```
 
 6. 
-```{r}
+```{r, eval = FALSE}
 # ggplot2
 crop_ylds %>% filter(crop == "wheat" & country == "ZMB") %>% 
   ggplot() + 
@@ -261,7 +261,7 @@ hist(crop_ylds$harv_area[crop_ylds$crop == "wheat" &
 ```
 
 7. 
-```{r}
+```{r, eval = FALSE}
 crop_ylds %>% filter(country == "ZAF") %>% 
   ggplot() + geom_point(aes(x = year, y = harv_area)) +
   geom_smooth(aes(x = year, y = harv_area)) + 
