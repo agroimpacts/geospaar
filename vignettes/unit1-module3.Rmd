@@ -26,6 +26,12 @@ knitr::opts_chunk$set(
 library(knitr)
 ```
 
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
 # Introduction to R programming{#introduction-to-r-programming}
 
 Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a brief, high-ish level overview of `R`'s structure. Now we get down to the business of learning how to use it.

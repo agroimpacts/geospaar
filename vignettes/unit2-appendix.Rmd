@@ -1,0 +1,29 @@
+---
+title: "Appendix"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1 Module Appendix}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+# Answers to practice
+## Module 1
+### Practice 1
+#### Questions
+#### Code
+
+## Module 2
+
+## Module 3

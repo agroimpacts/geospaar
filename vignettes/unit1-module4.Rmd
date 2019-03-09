@@ -27,6 +27,13 @@ library(knitr)
 options(width = 100)
 ```
 
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
+
 # Data analysis and visualization{#data-analysis-and-visualization}
 
 We are now moving onto the final module of this unit. We'll learn now about manipulating, analyzing, and visualizing data. We'll start working with `tidyverse` tools more now. 

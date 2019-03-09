@@ -44,7 +44,7 @@ Our learning goals for this unit as are follows--by the end of this unit you sho
 
 # Unit modules 
 
-This section is broken into three modules (the materials can be accessed by following the links): 
+This section is broken into four modules (the materials can be accessed by following the links): 
 
 [**Module 1**](unit1-module1.html): A general overview of R and an introduction to reproducibility tools. 
 
