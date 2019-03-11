@@ -57,7 +57,6 @@ We are going to work with three csv files that I downloaded from [FAOStat](http:
 We can easily read in each file using base `R`'s `read.csv` function, which is widely used.  However, we are going to skip straight to a more powerful csv reader provided by the tidyverse's [`readr`](https://readr.tidyverse.org) package. Even more powerful is `data.table::fread`, which is excellent (and as far as I know, still the fastest on the market) for reading in very large csv files, but we are sticking with the tidyverse. First, for grins, here is how you would use `read.csv`
 
 ```{r}
-library(geospaar)
 f <- system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
 maize <- read.csv(f)
 head(maize)

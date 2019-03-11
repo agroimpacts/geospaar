@@ -22,7 +22,53 @@ vignette: >
 ## Module 1
 ### Practice 1
 #### Questions
+1. Answers [here](https://r-spatial.github.io/sf/articles/sf1.html#simple-feature-geometry-types).
+
+2. Assuming the `tibble` has x and y or lat/long coordinates, you apply the function `st_as_sf` with the "coords" argument set to specify which columns contain the x and y coordinates. 
+
+3. `sf::plot` by default plots one panel per variable. You can create a single panel by specifying the variable you want, or by using the `st_geometry` argument to strip out the geometry from object. 
+
 #### Code
+1. 
+```{r, eval=FALSE}
+farmers %>% st_geometry()
+st_geometry(farmers)
+```
+
+2. 
+```{r, eval=FALSE}
+st_crs(farmers) <- st_crs(districts)
+# p <- "path/to/your/project/notebooks/data"
+p <- "~/Desktop"
+st_write(farmers, dsn = file.path(p, "farmers.sqlite"))
+rm(farmers)
+st_read(file.path(p, "farmers.sqlite"))
+```
+
+3. 
+```{r, eval = FALSE}
+class(roads)
+str(roads)
+class(districts)
+str(districts)
+```
+
+4. 
+```{r}
+plot(roads %>% st_geometry(), col = "blue")
+```
+
+5. 
+```{r}
+plot(districts %>% select(distName), main = "Zambia Districts")
+```
+
+6. 
+```{r}
+pts <- st_multipoint(x = cbind(x = c(27, 28, 29), y = c(-13, -14, -15)))
+plot(districts %>% st_geometry(), col = "grey")
+plot(pts, add = TRUE, col = "orange", pch = 16)
+```
 
 ## Module 2
 

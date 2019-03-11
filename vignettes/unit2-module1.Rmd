@@ -1,0 +1,390 @@
+---
+title: "Unit 1 - Module 4"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1 Module 4}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+options(width = 100)
+```
+
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
+# Working with spatial vector data{#working-with-spatial-vector-data}
+
+In this section we will start to work with spatial vector data, learning the most common forms of vector-based spatial operations. We will be working primarily with the new `sf` package. If you had taken this class in Spring, 2018, you would have primarily learned the older `sp` package. However, `sf` is now mature enough that we can use it exclusively for all vector-based operations, and it is much more powerful than `sp`. We still, however, need to use `sp` a little bit, because the `raster` package (we get to that in the next module) still requires `sp` classes for many of its functions that work with vectors.
+
+The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to intersections, buffers, and differencing.  
+
+# Preparation
+## Installation
+
+Let's start by loading `geospaar`.
+```{r, warning=FALSE, message=FALSE}
+library(geospaar)
+```
+
+`geospaar` imports `sf`, which in turn imports `rgdal`, `raster`, `rgeos`, `sp`, and a bunch of other packages that are useful for spatial stuff. `sp` is the package that `sf` is replacing. `rgdal` is something you probably haven't looked into much yet, so what is it?  This is a package that, according to `rgdal`'s DESCRIPTION file: 
+
+> Provides bindings to the Geospatial Data Abstraction Library ('GDAL') (>= 1.6.3) and access to projection/transformation operations from the 'PROJ.4' library. The 'GDAL' and 'PROJ.4' libraries are external to the package, and, when installing the package from source, must be correctly installed first. Both 'GDAL' raster and 'OGR' vector map data can be imported into R, and 'GDAL' raster data and 'OGR' vector data exported.
+
+That means that `rgdal` allows us to call these external libraries that give us the ability to read in a wide range of raster and vector formats, provided we have these libraries already installed on our computer.  
+
+You may have to install `rgdal` separately to get things to work. Platform specific instructions follow.
+
+### Windows
+
+You should be able to do most of the work in this section by simply installing the `rgdal` library.  
+
+### Mac
+The same holds as for Windows (just install `rgdal`), but you might also have to install the full GDAL and PROJ.4 libraries. The easiest way to do that is to go to William Kyngesburye's website to [download the latest QGIS version](http://www.kyngchaos.com/software/qgis), which as of writing (9 October, 2017) is 2.18.13-1. The installer bundles in GDAL and PROJ.4 along with QGIS, doing it all for you in one go.  Read the page first and then the various readme's accompanying the install files you extract from the .dmg. 
+
+## Set-up
+You should already have your class Rstudio project setup, with a `notebooks/` folder within it. If you don't already have it, create a `data/` folder within `notebooks/`, which is where you will practice writing spatial data files.  
+
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+# Reading, writing, and making vector data{#reading-writing-and-making-vector-data}
+
+This reading introduces reading, writing, and making vector data, how to work with their coordinate reference systems (CRS), and how to do some basic plotting, leavened with some additional `R` programming examples. However, the first thing we need to do is learn about simple features, which is the representation of vector data that is employed by `sf` (which stands for simple features). 
+
+## Simple features, explained
+To learn more about what simple features are and how they work, and why `R` developed a package for them, please read the `sf` introductory [vignette](https://r-spatial.github.io/sf/articles/sf1.html) written by Edzer Pebesma, the primary `sf` package developer. 
+
+## From non-spatial to spatial
+
+We are going to start by reading in the `farmer_spatial` dataset, which installs with `geospaar`. It contains results from a cellphone-based survey of Zambian farmers that asks questions about crop management and weather. This is a subset that contains the following variables:
+
+- uuid: Unique anonymous identifier of survey respondent
+- x: Longitude in decimal degrees (rounded to 3 places for anonymity)
+- y: Latitude in decimal degrees (rounded to 3 places for anonymity)
+- date: the last date in the 7 day survey interval. 
+- season: 1 (2015-2016 growing season) or 2 (2016-2017 growing season)
+- rained: The answer to the question, "did it rain on your fields this week?", coded as 1 for yes and 2 for no 0. There are also NA values, because the farmer might not have answered the question in that week. 
+- planted: The answer to the question "did you plant your crop this week?", coded 1 or 2 yes (1) or no (2). As with the above there are many NAs, because the farmer might not have answered the question, but also because the question is only asked for a few weeks at the beginning of the season. 
+
+Note that there are multiple dates for most farmers, and since this is a long format database, that means that the coordinates are duplicated several times over. 
+
+Here's a quick look:
+ 
+```{r, message=FALSE}
+# Chunk 1
+farmers <- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"))
+#
+# 1
+set.seed(30)
+farmers %>% sample_n(5) %>% arrange(season, date)
+#
+# #2
+farmers %>% distinct(uuid) %>% count()
+# 
+# #3
+farmers %>% group_by(uuid, season) %>% count() %>% arrange(uuid)
+```
+
+Okay, #1 shows us that this dataset, read in as `farmers`, is a `tibble`, which means it is non-spatial at the moment, even though its comes with  coordinates. #2 shows us that there are 793 farmers in the survey, and #3 shows a varying number of observations per farmer per season, with some farmers appearing only in one season. 
+
+Given that these are point data, we can turn them into a facsimile of spatial data by simply plotting them and having a look. 
+
+```{r, out.width='50%'}
+# Chunk 2
+ggplot(farmers %>% distinct(uuid, x, y)) + geom_point(aes(x, y))
+```
+
+We first cut `farmers` down to just unique farmer *uuid* and coordinates (to avoid duplicate points--remember, there is more than one observation per farmer for most farmers), and then use `gglot` to shows us, in a very crude way, where these points lie in space. This works, because `farmers$x` (the longitude) is exactly analogous to the x coordinate of a scatter plot, and `farmers$y` (latitude) is the y coordinate. But it is still not a spatial object. So, let's convert it to one, and then plot it again.
+
+```{r, out.width="50%"}
+# Chunk 3
+# #1
+farmers <- st_as_sf(farmers, coords = c("x", "y"))
+farmers
+#
+# #2
+str(farmers)
+#
+# #2
+plot(st_geometry(farmers), pch = 20, cex = 0.5)
+```
+
+In #1, we use our first function from `sf`, which is `st_as_sf`, which is used to "convert foreign object to an sf object" (`?st_as_sf`). In this case we coerce a `data.frame`/`tibble` into an `sf` POINT object, by specifying the x and y coordinates for the "coords" argument. The summary of `farmers`, now an `sf` object, displays metadata describing the number of features and variables, the geometry type, the number of dimensions, the object's bounding box (bbox), its spatial reference system information (EPSG string and proj4string; more on these later), which are currently not set, and then it shows the `tibble` with values. *x* and *y* no longer occur, and have been replaced by a geometry column now. 
+
+Looking at `str` in #2, we see the object is constructed of 4 classes (`sf`, `tbl_df`, `tbl`, and `data.frame`), with the geometry variable being of class `sfc_POINT`.  Please refer back to the [how simple features are organized](https://r-spatial.github.io/sf/articles/sf1.html#how-simple-features-in-r-are-organized) section on the `sf` website to understand how the geometry is structured. 
+
+We then `plot` the new `sf` object, using `st_geometry` to strip out the geometries of this object, dropping the other variables in the `tibble` with associated with the object. The reason for this is that `plot` (`sf`'s generic for plotting `sf` objects) would otherwise default to creating one plot panel for each variable in the `tibble`. We can see this behavior here:
+
+```{r, out.width="50%"}
+# Chunk 4
+plot(farmers %>% slice(1:10), pch = 20, cex = 0.5)
+```
+
+In the above, we illustrate this multi-panel plotting behavior using just the first 10 rows of `farmers`, using `dplyr` syntax to `slice` out those rows, in the process illustrating that `sf` is designed to work with the `tidyverse`.  
+
+So, in Chunk 3 above, we have seen how we can coerce the non-spatial `farmers` into a spatial object `sf`. We can coerce `farmers` back to an ordinary `data.frame`/`tibble` by simply doing this: 
+
+```{r}
+# Chunk 5
+farmers %>% as_tibble
+```
+
+This gets us back to a `tibble`, but the *x* and *y* variables do not reappear, instead we still have the geometry column. If we want to get back to the original structure of the `tibble`, its more complicated:
+
+```{r}
+# Chunk 6
+bind_cols(farmers %>% as_tibble %>% select(-geometry), 
+          st_coordinates(farmers) %>% as_tibble) %>% 
+  select(uuid, date, X, Y, season, rained, planted) %>% 
+  rename(x = X, y = Y)
+```
+
+We use `dplyr` syntax to coerce `farmers` back to a `tibble`, dropping the `geometry` via negative selection, and then we use `dplyr::bind_cols` (equivalent to `cbind`) to bind the coordinates back to the `tibble`. The coordinates are obtained using `st_coordinates`, an `sf` function used to "retrieve coordinates in matrix form" (`?st_coordinate`), and we have to coerce that to a `tibble` for `bind_cols` to work. We can use `select` to reorder the columns in their original form, and rename the coordinate columns back to their original lower case (`st_coordinates` returns *X* and *Y* columns). 
+
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Read and write spatial data 
+
+That was a very quick dip into spatial waters, using a points example. We are going to learn to read and write (in reverse order) spatial data. We still have `farmers` back as an `r class(farmers)[1]` object. We are now going to write it out to a spatial file. 
+
+```{r}
+# Chunk 6
+st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.shp"), 
+         delete_layer = TRUE)
+dir(tempdir(), pattern = "farmers")
+```
+
+The code above uses `st_write` to create that old standby, the ESRI shapefile, that clunky, annoying format that has many files for one thing. Note that I have the option `delete_layer = TRUE` set, which is needed if the file already exists in that location, and you want to recreate it (which I did in this case, because I was re-running this code many times as I wrote this). For `st_write`, the "obj" argument asks for the `sf` object to write, "dsn" is the name and path for the output file. By adding the ".shp" at the end of the filename, `st_write` knows to use the "ESRI Shapefile" driver. For this example, I used again the `tempdir()` function to write this object to a temporary directory, but, as you follow along, ___you should change the file path to correctly lead to your own `xyz246/notebooks/data` path___. 
+
+Looking in the output directory here, we see that there are only three files now (.dbf, .shp, and .shx). We are missing a .prj because of the following reason: 
+
+```{r}
+# Chunk 7
+farmers %>% st_crs()
+```
+
+`farmers` does not have a coordinate reference system (CRS) associated with it yet, even though we can tell it is in geographic coordinates.  Remember this, because we will come back to it. 
+
+Because .shp is an annoying format, we can try other types. Let's do the much more convenient "SQLite" format, which produces a single file.  
+```{r}
+# Chunk 8
+st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.sqlite"), 
+         delete_layer = TRUE)
+dir(tempdir(), pattern = "farmers")
+```
+
+We see that we have just a single file to hold the .sqlite, which is much nicer. Now let's read that back in, but just pulling from the shapefile itself. I am going the first delete the .sqlite version, for the sake of directory cleanliness (having shown you a nicer format, I am not going to work with because so much is still done with ESRI shapefiles, so we must as well remain used to them) 
+```{r}
+# Chunk 9
+file.remove(dir(tempdir(), pattern = "farmers.sqlite", full.names = TRUE))
+rm(farmers) 
+farmers <- st_read(dir(tempdir(), pattern = "farmers.shp", full.names = TRUE))
+```
+
+Okay, so we used `file.remove` to get rid of the .sqlite, and then used `rm` to get rid of the existing `farmers` `r class(farmers)[1]` object, and then read back in the `farmers` we had written to the .shp. So we have `farmers` back again.   
+
+Now, there are two more datasets that come with `geospaar` to read in using `st_read`: `roads.shp` and `districts.shp`. The paths to both are found with the `system.file` function. I'll set up the first one for you. 
+```{r}
+# Chunk 10
+fnm <- system.file("extdata/roads.shp", package = "geospaar")
+roads <- st_read(dsn = fnm)
+fnm <- system.file("extdata/districts.shp", package = "geospaar")
+districts <- st_read(dsn = fnm)
+```
+
+Let's end this section by a quick look at these data. We are going to plot `districts`, `roads`, and `farmers` onto one plot.   
+```{r, out.width="50%"}
+# Chunk 11
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(roads), col = "red", add = TRUE)
+plot(st_geometry(farmers), pch = 20, reset = FALSE, col = "blue", add = TRUE)
+```
+
+Okay, so what have we done? First, we use the `par` function with the `mar` (margin) argument and a 4-element vector of 0s to remove the inner margins of the plot so that the map of Zambia fills the plot frame. We then use `plot` to draw the map of `districts` (wrapped in `st_geometry`, to just grab the geometry part), which are administrative boundaries for Zambia. We then use lines to add `roads` on top of that, making them red. Finally, we add the `farmers` data as blue points. Note the use of `add = TRUE`, which is necessary to overlay the two plots on the `district` boundaries without creating a new plot of each. 
+
+That's great, you say, but I see no `roads` in the map. Where are they? And why are there two farmers outside of Zambia?  
+
+We'll look at that in our next section, but a hint of why can be seen in the outputs from Chunk 10. You will note that in Chunks 9 and 10 that `st_read` (the opposite of `st_write`) gives a brief summary of the spatial data being read into `R`. 
+
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Coordinate Reference Systems and Projections
+
+The reason you can't see the roads on the previous map can be illustrated as follows: 
+
+```{r}
+# Chunk 12
+sfdat <- list("districts" = districts,  "roads" = roads, "farmers" = farmers)
+sapply(sfdat, function(x) st_bbox(x))
+```
+
+In the code above, we add our 3 `sf` objects into a `list` (`sfdat`), and then use `sapply` to apply `st_bbox` to each list element to get their bounding boxes. That produces an output matrix that shows in the westernmost (xmin), southernmost (ymin), easternmost (xmax), and northernmost (ymax) coordinates of each object. This shows us that `roads`' coordinates are in different units (meters) than `districts`' and `farmers`', which are decimal degrees.  So when we tried to plot `roads` on the same map as `districts` and `farmers`, `roads` didn't appear because the units are not the same. You could get a map of `roads` if you plotted them on their own. 
+
+### Checking the CRS of a `Spatial*` object
+
+In this case, we have to do a bit more, which is to convert `roads` coordinate reference system (CRS) to decimal degrees.  How do we do that?  First, we have to know the crs we want to transform `roads` into, which we can do by checking the `st_crs` of `farmers` or `districts`:
+
+```{r}
+# Chunk 13
+st_crs(districts)
+st_crs(roads)
+```
+
+We use `st_crs`, which is `sf`'s function for checking and assigning a CRS to an `sf` object. When you run it as we have done with `st_crs(districts)`, it returns an object of class `crs` (you can verify that by running `class(st_crs(districts))`). We see that `districts` and `roads` have different values in their "proj4string" fields, which holds the projection string that contains the projection parameters of the CRS. If you want to understand the meaning of projection string parameters, please have a look at the [documentation](http://proj4.org) for the `proj.4` library, specifically the page on [parameters](http://proj4.org/parameters.html).
+
+This one basically tells us that `districts` has a geographic (longlat) projection, and uses the WGS84 datum.  Let's check the crs for all three objects now, using our old friend `sapply`
+
+```{r}
+# Chunk 14
+sapply(sfdat, st_crs)
+```
+
+These results show us that `farmers` does not have a projection string. So how come it was able to plot on the same map as `districts`? Because the coordinates are in the same units. However, we want to fix that before we move to the next step, reprojecting:  
+
+```{r, results='hold'}
+# Chunk 15
+st_crs(farmers) <- st_crs(districts)
+st_crs(sfdat$farmers) <- st_crs(districts)
+st_crs(sfdat$farmers)
+```
+
+Simple--we apply the fix to `farmers` and to `sfdat$farmers` by assigning each the proj4string from `districts`. We can do that because we are pretty sure that the coordinates for farmers are from a geographic coordinate system that uses the WGS84 datum. If that is incorrect, we are introducing some spatial error. But for now, this is fine. 
+
+
+### Reprojecting
+
+Okay, so now we want to change `roads` to the same CRS as `districts`.  
+
+```{r}
+# Chunk 16
+sfdat$roads <- st_transform(x = sfdat$roads, crs = st_crs(districts))
+```
+
+We use `sf`'s `st_transform` function to reproject `sfdat$roads` using the parameters supplied by `districts`' p4s, which is passed into the function's "crs" argument via the `st_crs` function applied to `districts`.  
+
+And that's all. We can now redo our plots. I am going to show you two ways to do it. First, the way we have already done it with `sf:plot`:
+
+```{r, out.width="50%"}
+# Chunk 17
+par(mar = c(0, 0, 0, 0))
+plot(sfdat$districts %>% st_geometry(), col = "grey")
+plot(sfdat$roads %>% st_geometry(), col = "red", add = TRUE)
+plot(sfdat$farmers %>% st_geometry(), col = "blue", pch = 20, add = TRUE)
+```
+
+And with `ggplot`:
+
+```{r, eval=FALSE}
+# Chunk 18
+ggplot(sfdat$districts) + geom_sf() +
+  geom_sf(data = sfdat$roads, col = "red") + 
+  geom_sf(data = sfdat$farmers, col = "blue")
+```
+```{r, echo = FALSE, eval = FALSE}
+p <- ggplot(sfdat$districts) + geom_sf() +
+  geom_sf(data = sfdat$roads, col = "red") + 
+  geom_sf(data = sfdat$farmers %>% distinct(uuid), col = "blue")
+ggsave(p, filename = "vignettes/fig/u2-m1.png", width = 5, height = 5, 
+       units = "in", dpi = 300)
+```
+```{r, echo = FALSE, out.width="50%"}
+knitr::include_graphics("fig/u2-m1.png")
+```
+
+So now you see the roads appearing as red lines on the map.  `ggplot` adds a coordinate grid to the outside of the plot, and has a special function `geom_sf` that is designed to plot `sf` geometries. However, it is still substantially slower than `sf::plot` for the time being, so we'll mostly stick with the latter. 
+
+## Making simple features from scratch
+Before ending this section, it is worth looking at how we can make our own `sf` objects from scratch, which we might need to do from time to time. 
+
+```{r}
+# Chunk 19
+# #1
+pt <- st_point(x = c(28, -14))
+pt
+#
+# #2
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts
+#
+# #3
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline
+#
+# #4
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol
+#
+# 5
+par(mar = c(0, 0, 0, 0))
+plot(districts %>% st_geometry(), col = "grey")
+plot(pt, add = TRUE, col = "red", pch = 20)
+plot(pts, add = TRUE, col = "blue", pch = 20)
+plot(sline, add = TRUE, col = "cyan", lwd = 2)
+plot(pol, add = TRUE, col = "orange", lwd = 2)
+```
+
+We use `st_point` in #1 to create a single point object, based on a two-element vector that consists of the x and y coordinate. In #2, `st_multipoint` create an object with three points, based on an matrix containing the x coordinates in the first column and y coordinates in second column. #3 convert a similar matrix of coordinates into an `st_linestring`, and #4 creates a polygon object, also using a matrix as input--note that the first and last coordinates in both the x and y coordinates are the same, which is done in order to close the polygon. The printout of each `sfg` (simple feature geometry) shows that they store coordinates as point pairs separated by commas (except for `pt`, since it is just a single point). In #5 we plot each object over the `districts` polygons.  
+
+
+## Practice
+### Questions
+1. What are the primary simple feature geometry types? 
+
+2. How do you convert a `tibble` (or `data.frame`) into an `sf` object? 
+
+3. When plotting (mapping) `sf` objects, what happens if your object has multiple variables? 
+
+### Code
+1. Working with the `farmers` `sf` object, convert it to just a set of points without any other variables. 
+
+2. Write out `farmers` with it CRS set to the same as `districts` into an sqlite file within your `notebooks/data` folder. Remove the `farmers` object from your workspace, and then read back into `R` the sqlite you just wrote out. 
+
+3. Examine the `class` and `str` of `districts` and `roads`.
+
+4. Create a plot of `roads`--just the geometries--and make the color of the lines blue.
+
+5. Create a plot of `districts`, using `dplyr::select` to choose the *distName* variable from the objects `data.frame`. Set the title to "Zambia Districts" using the "main" argument. Don't specify a color. 
+
+6. Create an `st_multipoint` object using x coordinates of `c(27, 28, 29)` and y coordinates of `c(-13, -14, -15)`, and plot that over `districts` as orange points.  
+
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***
