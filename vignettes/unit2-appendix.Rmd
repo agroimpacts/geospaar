@@ -12,7 +12,7 @@ output:
     toc: yes
     css: unit.css
 vignette: >
-  %\VignetteIndexEntry{Unit 1 Module Appendix}
+  %\VignetteIndexEntry{Unit 2 Module Appendix}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

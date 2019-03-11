@@ -12,7 +12,7 @@ output:
     toc: yes
     css: unit.css
 vignette: >
-  %\VignetteIndexEntry{Unit 1 Module 4}
+  %\VignetteIndexEntry{Unit 2 Module 1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -331,7 +331,7 @@ So now you see the roads appearing as red lines on the map.  `ggplot` adds a coo
 ## Making simple features from scratch
 Before ending this section, it is worth looking at how we can make our own `sf` objects from scratch, which we might need to do from time to time. 
 
-```{r}
+```{r, out.width='50%'}
 # Chunk 19
 # #1
 pt <- st_point(x = c(28, -14))
