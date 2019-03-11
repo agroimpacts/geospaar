@@ -54,17 +54,17 @@ str(districts)
 ```
 
 4. 
-```{r}
+```{r, eval=FALSE}
 plot(roads %>% st_geometry(), col = "blue")
 ```
 
 5. 
-```{r}
+```{r, eval=FALSE}
 plot(districts %>% select(distName), main = "Zambia Districts")
 ```
 
 6. 
-```{r}
+```{r, eval=FALSE}
 pts <- st_multipoint(x = cbind(x = c(27, 28, 29), y = c(-13, -14, -15)))
 plot(districts %>% st_geometry(), col = "grey")
 plot(pts, add = TRUE, col = "orange", pch = 16)
