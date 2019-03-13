@@ -370,6 +370,9 @@ We use `st_point` in #1 to create a single point object, based on a two-element 
 
 3. When plotting (mapping) `sf` objects, what happens if your object has multiple variables? 
 
+4. When constructing new `sf` objects, in what format do you have to provide inputs to the `st_*` constructor functions. How does the input object differ in the case of a POLYGON versus MULTIPOINT or LINESTRING? 
+
+
 ### Code
 1. Working with the `farmers` `sf` object, convert it to just a set of points without any other variables. 
 
@@ -388,3 +391,283 @@ We use `st_point` in #1 to create a single point object, based on a two-element 
 [Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+# Basic spatial vector operations{#basic-spatial-vector-operations}
+
+We now begin to learn how to perform analyses with spatial vectors, starting with calculating basic spatial properties and manipulating the attribute tables associated with spatial vectors. 
+
+As you probably closed this project between Section 1 and 2, you will also need to reload the `roads`, `districts`, and `farmers` datasets (coercing the latter back to an `sf` object). The code in [Section 1](#section1) will show you how to do that, but here is some code to recreate most of what we need:
+
+```{r}
+# Chunk 20
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read()
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
+  st_read()
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+```
+
+This looks a bit different than what we did before. In this construction, we make use of `dplyr` pipes to do everything in one go for all three datasets. We pipe the file path to `roads.shp` straight to `sf::st_read()`, and that reads in it as a one-liner. Same goes for `districts` (despite the line break). `farmers` gets the file path piped to `read_csv`, and then the coercion to `sf` happens right downstream. We add the `crs = 4326` argument to `st_as_sf` to provide the missing projection information (4326 is the EPSG identifier for GCS WGS84)
+
+## Spatial properties{#spatial-properties}
+### Area
+Using polygons to calculate area is a fairly basic but important spatial vector operation. To calculate meaningful areas, generally you need your data to be  projected into a coordinate system in which area is one of the true properties. However, the function we are going to use, `sf::st_area`, will estimate area even for data in geographic coordinates. 
+
+```{r, results='hold'}
+# Chunk 21
+# #1
+dist_areas <- districts %>% st_area()
+dist_areas
+#
+# #2
+dist_areas %>% units::set_units("ha")
+#
+# #3
+dist_areas %>% units::set_units("km^2")
+```
+
+Very simple to calculate area for each polygon in `districts`. Note that the default is to calculate m$^2$, but we can change that to hectares (in #2) using or km$^2$ (#3) using the function `units::set_units` (the `units` package is imported by `sf`). 
+
+So this was an estimate of area from a non-project dataset. How does that compare to area from a true equal area projection, such as the Albers Equal Area projection that `roads` is projected in:
+
+```{r}
+# Chunk 21
+dist_areas_alb <- districts %>% st_transform(crs = st_crs(roads)) %>% st_area()
+mean(abs(dist_areas_alb - dist_areas)) %>% units::set_units("ha")
+mean(abs(dist_areas_alb - dist_areas)) / mean(dist_areas_alb) * 100
+```
+
+Using `st_transform` with the CRS from `roads` to reproject `district`, and then calculate polygons areas, we see the mean absolute difference between areas calculated from the projected and unprojected datasets is just over 5 ha, which is a tiny percentage (0.0005%) of the average district area. Not much to write home about.   
+
+```{r, fig.width=5, fig.height=3.5}
+# Chunk 22
+districts %>% 
+  st_area() %>% units::set_units("km^2") %>% as.numeric() %>% 
+  tibble(km2 = .) %>% ggplot() + 
+  geom_histogram(aes(x = km2), bins = 15, fill = "blue", col = "grey") + 
+  xlab(bquote("km"^2))
+```
+
+Here's a look at the district areas (in km$^2$) as a histogram. Notice the conversion steps. First we wanted to convert the calculated areas to a numeric vector (rather than one of class `units`), using `as.numeric`, then we made it into a `tibble`, because `ggplot` only works with `data.frame`, and then we plotted the histogram.  There is one new addition there--in `xlab`, we use `bquote` to print a superscript 2 in the km$^2$ axis label.
+
+### Distance
+We can also calculate the distances between spatial features. To do that, we are make use of `st_centroid` on the Albers-projected `districts` data, which we use to find the central coordinates of each district, and then plot the centroids on top of the districts themselves. 
+```{r, out.width="60%"}
+# Chunk 23
+# # 1
+dist_cent <- districts %>% st_transform(., st_crs(roads)) %>% st_centroid()
+# dist_cent <- st_centroid(st_transform(districts, st_crs(roads)))  # equivalent
+
+# #2
+par(mar = c(0, 0, 0, 0))
+districts %>% st_transform(., st_crs(roads)) %>% st_geometry() %>% 
+  plot(col = "grey")
+dist_cent %>% st_geometry() %>% plot(col = "red", pch = 20, add = TRUE)
+```
+
+Notice that right below the centroid calculation pipeline (#1) is a commented out line, which is the non-pipeline equivalent of the operation.  In #2, we make the plots, setting up the plotting functions for both the `districts` polygons and their centroids on the downstream ends of pipelines.  
+
+Moving on, we can now find out how far apart the centroids of each district are by using another `rgeos` function, `gDistance`
+
+```{r}
+# Chunk 24
+# #1
+all_dists <- st_distance(x = dist_cent)
+all_dists[1:5, 1:5]
+#
+# #2
+d1_dists <- st_distance(x = dist_cent[1, ], y = dist_cent[-1, ])
+d1_dists %>% as.vector()
+#
+# #3
+d1_dists %>% as.vector() %>% quantile() / 1000
+```
+
+There are two variants above. The first (#1) is captured in `all_dists`, and it produces a matrix that provides the distance, in meters, between each district centroid and every other district centroid (we show the first 5 rows and 5 columns of the matrix, otherwise it is 72X72). To get that, you simply pass in the `dist_cent` object into to the "x" argument. The second variant (#2) (`d1_dists`), uses both "x" and "y" arguments, and it simply finds the distance between the first district centroid and all the other districts' centroids. We coerce the matrix to a vector for more compact printing. In #3, we summarize `d1_dists` using the `quantile` function, converting meters to kilometers. 
+
+### Length
+For the last example of functions that extract spatial properties, we will calculate the line lengths and perimeters.
+```{r, fig.width=7, fig.height=4}
+# Chunk 25
+# #1
+road_length <- st_length(roads) %>% as.numeric()
+#
+# #2
+dist_perims <- st_length(districts) %>% as.numeric()
+#
+# #3
+p1 <- ggplot(tibble(x = road_length), aes(x / 1000)) + 
+  geom_histogram(fill = "blue", col = "grey", bins = 15) + xlab("km") + 
+  ggtitle("Zambia road lengths")
+p2 <- ggplot(tibble(x = dist_perims), aes(x / 1000)) + 
+  geom_histogram(fill = "purple", col = "grey", bins = 10) + xlab("km") + 
+  ylab("") + ggtitle("Zambia district perimeters")
+cowplot::plot_grid(p1, p2)
+```
+
+We use `st_length` to calculate the length of the line segments in `roads` (#1) and the perimeter length of the polygons in `district` (#2), converting both to 
+numeric vectors. We then plot each set of lengths as histograms (#3), converting units to kilometers (by dividing by 1000, within `geom_histogram`), and then use `cowplot::plot_grid` to arrange the two histograms side-by-side. 
+
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Manipulating attributes
+
+`sf` objects stores attributes as `data.frame`s or `tibble`s, and they can be manipulated using the same preparatory and analytical methods we learned about in the previous modules. For example, let's consider some very basic subsetting:
+
+```{r, out.width="60%"}
+# Chunk 26
+par(mar = c(0, 0, 0, 0))
+st_geometry(districts) %>% plot(col = "grey")
+districts %>% slice(1, 20, 40) %>% plot(col = "blue", add = TRUE)
+set.seed(123)
+farmers %>% sample_n(20) %>% st_geometry() %>%  
+  plot(col = "yellow", pch = "+", add = TRUE)
+```
+
+Notice the use of `dplyr` verbs to subset two datasets on the fly before they are piped into `plot`. The plot as setup with all `districts` as a backdrop (using `st_geometry` to strip away the attribute table), and then we overlay on that in blue the 1st, 20th, and 40th district, `slice`d out of `districts`. On top of that, we take a random sample of 20 observations from `farmers`, and plot those on top. You can also index into the `sf` objects with `[]`:
+
+```{r, eval = FALSE}
+# Chunk 27
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(districts), col = "grey")
+plot(districts[c(1, 20, 40), ], col = "blue", add = TRUE)
+set.seed(123)
+plot(st_geometry(farmers[sample(1:nrow(farmers), 20), ]), col = "yellow", 
+     pch = "+", add = TRUE)
+```
+
+The code above makes the identical plot as in Chunk 26, so ee don't display that again, but note the indexing, as well as the lack of piping and more conventional syntax.  
+
+### Mutating and joining
+
+The [Spatial Properties](#spatial-properties) showed how to calculate area, length, and other properties as separate outputs. Why not add them stick them in separate data objects. Now let's see how to add those properties back the `sf` attribute `tibble`.  
+
+```{r}
+# Chunk 27
+districts %>% mutate(area = as.numeric(st_area(.) / 10^6))
+```
+
+So that's a fairly straightforward way to do it. Just use `mutate` with `st_area` (note that `st_area` needs the `.` in it to function correctly). In making a new *area* column, we divide by 10$^6$ to convert to km$^2$, and coerce the result to numeric. 
+
+Imagine that someone gave you a separate dataset that simply listed district names and their areas for Zambia, but provided no other spatial information. Say they did something like this:
+```{r}
+# Chunk 28
+dist_area <- tibble(distName = districts$distName, 
+                    area = as.numeric(st_area(districts)) / 10^6)
+```
+
+We could use a `*_join` to merge this onto `districts`:
+```{r}
+# Chunk 29
+left_join(districts, dist_area, by = "distName")
+```
+
+In this case a `left_join` works because the number of records is identical and each row in each dataset has a unique district name. 
+
+```{r, echo=FALSE, eval=FALSE}
+# check merge ordering
+test_join <- left_join(districts, dist_area, by = "distName")
+plot(st_geometry(districts))
+set.seed(7)
+districts %>% sample_n(5) %>% plot(add = TRUE, col = rgb(1, 0, 0, alpha = 0.5))
+set.seed(7)
+test_join %>% sample_n(5) %>% st_geometry() %>% 
+  plot(add = TRUE, col = rgb(0, 0, 1, alpha = 0.5))
+```
+
+### More subsetting 
+
+We have already done a bit of this a couple of sections back, but let's use this opportunity to do a bit more subsetting, including a previously unseen approach:
+
+```{r, out.width="60%"}
+# Chunk 30
+# #1
+kanyi_dists <- districts %>% filter(grepl("^Ka|^Nyi", distName))
+# 
+# #2
+dists_gt2m <- districts %>% filter(as.numeric(st_area(.) / 10^6) > 20000)
+
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(kanyi_dists), col = rgb(0, 0, 1, alpha = 0.5), add = TRUE)
+plot(st_geometry(dists_gt2m), col = rgb(1, 0, 0, alpha = 0.5), add = TRUE)
+```
+
+That's two examples of subsetting that that are accomplished with `filter`. #1 is the new one, as it uses `grepl` to select districts with names beginning with either "Ka" or "Nyi". `grepl` is one of several functions that make use of regular expressions to identify and do things (select, substitute, split, etc) to string variables. You can read up more on the subject by starting with `?grepl` and `?regex`. Regular expressions are quite powerful, and although they can be somewhat arcane, they are well worth learning (although we don't do much with them here). #2 creates `dists_gt2m`) by calculating area within `filter` on the fly, and using that to select districts >20000 km$^2$. The resulting subsets are plotted onto the full district map of Zambia, using another function appearing for the first time in `geospaar`, `rgb`, which we use to define the colors for filling the polygons. `rgb` makes red-green-blue color combinations, and the alpha argument allows us to define how transparent the colors are.  In this case, our two subsets selected some of the same polygons (two of the districts with names beginning with "Ka" or "Ny" are also larger than 20,000 km$^2$), thus the partial transparency is needed to show where the overlaps occur. 
+
+### Split-apply-combine
+
+As with plain old `data.frame`s, we might want to do split-apply-combine operations on spatial data. Let's demonstrate this selecting the districts in `districts_alb2` that fall within certain area ranges, convert the selected districts to centroid points, and then plot them.  
+
+```{r, out.width="60%"}
+# Chunk 30
+# #1
+tertiles <- function(x) quantile(x, probs = c(0, 0.333, 0.667, 1))
+dist_tertiles <- districts %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  mutate(acls = cut(area, breaks = tertiles(area), include.lowest = TRUE)) %>% 
+  group_by(acls) %>% summarize(mean_area = mean(area))  
+dist_tertiles
+#
+# #2
+par(mar = rep(0, 4))
+plot(st_geometry(dist_tertiles), col = c("red", "purple", "blue"))
+legend(x = "bottomright", pch = 15, col = c("red", "purple", "blue"), 
+       bty = "n", legend = c("Bottom third", "Middle third", "Largest third"))
+```
+
+The above is a `dplyr`-based split-apply-combine, which has a fair bit going on, so let's explain: 
+
+- We first create a new function called `tertiles`, which will divide any vector `x` it is given into thirds. 
+- In the pipeline, the first line does the usual creation of an *area* variable. The second line use the `cut` function (see `?cut`) to classify the *area* variable into thirds (i.e. districts whose areas are below the 33rd percentile area, those between the 33rd and 66th percentile areas, and those above the 66th percentile), using our `tertile` function, resulting in a new `acls` variable. 
+- The third line in the pipeline groups the data by `acls`, and then calculates the mean area of each group. This `summarize` is spatial, in that it unions the polygons that are in group into a single large polygon for each group, while creating an output value describing the average area of the districts that were unioned to make each group. This is achieved by a generic `summarize` method defined for `sf` (see `?summarise.sf`). 
+- The `plot` shows the result of the union (plus a legend that we add)
+
+We can do the same thing for standard deviation, but using a quintile grouping:
+```{r, out.width="60%"}
+# Chunk 31
+quintiles <- function(x) quantile(x, probs = seq(0, 1, 0.2))
+dist_quintiles <- districts %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%   mutate(acls = cut(area, breaks = quintiles(area), include.lowest = TRUE)) %>% 
+  group_by(acls) %>% summarize(sd_area = sd(area))
+dist_quintiles
+
+cols <- heat.colors(5)
+par(mar = rep(0, 4))
+plot(st_geometry(dist_quintiles), col = cols)
+legend(x = "bottomright", pch = 15, col = cols, bty = "n", 
+       legend = paste0(1:5, c("st", "nd", "rd", "th", "th"), " quantile"))
+```
+
+Our plot in this case uses the `heat.colors()` function for filling the polygons. 
+
+That was a quick introduction to SAC for `sf`. There are others we could do (you can visit the [tidyverse examples](https://r-spatial.github.io/sf/reference/tidyverse.html) page for `sf` to see some others), but we will move on to the learn about other spatial operations now. 
+
+
+## Practice
+### Questions
+1. How different are areas calculated using projected and unprojected (geographic) coordinate systems when using `st_area`? How come `st_area` "knows" how to calculate an area in m$^2$ when the CRS is unprojected (the answer isn't in the material above, but can be found if you read through `?st_area`)?  
+
+2. You will note that we haven't used `ggplot() + geom_sf()` in this section. Why is that? 
+
+3. How can we create a grouping variable that we can use to split an `sf` object according to different levels of spatial properties (e.g. area)? 
+
+### Code
+1. Using a seed of 1, randomly select (`sample_n`) 10 districts from `districts` and calculate their average area in hectares.
+
+2. Using a seed of 1, randomly select (`sample_n`) 100 road segments from `roads` and calculate their average length in kilometers.
+
+3. Plot districts with a "lightgrey" background, and then randomly select (seed of 1) 200 observations from farmers from the second season, and plot them as red circles over `districts`.
+
+4. From `road` select the roads that have lengths between 50 and 100 km and plot those in red over districts. Note that `districts` and `roads` are in different projections, so transform `district` to have the same CRS as `roads` first. 
+
+5. Hack the code in Chunk 31 to create a map of districts merged by their deciles of area. Do the summary by total area. To do this, the `quantile` function will have to be altered (pass `seq(0, 1, 0.1)` to "probs"), and make sure your color vector has enough values. 
+
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
