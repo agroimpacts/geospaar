@@ -14,7 +14,8 @@ Depends:
     sf,
     tidyverse
 Imports:
-    cowplot
+    cowplot,
+    lwgeom
 Suggests: 
     knitr, 
     rmarkdown
