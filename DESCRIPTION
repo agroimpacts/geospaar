@@ -9,10 +9,12 @@ Description: This package contains the course materials for Geospatial
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Depends: 
+Depends:
     raster,
     sf,
     tidyverse
+Imports:
+    cowplot
 Suggests: 
     knitr, 
     rmarkdown
