@@ -170,8 +170,10 @@ Buried in the Rmarkdown
 
 ```{r, echo = FALSE, eval = FALSE}
 crop_ylds %>% group_by(crop, country) %>% 
-  summarize(mu = mean(yields), sd = sd(yields))
+  # summarize(mu = mean(yields), sd = sd(yields))
+  select(crop, country, yields) %>% summarise_all(list(mu = mean, sd = sd))
 
+par(mar = c(4, 4, 1, 1))
 crop_ylds %>% filter(crop == "Maize" & country == "ZAF") %>% 
   plot(harv_area ~ year, data = ., type = "l", col = "red", 
        ylim = c(0, 6000000), ylab = "Harvested area (ha)", xlab = "Year")
@@ -179,12 +181,13 @@ crop_ylds %>% filter(crop == "Maize" & country == "ZMB") %>%
   lines(harv_area ~ year, data = ., col = "blue")
 
 crop_ylds %>% filter(crop == "Maize") %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
+  geom_histogram(aes(x = yields, fill = country), bins = 15, col = "grey30",
+                 position = "dodge") +
   scale_fill_manual(values = c("green", "blue")) 
 
 crop_ylds %>% ggplot() + 
   geom_histogram(aes(x = yields, fill = country), position = "dodge") +
-  scale_fill_manual(values = c("green", "blue")) + 
+  scale_fill_manual(values = c("green4", "blue")) + 
   facet_grid(cols = vars(crop))
 
 crop_ylds %>% filter(crop == "Maize") %>% 
