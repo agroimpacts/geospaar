@@ -95,7 +95,7 @@ roads %>% sample_n(100) %>% st_length() %>% units::set_units("km") %>% mean()
 ```
 
 3. 
-```{r}
+```{r, eval = FALSE}
 plot(st_geometry(districts), col = "lightgrey")
 set.seed(1)
 farmers %>% filter(season == 2) %>% sample_n(200) %>% st_geometry() %>% 
@@ -103,7 +103,7 @@ farmers %>% filter(season == 2) %>% sample_n(200) %>% st_geometry() %>%
 ```
 
 4. 
-```{r}
+```{r, eval = FALSE}
 districts %>% st_transform(st_crs(roads)) %>% st_geometry() %>% 
   plot(col = "lightgrey")
 roads %>%  
@@ -113,7 +113,7 @@ roads %>%
 ```
 
 5.
-```{r}
+```{r, eval = FALSE}
 deciles <- function(x) quantile(x, probs = seq(0, 1, 0.1))
 dist_deciles <- districts %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
   mutate(acls = cut(area, breaks = deciles(area), include.lowest = TRUE)) %>% 
