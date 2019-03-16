@@ -30,3 +30,4 @@ vignette: >
 - [Unit 2](unit2.html) - Overview
   - [Module 1](unit2-module1.html) - Working with vector data
   - [Module 2](unit2-module2.html) - Working with raster data
+  - [Appendix](unit2-appendix.html) - Unit appendix
