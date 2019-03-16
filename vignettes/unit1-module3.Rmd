@@ -1364,7 +1364,7 @@ Select Option `10: lapply and sapply`. Work through the whole unit, then escape 
 </center>
 ***
 
-# Unit Assignment 
+# Unit assignment 
 
 ## Set-up
 Make sure you are working in the master branch of your project. Create a new vignette named "module3.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 

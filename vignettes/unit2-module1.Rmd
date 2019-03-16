@@ -1029,3 +1029,43 @@ knitr::include_graphics("fig/u2m1-2.png")
 [Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+# Unit assignment
+## Set-up
+Make sure you are working in the master branch of your project (you should not be working on the a3 branch). Create a new vignette named "unit2-module1.Rmd". You will use this to document the tasks you undertake for this assignment. 
+
+There are no package functions to create for this assignment. All work is to be done in the vignette. 
+
+## Vignette tasks
+1. Read in the `farmers_spatial.csv`, `districts.shp`, and `roads.shp` datasets. Reduce the size of the farmers data by first selecting distinct observations by *uuid*, *x*, *y*, *season*, i.e. use `distinct(uuid, x, y, season)`. After that convert it to an `sf` object. Reproject the farmers and districts data to Albers projection (using the CRS from roads), naming each `farmers_alb` and `districts_alb`. Ideally (worth an extra 0.5 points) you will do all the necessary steps to create `farmers_alb` and `districts_alb` in one pipeline. 
+
+2. Create a plot using `sf::plot` that shows all three datasets on one map, with `districts_alb` in grey, with `roads` in red over that, and `farmers_alb` as a blue cross over that. Use the relevant chunk arguments to center the figure in the vignette html, and to have a height of 4 inches and a width of 6 inches. The figure should have 0 margins all around. 
+
+3. Make the same plot above using `ggplot` and `geom_sf`. When adding `farmers_alb` to the plot, use `pch = "+"` and `size = 3` as arguments to `geom_sf`. Add the function `theme_bw()` to the `ggplot` construction chain, to get rid of the grey background. Make the "fill" (rather than "color") of `districts_alb` grey. Center the figure using chunk options and make the figure width 5 inches and height 6 inches. 
+
+4. Select from `districts_alb` the district representing the *50th percentile area*, i.e. the median area, and save that district into a new object `median_dist`. Plot it in "khaki" on top of grey `districts_alb`. Give the plot a title "The median area district". Same plot dimensions in the vignette html as for Task 2, but a leave a space of 1 at the top in the plot `mar`. 
+
+5. Convert the `median_dist` to its centroid point. Call it `median_distp`. `filter` the `farmers_alb` data for season 1, and then find the 20 closest season 1 farmers to `median_distp`. To do that, create the new object `closest_20farmers` by using `mutate` with `st_length` to create a new variable `length` (convert it to numeric), and then `arrange` by variable *length* and slice out the top 20 observations. Plot `districts_alb` in grey, `median_dist` over that in khaki, `median_distp` as a solid purple circle, `farmers_alb` in blue, and `closest_20farmers` in red. Zero margins and width of 6 inches and height of 4 inches.  
+
+6. Create a rectangular `sf` polygon called `mypol` using the x coordinates 30 and 31 (minimum and maximum) and y coordinates -10 and -11. Assign it `crs = 4326` and transform it to Albers. Select from `districts_alb` the districts that intersect `mypol`, and plot in "grey40" over `districts_alb` in grey, and plot over that `mypol` without any fill but just a yellow border. Calculate the area in ha of `mypol` and report it in your vignette below this plot. Zero margins and width of 6 inches and height of 4 inches.  
+
+7. Create `mypol_dist_int` from the intersection of `mypol` and `districts_alb`, recasting the intersected districts to multipolygons, and adding an *area* variable onto it that reports areas of intersections in hectares. Do all that in one pipeline. Plot `mypol_dist_int` in rainbow colors over `districts_alb`. Zero margins and width of 6 inches and height of 4 inches.  Report the mean and median of interections in the vignette below the plot. 
+
+8. Find the shortest and longest roads in Zambia, and place the selected roads into a new object (`roads_extreme`). To do this, you will need to `arrange` `roads` by length and then `slice` to get the first and last observations (of course you need to first calculate length). Do that as one pipeline. Then calculate a 50 km buffer around those two roads (`roads_extreme_buff`). Plot `roads_extreme_buff` in blue over `districts_alb` in grey, and add `roads_extreme` on top of that as red lines (use `lwd = 3` in the plot). Zero margins and width of 6 inches and height of 4 inches. 
+
+9. Select a random sample of 10 points in the smallest object in `roads_extreme_buff`, and one of 50 in the largest object. Use a single call to `st_sample` to do that. Use a seed of 2. Plot those points as yellow solid points over the same map created in Task 8 above. Use the same dimensions. 
+
+10. Your final task is to intersect `roads` with the buffer of the longest road in `roads_extreme_buff` (`roads_int`). Plot the buffer of the longest road in blue over the districts in grey, and then `roads_int` as red lines. Use the same dimensions as the previous two plots. Report the total distance of intersected roads in km in the vignette below the plot. 
+
+## Assignment output
+Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assignment-output) for submission instructions. The only differences are as follows:
+
+1. Your submission should be on a new side branch "a4";
+2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
+3. Do not worry about #3 in those instructions
+4. When asked to report the result of calculations in the vignette text (e.g. in Task 10), you can use another RMarkdown trick, which is to let the calculation be done by code inserted between a single pair of backticks, with the first backtick followed immediately by r and a space. See [here](https://rmarkdown.rstudio.com/lesson-4.html) for more explanation of that. 
+***
+<center>
+[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+</center>
+***

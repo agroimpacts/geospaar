@@ -1342,9 +1342,9 @@ So that's it for our visualization section. There are many other graphics we cou
 
 7. Let's display wheat, sorghum, and maize harvested areas for South Africa on side-by-side scatter plots, each with a smooth trendline fit through it. That requires adapting Chunk 66's code. Hints: leave out `color = country` in `geom_points` and `geom_smooth`, and use `dplyr` to filter for South African data.    
 
-# Unit Assignment
+# Unit assignment
 ## Set-up
-Make sure you are working in the master branch of your project (you should not be working on the a3 branch. Create a new vignette named "module4.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 
+Make sure you are working in the master branch of your project (you should not be working on the a2 or a3 branch). Create a new vignette named "module4.Rmd". You will use this to document the tasks you undertake for this assignment. 
 
 There are no package functions to create for this assignment. All work is to be done in the vignette. 
 
@@ -1353,7 +1353,7 @@ There are no package functions to create for this assignment. All work is to be 
   - `left_join`
   - `right_join`
   - `full_join`
-  -`inner_join`
+  - `inner_join`
 
 2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 19, and 21 are your guides. 
 
@@ -1370,8 +1370,8 @@ There are no package functions to create for this assignment. All work is to be 
 8. Use `ggplot` to make a 5-bin histogram of Zambia's maize yields. The x-label should be "Yield (t/ha)", the title should be "Zambian Maize", and bins should be blue with black outlines. 
 
 
-## Assignment output
-Refer to [Unit 1 Module 3's Assignment output section](unit-module3.html#assignment-output) for submission instructions. The only differences are as follows:
+## Assignment output{#assignment-output}
+Refer to [Unit 1 Module 3's Assignment output section](unit1-module3.html#assignment-output) for submission instructions. The only differences are as follows:
 
 1. Your submission should be on a new side branch "a3";
 2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;

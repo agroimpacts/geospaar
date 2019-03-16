@@ -24,8 +24,8 @@ vignette: >
 ***
 
 # Module 1 practice answers{#module-1-practice-answers}
-### Practice 1
-#### Questions
+## Practice 1
+### Questions
 1. Answers [here](https://r-spatial.github.io/sf/articles/sf1.html#simple-feature-geometry-types).
 
 2. Assuming the `tibble` has x and y or lat/long coordinates, you apply the function `st_as_sf` with the "coords" argument set to specify which columns contain the x and y coordinates. 
@@ -34,7 +34,7 @@ vignette: >
 
 4. For a single point you provide an x and y coordinate, otherwise you give an input matrix containing x and y coordinates. A polygon requires that the last point pair in the matrix is the same as the first point pair, to close the polygon. 
 
-#### Code
+### Code
 1. 
 ```{r, eval=FALSE}
 farmers %>% st_geometry()
@@ -83,15 +83,15 @@ plot(pts, add = TRUE, col = "orange", pch = 16)
 ***
 
 
-### Practice 2
-#### Questions
+## Practice 2
+### Questions
 1. At least with this example, pretty negligible--well less than 1% mean absolute error.  It might matter more in other places and with other scales though.  The reason `st_area` knows how to estimate areas is because it invokes `lwgeom::st_geod_area`, which calculates a geodetic surface area.  
 
 2. Because for the time being `sf::plot` is a fair bit faster. However, [this recent twitter thread](https://twitter.com/thomasp85/status/1092412825899810817) suggests that may change soon. 
 
 3. By using `mutate` with `cut` that has break values based on those properties. In our example, we found the breaks using `quantile` and different probabilities/percentile levels that creating tertiles of area. 
 
-#### Code
+### Code
 1. 
 ```{r, eval = FALSE}
 set.seed(1)

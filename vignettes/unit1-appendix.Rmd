@@ -18,14 +18,28 @@ vignette: >
 ---
 
 
-# Answers to practice
-## Module 1
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
 
-## Module 2
 
-## Module 3: Data preparation
-### Practice 1
-#### Questions
+# Module 1 practice answers
+
+# Module 2 practice answers
+
+# Module 3 practice answers
+
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+# Module 4 practice answers
+## Practice 1
+### Questions
 1. A `tibble` is an enhanced `data.frame`. Among other features, it provides more information on data types it contains when printing. It can be treated exactly like a `data.frame` though, in terms of indexing and other operations. 
 
 2. Base methods: `tb_a$a`; `tb_a[["a"]]`; `tb_a[, "a"]`. tidyverse, with `tb_a %>% dplyr::select(a)`. Note that that gives back a `tibble` (or `data.frame`, if you have a `data.frame`). To get a vector back, use `tb_a %>% dplyr::pull(a)` 
@@ -34,7 +48,7 @@ vignette: >
 
 4. `inner_join` preserves just the values in x and drops non-matching rows from y. `left_join` fills non-matching values in y with NAs. `right_join` preserves values in y dropping non-matching values in x. `full_join` preserves all non-matching rows in both x and y, filling NAs into non-matched rows. 
 
-#### Code
+### Code
 1. 
 ```{r, eval = FALSE}
 set.seed(1)
@@ -109,14 +123,20 @@ my_tb <- tibble(v1 = 1:10, v2 = 11:20) %>%
 my_tb %>% slice(1, 10, 17) %>% dplyr::select(v2, v3)
 ```
 
-### Practice 2: Analysis
-#### Questions
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Practice 2: Analysis
+### Questions
 1. `dplyr::filter`
 2. `group_by(crop, country, y2k)` is doing the splitting, on crop type, then country, and then year. `summarize(...)` is doing the apply using a `mean`. There is no combine line, as it is implicit. 
 3. Chunk 30 adds a `filter` for crop type (selecting out maize), and then simply groups on the *y2k* variable. 
 4. It doesn't work when the output of the analysis is not tabular/a list, as with `cor.test` and `lm`.  We can overcome this by 1) creating individual functions that reproduce the component outputs of the analysis (e.g. Chunk 33) and these as a list of functions using `funs` to `summarise_all`, 2) doing the splits outside of the pipeline (e.g. Chunk 36), or 3) using functions such as `do` and `broom::tidy` within the pipeline (e.g. Chunk 39). 
 
-#### Code
+### Code
 1. 
 ```{r, eval = FALSE}
 crop_ylds %>% filter(crop == "sorghum" & country == "ZAF" & year >= 2000)
@@ -171,8 +191,15 @@ crop_ylds %>% filter(crop != "sorghum") %>% group_by(crop, country) %>%
   broom::tidy(., prod_ha_lm)
 ```
 
-### Practice 3: Visualization
-#### Questions
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+## Practice 3: Visualization
+### Questions
 1. `ggplot2` is built from `grid` graphics, and is based on an underlying visualization philosophy. It builds up graphics objects using the `+` operator, and easily does splits within the data using the "color" argument within `aes` and/or the `facet_grid` function. `graphics` plots can be faster to implement for exploratory analysis, `ggplot2` has more attractive, presentation-grade defaults.
 2. Because the syntax used in `graphics` plots is used in many of the plotting functions developed for spatial packages, including newer ones such as `sf` and `stars`. 
 3. Each of the three plots takes the axis labels exactly as they are specified to the axis arguments (either as they were specified in the formula in the case of Chunk 40 or to the "x" and "y" arguments in Chunk 41). You can change the names using the "xlab" and "ylab" arguments. 
@@ -180,7 +207,7 @@ crop_ylds %>% filter(crop != "sorghum") %>% group_by(crop, country) %>%
 5. You have to add the `.` to the "data" argument of `plot`, e.g. `dat %>% plot(y ~ x, data = .)`
 6. You get just an empty grey background--`ggplot` won't plot anything without a `geom_*` function added to the `ggplot` object. 
 
-#### Code
+### Code
 1. 
 ```{r, eval=FALSE}
 crop_ylds %>% filter(crop == "sorghum") %>%
@@ -270,3 +297,8 @@ crop_ylds %>% filter(country == "ZAF") %>%
   ylab("Yield (tons/ha)") + xlab("")
 ```
 
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
