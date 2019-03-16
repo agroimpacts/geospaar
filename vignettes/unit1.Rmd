@@ -54,6 +54,8 @@ This section is broken into four modules (the materials can be accessed by follo
 
 [**Module 4**](unit1-module4.html): Data analysis and visualization with `R` 
 
+[**Appendix**](unit1-appendix.html): Unit appendix
+
 ***
 <center>
 [Back to top](#unit1overview) || [Back to **vignette index**](toc.html)

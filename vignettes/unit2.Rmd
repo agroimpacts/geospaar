@@ -49,6 +49,9 @@ This section is broken into three modules (the materials can be accessed by foll
 
 [**Module 3**](unit3-module3.html): Spatial modeling and remote sensing
 
+[**Appendix**](unit2-appendix.html): Unit appendix
+
+
 ***
 <center>
 [Back to top](#unit2overview) || [Back to **vignette index**](toc.html)

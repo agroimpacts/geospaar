@@ -17,9 +17,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
 
-# Answers to practice
-## Module 1
+# Module 1 practice answers{#module-1-practice-answers}
 ### Practice 1
 #### Questions
 1. Answers [here](https://r-spatial.github.io/sf/articles/sf1.html#simple-feature-geometry-types).
@@ -29,7 +33,6 @@ vignette: >
 3. `sf::plot` by default plots one panel per variable. You can create a single panel by specifying the variable you want, or by using the `st_geometry` argument to strip out the geometry from object. It also prevent distortions that sometimes occur when overlaying subsequent features on top of a base map. 
 
 4. For a single point you provide an x and y coordinate, otherwise you give an input matrix containing x and y coordinates. A polygon requires that the last point pair in the matrix is the same as the first point pair, to close the polygon. 
-
 
 #### Code
 1. 
@@ -73,6 +76,13 @@ plot(districts %>% st_geometry(), col = "grey")
 plot(pts, add = TRUE, col = "orange", pch = 16)
 ```
 
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
 ### Practice 2
 #### Questions
 1. At least with this example, pretty negligible--well less than 1% mean absolute error.  It might matter more in other places and with other scales though.  The reason `st_area` knows how to estimate areas is because it invokes `lwgeom::st_geod_area`, which calculates a geodetic surface area.  
@@ -81,7 +91,7 @@ plot(pts, add = TRUE, col = "orange", pch = 16)
 
 3. By using `mutate` with `cut` that has break values based on those properties. In our example, we found the breaks using `quantile` and different probabilities/percentile levels that creating tertiles of area. 
 
-## Module 2
+#### Code
 1. 
 ```{r, eval = FALSE}
 set.seed(1)
@@ -129,6 +139,88 @@ legend(x = "bottomright", pch = 15, col = cols, bty = "n",
 
 ```
 
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 
-## Module 3
+### Practice 3
+#### Questions
+1. It changes features from one type to another (e.g. POLYGON to MULTIPOLYGON), either one specified by the user or the simplest possible common feature, if left unspecified. Casting is sometimes necessary to avoid mixed feature types that cause failures for subsequent operations. 
+
+2. `st_union` runs under the hood of `summarise.sf`, so a `summarize` operation on an `sf` will result in a merged/dissolved set of spatial features. 
+
+3. It affects the order of the fields in the resulting unioned `sf` object--the fields from the object passed to the "x" argument appear first. 
+
+#### Code
+1. 
+```{r, eval = FALSE}
+coords <- cbind("x" = c(27, 27.5, 27.5, 27, 27), 
+                "y" = c(-13, -13, -13.5, -13.5, -13))
+pol2 <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(pol2, col = "blue", add = TRUE)
+```
+
+2. 
+```{r, eval = FALSE}
+pol2_int_dists <- st_intersection(pol2, districts)
+districts[1] %>% plot(col = "grey", main = NULL)
+pol2_int_dists[2] %>% plot(col = rainbow(nrow(pol2_int_dists)), add = TRUE)
+```
+
+3. `pol2` is nearly 26 hectares larger
+```{r, eval = FALSE}
+pol2_int_dists %>% st_area() %>% as.numeric() %>% sum() / 10000 -
+  pol2 %>% st_area() %>% as.numeric() %>% sum() / 10000
+```
+
+4. 
+```{r, eval = FALSE}
+st_difference(districts, pol2)[2] %>% plot(col = "grey", main = NULL)
+```
+
+5. 
+```{r, eval = FALSE}
+# Try compare the
+set.seed(1)
+farmers_alb %>% filter(season == 2) %>%
+  sample_n(size = 5) %>% st_buffer(dist = 30000) %>% st_geometry %>% plot()
+
+# With 
+set.seed(1)
+farmers_alb %>% filter(season == 2) %>%
+  st_sample(size = 5) %>% st_buffer(dist = 30000) %>% st_geometry %>% plot()
+```
+
+6.
+```{r, eval = FALSE}
+roads_gt400 <- roads %>% filter(as.numeric(st_length(.)) / 1000 > 400)
+par(mar = rep(0, 4))
+st_transform(districts, st_crs(roads)) %>% st_geometry %>% 
+  plot(col = "grey", main = NULL)
+roads_gt400 %>% st_buffer(25000) %>% plot(col = "green", add = TRUE)
+```
+
+7.
+```{r, eval = FALSE}
+par(mar = rep(0, 4))
+st_transform(districts, st_crs(roads)) %>% st_geometry %>% 
+  plot(col = "grey", main = NULL)
+roads_gt400 %>% st_buffer(25000) %>% plot(col = "tan", add = TRUE)
+set.seed(1)
+roads_gt400 %>% st_buffer(25000) %>% 
+  st_sample(size = rep(20, nrow(.)), exact = TRUE) %>% 
+  plot(col = "red", pch = 20, add = TRUE)
+
+```
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
+

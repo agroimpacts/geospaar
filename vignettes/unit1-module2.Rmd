@@ -427,6 +427,7 @@ Notice how the previous call to `search` showed "package:raster" being right aft
 This ordering or parentage matters to us for at least one important reason, and this relates to whether functions are exported from packages or not. If a function is exported (recall how we [exported our first function](unit1-module1.html#your-first-package-function) in Module 1) it then becomes publicly usable in the package environment. The thing is, however, that the same function name might be used by more than one package (and not as generic functions). If you try to attach both packages, the function in the most recently attached of the two packages will mask the function from the other one. This is demonstrated by the following examples in which we attach `dplyr` (a package we will use more in the next modules) and `raster` in alternating sequence.
 
 ```{r, echo=FALSE, message=FALSE}
+if("package:geospaar" %in% search())detach("package:geospaar", unload=TRUE)
 detach("package:raster", unload=TRUE)
 ```
 
