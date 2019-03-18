@@ -1064,6 +1064,7 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
 3. Do not worry about #3 in those instructions
 4. When asked to report the result of calculations in the vignette text (e.g. in Task 10), you can use another RMarkdown trick, which is to let the calculation be done by code inserted between a single pair of backticks, with the first backtick followed immediately by r and a space. See [here](https://rmarkdown.rstudio.com/lesson-4.html) for more explanation of that. 
+
 ***
 <center>
 [Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
