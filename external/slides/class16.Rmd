@@ -72,8 +72,9 @@ crop_ylds <-  map(fs, function(x) {
 
 ```{r, eval = FALSE}
 p <- st_multipoint(cbind(c(1, 1), c(2, 2)))  # 
+# st_point(c(1, 2))  # 
 p %>% class()
-psfc <- st_sfc(p) 
+psfc <- st_sfc(p, crs = 4326) 
 psfc %>% class()
 psf <- st_sf(ID = 1, geom = st_sfc(p))
 psf %>% class()
