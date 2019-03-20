@@ -1,0 +1,274 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 17
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class15plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Looking ahead to projects
+- `sf` continued
+
+---
+
+### Tired
+```{r, eval = FALSE}
+library(geospaar)
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read()
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
+  st_read()
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+```
+
+### Wired
+```{r, eval = FALSE}
+library(geospaar)
+system.file("extdata/", package = "geospaar") %>% 
+  dir(pattern = "farmer_spatial.csv|[districts|roads]*.*.shp", 
+      full.names = TRUE) %>% 
+  map(function(x) {
+    if(basename(x) == "farmer_spatial.csv") {
+      read_csv(x) %>% st_as_sf(., coords = c("x", "y"), crs = 4326)
+    } else {
+      st_read(x)
+    }
+  }) %>% set_names(c("d", "f", "r")) -> sdat
+```
+
+---
+## Reading/Writing/Manipulating
+- read and write
+
+```{r, eval = FALSE, echo = FALSE}
+st_write(obj = sdat$f, 
+         dsn = file.path(tempdir(), "~/Desktop/farmers.sqlite"))
+st_read(file.path(tempdir(), "~/Desktop/farmers.sqlite"))
+st_read(system.file("extdata/farmer_spatial.csv", package = "geospaar"))
+```
+
+- filtering and dates classes and plotting issues
+```{r, eval = FALSE, echo = FALSE}
+sdat$f %>% filter(season == 1 &
+                    between(date, lubridate::as_date("2015-12-15"),
+                            lubridate::as_date("2015-12-31"))) %>%
+  summarise(reported_rain = sum(rained)) %>% plot()  #pull(reported_rain)
+
+sdat$d %>% plot(col = "grey", main = NULL, reset = FALSE)
+sdat$d %>% filter(grepl("Chil", distName)) %>% plot(main = NULL, add = TRUE)
+```
+
+- filtering with spatial properties
+```{r, eval = FALSE, echo = FALSE}
+sdat$d %>% st_geometry %>% plot(col = "grey")
+sdat$d %>% filter(as.numeric(st_area(.)) / 10^6 > 20000) %>% 
+  plot(col = viridis::inferno(nrow(.)), add = TRUE)
+```
+
+---
+## Spatial operations
+- intersects/intersection
+```{r, eval = FALSE, echo = FALSE}
+farmers_uni <- sdat$f %>% as_tibble %>% distinct(uuid, .keep_all = TRUE) %>%
+  st_as_sf
+farmers_uni %>% 
+  slice(unlist(st_intersects(sdat$d %>% filter(grepl("Choma", distName)), .))
+        ) -> choma_farmers
+sdat$d %>% st_geometry %>% plot(col = "grey")
+choma_farmers %>% st_geometry %>% 
+  plot(col = "red", pch = 20, cex = 0.1, add = TRUE)
+```
+
+- merge/union
+```{r, eval = FALSE, echo = FALSE}
+
+```
+
+- buffer
+```{r, eval = FALSE, echo = FALSE}
+
+```
+
+
+---
+## Exercises
+- Select roads between 300 and 500 km long
+- Create 25 km buffer around those
+- Intersect with districts and plot result (don't forget district is in GCS)
+- Different with districts and plot result
+- Plot previous with `ggplot`
+- Reduce farmers to unique points (UUID) 
+- Use roads buffers to select and plot intersecting farmers points
+
+---
+## Code Appendix
+
+- On following slides
+
+---
+### Practical answers from previous class
+- Use ggplot to plot the histograms of yields by country and crop (hint: you need to use `facet_grid` on the *crop* variable)
+- Fit a regression model to maize yield, where year is the dependent variable. Use base R's `lm` function
+- Plot the linear regression fits between Zambian wheat yields by year, and South Africa wheat yields by year, using `ggplot` and `geom_smooth`, with `method = "lm"`
+- Use `cowplot::plot_grid` to create a two-panel plot, putting the previous figure in the left panel, and a point scatter of wheat harvested area (log10 transformed) by year by country, in the right panel. Change the defaults colors to green4 and blue4. *Make sure that only one legend is plotted on the far right.* 
+- Answers on next slide...
+
+---
+```{r, eval = FALSE}
+crop_ylds %>% ggplot() + 
+  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
+  scale_fill_manual(values = c("green4", "blue")) + 
+  facet_grid(cols = vars(crop))
+
+crop_ylds %>% filter(crop == "Maize") %>% 
+  lm(yields ~ year, data = .) %>% summary()
+
+p1 <- crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
+  geom_point(aes(year, yields, color = country)) + 
+  geom_smooth(aes(year, yields, color = country), method = "lm") + 
+  scale_color_manual(values = c("green4", "blue4")) + xlab("")
+
+p2 <- crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
+  geom_line(aes(year, log10(harv_area), color = country)) + 
+  scale_color_manual(values = c("green4", "blue4")) + 
+  ylab("Harvested area (log10(ha))") + xlab("")
+cowplot::plot_grid(p1 + theme(legend.position = "none"), 
+                   p2 + theme(legend.position = "none"), 
+                   cowplot::get_legend(p1), nrow = 1, 
+                   rel_widths = c(1, 1, 0.2))
+```
+
+---
+
+### Practical answers from penultimate class
+
+- Calculate the mean and standard deviations of crop yield by crop and country
+- Use `graphics::plot` to create a red line plot of South African maize harvested area by year. Use `lines` to add Zambia maize yields to the same plot (in blue). Make sure they have the same scale (use an appropriate "ylim"). Make the axis labels nicer (e.g. "Harvested area (ha)", "Year") 
+- Use ggplot to plot the histograms of maize yields by country
+
+```{r, echo = FALSE, eval = FALSE}
+crop_ylds %>% ggplot() + 
+  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
+  scale_fill_manual(values = c("green4", "blue")) + 
+  facet_grid(cols = vars(crop))
+
+crop_ylds %>% filter(crop == "Maize") %>% 
+  lm(yields ~ year, data = .) %>% summary()
+
+crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
+  geom_point(aes(year, yields, color = country)) + 
+  geom_smooth(aes(year, yields, color = country), method = "lm")
+```
+
+---
+## Base
+### Scatters
+```{r, eval = FALSE}
+# Base scatters
+crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
+  plot(yields ~ year, data = ., col = "blue", type = "l")
+crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
+  lines(yields ~ year, data = ., col = "red")
+
+# change axes
+dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
+plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
+axis(side = 1, las = 2)
+axis(side = 2, las = 2)
+
+# multiple panels
+par(mfrow = c(2, 1))
+crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
+  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
+crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
+  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
+```
+
+---
+### Multiple panels
+```{r, eval = FALSE}
+# multiple panels
+par(mfrow = c(2, 1))
+crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
+  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
+crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
+  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
+```
+
+
+---
+## ggplot
+### scatters
+```{r, eval = FALSE}
+# basic points
+crop_ylds %>% filter(crop == "Maize") %>% 
+  ggplot() + geom_point(aes(x = year, y = yields))
+
+# basic lines
+crop_ylds %>% filter(crop == "Maize") %>% 
+  ggplot() + geom_line(mapping = aes(x = year, y = yields))
+
+# multiple lines
+crop_ylds %>% filter(crop == "Maize") %>% 
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue"))
+
+# change axes/theme
+crop_ylds %>% filter(crop == "Maize") %>%   
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue")) + 
+  scale_x_continuous(breaks = seq(1960, 2020, 5), expand = c(0, 0)) +
+  theme(axis.text.x = element_text(angle = 90), 
+        panel.background = element_blank())
+```
+
+---
+### Multi-panel
+```{r, eval = FALSE}
+# from a single variable, facet_grid, facet_wrap
+crop_ylds %>% 
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue")) + 
+  facet_grid(cols = vars(crop))
+
+# multiple variables
+p1 <- crop_ylds %>% filter(crop == "Maize") %>% 
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue")) 
+p2 <- crop_ylds %>% filter(crop == "Maize") %>% 
+  ggplot() + geom_line(aes(x = year, y = harv_area, color = country)) +
+  scale_color_manual(values = c("green", "blue")) 
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
+                         p2 + theme(legend.position = "none"))
+cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
+```
+
+---
+
+## Histograms (base and ggplot)
+```{r, eval = FALSE}
+# basic
+par(mar = c(3, 3, 1, 1))
+crop_ylds %>% filter(crop == "Maize") %>% 
+  pull(yields) %>% hist(., breaks = seq(0, 7, 0.5), main = "Maize yields")
+
+# side-by-side
+par(mfrow = c(1, 2))
+crop_ylds %>% filter(crop == "Maize" & country == "ZAF") %>%
+  pull(yields) %>% 
+  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
+crop_ylds %>% filter(crop == "Maize" & country == "ZMB") %>%
+  pull(yields) %>% 
+  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
+```
+
+
