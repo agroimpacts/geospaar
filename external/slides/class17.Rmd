@@ -47,7 +47,7 @@ system.file("extdata/", package = "geospaar") %>%
 ## Reading/Writing/Manipulating
 - read and write
 
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 st_write(obj = sdat$f, 
          dsn = file.path(tempdir(), "~/Desktop/farmers.sqlite"))
 st_read(file.path(tempdir(), "~/Desktop/farmers.sqlite"))
@@ -55,7 +55,7 @@ st_read(system.file("extdata/farmer_spatial.csv", package = "geospaar"))
 ```
 
 - filtering and dates classes and plotting issues
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 sdat$f %>% filter(season == 1 &
                     between(date, lubridate::as_date("2015-12-15"),
                             lubridate::as_date("2015-12-31"))) %>%
@@ -66,7 +66,7 @@ sdat$d %>% filter(grepl("Chil", distName)) %>% plot(main = NULL, add = TRUE)
 ```
 
 - filtering with spatial properties
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 sdat$d %>% st_geometry %>% plot(col = "grey")
 sdat$d %>% filter(as.numeric(st_area(.)) / 10^6 > 20000) %>% 
   plot(col = viridis::inferno(nrow(.)), add = TRUE)
@@ -75,7 +75,7 @@ sdat$d %>% filter(as.numeric(st_area(.)) / 10^6 > 20000) %>%
 ---
 ## Spatial operations
 - intersects/intersection
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 farmers_uni <- sdat$f %>% as_tibble %>% distinct(uuid, .keep_all = TRUE) %>%
   st_as_sf
 farmers_uni %>% 
@@ -86,16 +86,31 @@ choma_farmers %>% st_geometry %>%
   plot(col = "red", pch = 20, cex = 0.1, add = TRUE)
 ```
 
-- merge/union
-```{r, eval = FALSE, echo = FALSE}
-
+- merge/union/dissolve
+```{r, eval = FALSE}
+sdat$d %>% st_union %>% plot(col = "grey")
+sdat$d %>% mutate(area = as.numeric(st_area(.))) %>% 
+  summarize(area = mean(area)) %>% plot
 ```
 
-- buffer
-```{r, eval = FALSE, echo = FALSE}
-
+- buffer & difference
+```{r, eval = FALSE}
+zam_alb <- sdat$d %>% st_union %>% st_transform(st_crs(roads))
+sdat$r %>% filter(as.numeric(st_length(.)) / 1000 > 500) %>% 
+  st_buffer(dist = 25000) %>% st_union %>% 
+  st_difference(zam_alb, .) %>% plot(col = "grey")
 ```
+---
 
+- buffer & intersect
+```{r, eval = FALSE}
+sdat$d %>% st_transform(st_crs(roads)) %>%  
+  plot(col = "grey", main = NULL, reset = FALSE, border = "transparent")
+sdat$r %>% filter(as.numeric(st_length(.)) / 1000 > 500) %>% 
+  st_buffer(dist = 25000) %>% st_union %>% 
+  st_intersection(sdat$d %>% st_transform(st_crs(roads)), .) %>% 
+  plot(add = TRUE)
+```
 
 ---
 ## Exercises
