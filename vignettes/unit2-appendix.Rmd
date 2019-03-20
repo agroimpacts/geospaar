@@ -224,3 +224,80 @@ roads_gt400 %>% st_buffer(25000) %>%
 </center>
 ***
 
+# Module 2 practice answers
+## Practice 1
+### Questions
+1. `raster` uses the S4 object-oriented system, where `sf` uses S4. Slots in S4 objects are accessed using the `@` operator. 
+
+2. `brick`, because `raster` only allows you to read and write a single layer.  
+
+3. `stack` organizes multiple rasters that might be stored in separation locations into a single multi-layer object, whereas `brick` requires a single file on disk. `bricks` take longer to create, but are faster to work with once they exist. 
+
+4. The output of `raster`'s vectorization functions are `sp` objects, so you have to convert them to `sf` objects using `st_as_sf`. 
+
+### Code
+1. 
+```{r, eval=FALSE}
+# recreate r, r2, r3
+e <- extent(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  
+r <- raster(x = e, res = 0.25, crs = crs(districts))
+set.seed(1)  
+values(r) <- sample(1:100, size = ncell(r), replace = TRUE)  # 3
+r2 <- r > 50
+r3 <- r
+set.seed(1)
+values(r3) <- rnorm(n = ncell(r3), mean = 10, sd = 2)
+
+# 
+r4 <- r3
+set.seed(1)
+values(r4) <- runif(n = ncell(r4), 0, 1)
+r5 <- r4 > 0.5
+
+s2 <- list(r, r2, r3, r4, r5) %>% stack
+names(s2) <- c("r", "r2", "r3", "r4", "r5")
+plot(s2)
+
+```
+
+2. We use `tempdir()` here, but you should use your `notebooks/data` folder.
+```{r, eval = FALSE}
+b <- brick(s2, file = file.path(tempdir(), "b2.tif"))
+```
+
+3. 
+```{r, eval = FALSE}
+zamr3 <- raster(x = extent(districts), crs = crs(districts), res = 0.2)
+values(zamr3) <- 1:ncell(zamr3)
+
+farmersr <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% select(x, y) %>% 
+  mutate(count = 1) %>% st_as_sf(coords = c("x", "y")) %>% 
+  rasterize(x = ., y = zamr3, field = "count", fun = sum)
+
+par(mar = c(0, 0, 1, 4))
+districts %>% st_union %>% plot(col = "grey", border = "grey")
+plot(farmersr, add = TRUE)
+```
+
+4. 
+```{r, eval = FALSE}
+zamr_alb <- projectRaster(from = zamr, res = 20000, crs = crs(roads), 
+                          method = "ngb")
+farmersr_alb <- projectRaster(from = farmersr, to = zamr_alb, 
+                              method = "bilinear")
+
+par(mar = c(0, 0, 1, 4), mfrow = c(1, 2))
+districts %>% st_union %>% plot(col = "grey", border = "grey")
+plot(farmersr, add = TRUE)
+districts %>% st_transform(crs(roads)) %>% st_union %>% 
+  plot(col = "grey", border = "grey")
+plot(farmersr_alb, add = TRUE)
+```
+
+5. 
+```{r, eval = FALSE}
+par(mar = c(0, 0, 0, 0))
+farmersr %>% rasterToPolygons(dissolve = TRUE) %>% st_as_sf %>% 
+  plot(main = NULL)
+```
+
