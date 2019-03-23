@@ -301,3 +301,76 @@ farmersr %>% rasterToPolygons(dissolve = TRUE) %>% st_as_sf %>%
   plot(main = NULL)
 ```
 
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Practice 2
+### Questions
+1. `cellStats` provides summary statistics over an entire layer; `zonal` calculates statistics within pre-defined zones; `focal` calculates statistics within a moving window. 
+
+2. Use `method = bilinear`.
+
+3. You don't. You have to resample them to a common resolution and extent first. And then you have to `stack` them. 
+
+### Code
+1. 
+```{r, eval = FALSE}
+as.Date("10-11-2017", "%m-%d-%Y")
+as.Date("10-11-17", "%m-%d-%y")
+as.Date("101117", "%m%d%y")
+as.Date("10112017", "%m%d%Y")
+lubridate::mdy("10-11-2017")
+lubridate::as_date("20171011")
+```
+
+2. 
+```{r, eval = FALSE}
+farmersr2 <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
+  mutate(count = 1) %>% select(x, y, count) %>% 
+  st_as_sf(coords = c("x", "y")) %>% 
+  rasterize(., distsr, field = "count", fun = sum)
+```
+
+3. 
+```{r, eval = FALSE}
+zonal(farmersr2, distsr, fun = sum) %>% data.frame %>% 
+  subs(distsr, .) %>% plot_noaxes
+```
+
+4.
+```{r, eval=FALSE}
+wmat3 <- matrix(1, nrow = 3, ncol = 3) 
+wmat5 <- matrix(1, nrow = 5, ncol = 5) 
+fstack <- list(sd3 = focal(x = chirpsz[[20]], w = wmat3, fun = sd), 
+               sd5 = focal(x = chirpsz[[20]], w = wmat5, fun = sd),
+               max3 = focal(x = chirpsz[[20]], w = wmat3, fun = max), 
+               max5 = focal(x = chirpsz[[20]], w = wmat5, fun = max)) %>% stack
+fstack %>% plot_noaxes
+```
+
+5. 
+```{r, eval = FALSE}
+chirps_d57 <- chirpsz[[1]] %>% crop(., extent(districts[57, ]))
+s <- list(d1 = disaggregate(chirps_d57, fact = 5), 
+          d2 = disaggregate(chirps_d57, fact = 5, method = "bilinear")) %>% 
+  stack
+plot_noaxes(s)
+```
+
+6. 
+```{r, eval = FALSE}
+s <- lapply(list(mean, cv, median), function(x) {
+  calc(chirpsz, fun = x)  
+}) %>% stack
+names(s) <- c("Mean", "CV", "Median")
+plot_noaxes(s, nr = 1)
+```
+
+***
+<center>
+[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+</center>
+***
