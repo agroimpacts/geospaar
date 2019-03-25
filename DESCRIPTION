@@ -15,7 +15,9 @@ Depends:
     tidyverse
 Imports:
     cowplot,
-    lwgeom
+    lwgeom,
+    rgdal,
+    rgeos
 Suggests: 
     knitr, 
     rmarkdown
