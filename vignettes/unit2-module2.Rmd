@@ -579,7 +579,7 @@ mean(v, na.rm = TRUE)
 
 Here's a more programmatic way of using `cellStats`:
 
-```{r, out.width="50%"}
+```{r, fig.width=7, fig.height=4}
 # Chunk 28
 # #1
 rain_stats <- lapply(list(mean, sum, sd, cv), function(x) {
