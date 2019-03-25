@@ -42,8 +42,7 @@ The material in this section assumes that the reader is familiar with standard r
 We'll use the following datasets in this section:
 ```{r, message=FALSE, warning=FALSE}
 library(geospaar)
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%   
-  read_csv() 
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%    read_csv() 
 roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
 districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
   st_read
