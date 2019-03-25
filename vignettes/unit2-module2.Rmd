@@ -475,7 +475,7 @@ plot_noaxes <- function(x, axes = FALSE, box = FALSE, mar = c(0, 0, 1, 4),
 The function above (not run in the block above, because it is written into `geospaar`) takes care of the axes and box problem by setting their default arguments to FALSE. It also sets the default plot margins to the ones we have mostly been using so far (leaving room on the right for the legend and at the top for a title), and it checks whether the object being passed to it belongs to one of the raster classes (failing if it doesn't). Otherwise, it retains all of the other functionality of `raster::plot`, and has the "..." argument, meaning you can pass other eligible arguments to it. 
 
 Let's see how it works:
-```{r}
+```{r, out.width = "50%"}
 # Chunk 21
 plot_noaxes(chirpsz[[1]])
 # chirpsz[[1]] %>% plot_noaxes  # also works in a pipeline
@@ -517,7 +517,7 @@ The second way (commented out), is to set `method = bilinear`, which interpolate
 
 Resampling is done for many reasons, but one particularly common case is as a final step following aggregation or disaggregation, when it is needed to co-register the resulting grid to another grid. 
 
-```{r, error=TRUE}
+```{r, error=TRUE, out.width="60%"}
 # Chunk 23
 chirps125 <- aggregate(x = chirpsz[[1]], fact = 5)  # no fun b/c default is mean
 s <- stack(chirps125, farmersr)  # fails 
@@ -529,7 +529,7 @@ plot(extent(farmersr), add = TRUE, col = "red")
 
 After aggregating `chirpsz` layer 1, we try and fail to stack the result with `farmersr`, because (as the plot of extents show, and the warning tells) the two objects have different extents. So, another approach is needed: 
 
-```{r}
+```{r, fig.height=2.5, fig.width=7}
 # Chunk 24
 farmersr_rs <- resample(x = farmersr, y = chirps125) 
 s <- stack(chirps125, farmersr_rs)  
@@ -676,7 +676,7 @@ plot_noaxes(distr_rfmu)
 #### Focal
 Another way of calculating image statistics is to use a moving window/neighborhood approach. This is done with the `focal` function, which can be used to calculate a large number of different statistics. Here's we'll just show you the mean (also known as a low pass filter), with a few permutations to illustrate the concept. **Disclaimer:** This section assumes that you have applied moving window functions/low pass/high pass filters in your GIS/remote sensing classes so far, and thus are familiar with the calculations. If not, please be sure to ask about this in class.  
 
-```{r, fig.width=6, fig.height=4}
+```{r, out.width="60%"}
 # Chunk 34
 # #1
 wmat <- matrix(1 / 9, nrow = 3, ncol = 3) 
@@ -736,7 +736,7 @@ If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we wa
 
 The workhorse for doing this sort of analysis is `calc`, which allows you to apply pretty much any function to the Z-dimension of a `RasterStackBrick`. 
 
-```{r, out.width="50%"}
+```{r, out.width="60%"}
 # Chunk 35
 # #1
 rain_zmu <- calc(x = chirpsz, fun = mean)
@@ -1074,7 +1074,7 @@ dem <- dem * 1
 save(dem, file = "data/dem.rda")
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width="70%"}
 data(dem)
 plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 ```
@@ -1089,7 +1089,7 @@ You can explore those further at your leisure. In our example, we choose the agg
 
 The DEM we downloaded is in decimal degrees with a resolution of `r raster::res(dem)[1]`&deg;, which means the area of each pixel varies through Zambia. To illustrate that, we use a nice function that `raster` provides, which lets you calculate the pixel areas, even when the raster is in geographic coordinates:
 
-```{r demarea}
+```{r demarea, out.width="60%"}
 # Chunk 43
 demarea <- area(dem)
 plot_noaxes(demarea, legend.args = list(text = expression("km"^2)), 
@@ -1103,7 +1103,7 @@ The result is in km$^2$, and you can see that the area of each pixel falls as th
 ### An aside on plot annotation
 Although we covered graphics in the previous unit, let's look a bit more at plot adornments for a second. Notice in the last two plots how we use the "legend.args" argument in `plot_noaxes` to put a title over the legend bar. And in the last one, we use `expression` to turn km2 into km$^2$. `expression` and several other functions can be used to annotate plots with more complex mathematical expressions:
 
-```{r, fig.width="60%"}
+```{r, fig.width=5, fig.height=5}
 # Chunk 44
 set.seed(1)
 a <- sapply(20:100, function(x) rnorm(n = 100, mean = x, sd = x / 10))
@@ -1144,7 +1144,7 @@ The example above shows how more advanced plot annotations can be done. It also 
 
 `raster::terrain` allows us to calculate five different terrain variables, four of which we show below: 
 
-```{r terrain, out.width="50%"}
+```{r terrain, out.width="60%"}
 # Chunk 45
 # #1
 zamr <- raster(x = extent(districts), crs = crs(districts), res = res(dem))
@@ -1241,7 +1241,7 @@ for(i in 1:3) plot_noaxes(raininterp[[i]], main = names(raininterp)[i])
 dev.off()
 ```
 
-```{r, echo = FALSE, out.width="50%"}
+```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2-1.png")
 ```
 
@@ -1322,7 +1322,7 @@ save(zamprec, file = "data/zamprec.rda")
 ```
 
 After doing that (and rebuilding `geospaar`), we can do our analysis, loading in the `zamprec` data as we need it.
-```{r, fig.width=7, fig.height = 2.5}
+```{r, fig.width=7, fig.height = 3}
 # #1
 data(zamprec)
 zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
