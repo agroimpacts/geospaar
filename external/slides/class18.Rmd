@@ -53,17 +53,23 @@ rd_sel %>% plot
 
 ```{r, echo=FALSE, fig.align='center', warning=FALSE}
 rd_sel_buff <- rd_sel %>% st_buffer(dist = 25000)
+# rd_sel %>% st_buffer(dist = 25000) %>% plot
+# rd_sel_buff %>% st_geometry %>% st_union %>% plot
+# rd_sel_buff %>% st_geometry %>% plot
 st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
-  st_intersection(x = ., y = rd_sel_buff) %>% st_geometry %>% plot
+  st_intersection(x = ., y = rd_sel_buff) %>% st_geometry %>% 
+  plot(col = bpy.colors(length(.)))
 
 ```
 
 ---
 ```{r, echo=FALSE, fig.align='center', warning=FALSE}
 st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
-  st_difference(x = ., y = rd_sel_buff %>% st_union) %>% st_geometry %>% 
-  plot(col = "grey")
-
+  st_difference(x = ., y = rd_sel_buff %>% st_union) %>% 
+  st_geometry %>% plot(col = "grey")
+# st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
+#   st_difference(x = ., y = rd_sel_buff) %>% st_geometry %>% 
+#   plot(col = "grey")
 ```
 
 ---
@@ -83,6 +89,12 @@ par(mar = rep(0, 4))
 rd_sel_buff %>% st_union %>% plot(col = "grey")
 farmers_uni %>% slice(ind) %>% st_geometry %>% 
   plot(add = TRUE, pch = 20, col = "blue1", cex = 0.2)
+
+par(mar = rep(0, 4))
+rd_sel_buff %>% st_union %>% plot(col = "grey")
+farmers_uni %>% slice(ind) %>% st_buffer(dist = 100000) %>% st_geometry %>% 
+  plot(add = TRUE, col = "blue1", cex = 0.2)
+
 ```
 
 ---
@@ -93,13 +105,18 @@ farmers_uni %>% slice(ind) %>% st_geometry %>%
 r <- raster(extent(30, 31, -14, -13), res = 0.1, 
             crs = "+proj=longlat +datum=WGS84")
 values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+
+par(mar = c(0, 0, 0, 0))
 plot(sdat$d %>% st_geometry)
 plot(r, add = TRUE)
+plot(r)
 
 s <- stack(r, log10(r))
 names(s) <- c("dummy", "log10dummy")
+plot(s)
 
 b <- brick(s)
+plot(b)
 ```
 
 - read and write
