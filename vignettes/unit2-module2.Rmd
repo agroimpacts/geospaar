@@ -988,10 +988,8 @@ randrain <- raintot[distsamp[, 1]]
 # #3
 set.seed(1)
 distsamp_str <- sampleStratified(x = distsrfarm, 
-                                 size = nrow(farmers_env) / length(farmdistid), 
-                                 cells = TRUE)
+                                 size = nrow(farmers_env) / length(farmdistid),                                  cells = TRUE)
 stratrandrain <- raintot[distsamp_str[, 1]]
-
 
 # #4
 rand_rain_stats <- bind_rows(
@@ -1013,18 +1011,27 @@ In #3 we apply the more correct way of collecting a representative sample from u
 In #4, we redo the boxplots, showing the results from the two approaches to random sampling alongside the distribution of district mean rainfall values (extracted in Chunk 40). Both approaches produce statistics that are quite representative of the district rainfall. The stratified approach is closest, as the median aligns more closely with that of `distrain`. 
 
 ## Practice
-__Under construction__
-
 ### Questions
+1. What are two ways of converting a continous to categorical raster? 
+
+2. What are two methods of sampling from a `raster`? Are the others (a look in `raster`s help files will be informative)?
 
 ### Code
+1. Use `calc` to find the standard deviation of rainfall for each cell in `chirpsz`. 
+
+2. Use raster algebra to find the country-wide average standard deviation, and then identify which areas of Zambia have values **less** than that. 
+
+3. Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries together with `cut`. Use `plot_noaxes` to show the result. 
+
+4. Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts randomly selected using `dplyr::sample_n` (use a seed of 11) from `districts`. Use `raintot` as the rasterization target. Mask `raintot` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. 
+
+5. Use `sampleRandom` with a size of 300 to get a random sample of rainfall values from `newrandrain` (use a seed of 1), saving the result as `randsamp`. Use `sampleStratified` with `cell = TRUE` to get a sample of 300 / 15 samples from `randdistsr`. Use the cell IDs to extract the rainfall values from `newrandrain`, saving the output vector as `stratsamp`. Create a tibble that binds these two vectors by row (as in Chunk 41 #4), and then plot the two results as side-by-side boxplots with `ggplot`. 
 
 ***
 <center>
 [Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
 </center>
 ***
-
 
 # Terrain analysis, interpolation, and modeling
 
@@ -1184,7 +1191,7 @@ In #2 we calculate slope, aspect, flow direction, and the topographic ruggedness
 
 Interpolating between point values is a fairly common GIS analysis. The `interpolate` function of raster allows you to do this using a number of different types of models, such as kriging and inverse distance weighting. We are going to demonstrate both approaches, drawing on functions provided by the `gstat` package (please install it):
 
-```{r interpolate, eval = FALSE}
+```{r interpolate, fig.width=5, fig.height=4}
 # Chunk 46
 # install.packages("gstat")
 library(gstat)
@@ -1215,19 +1222,20 @@ m <- fit.variogram(object = v, model = vgm("Sph"))  # d
 m
 plot(variogramLine(m, max(v[, 2])), type = "l")  # e
 points(v[, 2:3], pch = 20)  # f
-legend("bottomright", legend = c("variogram fit", "variogram"), lty = c(1, NA), 
-       pch = c(NA, 20), bty = "n") # g
-
+legend("bottomright", legend = c("variogram fit", "variogram"), 
+       lty = c(1, NA), pch = c(NA, 20), bty = "n") # g
+```
+```{r, eval = FALSE}
 # #5
 ordkrig <- gstat(id = "rain", formula = rain ~ 1, data = rainsamp, model= m)
 ordkrigr <- interpolate(object = r, model = ordkrig)
 ordkrigrmsk <- mask(x = ordkrigr, mask = raintotalb)
 
 raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
-names(raininterp) <- c("Actual rain", "IDW rain", "Kriged rain")
+titles <- c("Actual rain", "IDW rain", "Kriged rain")
 par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
 plot(rainsamp, pch = 20, cex = 0.5)
-for(i in 1:3) plot_noaxes(raininterp[[i]], main = names(raininterp)[i])
+for(i in 1:3) plot_noaxes(raininterp[[i]], main = titles[i])
 ```
 
 ```{r, eval = FALSE, echo = FALSE}
@@ -1236,7 +1244,7 @@ raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
 names(raininterp) <- c("Actual rain", "IDW rain", "Kriged rain")
 par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
 plot(rainsamp, pch = 20, cex = 0.5)
-for(i in 1:3) plot_noaxes(raininterp[[i]], main = names(raininterp)[i])
+for(i in 1:3) plot_noaxes(raininterp[[i]], main = titles[i])
 dev.off()
 ```
 
@@ -1271,8 +1279,7 @@ If you want to calculate how far any point on a grid is from a particular point 
 # Chunk 47
 # #1
 set.seed(1)
-randsamp <- sampleRandom(raintotalb, size = 10, xy = TRUE) %>% as_tibble %>% 
-  st_as_sf(coords = c("x", "y"))
+randsamp <- sampleRandom(raintotalb, size = 10, xy = TRUE) %>% as_tibble %>%   st_as_sf(coords = c("x", "y"))
 
 # #2
 ptdistr <- distanceFromPoints(object = raintotalb, xy = as_Spatial(randsamp))
@@ -1294,7 +1301,7 @@ for(i in 1:nlayers(s)) {
 
 In #1, we draw 10 randomly selected points from `raintotalb` and create a `SpatialPointsDataFrame` called `randsamp`. Here we are interested just in the spatial locations, not the values.  
 
-In #2, we use the `distanceFromPoints` function to find how far any given point in an input raster (`raintotalb`) is from the xy locations contained in `randsamp`. `raintotalb` serves to just provide the dimensions of the raster surface from which we want to calculate distance values. We mask the resulting distance surface (`ptdistr`) to confine the results to Zambia's borders.
+In #2, we use the `distanceFromPoints` function to find how far any given point in an input raster (`raintotalb`) is from the xy locations contained in `randsamp`. `raintotalb` serves here simply to provide the dimensions of the raster surface from which we want to calculate distance values. We mask the resulting distance surface (`ptdistr`) to confine the results to Zambia's borders.
 
 Block #3 does pretty much the same thing, but in this case we use the `distance` function, which takes a set of rasterized points (where the only cells having values are the cells underlying the points that were rasterized--the rest are NA) and calculates the distances from every other cell (the NA values) to the nearest rasterized point having a non-NA value.  
 
@@ -1314,6 +1321,7 @@ Although there are many, many more analyses and capabilities we could illustrate
 
 First, we will use `getData` to download the Worldclim global precipitation layer (at a resolutMion of 2.5 minutes of a degree), then `crop` the data to Zambia's extent, sum the resulting cropped monthly values into a single annual value, mask the result, and then save it so that it becomes available as a lazy load with the `geospaar` package. The code for doing this is below, which doesn't execute as part of this vignette.  
 ```{r, eval = FALSE}
+# Chunk 48
 wcprec <- getData("worldclim", var = "prec", res = 2.5, path = p_data)
 zamprec <- crop(wcprec, y = districts)
 zamprec <- mask(calc(zamprec, sum), districts)
@@ -1322,6 +1330,7 @@ save(zamprec, file = "data/zamprec.rda")
 
 After doing that (and rebuilding `geospaar`), we can do our analysis, loading in the `zamprec` data as we need it.
 ```{r, fig.width=7, fig.height = 3}
+# Chunk 49
 # #1
 data(zamprec)
 zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
@@ -1403,11 +1412,89 @@ So that's about it for this module.
 ***
 
 ## Practice
-__Under construction__
-
 ### Questions
+1. How do we estimate the pixel area of rasters when they are in non-projected coordinate systems? 
+
+2. How can you add mathematical symbols and other special characters (e.g. superscripts) to graphics? 
+
+3. When you want to apply a fitted model to a stack or brick of rasters (e.g. `pred_stack` that provide the model predictor layers, what do we have to remember to do with `names(pred_stack)`? 
 
 ### Code
+1. Crop `demalb` down to the extent of district 42 (bear in mind that `districts` needs to be in the same projection as `demalb`, so transform it first). Then calculate slope, aspect, and TPI on the cropped DEM. Plot the results so that they appear in 3 side by side panels.
+
+2. Using the code in Chunk 46 blocks #1-#3 as your template, re-create IDW interpolations using the original 1000 randomly sampled points. Then create two new ones based on 1) 500 and 2) 250 randomly selected points (use the same seed). Stacking the results in this order: `raintotalb`, the 1000 point IDW, the 500 point IDW, and the 250 IDW. Plot these in a single call to `plot_noaxes`, setting `zlim = c(0, 150)` and passing informative titles to the "main" argument (e.g. "CHIRPS", "1000 pt IDW", "500 pt IDW", etc). There are two ways of doing this: i) the hard way, by copying, pasting, and changing code blocks #2 and #3 for each version of the IDW; ii) the programmatic way, by creating the three IDWs in an `lapply`. Note: if you choose the elegant way, to make the stack, you will either need to `stack(c(raintotalb, idw_list))` or `stack(raintotalb, stack(idw_list))` stack the list of three idws, and then stack that with `raintotalb`.
+
+3. Select (`filter`) districts 15, 20, 25, 30, 35, 40, 45, and 50 out of `districts`. Convert the resulting subset of districts to Albers projection, and then extract the centroids of those districts. Convert the centroids to an `sp` object using `as_Spatial`. Using `raintotalb` as your target, use `distance` or `distanceFromPoints` to calculate the distances from any point in Zambia to the centroids of those selected districts. Mask the result (you can use `raintotalb` again for the mask target) and plot it using `plot_noaxes`. 
+
+4. Redo the code in Chunk 49, but use a new random draw of just 25 points to collect the predictors (ref. #2). How much more poorly does this model do than the one with denser observations?
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
 
 # Unit assignment
-__Under construction__
+## Set-up
+Make sure you are working in the master branch of your project (you should not be working on the a4 branch). Create a new vignette named "unit2-module2.Rmd". You will use this to document the tasks you undertake for this assignment. 
+
+There are no package functions to create for this assignment. All work is to be done in the vignette. 
+
+## Vignette tasks
+1. Create a subset of `districts` by extracting districts 22, 26, 53, and 54. Call it `districts_ss`. Use the extent of `districts_ss` (`extent(districts_ss)`) to define the extent of a new raster `r`, which should have a resolution of 0.1&deg;. Use `r` as a template for creating two new rasters, `rsamp` and `runi`. `rsamp` should be filled with randomly selected integers ranging between 10 and 50. `rrandn` should be filled with random numbers drawn from a normal distribution (`rnorm`) that has a mean of 30 and standard deviation of 5. Use a seed of 1 in `set.seed`. Stack `rsamp` and `runi` (name the stack `s`), mask that by `districts_ss`, and plot `s` using `plot_noaxes`. (Ref: Chunks 1, 3, 4, 16)
+
+2. Disaggregate `s[[1]]` to a resolution of 0.025&deg;, using bilinear interpolation, calling the result `s2_1d`. Select all areas of `s2_1d` that have values > 35, creating a new raster `s2_1gt35`. Set the values of `s2_1gt35` that equal 0 to NA. Then convert the resulting raster into an `sf` object called `s2poly`. Plot the resulting polygons over `s2_1d`. (Ref: Chunks 10, 22, 37) 
+
+3. Create a new grid from the extent of `districts` that has a resolution of 0.5&deg; (call it `zamr`), assigning all cells a value of 1. Then recreate the `farmersr` dataset--a raster that sums the number of farmers falling within each grid cell. Mask the results using `districts`, and then plot the result onto a grey background of Zambia. (Ref: Chunk 8, 37)
+
+4. Convert the rasterized farmers counts (`farmersr`) back into an `sf` points object `farmersrpts`. Create a new version of `zamr` at 0.05&deg;, and then calculate the distance between these points and every other location in Zambia, creating an output grid of distances, called `dist_to_farmers`, which you mask by `districts`. Plot `dist_to_farmers` in kilometers (i.e. divide it by 1000) using `plot_no_axes`, with `farmersrpts` overlaid as black solid circles. (Ref: Chunks 8, 10, 47)
+
+5. Use `raster`'s `getData` function to grab WorldClim's mean temperature ("tmean") dataset at a resolution of 2.5 (note this is not degrees, but minutes of a degree), and download it to somewhere on your local disk. That will give a global scale `RasterBrick` with 12 layers, with each layer representing the average monthly temperature for each grid cell on the planet. Crop that brick to the extent of `districts`, and then calculate the annual mean temperature for each cell. Mask the result using `districts`, and divide it by 10 to get temperature in &deg;C in your final raster, `zamtmean`. Plot the result. (Ref: Chunk 17, 18, 48)
+
+6. Classify the temperature data into three categories, low, medium, and high, using <20&deg;, 20-24&deg;, and >24&deg; as the break points for determining the classes.  Use the `reclassify` function rather than the `cut` function, which means you need to set up a reclassification matrix, which you should do like this:
+
+    ```{r, eval = FALSE}
+    trng <- cellStats(zamtmean, range)
+    reclmat <- cbind(c(floor(trng[1]), 20, 24), c(20, 24, ceiling(trng[2])), 1:3)
+    ```
+
+    Here `cellStats` is helping to find the values of tmin and tmax, which respectively define the lower bound of the "low" class and the upper bound of the "high" class. What are the functions `floor` and `ceiling` doing (answer this in your vignette)? Call the reclassified temperature raster `zamtclass`. Make the map using `plot_noaxes` with a categorical legend, and using the colors "blue", "yellow2", and "red" for the three classes. (Ref: Chunk 26, 39)
+
+7. Load up the `zamprec` dataset (`data(zamprec)`) that comes with `geospaar`, then calculate the mean precipitation within each temperature zone defined by `zamtclass`. Call the resulting matrix `z`. Map the mean zonal precipitation values in `z` onto each temperature zone (using the `subs` function with `zamtclass` as the target; remember that `zonal` returns a matrix, and that `subs` requires a `data.frame` or `tibble` for its y argument). Call the new raster `zamprecz`, and then plot it using `plot_noaxes`, with a custom legend (as done in Task 6), using the rounded zonal mean values (rounded) as the legend labels (`legend = round(z$mean)`). Use colors "yellow2", "green3", and "blue" for the three classes (Ref: Chunks 32, 33, 39)
+
+8. Use `getData` again to download the elevation raster for Zambia (call it `dem`). Aggregate it to the same resolution as `zamtmean`, using the default mean aggregation (the factor you need is 5). Call that `dem5`. Use `terrain` to calculate aspect from `dem5` (call it `aspect`), selecting degrees as the output value. Then find all west-facing aspects (aspects >247.5 and <292.5), and all east facing aspects (>67.5 and <112.5), making new rasters respectively named `west` and `east`, e.g. `west <- aspect > 247.5 & aspect < 292.5)`. Stack these together with `aspect` and make a three-panel plot with `plot_noaxes` with titles "Aspect", "West", and "East". (Ref: Chunks 37, 42)
+
+9. Using a random seed of 1, create two random samples of 100 each. The first one should be collected from within the west-facing cells (i.e. only be drawn from cells in `west` that have a cell of one), and the second from east-facing cells. To do this, set the cells equal to 0 in `east` and `west` to NA (e.g. `west[west == 0] <- NA`). Once you have collected those, convert the resulting `sp` objects to `sf`, and use those two sets of points to extract temperature values from `zamtmean` into a tibble `temp_stats`, which is going to look this: 
+
+    ```{r, eval=FALSE}
+    temp_stats <- bind_rows(
+      tibble(temp = raster::extract(zamtmean, westpts), dat = "West"), 
+      tibble(temp = raster::extract(zamtmean, eastpts), dat = "East")
+    )
+    ```
+
+    Then use `temp_stats` with `ggplot` to make side-by-side boxplots to compare the distributions of west and east facing temperatures, modeled on the example in Chunk 40 #4. (Ref: Chunks 37, 40)
+
+10. **Extra credit worth (5 points).** Extract the centroids from each district in `districts` (call it `dcent`), and reproject the points to Albers, using the `st_crs(roads)`. Reproject `zamtmean` to Albers also, making the new resolution (5 km, i.e. 5000 m), using bilinear interpolation (call it `zamtmeanalb`). Then use `dcent` to extract the temperature values from `zamtmeanalb` (add the values to `dcent` as a new variable "temp" using `mutate`). Use `gstat` to create an IDW model (call it `idw`). To make the IDW work, which isn't `sf` compliant, some extra work will be required, as shown below (this is the step needed after the extract of temperature values)
+
+    ```{r, eval = FALSE}
+    dcent <- bind_cols(
+      dcent %>% data.frame %>% dplyr::select(-geometry) %>% as_tibble, 
+      st_coordinates(dcent) %>% as_tibble)
+    ) %>% rename(x = X, y = Y)
+    ```
+    
+    This yields a `tibble` with columns *x* and *y* that are needed by `gstat`. After running `gstat`, map the interpolated temperatures using `zamtmeanalb` as a target object (it won't be overwritten) and `idw` as the model. Make sure you mask the result to the boundaries of Zambia, using `zamtmeanalb` as the mask. Call the new interpolated, masked grid `zamtidw`. Plot the result side by side with `zamtmeanalb` for comparison using `plot_noaxes` with titles "Real Temperature" and "IDW Temperature". (Refs: Chunks 46, 49)
+
+## Assignment output
+Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assignment-output) for submission instructions. The only differences are as follows:
+
+1. Your submission should be on a new side branch "a5";
+2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.2 to 0.0.3) in the DESCRIPTION;
+3. Do not worry about #3 in those instructions
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***

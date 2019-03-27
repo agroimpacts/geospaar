@@ -374,3 +374,178 @@ plot_noaxes(s, nr = 1)
 [Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+## Practice 3
+### Questions
+1. Using `cut` with vector of breakpoints (e.g. quantiles), or use `reclassify` with a reclassification matrix.
+
+2. `sampleRandom`, `sampleStratified`. There is also `sampleRegular`. 
+
+### Code
+1. 
+```{r, eval = FALSE}
+chirps_sd <- calc(chirpsz, fun = sd)
+```
+
+2. 
+```{r, eval = FALSE}
+(chirps_sd < cellStats(chirps_sd, mean)) %>% plot
+```
+
+3. 
+```{r, eval = FALSE}
+quantile(raintot, probs = seq(0, 1, 0.2)) %>% cut(raintot, .) %>% 
+  plot_noaxes
+```
+
+4. 
+```{r, eval = FALSE}
+set.seed(11)
+randdistsr <- districts %>% sample_n(size = 15) %>% rasterize(., raintot)
+plot_noaxes(randdistsr)
+
+newrandrain <- mask(raintot, randdistsr)
+newrandrain %>% plot_noaxes
+```
+
+5. 
+```{r, eval = FALSE}
+set.seed(1)
+randsamp <- sampleRandom(x = newrandrain, size = 300)
+
+set.seed(1)
+ind <- sampleStratified(x = randdistsr, size = 300 / 15, cells = TRUE)
+stratsamp <- newrandrain[ind[, 1]]
+
+rand_rain_stats <- bind_rows(
+  tibble(rain = randsamp, dat = "Simple"),
+  tibble(rain = stratsamp, dat = "Stratified"),
+) %>% drop_na
+
+bp_theme <- theme(legend.title = element_blank(), axis.text.x = element_blank(),
+                  axis.ticks.x = element_blank(), 
+                  panel.grid.major.x = element_blank(), 
+                  panel.grid.minor.x = element_blank(), 
+                  panel.background = element_rect(fill = "grey95"))
+
+rand_rain_stats %>% ggplot() +
+  geom_boxplot(mapping = aes(y = rain, fill = dat), position = "dodge2") +
+  scale_fill_manual(values = c("lightblue", "steelblue")) + 
+  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + bp_theme
+
+```
+
+## Practice 4
+### Questions
+1. The `area` function is your friend for this. 
+
+2. Use `expression` together combined with `paste` as needed for more complex labels. 
+
+3. Make `names(predstack)` matches the predictor names used by the model. 
+
+### Code
+1. 
+```{r, eval = FALSE}
+demalb42 <- districts %>% filter(ID == 42) %>% st_transform(st_crs(roads)) %>% 
+  crop(demalb, .)
+vars <- c("slope", "aspect", "flowdir", "tri")
+terrvars <- stack(lapply(1:length(vars), function(x) {
+  tv <- terrain(x = demalb42, opt = vars[x], unit = "degrees")
+}))
+names(terrvars) <- vars
+
+plot_noaxes(terrvars)
+
+```
+
+2. 
+```{r, eval = FALSE}
+library(gstat)
+
+# #1
+raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
+names(raintotalb) <- "rain"
+r <- raster(extent(raintotalb), res = res(raintotalb), crs = crs(raintotalb),             vals = 1)
+
+# lapply approach to interpolation
+idw_list <- lapply(c(250, 500, 1000), function(x) {
+  set.seed(1)
+  rainsamp <- sampleRandom(raintotalb, size = 1000, xy = TRUE)
+  rainsamp <- as.data.frame(rainsamp)
+  invdist <- gstat(id = "rain", formula = rain ~ 1, locations = ~x + y, 
+                   data = rainsamp)
+  invdistr <- interpolate(object = r, model = invdist)
+  invdistrmsk <- mask(x = invdistr, mask = raintotalb)
+})
+
+idws <- stack(c(raintotalb, idw_list))
+
+titles <- c("CHIRPS rainfall", "1000 pt IDW", "500 pt IDW", "250 pt IDW")
+plot_noaxes(idws, main = titles, zlim = c(0, 150))
+```
+
+3. 
+```{r, eval = FALSE}
+districts %>% filter(ID %in% seq(15, 50, 5)) %>% 
+  st_transform(st_crs(roads)) %>% st_geometry %>% st_centroid %>% 
+  as_Spatial(.) %>% 
+  distanceFromPoints(object = raintotalb, xy = .) %>% 
+  mask(., raintotalb) %>% plot_noaxes
+```
+
+4. Pretty close to results of highest density sample. Slightly higher mean error. 
+```{r, eval = FALSE}
+# #1
+data(zamprec)
+zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
+names(zamprecalb) <- "rain"
+elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
+
+# #2
+set.seed(1)
+pts <- sampleRandom(x = zamprecalb, size = 25, sp = TRUE) %>% st_as_sf
+pts <- pts %>% mutate(elev = raster::extract(x = elev, y = .)) 
+pts_dat <- bind_cols(pts %>% data.frame %>% select(-geometry) %>% as_tibble, 
+                     st_coordinates(pts) %>% as_tibble) %>% drop_na
+  
+# #3
+p1 <- ggplot(pts_dat) + geom_point(aes(X, rain), col = "steelblue") +
+  ylab("Rainfall (mm)")
+p2 <- ggplot(pts_dat) + geom_point(aes(Y, rain), col = "blue2") + ylab("")
+p3 <- ggplot(pts_dat) + geom_point(aes(elev, rain), col = "darkblue") + ylab("")
+cowplot::plot_grid(p1, p2, p3, nrow = 1)
+
+# #4
+rain_lm <- lm(rain ~ X + Y + elev, data = pts_dat)
+summary(rain_lm)
+
+# #5
+xs <- xFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+ys <- yFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+X <- Y <- raintotalb
+values(X) <- xs
+values(Y) <- ys
+
+# #6
+predst <- stack(X, Y, elev)
+names(predst) <- c("X", "Y", "elev")
+predrainr <- predict(object = predst, model = rain_lm)
+
+# #7
+s <- stack(zamprecalb, predrainr, (predrainr - zamprecalb) / zamprecalb * 100)
+mae <- round(cellStats(abs(zamprecalb - predrainr), mean), 1)  
+
+pnames <- c("'Observed' Rainfall", "Predicted Rainfall", "% Difference")
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 4))
+for(i in 1:3) {
+  plot_noaxes(s[[i]], main = pnames[i])
+  if(i %in% 1:2) {
+    pts %>% st_geometry %>% 
+      plot(pch = 20, cex = 0.2, col = "grey70", add = TRUE)
+  } else {
+    mtext(side = 1, line = -3, cex = 0.8, 
+          text = paste("Mean abs err =", mae, "mm"))
+  }
+}
+```
+
