@@ -582,7 +582,7 @@ Here's a more programmatic way of using `cellStats`:
 ```{r, fig.width=7, fig.height=4}
 # Chunk 28
 # #1
-rain_stats <- lapply(c("mean", "sum", "sd", "cv"), function(x) {
+rain_stats <- lapply(list(mean, sum, sd, cv), function(x) {
   cellStats(x = chirpsz, stat = x)
 })
 names(rain_stats) <- c("mean", "sum", "sd", "cv")
