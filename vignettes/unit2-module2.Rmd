@@ -1480,7 +1480,7 @@ There are no package functions to create for this assignment. All work is to be 
     ```{r, eval = FALSE}
     dcent <- bind_cols(
       dcent %>% data.frame %>% dplyr::select(-geometry) %>% as_tibble, 
-      st_coordinates(dcent) %>% as_tibble)
+      st_coordinates(dcent) %>% as_tibble
     ) %>% rename(x = X, y = Y)
     ```
     
