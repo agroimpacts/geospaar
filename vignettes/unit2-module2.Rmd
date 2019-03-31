@@ -173,7 +173,7 @@ s <- stack(l)
 
 # #4 - read in brick
 b <- raster(file.path(tempdir(), "b.tif"))  # incorrect, reads in just 1st layer
-b <- brick("external/unit2/data/b.tif")  # correct, reads in whole brick
+b <- brick(file.path(tempdir(), "b.tif"))  # correct, reads in whole brick
 ```
 
 In #1 above, we use `writeRaster` to write out each of the three individual rasters to a geotiff, and write `b` to a three-band geotiff. In #2 we use the `raster` function to read back in the individual rasters, and then recreate stack `s` from those. #3 is a more programmatic way of doing #2, using the `dir` function to read the directory, looking for filenames matching a pattern, and returning the full paths to the matching files. These paths are then used in an `lapply` to read the files in with `raster`, recreating list `l`, which is then stacked. The pipeline approach that wraps up these commands in one line is shown commented out below that. 

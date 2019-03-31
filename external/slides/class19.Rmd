@@ -103,8 +103,8 @@ plot_noaxes(chirps[[1]])
 chirpsz <- mask(chirps, districts)
 plot_noaxes(chirpsz[[1]])
 # rasterVis::levelplot(chirpsz[[1:5]])
-plot_noaxes(chirpsz, nr = 5, nc = 6, maxnl = 30, legend = FALSE, 
-            zlim = c(0, 50))
+plot_noaxes(chirpsz, nr = 5, nc = 6, maxnl = 30, 
+            legend = FALSE, zlim = c(0, 50))
 ```
 
 ---
