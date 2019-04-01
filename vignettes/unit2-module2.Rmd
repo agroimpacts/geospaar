@@ -1191,7 +1191,7 @@ In #2 we calculate slope, aspect, flow direction, and the topographic ruggedness
 
 Interpolating between point values is a fairly common GIS analysis. The `interpolate` function of raster allows you to do this using a number of different types of models, such as kriging and inverse distance weighting. We are going to demonstrate both approaches, drawing on functions provided by the `gstat` package (please install it):
 
-```{r interpolate, fig.width=5, fig.height=4}
+```{r interpolate, eval=FALSE}
 # Chunk 46
 # install.packages("gstat")
 library(gstat)
@@ -1225,6 +1225,28 @@ points(v[, 2:3], pch = 20)  # f
 legend("bottomright", legend = c("variogram fit", "variogram"), 
        lty = c(1, NA), pch = c(NA, 20), bty = "n") # g
 ```
+```{r, echo=FALSE, eval=FALSE}
+invdist <- gstat(id = "rain", formula = rain ~ 1, locations = ~x + y, 
+                 data = rainsamp)
+invdistr <- interpolate(object = r, model = invdist)
+invdistrmsk <- mask(x = invdistr, mask = raintotalb)
+
+# #4
+coordinates(rainsamp) <- ~x + y  # a
+crs(rainsamp) <- crs(roads)  # b
+v <- variogram(object = rain ~ 1, data = rainsamp)  # c
+m <- fit.variogram(object = v, model = vgm("Sph"))  # d
+m
+png("fig/u2m2-1.png", height = 4, width = 4, units = "in", res = 300)
+plot(variogramLine(m, max(v[, 2])), type = "l")  # e
+points(v[, 2:3], pch = 20)  # f
+legend("bottomright", legend = c("variogram fit", "variogram"), 
+       lty = c(1, NA), pch = c(NA, 20), bty = "n") # g
+dev.off()
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2-1.png")
+```
 ```{r, eval = FALSE}
 # #5
 ordkrig <- gstat(id = "rain", formula = rain ~ 1, data = rainsamp, model= m)
@@ -1239,7 +1261,7 @@ for(i in 1:3) plot_noaxes(raininterp[[i]], main = titles[i])
 ```
 
 ```{r, eval = FALSE, echo = FALSE}
-png("vignettes/fig/u2m2-1.png", height = 400, width = 600)
+png("fig/u2m2-2.png", height = 400, width = 600)
 raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
 names(raininterp) <- c("Actual rain", "IDW rain", "Kriged rain")
 par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
@@ -1249,7 +1271,7 @@ dev.off()
 ```
 
 ```{r, echo = FALSE, out.width="60%"}
-knitr::include_graphics("fig/u2m2-1.png")
+knitr::include_graphics("fig/u2m2-2.png")
 ```
 
 This example is reasonably complex, both conceptually and with respect to code. We will refer you to other, non-R literature to explain how  [interpolation](http://gisgeography.com/inverse-distance-weighting-idw-interpolation/) and [kriging](http://gisgeography.com/kriging-interpolation-prediction/) work, and confine our explanations to the code. 
