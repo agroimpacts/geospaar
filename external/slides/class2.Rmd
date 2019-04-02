@@ -17,7 +17,6 @@ output:
 
 ```{r, eval = FALSE}
 library(ggmap)
-gkey <- "***REMOVED***"
 load("external/data/gkey.rda")
 m <- get_googlemap(center = c(-71.8229, 42.2511), zoom = 17, maptype = "hybrid",
                    key = gkey)

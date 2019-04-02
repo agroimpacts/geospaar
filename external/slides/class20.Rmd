@@ -40,7 +40,8 @@ chirpsz <- mask(chirps, districts)
 (1 + 1.456 * chirpsz[[nlayers(chirpsz)]]) %>% plot
 ```
 
-- statistics
+- statistics: The mean rainfall value is `r round(cellStats(chirpsz[[1]], mean), 3)`
+
 ```{r, eval = FALSE}
 cellStats(chirpsz[[1]], mean)
 cellStats(chirpsz[[1]], range)
@@ -69,7 +70,7 @@ zonal(x = chirpsz[[1]], z = distsr) %>% as.data.frame %>%
 
 - z dimension stats
 ```{r, eval = FALSE}
-calc(chirpsz, mean) %>% plot
+calc(chirpsz, mean) %>% plot_noaxes
 calc(chirpsz, sd) %>% plot
 
 # regression
