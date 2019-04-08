@@ -57,11 +57,6 @@ Continued on next slide...
 - Use `heightcat` as zones for calculating mean rainfall. You will have to resample `heighcat` to `raintot`'s resolution. Chunk 32. 
 
 
-
-
-
-
-
 ---
 ## Code appendix
 
