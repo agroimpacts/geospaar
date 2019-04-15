@@ -21,8 +21,6 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-__[In revision]__
-
 ***
 <center>
 [Back to **vignette index**](toc.html)
@@ -31,7 +29,7 @@ __[In revision]__
 
 # Overview{#overview}
 
-Each student will undertake an R-based final project for this class. This project could be one related to your own thesis work, which we will discuss and agree upon. Alternatively, you can choose to undertake one of the projects listed below. Some of these are individual projects, some of their you will work on as part of a team. 
+Each student will undertake an R-based final project for this class. This project could be one related to your own thesis work, which we will discuss and agree upon. Alternatively, you can choose to undertake one of the projects listed below. Some of these are individual projects, some of these you will work on as part of a team. 
 
 This list is currently in thumbnail form, and will fill out during the next few weeks. 
 
@@ -113,6 +111,67 @@ The goal is to demonstrate how redistricters gerrymander congressional districts
 ### GIS Arguments against Compactness/Map Metrics
 
 There is a strong perception that gerrymandering can be foiled by GIS techniques, using things such as a compactness metric (e.g. perimeter/area ratio) as a standard to prove or prevent gerrymandering. However, such standards cannot be applied in law. One reason has to do with how perimeters are measured. That requires GIS, yet the scale and density with which the polygon defining a district has a large impact on perimeter values. The goal here would be to write an R package to demonstrate and visualize how such variations in polygon delineation can impact perimeter:area ratios. This could be done quite simply with the creation of toy polygons and the use of introduced errors into node x,y coordinates. If successful and compelling, it could have an important impact on policy. 
+
+***
+<center>
+[Back to top](#overview) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+# Assignment
+
+The final assignment of this course is to provide a plan for your semester research project.
+
+## Set-up
+We are saying goodbye to the repos/packages we used for assignments 1-5 (e.g. your version of `xyza1`). Start a new package with a Git/GitHub repo, naming it something short but descriptive of the project you are doing. Follow the R package naming conventions to setup your repo name. This should be a private repo under the agroimpacts organization. 
+
+As with your previous assignments, your work should be structured as an R package. That does not mean that you will necessarily need to be writing functions that are native to the package (i.e. documented functions living in the R folder that build with the package), but you should be writing your project up and showing your code and analysis within vignettes.  
+
+## Tasks
+
+For this assignment, you should write a single vignette called "overview.Rmd", which has the following sections: 
+
+1. Summary: A brief (up to 250 words) description of the project, and a bullet point or enumerated list of its primary objectives. 
+
+2. Approach and Method: An outline of the analytical methods and code you plan to use, including the names of key packages that you will draw on. This section should be composed of the following sub-sections: 
+
+3. Data: A brief (~250 words) description **and** visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset.  
+
+4. Code: A bullet point summary of the analysis and coding approach that you propose to follow. For teams, this section should include a description of which member will be responsible for each bullet point. 
+
+5. Timelines: Provide a timeline for when each portion of the analysis will be completed. These timelines should be constructed relative to the time period of presentations (during the last two weeks of class) and final project submission (during exam week). For teams, names should be associated with each step on the timeline. 
+
+6. Anticipated outcomes: Briefly describe, as bullet points, the outcomes you expect for each of your primary project objectives
+
+## An additional note for teams
+
+For this last assignment, it doesn't make sense that team members do separate work in different branches of the repo, with the exception of cases where data fetching and wrangling tasks needed to describe and visualize the data are partitioned between members. In this case, team members should have separate vignettes in their respective branches describing the data gathering and processing steps to date. Otherwise, the expectation is that this assignment is presented as a jointly written vignette that builds with the package in the master branch. Please put your initials next to sections that you were responsible for writing. If you want to get really advanced, you can each jointly work on a version of overview in your own branches, and then do a merge and reconcile of your differing version in the master branch. 
+
+
+## Assessment
+
+For this final assignment, assessment will be out of 50 points using simplified and somewhat different categories: 
+
+1. Quality of plan:
+    - No plan (analysis/coding approach and timelines) provided: 0 pts
+    - Plan (analysis/coding approach and timelines) is provided but mostly unworkable, many holes or inconsistencies in logic or approach: 7.5 pts
+    - Probably workable plan, but with a fair number of holes or inconsistencies that need to be addressed: 15 pts
+    - A pretty well thought-out and workable plan, with just a handful of holes or inconsistencies remain: 22.5 pts
+    - Excellent, well thought plan, no obvious flaws in approach: 30 pts
+
+2. Structure and completeness: 
+    - Assignment does not at all follow required structure or provide requested information: 0 pts
+    - Assignment barely follows required structure or provide requested information: 2.5 pts
+    - Assignment partially follows structure and provides part of the information: 5 pts 
+    - Assignment mostly follows structure and provides most of the required information: 7.5 pts
+    - Assignment perfectly follows structure and provideds all the required information: 10 pts
+
+3. Reproducibility:
+    - Doesn't work at all/no R package structure: 0 pts
+    - Runs after numerous fixes: 2.5 pts
+    - Runs after several fixes: 5 pts
+    - Runs after one or two fixes: 7.5 pts
+    - Runs out of the box: 10 pts
 
 ***
 <center>

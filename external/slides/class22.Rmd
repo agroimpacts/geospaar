@@ -61,7 +61,8 @@ p
 ```{r, eval=FALSE}
 library(ggmap)
 pt <- st_union(districts) %>% st_centroid %>% st_coordinates %>% unlist
-hdf <- get_map(location = pt[1, ], zoom = 5, source = "google")
+hdf <- get_map(location = pt[1, ], zoom = 5, 
+               source = "google")
 ```
 
 ---
@@ -90,12 +91,15 @@ tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
   # tm_shape(World) + tm_borders()
 ```
 ---
+
 ### leaflet
 ```{r, echo = FALSE, eval=FALSE}
 load(file.path("~/Dropbox/projects/activelearning/mapper/spatial/data/test",
                "inspect_user_maps_data.rda"))
 ```
 ```{r, eval = FALSE}
+
+
 # set up some plotting options
 library(leaflet)
 falseparm <- "&redBand=3&greenBand=2&blueBand=1"
