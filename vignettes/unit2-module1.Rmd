@@ -95,7 +95,7 @@ Note that there are multiple dates for most farmers, and since this is a long fo
 
 Here's a quick look:
  
-```{r, message=FALSE}
+```{r, message=FALSE, message=FALSE}
 # Chunk 1
 farmers <- read_csv(system.file("extdata/farmer_spatial.csv", 
                                 package = "geospaar"))

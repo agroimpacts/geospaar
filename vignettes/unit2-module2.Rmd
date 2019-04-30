@@ -417,7 +417,7 @@ chirpsz <- mask(x = chirps, mask = districts)
 
 set.seed(1)
 ind <- sample(1:nlayers(chirpsz), size = 3)
-plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1) 
+plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
 ```
 
 The new `chirpsz` dataset contains all rainfall days with the values outside of Zambia converted to NA. The three plots are randomly selected from the layers of `chirpsz`, as a check to confirm that the masking was applied to all layers. 

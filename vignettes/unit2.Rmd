@@ -11,7 +11,7 @@ output:
     toc: yes
     css: unit.css
 vignette: >
-  %\VignetteIndexEntry{Unit 1}
+  %\VignetteIndexEntry{Unit 2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
