@@ -1,5 +1,5 @@
 ---
-title: "Unit 2 - Module 2"
+title: "Unit 2 Module 2"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
