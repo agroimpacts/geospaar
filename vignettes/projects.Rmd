@@ -73,7 +73,7 @@ This analysis would be undertaken using remotely sensed datasets: NDVI time seri
 
 ## In Sutton, MA
 
-Continuing analyses of UAS, satellite, and sensor datasets collected this past summer in Sutton MA (for students who took GEOG294/394). 
+Continuing analyses of UAS, satellite, and sensor datasets collected during the  past two summers in Sutton MA. 
 
 Among possible ideas are Shiny dashboards for: 1) displaying pod data over time; 2) displaying "cones of uncertainty" from projected crop yield simulations.
 
@@ -81,9 +81,9 @@ Among possible ideas are Shiny dashboards for: 1) displaying pod data over time;
 
 Use R-implemented machine learning techniques to classify fungal blight in UAS time series collected over cranberry bogs in New Jersey.
 
-## How well do crowdsourcers map individual fields? 
+## Analyzing Ghanaian croplands 
 
-The [Mapping Africa](http://mappingafrica.princeton.edu) project that uses a crowdsourcing platform to digitize cropland visible in high resolution satellite imagery, working within assigned mapping units of 1 km^2^. Our initial production run of the platform (run in the summer of 2016) mapped roughly 30,000 km^2^ over Sub-Saharan Africa. Of particular interest are roughly 200 km^2^ where we had at least 20 different workers map each of the sites. A subset of fields within each site were mapped on the ground using GPS. Now, for each of the fields that we mapped on the ground, we need to assess how many crowdsourced workers digitized that particular field and how many missed it. For any worker-mapped fields that intersect the ground-mapped field, we also need to assess 1) the summary statistics of intersecting worker fields (i.e. the mean worker-mapped field size, the standard deviation, 95th percentile, etc), evaluate 2) the summary statistics of omission (percent overlap) and commission (percent of workers' maps that fell outside of the GPS-mapped field) error of the worker-mapped fields.
+The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. Our initial production run of the platform (run in the summer of 2016) mapped roughly 30,000 km^2^ over Sub-Saharan Africa. Of particular interest are roughly 200 km^2^ where we had at least 20 different workers map each of the sites. A subset of fields within each site were mapped on the ground using GPS. Now, for each of the fields that we mapped on the ground, we need to assess how many crowdsourced workers digitized that particular field and how many missed it. For any worker-mapped fields that intersect the ground-mapped field, we also need to assess 1) the summary statistics of intersecting worker fields (i.e. the mean worker-mapped field size, the standard deviation, 95th percentile, etc), evaluate 2) the summary statistics of omission (percent overlap) and commission (percent of workers' maps that fell outside of the GPS-mapped field) error of the worker-mapped fields.
 
 This exercise will involve extensive work with vector data. The results will give us important information about how reliable the crowdsourcing data are for understanding the characteristics of cropland throughout Sub-Saharan Africa. 
 
