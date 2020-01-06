@@ -8,7 +8,7 @@ output:
     highlight: github
     fig_caption: yes
     number_sections: yes
-    toc_depth: 5
+    toc_depth: 4
     toc: yes
     css: unit.css
 vignette: >
@@ -345,11 +345,12 @@ We will keep working with the data from the previous sections, adding in a new d
 
 ```{r}
 # Chunk 13
-data("chirps")
+# data("chirps")
+chirps <- brick(system.file("extdata/chirps.tif", package = "geospaar"))
 ```
 
 Since we are recycling some of the objects from the previous section but you might have cleared your workspace, we have provided hidden code (in the RMarkdown document right below this paragraph), which will allow you to quickly rebuild the necessary objects without hunting back through the previous section.
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE, echo = FALSE, message=FALSE, warning=FALSE}
 zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
 values(zamr) <- 1:ncell(zamr)
 
@@ -370,6 +371,7 @@ There a few important things we missed doing in the first section. But first let
 ```{r}
 # Chunk 14
 chirps
+names(chirps) <- paste0("Y", 16299:16326)
 names(chirps)
 ```
 
@@ -410,15 +412,32 @@ plot(test_m, axes = FALSE, box = FALSE)
 ```
 
 In the code above, we use the `districts` data to `mask` out the portions of `chirps` (the first day in the time series only) falling outside of Zambia. Let's apply that to the entire `chirps` dataset:
+<!-- ```{r, echo=FALSE, eval=FALSE} -->
+<!-- chirpsz <- raster::mask(x = chirps, mask = districts) -->
 
-```{r, fig.width=7, fig.height=2}
+<!-- png("vignettes/fig/u2m2-3.png", height = 2, width = 7, res = 300, units = "in") -->
+<!-- set.seed(1) -->
+<!-- ind <- sample(1:nlayers(chirpsz), size = 3) -->
+<!-- plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1) -->
+<!-- dev.off() -->
+<!-- ``` -->
+
+```{r, fig.width=7, fig.height=2, warning=FALSE}
 # Chunk 17
+# chirpsz <- brick(stack(sapply(1:nlayers(chirps), function(x) {
+#   mask(x = chirps[[x]], mask = districts)
+# })))
+# names(chirpsz) <- names(chirps)
 chirpsz <- mask(x = chirps, mask = districts)
 
-set.seed(1)
-ind <- sample(1:nlayers(chirpsz), size = 3)
-plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
+# set.seed(1)
+# ind <- sample(1:nlayers(chirpsz), size = 3)
+# plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
 ```
+
+<!-- ```{r, echo = FALSE, out.width="100%"} -->
+<!-- knitr::include_graphics("fig/u2m2-3.png") -->
+<!-- ``` -->
 
 The new `chirpsz` dataset contains all rainfall days with the values outside of Zambia converted to NA. The three plots are randomly selected from the layers of `chirpsz`, as a check to confirm that the masking was applied to all layers. 
 
@@ -582,7 +601,7 @@ Here's a more programmatic way of using `cellStats`:
 ```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE}
 # Chunk 28
 # #1
-rain_stats <- lapply(list(mean, sum, sd, cv), function(x) {
+rain_stats <- lapply(list("mean", "sum", "sd", "cv"), function(x) {
   cellStats(x = chirpsz, stat = x)
 })
 names(rain_stats) <- c("mean", "sum", "sd", "cv")

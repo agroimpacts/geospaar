@@ -36,14 +36,13 @@ Originally developed for statistics, free and open source R is now one of the mo
 ## Meeting Time/Place
 
 - Jonas Clark 103, MW 12-13.15
-- Jonas Clark 105 (TA office hours), F 16-17.50
+- Jonas Clark 105 (TA office hours), F 13.25-14.40
 
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
-Lyndon   | Jefferson 105    | Tuesday 1-3 pm
-Jordan Frey | | TBD
-Dale Watt | | TBD
+Lyndon   | Jefferson 105    | Wednesday 0930-1130 
+Lei Song | TBD  | TBD 
 
 
 ## Philosophy
@@ -56,13 +55,13 @@ Here are some other aspects regarding this course that you may wish to consider 
 
 1. ___Assignments in this class are problem-oriented, not recipe-based___: 
 
-    I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in R, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out precise steps needed to arrive at a solution will not take you as far towards R fluency, and will prevent you from learning the diversity of this language. 
+    I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in `R`, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out precise steps needed to arrive at a solution will not take you as far towards R fluency, and will prevent you from learning the diversity of this language. 
     
     It can be very rewarding to figure out programming problems (I personally prefer programming to writing papers), but some people can find it boring or even frustrating. If you fall into the latter camp, please consider the possibility that this course might not be for you. Let's discuss.
     
 2. ___The order in which material is introduced will occasionally be non-linear___: 
 
-    Primarily because we are introducing reproducibility concepts up front in this class, which entails learning about some things that people might ordinarily get around to after they know a bit of R code.  However, I believe that this order of things will enable you to learn R (or any other programming language) more rapidly. It might even make it more fun. 
+    Primarily because we are introducing reproducibility concepts up front in this class, which entails learning about some things that people might ordinarily get around to after they know a bit of `R` code.  However, I believe that this order of things will enable you to learn `R` (or any other programming language) more rapidly. It might even make it more fun. 
 
 3. ___This is a flipped class___:
 
