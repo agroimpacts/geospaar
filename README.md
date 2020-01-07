@@ -22,7 +22,7 @@ install.packages(c("knitr", "kableExtra", "prettydoc"))
 
 #### 3. install the `geospaar` package
 
-Note that the code below reflects recent changes to the `devtools` package (versions > 2), which has changed the options for building vignettes. If you have an older version of `devtools`, try uncomment and then run the version that is currently commented out.
+Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
 ```R
 library(devtools)
 install_github("agroimpacts/geospaar", build_vignettes = TRUE)
