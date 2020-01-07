@@ -37,7 +37,7 @@ Help and how-to for certain things we will be using in this class.
 # Github-related{#github-related}
 ## Set up a github access token{#set-up-a-github-access-token}
 
-This is necessary for using `devtools::install_github()` to install private packages, such as the class R package
+This is necessary for using `devtools::install_github()` to install private packages, such as your class assignments.
 
 1. Go into your github account, click settings, and then developer settings:
 

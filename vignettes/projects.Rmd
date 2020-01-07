@@ -86,8 +86,13 @@ Use R-implemented machine learning techniques to classify fungal blight in UAS t
 The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05$^\circ$ tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: 
 
 ### Evaluating field characteristics
-### Vector cleaning
+Use the vector data to examine field size class distributions in different agro-ecosystems. Is there a link between these and any socio-economic datasets (e.g. World Bank LSMS data)? Use the cropland probability images and input satellite imagery to identify whether the degree of certainty in probability images is informative about the status of fields (e.g. fallow versus active).  
 
+### Vector refining
+With many vector data come many data processing challenges. Can you code up methods for merging adjacent polygons from neighboring tiles, or simplifying polygons in a way that preserves adjacency? There are `R`-based solutions for these. 
+
+### Map visualization
+Come up with `shiny` solution for presenting and analyzing map data. 
 
 ***
 <center>
