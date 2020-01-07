@@ -74,11 +74,11 @@ Here are some other aspects regarding this course that you may wish to consider 
 <a href="#top">Back to top</a>
     
 ## Required Texts, Reading, and Assignments
-There is no required textbook for this course. There is a huge amount of well-developed R material that is freely available on the web. We draw on those resources for this class and integrate it into our own content. 
+There is no required textbook for this course. There is a huge amount of well-developed R material that is freely available on the web. We draw on and those resources for this class and integrate them into our own content (citing/linking to show where they come from). 
 
-__Readings and assignments__ should be completed ___before___ the class they are listed under. This is key to learning the language, ***as you will not learn programming by just listening to lectures.*** 
+__Readings and assignments__ should be completed ___before___ the class they are listed under. This is key to learning the language, ***as it is difficult to learn programming by just listening to lectures.*** 
 
-___Practical assignments___. During the first two units, we will give a number of practical exercises (see links to individual assignments in the [course structure](#structure) section). Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. That means that you will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
+___Practical assignments___. During the first two units, we will give a number of practical exercises (see links to individual assignments in the [course structure](#structure) section). Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
 __Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
 
@@ -89,7 +89,7 @@ There are many ways to write code and get the results you want. However, not all
 
 ## Assessment and engaged time
 
-Your progress in this class will be assessed according as follows: 
+Your progress in this class will be assessed as follows: 
 
 ```{r, echo = FALSE}
 # a <- c(20, 30, 40)
@@ -125,16 +125,14 @@ kable(DF)
 ## Expectations
 Since class is flipped, this is a time for questions and discussion, between us and you, and often between yourselves. However, please keep any conversations low and necessary to the task at hand if they are one-on-one.   
 
-Class attendance is expected. It is the primary time in which to get help on understanding reading materials and assignments (see next section on Communications). No late assignments (including presentations and final report) will be accepted, unless you have a documentable emergency that prevents an on-time submission. 
+Class attendance is expected. It is the primary time in which to get help on understanding reading materials and assignments (see next section on Communications). Late assignments (including presentations and final report) are not accepted, barring any emergency or reasonable conflicts that prevent on-time submissions. 
 
 For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, many, if not most, of the projects will be team-based (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
 
 We abide by, and will enforce, the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
 
 ### Communications
-We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails, as they will be ignored***. Class-wide discussions will be conducted in the #spring2019 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
-
-Slack's most obvious characteristic is instant messaging. However, please don't expect an instant response. While I always strive to be responsive, given workloads and the number of students enrolled, we will restrict responses to specific days and times. Since we are running this class as a flipped model, the goal is for all questions to be answered during class (which will be more like lab than lecture). 
+We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #spring2020 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
 
 <a href="#top">Back to top</a>
 
@@ -183,7 +181,7 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 <a href="#top">Back to top</a>
 
 ## Unit 3. Projects
-### Week 11 (Nov 8) - Project selection
+### Week 11 - Project selection
 
 ### Weeks 12-13 - Project work
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
@@ -245,7 +243,6 @@ This is a big topic, but I will post some links here as I find them.
 - [R-bloggers](https://www.r-bloggers.com/)
 - [R-spatial](http://r-spatial.org/)
 - [\@RLangTip](https://twitter.com/RLangTip)
-
 
 ***
 <center>

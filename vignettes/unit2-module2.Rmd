@@ -345,8 +345,8 @@ We will keep working with the data from the previous sections, adding in a new d
 
 ```{r}
 # Chunk 13
-# data("chirps")
-chirps <- brick(system.file("extdata/chirps.tif", package = "geospaar"))
+data("chirps")
+# chirps <- brick(system.file("extdata/chirps.tif", package = "geospaar"))
 ```
 
 Since we are recycling some of the objects from the previous section but you might have cleared your workspace, we have provided hidden code (in the RMarkdown document right below this paragraph), which will allow you to quickly rebuild the necessary objects without hunting back through the previous section.
@@ -371,7 +371,7 @@ There a few important things we missed doing in the first section. But first let
 ```{r}
 # Chunk 14
 chirps
-names(chirps) <- paste0("Y", 16299:16326)
+# names(chirps) <- paste0("Y", 16299:16326)
 names(chirps)
 ```
 
@@ -412,32 +412,31 @@ plot(test_m, axes = FALSE, box = FALSE)
 ```
 
 In the code above, we use the `districts` data to `mask` out the portions of `chirps` (the first day in the time series only) falling outside of Zambia. Let's apply that to the entire `chirps` dataset:
-<!-- ```{r, echo=FALSE, eval=FALSE} -->
-<!-- chirpsz <- raster::mask(x = chirps, mask = districts) -->
 
-<!-- png("vignettes/fig/u2m2-3.png", height = 2, width = 7, res = 300, units = "in") -->
-<!-- set.seed(1) -->
-<!-- ind <- sample(1:nlayers(chirpsz), size = 3) -->
-<!-- plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1) -->
-<!-- dev.off() -->
-<!-- ``` -->
-
-```{r, fig.width=7, fig.height=2, warning=FALSE}
-# Chunk 17
-# chirpsz <- brick(stack(sapply(1:nlayers(chirps), function(x) {
-#   mask(x = chirps[[x]], mask = districts)
-# })))
-# names(chirpsz) <- names(chirps)
-chirpsz <- mask(x = chirps, mask = districts)
-
-# set.seed(1)
-# ind <- sample(1:nlayers(chirpsz), size = 3)
-# plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
+```{r, echo=FALSE}
+# hack workaround #1 because devtools and mask don't work at the moment
+chirpsz <- brick(stack(sapply(1:nlayers(chirps), function(x) {
+  mask(x = chirps[[x]], mask = districts)
+})))
+names(chirpsz) <- names(chirps)
 ```
 
-<!-- ```{r, echo = FALSE, out.width="100%"} -->
-<!-- knitr::include_graphics("fig/u2m2-3.png") -->
-<!-- ``` -->
+
+```{r, fig.width=7, fig.height=2, eval=FALSE}
+# Chunk 17
+chirpsz <- mask(x = chirps, mask = districts)
+
+set.seed(1)
+ind <- sample(1:nlayers(chirpsz), size = 3)
+plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
+```
+
+```{r, fig.width=7, fig.height=2, warning=FALSE, echo=FALSE}
+# hack workaround #2 because devtools and mask don't work at the moment
+set.seed(1)
+ind <- sample(1:nlayers(chirpsz), size = 3)
+plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
+```
 
 The new `chirpsz` dataset contains all rainfall days with the values outside of Zambia converted to NA. The three plots are randomly selected from the layers of `chirpsz`, as a check to confirm that the masking was applied to all layers. 
 
@@ -569,7 +568,6 @@ plot_noaxes(s$rain > 1 & s$farmer_count > 1)
 </center>
 ***
 
-
 ## Analyses
 
 Let's move on now to some analyses with raster data. 
@@ -601,7 +599,7 @@ Here's a more programmatic way of using `cellStats`:
 ```{r, fig.width=7, fig.height=4, warning=FALSE, message=FALSE}
 # Chunk 28
 # #1
-rain_stats <- lapply(list("mean", "sum", "sd", "cv"), function(x) {
+rain_stats <- lapply(list(mean, sum, sd, cv), function(x) {
   cellStats(x = chirpsz, stat = x)
 })
 names(rain_stats) <- c("mean", "sum", "sd", "cv")
@@ -657,7 +655,6 @@ Here we apply `freq` to a dataset with continuous values, although this function
 [Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
 </center>
 ***
-
 
 ### Local statistics
 
@@ -754,7 +751,17 @@ If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we wa
 
 The workhorse for doing this sort of analysis is `calc`, which allows you to apply pretty much any function to the Z-dimension of a `RasterStackBrick`. 
 
-```{r, out.width="60%"}
+```{r, echo=FALSE}
+# Another hack invisible chunk because devtools not allowing normal stacking
+# behavior after R upgrade
+rain_zmu <- calc(x = chirpsz, fun = mean)
+rain_zsd <- calc(x = chirpsz, fun = sd)
+rain_zrng <- calc(x = chirpsz, fun = range)
+rain_zstack <- stack(rain_zmu, rain_zsd, rain_zrng[[1]], rain_zrng[[2]])
+names(rain_zstack) <- c("Mean", "StDev", "Min", "Max")
+```
+
+```{r, eval=FALSE}
 # Chunk 35
 # #1
 rain_zmu <- calc(x = chirpsz, fun = mean)
@@ -765,6 +772,11 @@ rain_zrng <- calc(x = chirpsz, fun = range)
 rain_zstack <- stack(rain_zmu, rain_zsd, rain_zrng)
 names(rain_zstack) <- c("Mean", "StDev", "Min", "Max")
 
+plot_noaxes(rain_zstack)
+```
+
+```{r, echo=FALSE, out.width="60%"}
+# Hack invisible chunk to allow plotting
 plot_noaxes(rain_zstack)
 ```
 
@@ -1539,3 +1551,5 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 [Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+
