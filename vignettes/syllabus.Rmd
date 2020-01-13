@@ -153,14 +153,12 @@ This syllabus provides the general subject for each week and class. The detailed
 
 ### Week 1. Overview of R and Reproducibility
 
-### Week 2. Reproducibility Continued
+### Week 2. Reproducibility Continued / R fundamentals and Skills
 - [Assignment 1](assignment1.html)
 
-### Week 3. R fundamentals and Skills
+### Week 3. R fundamentals and Skills / Data preparation and visualization
 
-### Week 4. Data preparation and visualization
-
-### Week 5. Basic analytics
+### Week 4. Data preparation and visualization / Basic analytics
 
 <a href="#top">Back to top</a>
 
@@ -168,22 +166,22 @@ This syllabus provides the general subject for each week and class. The detailed
 
 In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
 
-### Week 6. Introduction
+### Week 5. Introduction
 
-### Week 7 - Working with vector data
+### Week 6. - Working with vector data
 
-### Week 8 - Vectors continued
+### Week 7. - Vectors continued
 
-### Week 9 - Working with raster data
+### Week 8. - Working with raster data
 
-### Week 10 - Raster data continued
+### Week 9 - Raster data continued
 
 <a href="#top">Back to top</a>
 
 ## Unit 3. Projects
-### Week 11 - Project selection
+### Week 10 - Project selection
 
-### Weeks 12-13 - Project work
+### Weeks 11-13 - Project work
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
 
 ### Weeks 14-15 - Project work and presentations 
