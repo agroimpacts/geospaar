@@ -64,16 +64,15 @@ knitr::include_graphics("figures/class1_2.png")
 
 ## Course Requirements
 
-- Let's have a look at the [Syllabus](../syllabus.html)
+- Let's have a look at the [Syllabus](`r here::here("vignettes/syllabus.html")`)
 
 ---
 
 ## Changes
 
-- `sf` replacing `sp`
-- `raster` about to be replaced by `stars`
+- `sf` replaced `sp`
+- `raster` about to be replaced by `stars` or `terra`
 - R's syntax is evolving
--> Rewriting the course
 
 ---
 
@@ -82,7 +81,7 @@ knitr::include_graphics("figures/class1_2.png")
 - Get yourself a GitHub account, if you haven't
 - Send us your GitHub name
 - Install `git` on your local computer(s)
-- Set up your [personal access token](../help.html)
+- Set up your [personal access token](`r here::here("vignettes/help.html")`)
 - Install the `geospaar` library
 - Learn how to create your own github repo under the [\@agroimpacts\/geog246346 team](https://github.com/agroimpacts)
 
