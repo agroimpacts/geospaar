@@ -42,7 +42,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 Instructor | Office | Office hours
 ---------|------------------|------------------
 Lyndon   | Jefferson 105    | Wednesday 0930-1130 
-Lei Song | TBD  | TBD 
+Lei Song | Jefferson 102  | Tuesday 1500-1700
 
 
 ## Philosophy
