@@ -1,3 +1,5 @@
 ^external$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^packrat/
+^\.Rprofile$
