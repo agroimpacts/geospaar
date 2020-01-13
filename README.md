@@ -10,6 +10,8 @@ This course draws from a number of other `R` courses and materials that are onli
 
 #### 1. Get the `devtools` package
 
+If you have a Windows machine and don't already have Rtools installed, you will first need to download that and install it from [here](https://cran.r-project.org/bin/windows/Rtools/). Run the next lines below after that installs. (if you are on Mac or Linux, then skip `Rtools`). 
+
 ```R
 install.packages("devtools")
 library(devtools)
