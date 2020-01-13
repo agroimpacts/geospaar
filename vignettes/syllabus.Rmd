@@ -78,7 +78,7 @@ There is no required textbook for this course. There is a huge amount of well-de
 
 __Readings and assignments__ should be completed ___before___ the class they are listed under. This is key to learning the language, ***as it is difficult to learn programming by just listening to lectures.*** 
 
-___Practical assignments___. During the first two units, we will give a number of practical exercises (see links to individual assignments in the [course structure](#structure) section). Unless otherwise stated, these will be assigned on a Monday and due by midnight on Friday of the same week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join github (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
+___Practical assignments___. During the first two units, there will be a total of 5 assignments (see links within the individual modules). The sixth assignment is your project proposal. Unless otherwise assignments are given on a Monday and will due before class on Monday of the same week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join [GitHub](http://github.com) (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
 __Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
 
@@ -154,11 +154,12 @@ This syllabus provides the general subject for each week and class. The detailed
 ### Week 1. Overview of R and Reproducibility
 
 ### Week 2. Reproducibility Continued / R fundamentals and Skills
-- [Assignment 1](assignment1.html)
+- Module 1 assignment (#1) due
 
 ### Week 3. R fundamentals and Skills / Data preparation and visualization
 
 ### Week 4. Data preparation and visualization / Basic analytics
+- Module 2/3 assignment (#2) due
 
 <a href="#top">Back to top</a>
 
@@ -167,19 +168,23 @@ This syllabus provides the general subject for each week and class. The detailed
 In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
 
 ### Week 5. Introduction
+- Unit 1 Module 4 assignment (#3) due
 
 ### Week 6. - Working with vector data
 
 ### Week 7. - Vectors continued
+- Unit 2 Module 1 assignment (#4) due
 
 ### Week 8. - Working with raster data
 
 ### Week 9 - Raster data continued
+- Unit 2 Module 2 assignment (#5) due
 
 <a href="#top">Back to top</a>
 
 ## Unit 3. Projects
 ### Week 10 - Project selection
+- Assignment #6 due
 
 ### Weeks 11-13 - Project work
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
