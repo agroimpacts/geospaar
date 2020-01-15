@@ -51,11 +51,11 @@ Roger Peng (Johns Hopkins University) provides a nice history and overview of `R
 
 Hadley Wickham's [introduction section](http://adv-r.had.co.nz/Introduction.html) to his book [*Advanced R*](http://adv-r.had.co.nz) provides a nice bullet-point summary of `R`'s advantages and disadvantages.  
 
-Please also visit the `R`'s [homepage](https://www.r-project.org), the center of the R universe, and particularly [CRAN](http://lib.stat.cmu.edu/R/CRAN/), where official `R` packages live (actually the link provided is the closest CRAN mirror site, which lives at Carnegie Mellon University).
+Please also visit `R`'s [homepage](https://www.r-project.org), the center of the `R` universe, and particularly [CRAN](http://lib.stat.cmu.edu/R/CRAN/), where official `R` packages live (actually the link provided is the closest CRAN mirror site, which lives at Carnegie Mellon University).
 
-Finally, you might have heard of the `python` programming language, and wonder why you are learning `R`. Good question. You can't throw a rock without hitting a python versus R comparison, and here's [one of the more recent examples of this genre](https://medium.com/@data_driven/python-vs-r-for-data-science-and-the-winner-is-3ebb1a968197). Please have a look, but basically each language has a lot of similarities, and one would do very well to learn both. To this I would add something I have yet to find, which is a comparison of R and python for their ability to handle spatial data (there are comparisons out there, but none really comprehensive, e.g. [this](https://www.quora.com/Which-is-better-for-spatial-analysis-Python-or-R)). Both languages can do it, but my own personal (and admittedly biased and unscientific) sense is that R's capabilities to do standalone spatial analysis are more developed than python's. I think this advantage could continue to grow now that development of the `sf` package (vector data) is well underway, and the new `stars` package (rasters) is starting to move. 
+Finally, you might have heard of the `python` programming language, and wonder why you are learning `R`. Good question. You can't throw a rock without hitting a `python` versus `R` comparison, and here's [one of the more recent examples of this genre](https://medium.com/@data_driven/python-vs-r-for-data-science-and-the-winner-is-3ebb1a968197). Please have a look, but basically each language has a lot of similarities, and one would do very well to learn both. To this I would add something I have yet to find, which is a comparison of `R` and `python` for their ability to handle spatial data (there are comparisons out there, but none really comprehensive, e.g. [this](https://www.quora.com/Which-is-better-for-spatial-analysis-Python-or-R)). Both languages can do it, but my own personal (and admittedly biased and unscientific) sense is that `R`'s capabilities to do standalone spatial analysis are more developed than python's. I think this advantage could continue to grow now that development of the `sf` package (vector data) is well underway, and the new `stars` package (rasters) is starting to move. 
 
-On the other hand, python seems to be preferred for machine learning applications on remote sensing data, and gives the ability to programmatically work with geospatial platforms like [Google's Earth Engine](https://developers.google.com/earth-engine/python_install), QGIS, ArcGIS, and the new [Radiant Earth platform](https://pypi.org/project/radiantearth/). It is also preferred, it seems, for setting up production workflows. So, really, there is a case for learning both languages, and developments such as the new [`reticulate` package](https://rstudio.github.io/reticulate/) from Rstudio make it increasingly possible to use both languages in more integrated fashion, as the need arises. That's a subject for another time (and not this class), but just one more reason why we should think about `R` and `python` rather than `R` or `python`. 
+On the other hand, `python` seems to be preferred for machine learning applications on remote sensing data, and gives the ability to programmatically work with geospatial platforms like [Google's Earth Engine](https://developers.google.com/earth-engine/python_install), QGIS, ArcGIS, and the new [Radiant Earth platform](https://pypi.org/project/radiantearth/). It is also preferred, it seems, for setting up production workflows. So, really, there is a case for learning both languages, and developments such as the new [`reticulate` package](https://rstudio.github.io/reticulate/) from Rstudio make it increasingly possible to use both languages in more integrated fashion, as the need arises. That's a subject for another time (and not this class), but just one more reason why we should think about `R` and `python` rather than `R` or `python`. 
 
 ***
 <center>
@@ -78,7 +78,7 @@ A great deal more about reproducibiity is written in the aforementioned book. Yo
 
 ## The tools of reproducibility
 ### Version control and git
-However, we are going to dive in and go straight to learning some of the tools of reproducibility. First, we are going to learn about `git`. `git` is version control software. Working with version control basically entails maintaining a single set of files (generally code files, but also other kind of documents, but typically not large binary images, such as rasters) for a project, and making changes to those files as you go in a way that keeps those changes out of sight, but makes it easy to recover past changes if you need them. For example, the file that we used to create this html document is called `unit1-module1.Rmd` (it's an Rmarkdown file, which we will be learning more about shortly) is under version control.  I have made many edits to it as I created it, but I have only one version of it visible in the file system. Previous versions of and changes to the file can be found in the prior *commits*.  
+However, we are going to dive in and go straight to learning some of the tools of reproducibility. First, we are going to learn about `git`. `git` is version control software. Working with version control basically entails maintaining a single set of files (generally code files, but also other kind of documents, but typically not large binary images, such as rasters) for a project, and making changes to those files as you go in a way that keeps those changes out of sight, but makes it easy to recover them if you need them. For example, the file that we used to create this html document is called `unit1-module1.Rmd` (it's an Rmarkdown file, which we will be learning more about shortly) is under version control.  I have made many edits to it as I created it, but I have only one version of it visible in the file system. Previous versions of and changes to the file can be found in the prior *commits*.  
 
 The image below illustrates version control--this shows Rstudio's interface to `git`, comparing the text in the paragraph above to the text in the previous committed version of this file: the pink shows the older paragraph, the green the newer one (I changed just a few lines in there)  
 
@@ -89,7 +89,7 @@ include_graphics("fig/u1m1-1.png")
 
 So, that is a small taste of version control. If you have ever worked with Google Docs, it does its own form of version control--you can look back at previous edits and changes. Using `git` is a bit more explicit and deliberate than that--you have to make commits manually, changes aren't saved automatically, but that's okay, and it helps us choose how much we want to change before committing the file version. 
 
-So why are we using it here? We want to avoid the common practice of many people when they are updating project documents:  make a file, name it something, make a bunch of changes, decide you want to keep the previous version -> make a new copy of the file -> append the date to the filename to track the changes.  Before long you end up with a cluttered directory that might look something like this: 
+So why are we using it here? We want to avoid this common practice used when updating project documents: make a file, name it something, make a bunch of changes, decide you want to keep the previous version -> make a new copy of the file -> append the date to the filename to track the changes.  Before long you end up with a cluttered directory that might look something like this: 
 
 ```bash
 ├── my_folder
@@ -99,7 +99,7 @@ So why are we using it here? We want to avoid the common practice of many people
     ├── somefile_jan12018.txt
 ```
 
-You can't remember what's in each file or when you made a particular change, and you start to hunt. Version control helps us keep folders neat and pruned and edits fairly recoverable, so that we can just a single file (in the example above) called `somefile.txt` and keep track of all the changes made to that file. That's why we are going to use `git` in this class. 
+You can't remember what's in each file or when you made a particular change, and you start to hunt. Version control helps us keep folders neat and pruned, and makes edits fairly recoverable, so that we can just use a single file (in the example above) called `somefile.txt` and keep track of all the changes made to that file. That's why we are going to use `git` in this class. 
 
 ### git and GitHub
 `git` is a program that lives on your local machine. You can make commits locally, and just keep things under version control on your local machine. If you want to collaborate, or even work with your project across multiple machines, you can create a remotely stored version of your `git` project (repository) on [GitHub](https://github.com).  GitHub is one of several web services that provides hosting for git repositories. It also provides useful collaboration functionality. We'll come back to this. 
@@ -117,7 +117,7 @@ include_graphics("fig/u1m1-tweet.png")
 Packages are another tool of reproducibility that we will learn to use in this class. Packages are bundles of code and documentation that provide a specific functionality for a particular language. Both `python` and `R` make extensive use of packages, as the utility of both languages depends heavily on user-contributed code. Code contributions are made through packages, which standardize and formalize the user-developed functions so that they work properly within the language, and can be easily used by the broader community. 
 Packages are also useful even if you don't intend to contribute code to the community, as they have a particular structure that can be useful for helping to organize and formalize your thinking, data analysis, and reporting. They can also save you time as they make it much easier to access functions that you have developed for one project and apply them to another. I learned these ideas from reading Hillary Parker's [blog post on personal R packages](https://hilaryparker.com/2013/04/03/personal-r-packages/), as well as Karl Broman's [R package primer](http://kbroman.org/pkg_primer/pages/why.html), and of course Hadley Wickham's [introduction](http://r-pkgs.had.co.nz/intro.html) to his *R packages* book (please read all aforementioned links).
 
-I have adopted the package structure for organizing the analyses and writing of each of my papers. For example, two of my most recent papers are structured as R packages that can be installed as R packages from their GitHub repositories (which can be found [here](https://github.com/agroimpacts/ecoscales) and [here](https://github.com/agroimpacts/croplandbias)). These contain all the code used to do the analyses, create the figures, and full (non-journal formatted) versions of the manuscripts. And (as you may have noticed by now), this class is also structured as an R package.
+I have adopted the package structure for organizing the analyses and writing of each of my papers. For example, two of my most recent papers are structured as `R` packages that can be installed from their GitHub repositories (which can be found [here](https://github.com/agroimpacts/ecoscales) and [here](https://github.com/agroimpacts/croplandbias)). These contain all the code used to do the analyses, create the figures, and full (non-journal formatted) versions of the manuscripts. And (as you may have noticed by now), this class is also structured as an `R` package.
 
 ***
 <center>
@@ -253,7 +253,7 @@ $ ls -a
 ..  .Rhistory      .git         DESCRIPTION  R
 ```
 
-Note the .git. That's folder that contains all the inner workings of a `git` project, which we won't go into but if you are interested you can explore with `ls .git`, which show you the contents.  
+Note the .git. That's the folder that contains all the inner workings of a `git` project, which we won't go into but if you are interested you can explore with `ls .git`, which show you the contents.  
 
 To get `git` to track your files, the easiest is to simply check the boxes in the GUI.  For example, check the boxes next to the files ".gitignore", "DESCRIPTION", "NAMESPACE", and the .Rproj file.  You will see the yellow checkmarks changed to green boxes with "A" in them, meaning the files have been staged for a commit.  This is equivalent to going back to terminal, and running the command (note I am using the .Rproj filename for my example):
 
@@ -263,9 +263,9 @@ git add .gitignore DESCRIPTION NAMESPACE lde346.Rproj
 
 I don't really want `git` to track the .Rbuildignore and .Rhistory files, so I want to add these to the .gitignore file, which essentially means `git` will not track those files and they will no longer appear in the `git` GUI with yellow boxes with question marks next to them. To add that, shift-click on the file names (not the check boxes) in the GUI, and then right-click, and choose "ignore" in the dialog that pops up.  That will bring up another box that lists those two files below .Rproj.user.  Click save on the dialog. Immediately you will notice in the GUI that those two files have disappeared, and .gitignore has a blue box with "M" appear next the green A box. That means that the file has been staged to be committed, and has been modified since it was staged.  The check in the box next to it has been replaced by solid blue, meaning the modification has not been staged--to stage it, click the box again, and the blue M will disappear.
 
-We are not ready to make our first commit. So, press the "Commit" button in the GUI, and up will pop a big box, showing the files you added, and giving you a dialog to leave a commit message. The message you put in there should be concise but informative as to what changes you are committing to the repo.
+We are now ready to make our first commit. So, press the "Commit" button in the GUI, and up will pop a big box, showing the files you added, and giving you a dialog to leave a commit message. The message you put in there should be concise but informative as to what changes you are committing to the repo.
 
-```{r out.width = "60%", fig.align='center', echo=FALSE, fig.cap="RStudio `git` commit window with message"}
+```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="RStudio `git` commit window with message"}
 include_graphics("fig/u1m1-8.png") 
 ```
 
@@ -302,14 +302,14 @@ Once those are done, save the changes, and then go back to the `git` GUI, where 
 
 So, that's how changes are tracked and committed in a local `git` repo. You can use the "History" button in the `git` GUI to see the history of your commits and all the changes that they entailed, which you should explore on your own. 
 
-## Syncing your repo using GitHub
-Now that you know the basics of `git` commits on your local machine, you'll want to push your project repo to a remote repo hosted on GitHub, and then keep it synchronized with GitHub. There are a few steps we will have to go through to do that. 
-
 ***
 <center>
 [Back to top](#unit1mod1intro) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+## Syncing your repo using GitHub
+Now that you know the basics of `git` commits on your local machine, you'll want to push your project repo to a remote repo hosted on GitHub, and then keep it synchronized with GitHub. There are a few steps we will have to go through to do that. 
 
 ### SSH keys
 First, you will need to create an SSH private-public key pair on your computer, if you don't have one already, and then add that key to GitHub (you will need to do this for each computer you want to connect to GitHub).  The most direct set of instructions, which revolve around RStudio, are found [here](http://r-pkgs.had.co.nz/git.html#git) (and this is generally a greeat resource covering how to work with `git`, GitHub, and `R`/Rstudio) here. To wit, use the following command in the R console:
@@ -378,9 +378,9 @@ Version: 0.0.1
 
 Commit the change with a meaningful message ("Updated package version number"), and then once you have done that, press the "Push" button (which you can access either from the big commit dialog, or in the main `git` GUI of RStudio). If you go to your repo on GitHub, you will see your new commit message next to your use icon, above the list of files.  Have a look at the file itself on GitHub to see that the change is in fact now shown on GitHub. 
 
-So that was a "push". What about a "pull"? A pull is done when a change is made on your GitHub repo that is not on your local repo (i.e. your remote repo is ahead of your local repo). How might that happen? In cases where the remote repo is synced to another local repo on another computer, either because you have connected it to a different computer (e.g. your lab computer), or because another person who has access to it has. The act of creating a new local copy of a remote repo is called [cloning](https://git-scm.com/book/en/v1/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository). 
+So that was a "push". What about a "pull"? A pull is done when a change is made on your GitHub repo that is not on your local repo (i.e. your remote repo is ahead of your local repo). How might that happen? In cases where the remote repo is synced to another local repo on another computer, either because you have connected it to a different computer (e.g. your lab computer), or because another person who has permission to write changes to it has. The act of creating a new local copy of a remote repo is called [cloning](https://git-scm.com/book/en/v1/Git-Basics-Getting-a-Git-Repository#Cloning-an-Existing-Repository). 
 
-In cases where your local repo is behind your remote repo, you can do use the Pull button to bring your remote up to date.  That should usually be enough, although conflicts might arise between your local and remote repo, particularly in cases where the remote is much further ahead.  We won't deal with that right now, however.  
+In cases where your local repo is behind your remote repo, you can use the Pull button to bring your remote up to date.  That should usually be enough, although conflicts might arise between your local and remote repo, particularly in cases where the remote is much further ahead.  We won't deal with that right now, however.  
 
 ***
 <center>
@@ -447,7 +447,7 @@ We will leave the topic of merging for now, but basically merging is quite usefu
 - Merge the changes
 
     ```bash
-    `git merge fix/description`
+    git merge fix/description
     ```
 
 - Push the changes to remote, and then pull to other local repos
