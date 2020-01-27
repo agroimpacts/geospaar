@@ -58,7 +58,7 @@ Genus    vector; matrix; data.frame; array; list; function
 Species  logical; integer; character; boolean; closure
 -------- ----------------------------------------------
 
-Admittedly the classifications I give above this might not be that sound, but our focus here is on Family, Genus, Species, which are internal to `R`. Here we liken taxonomic family to the set of *classes* that define the different types of objects in R. "But wait", you say, "that's confusing! Why don't you map taxonomic class to `R` classes?" I know, I know, but I wanted to use the whole hierarchy, and it felt better to use class to distinguish programming languages (into interpreted versus compiled). Plus I didn't want to have to jump over Order, which I would have struggled to fill with this analogy. 
+Admittedly the classifications I give above this might not be that sound, but our focus here is on Family, Genus, Species, which are internal to `R`. Here we liken taxonomic family to the set of *classes* that define the different types of objects in R. "But wait", you say, "that's confusing! Why don't you map taxonomic class to `R` classes?" I know, I know, but I wanted to use the whole hierarchy, and it felt better to use Class to distinguish programming languages (into interpreted versus compiled). Plus I didn't want to have to jump over Order, which I would have struggled to fill with this analogy. 
 
 Moving on, Family maps onto `R` structures, and Species onto types, primarily to data types. My organization of these topics is pieced together from several sources of information that are online (classes [1](http://adv-r.had.co.nz/OO-essentials.html), [2](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming); structures [3](http://adv-r.had.co.nz/Data-structures.html), [4](https://www.rspatial.org/intr/3-basic-data-structures.html); types: [5](https://www.rspatial.org/intr/2-basic-data-types.html)), and it is based on the level of complexity inherent in the object.
 
@@ -87,7 +87,7 @@ What is `raw`? According to `?raw`:
 ***
 
 ### Genus (data structures and functions)
-One level up from data types are structures and functions. I liken these to the genus level because there both are designed to do something with data--either hold the data or do something to, with, or on the data, and they each of these can have many forms. For example, a vector is a type of data structure, which can be either an atomic vector or a list, and any of these can hold multiple data types. So let's look at structures first. 
+One level up from data types are structures and functions. I liken these to the genus level because both are designed to do something with data--either hold the data or do something to, with, or on the data, and each of these can have many forms. For example, a vector is a type of data structure, which can be either an atomic vector or a list, and any of these can hold multiple data types. So let's look at structures first. 
 
 #### Data structures
 ##### One dimensional
@@ -101,7 +101,7 @@ d <- TRUE
 d
 ```
 
-The object `a` is a character vector with four elements, `b` is an integer vector with 10 elements, and d is logical vector with one element.  To strain the taxonomic example here, you can think of each of these vectors as a genus that contains just one species. A *list*, on the other hand, can be thought of a genus containing multiple species, as it can contain many different data types within a single object. 
+The object `a` is a character vector with four elements, `b` is an integer vector with 10 elements, and d is logical vector with one element.  To strain the taxonomic example here, you can think of each of these vectors as a genus that contains just one species. A *list*, on the other hand, can be thought of as a genus containing multiple species, as it can contain many different data types within a single object. 
 
 ```{r}
 l <- list("a", 1, 0.5, TRUE)
@@ -110,7 +110,7 @@ str(l)
 ```
 
 ##### Two or more dimensions
-Notice that each of the data types is maintained in the list (which we put together using the `list` function), and we can verify the type of data in the list using the `str` function. If we try to put together these same mix of types into an atomic vector using the `c` (concatenate) function, we don't get the same results.
+Notice that each of the data types is maintained in the list (which we put together using the `list` function), and we can verify the type of data in the list using the `str` function. If we try to put together this same mix of types into an atomic vector using the `c` (concatenate) function, we don't get the same results.
 
 ```{r}
 l <- c("a", 1, 0.5, TRUE)
@@ -137,16 +137,16 @@ arr
 str(arr)
 ```
 
-A `matrix` can only hold a single data type (like an atomic vector, if you try to mix types it will coerce them all to one kind--so a matrix is a genus that can only hold one species). A `data.frame`, which is actually a special kind of `list` that binds vectors containing the same number of elements into columns (so that they can have the same number of rows), can mix data types (a genus with multiple species). An `array`, on the other hand, can only have one data type despite being able to have more than one dimensions.
+A `matrix` can only hold a single data type (like an atomic vector, if you try to mix types it will coerce them all to one kind--so a matrix is a genus that can only hold one species). A `data.frame`, which is actually a special kind of `list` that binds vectors containing the same number of elements into columns (so that they can have the same number of rows), can mix data types (a genus with multiple species). An `array`, on the other hand, can only have one data type despite being able to have more than one dimension.
 
-Let's turn back to the `list` now, since we just mentioned it into the context of the `data.frame`. A list is very versatile, and can contain any kind of `R`object. 
+Let's turn back to the `list` now, since we just mentioned it in the context of the `data.frame`. A `list` is very versatile, and can contain any kind of `R`object. 
 ```{r}
 l2 <- list(m, m2, DF, arr, c, list)
 l2
 str(l2)
 ```
 
-We can put all the matrices, data.frames, and array we just made into a list, as well as some of the functions we were using to make those objects (`c`, `list`). 
+We can put all the matrices, `data.frame`s, and `array` we just made into a `list`, as well as some of the functions we were using to make those objects (`c`, `list`). 
 
 
 ***
@@ -267,7 +267,7 @@ This explanation nicely explains how OOP differs from the alternative programmin
 
 > Central to any object-oriented system are the concepts of class and method. A class defines the behaviour of objects by describing their attributes and their relationship to other classes. The class is also used when selecting methods, functions that behave differently depending on the class of their input. Classes are usually organised in a hierarchy: if a method does not exist for a child, then the parent’s method is used instead; the child inherits behaviour from the parent.
 
-The main takeaway here is that a class defines different types of objects and what methods are associated them (so to me this feels like a higher level of organization, which makes it like a taxonomic family). Here is where `R` gets confusing, because it actually has three types of OO systems, S3, S4, and RC, and (not quite OO) the "base types", which are the primitives from `C` we described above.  I'll let you read the description of each of those and how they differ in the *Advanced R* link I just gave you ([here it is again](http://adv-r.had.co.nz/OO-essentials.html#oo-answers)), and it is good to understand them.  Here I will highlight a few things about them that I think are important to know, particularly with respect to understanding `R`'s geospatial capabilities.  
+The main takeaway here is that a class defines different types of objects and what methods are associated with them (so to me this feels like a higher level of organization, which makes it like a taxonomic family). Here is where `R` gets confusing, because it actually has several types of OO system: S3, S4, and RC, and (not quite OO) the "base types", which are the primitives from `C` we described above.  I'll let you read the description of each of those and how they differ in the *Advanced R* link I just gave you ([here it is again](http://adv-r.had.co.nz/OO-essentials.html#oo-answers)), and it is good to understand them.  Here I will highlight a few things about them that I think are important to know, particularly with respect to understanding `R`'s geospatial capabilities.  
 
 - **R methods are idosyncratic relative to other OO languages**. If you have ever worked with `python`, you likely have done something like this:
 
@@ -349,7 +349,7 @@ Okay, that's enough on OO for now.
 
 ## Environments
 
-This brings us to the final chapter in our extended ecological metaphor. We have just heard about `R`'s species and their taxonomy, so now we will talk about how they interact. In ecology, we talk about species' environments. In `R`, objects have different environments. To learn about `R` environments in detail, there is a [whole chapter on them in Advanced R](https://adv-r.hadley.nz/environments.html). However, for now, to avoid too much confusion, and since (according to the chapter) "Understanding environments is not necessary for day-to-day use of R", we will focus on just a few aspects of what environments are and how they effect objects in ways that you will almost certainly encounter. 
+This brings us to the final chapter in our extended ecological metaphor. We have just heard about `R`'s species and their taxonomy, so now we will talk about how they interact. In ecology, we talk about species' environments. In `R`, objects have different environments. To learn about `R` environments in detail, there is a [whole chapter on them in Advanced R](https://adv-r.hadley.nz/environments.html). However, for now, to avoid too much confusion, and since (according to the chapter) "Understanding environments is not necessary for day-to-day use of R", we will focus on just a few aspects of what environments are and how they affect objects in ways that you will almost certainly encounter. 
 
 First, to provide a very simplistic definition of what an environment is, it is the means by which `R` maps the name you assign to an object to where the object's values live in memory: 
 
@@ -393,7 +393,7 @@ This last point on namespaces brings us to packages. Packages have their own env
 
 > - The namespace environment is the internal interface to the package. The package environment controls how we find the function; the namespace controls how the function finds its variables.
 
-Okay, there are a few things to dive into in that explanation. First, you will note the mention of ::. That has appeared already time in examples in these first two modules. When you create an `R` package, it makes a package environment that contains its functions. You access the functions in the package environment in one of two ways:
+Okay, there are a few things to dive into in that explanation. First, you will note the mention of ::. That has already appeared several times in examples in these first two modules. When you create an `R` package, it makes a package environment that contains its functions. You access the functions in the package environment in one of two ways:
 
 
 ```{r, fig.width=5, fig.height=3.5}
