@@ -43,7 +43,7 @@ Before starting, we need to turn back to natural history for another metaphor, s
 include_graphics("fig/u1m3-1.png") 
 ```
 
-The graphic above is crude and almost certainly not correct in some respects (e.g. relative age of divergence), but it serves to illustrate what I think are key developments that are changinghow we program in `R`. Many of these changes are being driven by the ["tidyverse"](https://www.tidyverse.org), which is:
+The graphic above is crude and almost certainly not correct in some respects (e.g. relative age of divergence), but it serves to illustrate what I think are key developments that are changing how we program in `R`. Many of these changes are being driven by the ["tidyverse"](https://www.tidyverse.org), which is:
 
 > ...an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. 
 
@@ -151,7 +151,7 @@ d_tb[, mean(b), by = a][order(a)]
 
 `data.table` is extremely powerful, and is the tool of choice for working with extremely large tabular datasets (it seems to have heavy uptake in quantitative finance, for example), and by some [measures](https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping) beats out `pandas` in `python` However, the syntax is much more arcane, and, more importantly, not really part of `R`'s spatial packages, so we won't learn it further (but it is well worth learning). 
 
-`dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that is replacing `raster`). It is also really great for accessing databases such as postgres. So we will learn base `R` and just enough `dplyr` and a few other tidyverse functions so that we can get ready for these changes. 
+`dplyr`, however, is quite important to know, as the functionality it provides is being incorporated into `sf` and `stars` (the package that *might* be replacing `raster`--but see [`terra`](https://github.com/rspatial/terra)). It is also really great for accessing databases such as postgres. So we will learn base `R` along with some `dplyr` and a few other tidyverse functions so that we can get ready for these changes. 
 
 
 ## Setting up for practice
@@ -182,7 +182,7 @@ b <- a
 names(b) <- letters[1:10]
 ```
 
-Here we define the vector a, which has values 1:10, and make a copy of `a` called `b`. We then assign names to each of the values in the vector `b`. The names are the first 10 letters of the alphabet, which `R` provides in a built-in vector called `letters` (there is also `LETTERS`--type that into the console and execute it to check it out). Note the operation here: we apply the `names` function (run `?names` to see what this function does) to `b`, and then *assign* to it the vector of letter from `letters` using `<-`, R's assignment operator (you could also use `=`, but we don't because we follow the `R` style guide [here](http://adv-r.had.co.nz/Style.html), and for reasons detailed [here](https://colinfay.me/r-assignment/) it is better to stick with `<-` for assignment). 
+Here we define the vector `a`, which has values `1:10`, and make a copy of `a` called `b`. We then assign names to each of the values in the vector `b`. The names are the first 10 letters of the alphabet, which `R` provides in a built-in vector called `letters` (there is also `LETTERS`--type that into the console and execute it to check it out). Note the operation here: we apply the `names` function (run `?names` to see what this function does) to `b`, and then *assign* to it the vector of letter from `letters` using `<-`, R's assignment operator (you could also use `=`, but we don't because we follow the `R` style guide [here](http://adv-r.had.co.nz/Style.html), and for reasons detailed [here](https://colinfay.me/r-assignment/) it is better to stick with `<-` for assignment). 
 
 Note that this code also gives out first instruction in indexing. Note that we use `[]` with `letters`, `()`. That's because `letters` is a vector from which we are extracting a subset of values, as opposed to an object to which we are applying a function, in which case we would enclose the object with `()`--as we did with `names(a)`.  
 
@@ -314,8 +314,10 @@ l[[length(l)]]
 l[length(l)]
 ```
 
-- Line #1: the example code pulls out the contents of the element of list `l` - Line #2: pulls the first element of list `l` into a list of length 1
-- Line #3: pulls the second and third elements of `l` into a two-element list - Line #4: tries **but fails** to pull the second and third elements of `l` to see their contents--it only returns the contents of element 2
+- Line #1: the example code pulls out the contents of the element of list `l` 
+- Line #2: pulls the first element of list `l` into a list of length 1
+- Line #3: pulls the second and third elements of `l` into a two-element list 
+- Line #4: tries **but fails** to pull the second and third elements of `l` to see their contents--it only returns the contents of element 2
 - Line #5: pulls out the contents of the last element of `l`
 - Line #6: pulls the last element of list `l` into a list of length 1
 
@@ -355,7 +357,7 @@ Note that 1-6 just above (Chunk 2) recreate the previous 1-6 (Chunk 1) using int
 One more thing with list indexing we will look at: indexing specific elements within list elements:
 
 ```{r}
-# Block 3
+# Chunk 3
 names(l2$c) <- letters[1:4]
 #
 # #1
@@ -492,9 +494,9 @@ We'll leave you to figure out what is happening in Chunk 4 for the questions bel
 1. Answer the following questions:
 
 - In 2.0.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
-- In 2.0.1.2, Chunk 3 #2, #3, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
+- In 2.0.1.2, Chunk 3 #3, #4, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
 - In 2.0.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
-- In 2.0.1.4 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
+- In 2.0.1.3 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
 
 2. Coding practice:
 
