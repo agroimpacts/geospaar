@@ -26,10 +26,20 @@ vignette: >
 
 
 # Module 1 practice answers
+N/A
 
 # Module 2 practice answers
+N/A
 
 # Module 3 practice answers
+## Practice 1
+### Questions
+1. 
+- Class of `a` is `r class(a <- 1:10)`. 
+- Because the vector is contained in a list, and using a single `[]` to pull out an element returns a 1-element list, so you have to use list notation to get the vector.
+- `a` is vector of integers, `l` is a list of containing 2 integer vectors and 1 character vector. 
+- We applied a function that is the fourth element of list `l2` to the integer vector `f` that is the second element of `l2`.
+2. 
 
 ***
 <center>
