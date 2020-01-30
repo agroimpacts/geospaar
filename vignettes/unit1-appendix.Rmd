@@ -34,18 +34,112 @@ N/A
 # Module 3 practice answers
 ## Practice 1
 ### Questions
-1. 
-- Class of `a` is `r class(a <- 1:10)`. 
-- Because the vector is contained in a list, and using a single `[]` to pull out an element returns a 1-element list, so you have to use list notation to get the vector.
-- `a` is vector of integers, `l` is a list of containing 2 integer vectors and 1 character vector. 
-- We applied a function that is the fourth element of list `l2` to the integer vector `f` that is the second element of `l2`.
-2. 
+1.  Class of `a` is `r class(a <- 1:10)`. 
+2. Because the vector is contained in a list, and using a single `[]` to pull out an element returns a 1-element list, so you have to use list notation to get the vector.
+3. `a` is vector of integers, `l` is a list of containing 2 integer vectors and 1 character vector. 
+4. We applied a function that is the fourth element of list `l2` to the integer vector `f` that is the second element of `l2`.
+
+### Code
+1.
+```{r, eval=FALSE}
+a <- 20:30
+b <- letters
+```
+
+2.
+```{r, eval=FALSE}
+names(a) <- b[1:length(a)]
+a
+```
+
+3.
+```{r, eval=FALSE}
+l <- list(a = a, b = b)
+```
+
+4.
+```{r, eval=FALSE}
+a[a >= 26]
+a[c(1, 7)]
+a[c(length(a) - 1, length(a))]
+```
+
+5. 
+```{r, eval=FALSE}
+b[b %in% c("a", "c", "g")]
+```
+
+6. 
+```{r, eval=FALSE}
+l[[1]]
+l[1]
+l$a[l$a < 25]
+l[["a"]][l[["a"]] == 25]
+l[[2]][l[[2]] %in% c("d", "e", "f")]
+```
+
+
 
 ***
 <center>
 [Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
 </center>
 ***
+
+## Practice 2
+### Questions
+1. The vector is coerced to character. 
+2. The whole `matrix` is coerced to character. If `data.frame`, only `m$b` is coerced to character. 
+3. a) Have to use both column and row indices to attract row, col subset; b) Can use list notation for `data.frame` (e.g. `m$b`), but not for `matrix`.   
+
+### Code
+1. 
+```{r, eval=FALSE}
+m <- cbind(1:10, 11:20, 21:30)
+```
+
+2. 
+```{r, eval=FALSE}
+m[4:5, 2:3]
+```
+
+3. 
+```{r, eval=FALSE}
+colnames(m) <- letters[1:3]
+```
+
+4. 
+```{r, eval=FALSE}
+m[m[, "b"] > 14 & m[, "b"] <= 18, ]
+```
+
+5. 
+```{r, eval=FALSE}
+d <- as.data.frame(m)
+```
+
+6. 
+```{r, eval=FALSE}
+d[d$a > 4, "a"] <- -1 
+```
+
+7. 
+```{r, eval=FALSE}
+d$c <- letters[1:10]
+```
+
+8. 
+```{r, eval=FALSE}
+l <- list(m, d)
+l[[2]][2:3, ]
+```
+
+9. 
+```{r, eval=FALSE}
+d %>% filter(b >= 14 & b <= 18)
+```
+
+
 
 # Module 4 practice answers
 ## Practice 1

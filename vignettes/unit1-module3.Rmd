@@ -172,9 +172,9 @@ In this module, you will be asked to answer questions and practice coding along 
 
 You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. Indexing is also referred to as subsetting, because when we extract values we are selecting a subset of an object. 
 
-### One-dimensional data structures
+## One-dimensional data structures
 
-#### Vectors
+### Vectors
 Recall that a vector is a 1-dimensional object. An atomic vector can contain only one data type.   
 ```{r}
 a <- 1:10
@@ -280,7 +280,7 @@ which(b %in% 2:3)
 
 You can check that by comparing the index values to the positions of the `TRUE` values in the corresponding logical results (the 1st and 5th examples) above that. 
 
-#### Lists
+### Lists
 
 A list is a vector that can contain multiple data types. It can be named or unnamed. 
 ```{r}
@@ -395,7 +395,7 @@ In Chunk 3 above, we are indexing into a specific list element, and then indexin
 - **Pay close attention to #3, #4, and #8, which each have three sets of brackets**
 - Lastly we see #9, which produces a NULL because it is not possible to index into two separate list elements 
 
-#### Indexing to change values
+### Indexing to change values
 We have just seen how you can select values from vectors and lists. Now we look at using indices to change values within objects.  Fairly straightforward, and mostly entails doing the indexing on the left-hand side of the `<-`:
 
 ```{r}
@@ -489,31 +489,29 @@ l2$myfun(l2$f)
 We'll leave you to figure out what is happening in Chunk 4 for the questions below. 
 
 
-#### Practice
+### Practice
+#### Questions
+1. In 2.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
+2. In 2.1.2, Chunk 3 #3, #4, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
+3. In 2.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
+4. In 2.1.3 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
 
-1. Answer the following questions:
+#### Code
 
-- In 2.0.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
-- In 2.0.1.2, Chunk 3 #3, #4, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
-- In 2.0.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
-- In 2.0.1.3 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
-
-2. Coding practice:
-
-- Create a vector `a`, with values 20:30, a vector `b` holding all letters in the alphabet.
-- Assign letters as the names for vector `a`, such that `a[1]` gets the name "a", `a[2]` gets named "b", etc.  
-- Combine those vectors in to a list `l`, assigning names `a` and `b` to the two list elements 
-- Select from `a` as follows:
+1. Create a vector `a`, with values 20:30, a vector `b` holding all letters in the alphabet.
+2. Assign letters as the names for vector `a`, such that `a[1]` gets the name "a", `a[2]` gets named "b", etc.  
+3. Combine those vectors in to a list `l`, assigning names `a` and `b` to the two list elements 
+4. Select from `a` as follows:
   - All values `>=` 26
   - The 1st and 7th element
   - The last element and the second to last element (extra marks if you use `length` to find both index numbers)
-- Select from `b` the values named "a", "c", and "g"
-- Select from `l`:
+5. Select from `b` the values named "a", "c", and "g"
+6. Select from `l`:
   - The first element by integer index
   - The first element by integer index, so that it returns as a 1-element list
   - All values in the element named `a` that are `<` than 25
   - All values in the element named `a` that are equal to 25
-  - All values in the second element that are contained in the vector of letters `c(d, e, f)`
+  - All values in the second element that are contained in the vector of letters `c("d", "e", "f")`
 
 ***
 <center>
@@ -872,22 +870,22 @@ So that's a brief look at subsetting and replacement with `dplyr`. We'll build o
 
 
 ### Practice
-1. Answer the following questions:
+#### Questions
 
-- What happens if you update an integer vector with a character? 
-- What happens if you have an integer `matrix` `m` with 10 rows and columns "a" and "b", and you replace the fourth row of "b" with "zzz"? What would happen if `m` is a `data.frame`? 
-- Name two ways that indexing a `data.frame` differs from a `matrix`.
+1. What happens if you update an integer vector with a character? 
+2. What happens if you have an integer `matrix` `m` with 10 rows and columns "a" and "b", and you replace the fourth row of "b" with "zzz"? What would happen if `m` is a `data.frame`? 
+3 Name two ways that indexing a `data.frame` differs from a `matrix`.
 
-2. Coding practice:
-- Create a matrix `m` with 10 rows and 3 columns. Make the 1st column have values 1:10, the second column 11:20, and the third 21:30
-- Select rows 4 and 5 and columns 2 and 3 from the matrix
-- Name the matrix columns "a", "b", and "c" 
-- Select the values from column "b" that are greater than 14 and less than or equal to 18
-- Convert `m` to a `data.frame` `d` 
-- Select from `d$a` the values >4 and replace them with the value -1
-- Replace the values in column `c` with the first 10 letter of the alphabet
-- Combine `m` and `d` into a list `l`. Select rows 2 and 3 from column `b` from the element containg `d` of list `l`
-- Use `dplyr::filter` to select the values between 14 and 18 from column `b`
+#### Code
+1. Create a matrix `m` with 10 rows and 3 columns. Make the 1st column have values 1:10, the second column 11:20, and the third 21:30
+2. Select rows 4 and 5 and columns 2 and 3 from the matrix
+3. Name the matrix columns "a", "b", and "c" 
+4. Select the values from column "b" that are greater than 14 and less than or equal to 18
+5. Convert `m` to a `data.frame` `d` 
+6. Select from `d$a` the values >4 and replace them with the value -1
+7. Replace the values in column `c` with the first 10 letter of the alphabet
+8. Combine `m` and `d` into a list `l`. Select rows 2 and 3 from column `b` from the element containg `d` of list `l`
+9. Use `dplyr::filter` to select the values between 14 and 18 from column `b` of `d`.
 
 ***
 <center>
