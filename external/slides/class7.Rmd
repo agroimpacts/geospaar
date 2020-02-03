@@ -4,14 +4,28 @@ subtitle: Class 7
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class7.css"]
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
 
+```{r, eval=FALSE}
+library(stars)
+s3url <- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+p <- read_stars(s3url, proxy = TRUE)
+png(here::here("external/slides/figures/ghana_planet_stars.png"), height = 2.9, 
+    width = 8, units  = "in", res = 300, bg = "white")
+plot(p)
+dev.off()
+```
+
+
 ---
+
 # Today
 
 - Coding practice

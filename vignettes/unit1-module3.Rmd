@@ -399,7 +399,7 @@ In Chunk 3 above, we are indexing into a specific list element, and then indexin
 We have just seen how you can select values from vectors and lists. Now we look at using indices to change values within objects.  Fairly straightforward, and mostly entails doing the indexing on the left-hand side of the `<-`:
 
 ```{r}
-# Chunk 1
+# Chunk 4
 set.seed(1)
 a <- sample(0:100, size = 10, replace = TRUE)
 names(a) <- letters[1:10]
@@ -409,10 +409,10 @@ l2 <- l  # copy we will modify
 l
 ```
 
-In the first two lines of Chunk 1, we are using the `sample` function to select a 10 integers at random from a vector of integers (0-100). We preceed that call with `set.seed(1)`, which ensures that each time we run this code we get the same numbers drawn (**use `?set.seed` to learn more about random seeds, and `?sample` to learn about the arguments passed to the function**). Random number generation is an important aspect of learning how to code, particularly for setting up __self-contained, reproducible examples__ that you can use to ask others for help. 
+In the first two lines of Chunk 4, we are using the `sample` function to select a 10 integers at random from a vector of integers (0-100). We preceed that call with `set.seed(1)`, which ensures that each time we run this code we get the same numbers drawn (**use `?set.seed` to learn more about random seeds, and `?sample` to learn about the arguments passed to the function**). Random number generation is an important aspect of learning how to code, particularly for setting up __self-contained, reproducible examples__ that you can use to ask others for help. 
 
 ```{r, error = TRUE}
-# Chunk 2
+# Chunk 5
 # #1
 b[1] <- -99 
 a
@@ -451,7 +451,7 @@ Looking at the above, we are indexing the same way we did in the previous sectio
 Now let's replace list elements:
 
 ```{r}
-# Chunk 3
+# Chunk 6
 # 
 # #1
 l2[[1]] <- c(1, 4)
@@ -474,7 +474,7 @@ l
 l2
 ```
 
-In Chunk 3 above, we compare changes to elements of the copy list `l2` to the relevant elements of the original list `l`:
+In Chunk 6 above, we compare changes to elements of the copy list `l2` to the relevant elements of the original list `l`:
 
 - Line #1 replaces `l2`'s first element, a single element vector, with a two-element vector
 - Line #2 replaces the 1st and 10th element of the vector in the `l2` element named `f` with -1 and 1000, respectively
@@ -482,19 +482,19 @@ In Chunk 3 above, we compare changes to elements of the copy list `l2` to the re
 - Line #4 Assigns a fourth element to `l2` named `myfun`, which is a function we defined on the right of the operator. 
 
 ```{r}
-# Chunk 4
+# Chunk 7
 l2$myfun(l2$f)
 ```
 
-We'll leave you to figure out what is happening in Chunk 4 for the questions below. 
+We'll leave you to figure out what is happening in Chunk 7 for the questions below. 
 
 
 ### Practice
 #### Questions
 1. In 2.1.1, what class of object is `a`? Recreate `a` in your own script and apply a function to it to get the answer.  
 2. In 2.1.2, Chunk 3 #3, #4, and #8, why do we have to use three sets of brackets to get access to the vector elements? Hint: pay attention to the first set of brackets. 
-3. In 2.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #1. 
-4. In 2.1.3 Chunk #4, please describe the operation that we just performed, and what objects are used in it. 
+3. In 2.1.3, please describe (e.g. class, data structure, number of elements) `a` and `l` in Chunk #4. 
+4. In 2.1.3 Chunk #7, please describe the operation that we just performed, and what objects are used in it. 
 
 #### Code
 
@@ -526,7 +526,7 @@ The two-dimensional structures of greatest interest to us are the `matrix` and `
 Let's start with a 5 row, 3-column integer matrix: 
 
 ```{r}
-# Chunk 1
+# Chunk 8
 m <- cbind(1:5, 11:15, 21:25)
 m
 #
@@ -554,7 +554,7 @@ In #1, row 1, column 1 is selected, #2 is row 2, column 2, #3 is rows 1 and 2, c
 
 Now let's do it with names: 
 ```{r, error=TRUE}
-# Chunk 2
+# Chunk 9
 colnames(m) <- letters[1:3]
 rownames(m) <- letters[1:5]
 m
@@ -578,7 +578,7 @@ m["a", -(colnames(m) == "a")]
 m[-which(rownames(m) %in% c("a", "b", "c")), "a"]
 ```
 
-In Chunk2 we assign names to the 5 rows and 3 columns of `m`, and use those names to extract different parts of the matrix. This should be fairly how this works by now, although in #3 you will notice how we use indexing into the `letters` vector to extract the actual row and column names, so that we don't see them. #4 shows that you can't use negative indexing on a column name (and also not on a row name). #5 and #6 shows how you could do negative indexing though: 
+In Chunk 9 we assign names to the 5 rows and 3 columns of `m`, and use those names to extract different parts of the matrix. This should be fairly how this works by now, although in #3 you will notice how we use indexing into the `letters` vector to extract the actual row and column names, so that we don't see them. #4 shows that you can't use negative indexing on a column name (and also not on a row name). #5 and #6 shows how you could do negative indexing though: 
 
 - Use `colnames(m)` to return the vector of `m`'s column names
 - Use the `==` operator to find which column names match `a`
@@ -588,7 +588,7 @@ The same is done on row names in #6.
 
 A matrix value can also be accessed with a single vector:
 ```{r}
-# Chunk 3
+# Chunk 10
 # #1
 m[1:5]
 #
@@ -610,7 +610,7 @@ Looking at the examples above, you can see that the order of indexing is by row 
 How about by logical indexing? We already sort of got a start with that in Chunk 1 (#5 and #6), but let's have a look:
 
 ```{r}
-# Chunk 4
+# Chunk 11
 # #1
 m[m[, 1] == 3, 1:3]
 #
@@ -627,7 +627,7 @@ m[(m[, "a"] > 3) & (m[, "b"] < 15), 2:3]
 m[!m[, "a"] %in% 3:5, 1:3]
 ```
 
-In Chunk 4 #1 we search in `m`'s first column for the row that holds the value 3, and then use that to select the values on that row in columns 1-3, which is the equivalent of `m[3, ]` (because the values in `m[, 1]` correspond to the row numbers). #2 looks for all values >11 in column 2, but selects the values from column 3.  #3 searches for values >3 in column 1 and values <15 in column 2, pulling out values from column 3. #4 does the same search using column names rather than column index integers, but pulls out values from columns 2 and 3. Finally, #5 introduces the operator `!`, which, when combined with `%in%` is used to identify the rows in column a (1) that do not match the values 3, 4, or 5, and then subset the values in columns 1-3 (a, b, and c).
+In Chunk 11 #1 we search in `m`'s first column for the row that holds the value 3, and then use that to select the values on that row in columns 1-3, which is the equivalent of `m[3, ]` (because the values in `m[, 1]` correspond to the row numbers). #2 looks for all values >11 in column 2, but selects the values from column 3.  #3 searches for values >3 in column 1 and values <15 in column 2, pulling out values from column 3. #4 does the same search using column names rather than column index integers, but pulls out values from columns 2 and 3. Finally, #5 introduces the operator `!`, which, when combined with `%in%` is used to identify the rows in column a (1) that do not match the values 3, 4, or 5, and then subset the values in columns 1-3 (a, b, and c).
 
 ***
 <center>
@@ -676,7 +676,7 @@ is.list(d)
 They are indexed differently. The first major difference is that `$` and `[[` can be used on a `data.frame`:
 
 ```{r, error = TRUE}
-# Chunk 1
+# Chunk 12
 # #1
 d$a
 #
@@ -703,7 +703,7 @@ See how both `$` and `[[` allow an entire column to be extract from `d` (#1, #2,
 
 The second major difference is that single vector indexing is applied to columns only in `data.frame`s, not by row, column. 
 ```{r, error=TRUE}
-# Chunk 1
+# Chunk 13
 # #1
 d[1]
 #
@@ -721,7 +721,7 @@ This is consistent with what saw earlier with 1-d lists, in that `[` can be  use
 
 Now let's look subsetting `data.frame`s with logical indexing, which is also typically done differently then with a `matrix`:
 ```{r}
-# Chunk 3
+# Chunk 14
 # #1
 d[d$a %in% c("a", "c"), "c"]
 #
@@ -750,7 +750,7 @@ Notice how the `$` is used to specify the column name(s) used in logical indexin
 We'll keep this short and sweet, because the concepts are pretty close to what we use for 1-D structures. Here it is for `matrix`:
 
 ```{r}
-# Chunk 1
+# Chunk 15
 # #1
 m[1:4, 1:2] <- -9
 m
@@ -776,7 +776,7 @@ Changes to values in different rows/columns are made with fairly straightforward
 
 Here is replacement with a `data.frame`:
 ```{r}
-# Chunk 2
+# Chunk 16
 # #1
 d[d$b <= 2, "a"] <- "zzz"
 d
@@ -798,7 +798,7 @@ d[[3]] <- 10^d$b
 d
 ```
 
-In Chunk 2 above, #1 and #2 should make sense. In #3, we start to get a bit more tricksy. We first create a new `data.frame`, `ds`, which is a logically selected subset of columns `b` and `c`. We then overwrite the same subset in `d` with the vector `11:14`. In #4, we use `ds` to reset `d`. Finally, in #5, we show how the 3rd column of `d` can be replaced using `[[` notation for indexing, and we use the 10 to the power of (`^`) of `d$b` to create the replacement values.  
+In Chunk 16 above, #1 and #2 should make sense. In #3, we start to get a bit more tricksy. We first create a new `data.frame`, `ds`, which is a logically selected subset of columns `b` and `c`. We then overwrite the same subset in `d` with the vector `11:14`. In #4, we use `ds` to reset `d`. Finally, in #5, we show how the 3rd column of `d` can be replaced using `[[` notation for indexing, and we use the 10 to the power of (`^`) of `d$b` to create the replacement values.  
 
 ***
 <center>
@@ -808,11 +808,11 @@ In Chunk 2 above, #1 and #2 should make sense. In #3, we start to get a bit more
 
 ### Subsetting and replacement with dplyr
 
-Now that we have seen how to index/subset `data.frame`s, we'll look at how that is done with `dplyr`. In a word, it is quite different. First, read about the `dplyr` [grammar](https://dplyr.tidyverse.org), which provides a set of "verbs" that are designed to replace many of the base `R` approaches for manipulating `data.frame`s, including how you index them (you may also wish to read the chapter on [data transformation](https://r4ds.had.co.nz/transform.html) in *R For Data Science*). 
+Now that we have seen how to index/subset `data.frame`s, we'll look at how that is done with `dplyr`. It is quite different. First, read about the `dplyr` [grammar](https://dplyr.tidyverse.org), which provides a set of "verbs" that are designed to replace many of the base `R` approaches for manipulating `data.frame`s, including how you index them (you may also wish to read the chapter on [data transformation](https://r4ds.had.co.nz/transform.html) in *R For Data Science*). 
 
 Here we will focus on just indexing and replacement, using a slighly larger version of `d`, noting the `dplyr` works on `data.frame`s as well as `tibble`:
 ```{r}
-# Chunk 1
+# Chunk 17
 set.seed(1)
 d <- data.frame(a = letters[1:7], b = 1:7, c = runif(n = 7, min = 0, max = 20))
 d
@@ -844,7 +844,7 @@ In #3 using `filter` without `select` simply returns the matching row across all
 How about replacement? 
 
 ```{r}
-# Chunk 2
+# Chunk 18
 # #1
 d %>% mutate(a = ifelse(a %in% c("a", "e"), "zzz", a))
 #
@@ -912,7 +912,7 @@ pi * a^2  # areas with built in pi constant
 
 Let's look at it though for calculations on different kinds of objects:
 ```{r, error=TRUE}
-# Chunk 1
+# Chunk 19
 b <- 1:5
 m <- cbind(v1 = 1:5, v2 = 11:15)
 # 
@@ -959,7 +959,7 @@ d$v1 * m
 d$v1 * m2
 ```
 
-In Chunk 1 above we define a vector `b` (5 elements), matrices `m` (5 rows, 2 columns) and `m2` (2 rows, 2 columns), and `d`, a `data.frame` (5 rows, 3 integer variables, 1 character variable). 
+In Chunk 19 above we define a vector `b` (5 elements), matrices `m` (5 rows, 2 columns) and `m2` (2 rows, 2 columns), and `d`, a `data.frame` (5 rows, 3 integer variables, 1 character variable). 
 
 In #1 we multiply `m` and `b`. Notice that each element of `b` is multiplied with the corresponding row number of each column in `m`, i.e. `b[1]` is multiplied with `m[1, 1]`, `b[2]` with `m[2, 1]`, all the way to `b[5]` with `m[5, 1]`. This matching is repeated for column 2: `b[1] * m[1, 2]`; `b[2] * m[2, 2]`; ...; `b[5] * m[5, 2]`. In #2 we pull out the last element of `b` and multiply `m` by that one number. In #3, we multiply the 1st and 5th element of `b` with `m`. Notice the order of calculations. 
 
@@ -980,7 +980,7 @@ sqrt(m2)
 There are also four useful function to know that provide row and column summaries of 2-d structures:
 
 ```{r}
-# Chunk 2
+# Chunk 20
 rowSums(m)  # sum of each row
 colSums(m)  # sum of each column
 rowMeans(m)  # mean of each row
@@ -996,15 +996,15 @@ One thing that is important to point out, which is described well in rspatial.or
 This vectorization therefore is advantageous in terms of reducing the amount of code that has to be written. Vectorized operations are also faster, so when you are writing more complex, it is always helpful to try rely on `R` built in vectorization as much as possible. 
 
 ## Practice
-1. Answer the following questions:
+### Questions
+1. In Chunk 19 #3 explain the order of calculations. 
+2. In Chunk 19 #8, what would the order of calculations be if m had 3 columns? 
+3. In Chunk 19 #9, describe the dimensions of the subsets extracted from `d` and `m`, and the order of calculations. 
 
-- In Chunk 1 #3 explain the order of calculations. 
-- In Chunk 1 #8, what would the order of calculations be if m had 3 columns? - In Chunk 1 #9, describe the dimensions of the subsets extracted from `d` and `m`, and the order of calculations. 
-
-2. Coding practice: 
-- Repeat the code in chunk 1, but replace multiplication with division, addition, and subtraction
-- Find the sine and cosine of matrix `m`
-- For the `rowSums`, `colSums`, `rowMeans`, and `colMeans` of the numeric subset of `d`
+### Code 
+1. Repeat the code in Chunk 19, but replace multiplication with division, addition, and subtraction
+2. Find the sine and cosine of matrix `m`
+3. For the `rowSums`, `colSums`, `rowMeans`, and `colMeans` of the numeric subset of `d`
 
 ***
 <center>
@@ -1029,7 +1029,7 @@ We divide control structures into branching and looping structures, [following r
 Looping is pretty straight-forward. You have a multi-element or multi-dimensional object, you need to perform a particular operation or set of operations on each dimension or element: 
 
 ```{r}
-# Chunk 1
+# Chunk 21
 sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
 for(i in 1:4) {  # for loop with iterator i over vector 1:4
   stmnt <- paste0(letters[i], " is the ", i, sscript[i],
@@ -1048,7 +1048,7 @@ paste0(letters[1:4], " is the ", 1:4, sscript, " letter in the alphabet")
 But there might be cases in which you wouldn't to, say if you wanted to construct a unique title for each plot in a multi-panel plot:
 
 ```{r, fig.height=1, fig.width=9}
-# Chunk 2
+# Chunk 22
 sscript <- c("st", "nd", "rd", "th")  # vector of superscripts  
 par(mfrow = c(1, 4), mar = c(0, 0, 1, 0.5))
 for(i in 1:4) {  
@@ -1064,7 +1064,7 @@ That's a silly example of plotting, but I think illustrates a common use case fo
 
 How about another example:
 ```{r}
-# Chunk 3
+# Chunk 23
 dat_list <- list(data.frame(a = 1:10, b = 21:30), 
                  data.frame(a = 31:40, b = 41:50),
                  data.frame(a = 51:60, b = 61:70))
@@ -1073,7 +1073,7 @@ for(i in dat_list) print(rowSums(i))
 
 Here we combined three `data.frame`s in a list and then iterate over the list elements, and calculate the `rowSums` for each `data.frame`. Note that in this case the iterator `i` contains the entire `data.frame`, not just an index integer, so we apply `rowSums` to `i`. Also see how we do not wrap the `print(rowSums(i))` in `{}` and keep it on the same line. We could also write it these ways:
 ```{r}
-# Chunk 4
+# Chunk 24
 for(i in dat_list) {  ### Use this one 
   print(rowSums(i))
 }
@@ -1089,7 +1089,7 @@ print(rowSums(i))
 
 ```
 
-The first one is the preferred way for writing `for` loops, and should be used for almost all cases. The 1-line variant in Chunk 3 can be used when a single line command that fits on one 80 character-width line is all that is needed. The other four variants in Chunk 4 should not be used, even if they work, particularly the last two. 
+The first one is the preferred way for writing `for` loops, and should be used for almost all cases. The 1-line variant in Chunk 3 can be used when a single line command that fits on one 80 character-width line is all that is needed. The other four variants in Chunk 24 should not be used, even if they work, particularly the last two. 
 
 I almost never use `while` loops, and we won't have much call for them here, so if you want to see an example, please refer back to the control structures module in [Module 2](unit1-module2.html#control-structures). There are also `break` and `next` structures, which I don't use too much, but I suggest you read about [here](https://www.rspatial.org/intr/10-flow.html#break-and-next) here. `break` gets you out of a loop, and `next` let's you skip iterations.  
 
@@ -1098,7 +1098,7 @@ I almost never use `while` loops, and we won't have much call for them here, so 
 Branching structures let you choose different paths for your code to follow, given specific conditions. We have already seen these in the first functions we have written, so we will look at some examples within loops, which is where they tend to be most useful:
 
 ```{r}
-# Chunk 5
+# Chunk 25
 for(i in 1:20) {
   if(i %in% seq(5, 20, by = 5)) {
     print(paste(i, "is divisible by 5"))
@@ -1114,7 +1114,7 @@ for(i in 1:20) {
 
 Above we iterate over `1:20`, and put in three different `if` statements that trigger different statements depending on the `i` value. Notice, however, that we have two statements printed when `i` is 10 and 20. 
 ```{r}
-# Chunk 6
+# Chunk 26
 for(i in 1:10) {
   if(i < 5) {  # condition 1
     print(paste(i, "is less than", i + 1))
@@ -1129,7 +1129,7 @@ for(i in 1:10) {
 In this example, we use `else` to make sure that only one statement can be generated for a given number, depending on its value. The first `if` prints a statement for `i` < 5. It only requires an `if`. The second statement uses an `else if` to specify a second condition that triggers a print statement (`i` falling within the set 5-7). The third uses just a single `else`, which means that any values not meeting the first or second condition are printed. 
 There is another way of using `if` and `else` together:
 ```{r}
-# Chunk 7
+# Chunk 27
 a <- 1:10
 #
 # #1 
@@ -1143,15 +1143,15 @@ b
 That is the `ifelse` statement, which applies a conditional statement to a vector, and returns the result as applied to each element.  In #1 we see that values of `a` less than 7 are returned with the "<" symbol, while values greater than or equal to 7 have the ">=" returned. #2 shows that you can capture this output in a new vector, which is quite handy when modifying results. Recall from 2.1.4 above that `ifelse` is used in `dplyr::mutate` to change values in an existing `data.frame` variable.  
 
 ### Practice
-- Use the `paste` function to 
-- Copy Chunk 1's code. Change the iterator vector to `1:5` and re-run the code chunk.  What happens? Do you need to make any changes to make a better result? 
-- Copy Chunk 2's code. 
+#### Code
+1. Copy Chunk 21's code. Change the iterator vector to `1:5` and re-run the code chunk.  What happens? Do you need to make any changes to make a better result? 
+2. Copy Chunk 22's code. 
   - Comment out the lines beginning with `points` and run the code to see what that line does
   - Delete the "axes = FALSE" part of the call to `plot` and see what does. 
-- Copy Chunk 6's code:
+3. Copy Chunk 26's code:
   - Change the `if` statement within condition 2 such that `i >= 3`. Run it and inspect the result 
   - Now change the second half of the statement so that `i <= 8`. What's the result?
-- Create a `for` loop that iterates over a vector 1:20. Insert a condition into it such that it only prints out a result when the iterator's value is 11
+4. Create a `for` loop that iterates over a vector 1:20. Insert a condition into it such that it only prints out a result when the iterator's value is 11
 
 ***
 <center>
