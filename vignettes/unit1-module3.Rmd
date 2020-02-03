@@ -1211,7 +1211,7 @@ unlist(lapply(1:4, inverse_log10))
 
 Sometimes setting up an `lapply` is not so simple as specifying the list/vector and the function you want to apply to it. In this case you need to make use of what is known as an anonymous function:
 ```{r}
-# Chunk 8
+# Chunk 28
 dat_list <- lapply(1:length(dat_list), function(x) {
   d <- dat_list[[x]]
   d[1:3, 1] <- -99
@@ -1224,11 +1224,11 @@ The anonymous function here is `function(x)`. An anonymous function is simply on
 
 > The pieces of x are always supplied as the first argument to f. If you want to vary a different argument, you can use an anonymous function.
 
-That is, because the function is set up as `lapply(x, f)`, if either function `f` or the values of `x` fed to `f` won't do what we want them to do, we might need to specify something a bit more complicated within a new function.  In the example in Chunk 8, the goal was to specify a fixed subset (rows 1-3 in column 1) of each `data.frame` in `dat_list` and change the values to -99. So we created the anonymous function that used the argument x to iterate over the list's integer index so that we could extract and modify each data.frame, return the updated values, and overwrite the original `dat_list` with the new values.  This is using `function(x)` in conceptually the same way as the `i in` in a `for` loop, and, at least for me, is the most common way to use anonymous functions with `*apply`. 
+That is, because the function is set up as `lapply(x, f)`, if either function `f` or the values of `x` fed to `f` won't do what we want them to do, we might need to specify something a bit more complicated within a new function.  In the example in Chunk 28, the goal was to specify a fixed subset (rows 1-3 in column 1) of each `data.frame` in `dat_list` and change the values to -99. So we created the anonymous function that used the argument x to iterate over the list's integer index so that we could extract and modify each data.frame, return the updated values, and overwrite the original `dat_list` with the new values.  This is using `function(x)` in conceptually the same way as the `i in` in a `for` loop, and, at least for me, is the most common way to use anonymous functions with `*apply`. 
 
 You could of course specify your highly customized function that does the modification you want outside the `lapply`:
 ```{r}
-# Chunk 9
+# Chunk 29
 dat_modify <- function(x) {
   x[1:3, 1] <- 999
   return(x)
@@ -1241,7 +1241,7 @@ Which you see is done here (changing the value in the same subset to 999, instea
 
 Here's a slightly more complicated example, annotated with comments:
 ```{r}
-# Chunk 10
+# Chunk 30
 dat_list2 <- c(dat_list, mean)  # add another element to dat_list
 lapply(1:length(dat_list2), function(x) {  
   d <- dat_list2[[x]]  # extract element of list
@@ -1262,7 +1262,7 @@ So, there are several functions and control structures being applied to the elem
 
 One more example:
 ```{r}
-# Chunk 11
+# Chunk 31
 flist <- list(mean, sd, range)
 lapply(1:3, function(x) flist[[x]](unlist(dat_list[[1]])))
 ```
@@ -1272,7 +1272,7 @@ The first step above entails creating a list of three functions that we want to 
 ### sapply
 `sapply` is an `lapply` that figures out which data structure it should return its output in. It tries to find the most compact possible form and return that as output
 ```{r}
-# Chunk 12
+# Chunk 32
 # #1 
 sapply(dat_list, rowSums)
 #
@@ -1286,13 +1286,13 @@ sapply(1:3, function(x) sum(unlist(dat_list[[x]])))
 sapply(1:3, function(x) flist[[x]](unlist(dat_list[[1]])))
 ```
 
-In #1, we use `sapply` to apply `rowSums` to dat_list. It produces a matrix that holds the row sums from each `data.frame` in `dat_list` in a separate column.  #2 apply `colSums`, returning 2X3 matrix in which the columns again hold the results for each `data.frame`, while the rows hold the column sums for each column from each data.frame. #4 uses `sapply` with an anonymous function to iterate over `dat_list` and `unlist` each data.frame so that `sum` can be applied to it. Since the answer for each iteration is a single number, the output is produced as a vector of length 3 (1 element per list element). Finally, we reuse the code in Chunk 11, swapping in  `sapply` for `lapply`, and apply `flist` again. The first two elements of `flist` (`mean` and `sd`) produce a single output, but the third (`range`) produces two values (the minimum and maximum). That means the dimensions of the results from each iteration are not equal. `sapply` thus returns a list because elements of unequal dimensions cannot be combined into a matrix or a vector.  
+In #1, we use `sapply` to apply `rowSums` to dat_list. It produces a matrix that holds the row sums from each `data.frame` in `dat_list` in a separate column.  #2 apply `colSums`, returning 2X3 matrix in which the columns again hold the results for each `data.frame`, while the rows hold the column sums for each column from each data.frame. #4 uses `sapply` with an anonymous function to iterate over `dat_list` and `unlist` each data.frame so that `sum` can be applied to it. Since the answer for each iteration is a single number, the output is produced as a vector of length 3 (1 element per list element). Finally, we reuse the code in Chunk 31, swapping in  `sapply` for `lapply`, and apply `flist` again. The first two elements of `flist` (`mean` and `sd`) produce a single output, but the third (`range`) produces two values (the minimum and maximum). That means the dimensions of the results from each iteration are not equal. `sapply` thus returns a list because elements of unequal dimensions cannot be combined into a matrix or a vector.  
 
 ### apply
 This is a fairly restrictive form of this family (in my opinion), which is mainly used to apply functions over the rows or columns of 2-D structures. 
 
 ```{r}
-# Chunk 13
+# Chunk 33
 dat <- dat_list[[2]]
 # 
 # #1
@@ -1350,13 +1350,14 @@ Select Option `1: R Programming`
 ```
 Select Option `10: lapply and sapply`. Work through the whole unit, then escape out of `swirl` when finished, and do the remaining practice exercises:
 
-- Copy and run Chunk 3's code to recreate `dat_list`. Copy Chunk 10's code and:
+#### Code
+1. Copy and run Chunk 23 and 29's code to recreate `dat_list`. Copy Chunk 30's code and:
   - Set `na.rm = FALSE` in the call to `colSums`
   - Re-run the code to check how the answer changes. 
-- Copy Chunk 11's code. Remove the `unlist()` around `dat_list[[1]]`. Re-run the code and see what happens. 
-- Write an `lapply` to apply the functions `mean` and `sd` to `dat_list`
-- Do the same for `sapply`
-- Write an `lapply` with an anonymous function that iterates through `dat_list`, selecting the 3rd column, rows 1 and 2 from each `data.frame`, and then `sum` that subset.  
+2. Copy Chunk 31's code. Remove the `unlist()` around `dat_list[[1]]`. Re-run the code and see what happens. 
+3. Write two `lapply` statements to apply the functions `mean` and `sd` to `dat_list`
+4. Do the same for `sapply`
+5. Write an `lapply` with an anonymous function that iterates through `dat_list`, selecting the 2nd column, rows 1 and 2 from each `data.frame`, and then `sum` that subset.  
 
 ***
 <center>
