@@ -219,6 +219,59 @@ for(i in 1:20) {
 }
 ```
 
+## Practice 5
+### Code
+1. Turns the summary of "a" variables to NA. 
+```{r, eval=FALSE}
+dat_list <- list(data.frame(a = 1:10, b = 21:30), 
+                 data.frame(a = 31:40, b = 41:50),
+                 data.frame(a = 51:60, b = 61:70))
+dat_modify <- function(x) {
+  x[1:3, 1] <- 999
+  return(x)
+}
+dat_list <- lapply(dat_list, dat_modify)
+dat_list
+
+dat_list2 <- c(dat_list, mean)  # add another element to dat_list
+lapply(1:length(dat_list2), function(x) {  # x <- 1
+  d <- dat_list2[[x]]  # extract element of list
+  if(is.data.frame(d)) {  # check if it is a data.frame
+    d[d == 999] <- NA  # convert any 999 values to NA 
+    o <- c(colSums(d, na.rm = FALSE), # column sums, dropping NAs
+           "total" = sum(d, na.rm = TRUE)) #  sum dropping NAs
+  } else { # if it is not a data.frame, make an error statement
+    o <- paste("Operation not valid for a", class(d))  
+  }
+  return(o)  # return result
+})
+
+```
+
+2. Can't coerce list to double.
+
+```{r, eval=FALSE}
+flist <- list(mean, sd, range)
+lapply(1:3, function(x) flist[[x]](dat_list[[1]]))
+```
+
+3. 
+```{r, eval=FALSE}
+lapply(dat_list, function(x) mean(unlist(x)))
+lapply(dat_list, function(x) sd(unlist(x)))
+```
+
+4. 
+```{r, eval=FALSE}
+sapply(dat_list, function(x) mean(unlist(x)))
+sapply(dat_list, function(x) sd(unlist(x)))
+```
+
+5. 
+```{r, eval = FALSE}
+lapply(dat_list, function(x) sum(x[1:2, 2]))
+```
+
 # Module 4 practice answers
 ## Practice 1
 ### Questions
