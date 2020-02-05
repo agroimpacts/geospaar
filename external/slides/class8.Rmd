@@ -4,18 +4,41 @@ subtitle: Class 8
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class8.css"]
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
+```{r, eval=FALSE}
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+data(world.cities, package = "maps")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+afr_capitals <- world.cities %>% filter(capital == 1) %>% 
+  st_as_sf(coords = c("long", "lat"), crs = 4326) %>% 
+  st_intersection(., world %>% filter(continent == "Africa"))
+p <- world %>% filter(continent == "Africa") %>% 
+  ggplot() + geom_sf(aes(fill = name), lwd = 0.2) + 
+  geom_sf(data = afr_capitals, col = "blue", size = 0.5) + 
+  scale_fill_grey(guide = FALSE) + theme_minimal()
+ggsave(here::here("external/slides/figures/africa_capitals.png"), 
+       width = 5, height = 4, dpi = 300, bg = "transparent")
+```
+
+
+---
+
 # Today
 
 - More coding practice
   - Indexing
   - A little bit of summarizing
-  - Control structures
+  - Control structures (maybe)
 
 ---
 
@@ -122,3 +145,19 @@ datss <- dat[1:2, 1:2]
 dat[1:2, 1:2] <- -1:-4
 dat[1:2, 1:2] <- datss
 ```
+
+---
+## Summarizing datasets
+- Calculate the row and column sums of both `m` and `dat`. 
+- Calculate the overall means and sums of all values in each dataset
+- From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable. 
+
+---
+### Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`

@@ -83,8 +83,8 @@ Let's get all three datasets read in first:
 ```{r}
 # Chunk 1
 # #1
-fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
-          full.names = TRUE)
+fs <- dir(system.file("extdata/", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
 fs
 # #2
 crops <- lapply(fs, readr::read_csv)
@@ -95,20 +95,20 @@ We used good old `lapply` to read all three files into a list (#2), after we use
 ```{r}
 # Chunk 2
 # #1
-system.file("extdata/", package = "geospaar")
+system.file("extdata", package = "geospaar")
 #
 # #2
-dir(system.file("extdata/", package = "geospaar"))
+dir(system.file("extdata", package = "geospaar"))
 #
 # #3
-dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT")
+dir(system.file("extdata", package = "geospaar"), pattern = "FAOSTAT")
 #
 # #4
-dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
+dir(system.file("extdata", package = "geospaar"), pattern = "FAOSTAT", 
     full.names = TRUE)
 ```
 
-In #1, we get the file path to the extdata/ folder in the `geospaar` installed package. #2 gives shows us the names of all the files in there. #3 shows us narrows the listed files down to those whose names contains "FAOSTAT", and then #4 returns the full file paths for each. 
+In #1, we get the file path to the `extdata` folder in the `geospaar` installed package. #2 gives shows us the names of all the files in there. #3 shows us narrows the listed files down to those whose names contains "FAOSTAT", and then #4 returns the full file paths for each. 
 
 So that's a quick introduction to how one can construct a file path and read in table data stored in a csv. 
 
@@ -136,7 +136,7 @@ In #1 we do the usual creation of dummy data, but we replace `data.frame` with `
 
 
 ## Getting your data clean and in shape
-As we have already seen, our three crop datasets are messy. Columns we don't need and not sure if we want the row structure as it is. So we have to prepare our data. 
+As we have already seen, our three crop datasets are messy. There are columns we don't need, and we are not sure if we want the row structure as it is. So we have to prepare our data. 
 
 ### Tidy data
 This introduces the concept of *tidy* data, which is the foundational concept for the tidyverse.  There is a whole paper written on the tidy data concept by Hadley Wickham, which is [here](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html). To quote the key principles:
@@ -272,7 +272,7 @@ crops_df <- do.call(rbind, lapply(crops, function(x) {
 crops_df
 ```
 
-Building on Chunk10, we apply the tidying procedure and then join the three tidied `tibble`s into one long one (`crops_df`) using `do.call` and `rbind` to do that last step. `do.call` basically says "do this function call", which is `rbind`, `rbind` is being done to the results of the `lapply`. Or, broken down:
+Building on Chunk 10, we apply the tidying procedure and then join the three tidied `tibble`s into one long one (`crops_df`) using `do.call` and `rbind` to do that last step. `do.call` basically says "do this function call", which is `rbind`, `rbind` is being done to the results of the `lapply`. Or, broken down:
 ```{r}
 # Chunk 12
 crops2 <- lapply(crops, function(x) {
