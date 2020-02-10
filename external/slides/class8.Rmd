@@ -75,14 +75,15 @@ l
     - Create each column first as its own vector, then combine
     - `V1` = 1:10
     - `V2` is a random sample between 1:100
-    - `V3` is drawn from a random uniform distribution between 0 and 50     - Use `set.seed(50)`
+    - `V3` is drawn from a random uniform distribution between 0 and 50     
+    - Use `set.seed(10)`
     - Inspect the `str` and `class` of `m`
   - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
     - `V4` is a random selection of the letters A-E
     
 ---
 ```{r}
-set.seed(50)
+set.seed(10)
 m <- cbind(V1 = 1:10, 
            V2 = sample(1:100, size = 10, replace = TRUE), 
            V3 = runif(n = 10, min = 0, max = 50))
