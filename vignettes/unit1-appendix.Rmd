@@ -330,11 +330,11 @@ fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT",
 crops <- lapply(fs, readr::read_csv)
 crops_df <- do.call(rbind, lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    spread(key = Element, value = Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production) %>% 
+           harv_area = `Area harvested`, prod = Production)
 }))
-crop_ylds <- crops_df %>% mutate(yields = prod / harv_area)
+crop_ylds <- crops_df %>% mutate(yield = prod / harv_area)
 crop_ylds <- crop_ylds %>%     
   mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
   mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
@@ -382,7 +382,7 @@ crop_ylds[crop_ylds$crop == "sorghum" & crop_ylds$country == "ZAF" &
 2. 
 ```{r, eval = FALSE}
 crop_ylds %>% filter(crop == "sorghum" & country == "ZAF" & year >= 2000) %>% 
-  select(prod, harv_area, yields) %>% summarise_all(funs(mean, sd))
+  select(prod, harv_area, yield) %>% summarise_all(funs(mean, sd))
 ```
 
 3. 
@@ -394,35 +394,35 @@ crop_ylds %>% group_by(crop, country) %>% select(prod, harv_area) %>%
 4. 
 ```{r, eval = FALSE}
 crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
-  select(yields, harv_area) %>% cor()
+  select(yield, harv_area) %>% cor()
 
 dat <- crop_ylds %>% filter(crop == "maize" & country == "ZMB")
-cor.test(dat$harv_area, dat$yields)
+cor.test(dat$harv_area, dat$yield)
 ```
 
 5. 
 ```{r, eval = FALSE}
-crop_ylds %>% filter(crop == "maize") %>% summarize(mu_yld = mean(yields))
+crop_ylds %>% filter(crop == "maize") %>% summarize(mu_yld = mean(yield))
 # 2.07 t/ha
 ```
 
 6. South Africa shows larger yields gains (0.061 t/ha/yr versus 0.03 t/ha/yr)
 ```{r, eval = FALSE}
-summary(lm(yields ~ year, 
+summary(lm(yield ~ year, 
            data = crop_ylds %>% filter(crop == "maize" & country == "ZMB")))
-summary(lm(yields ~ year, 
+summary(lm(yield ~ year, 
            data = crop_ylds %>% filter(crop == "maize" & country == "ZAF")))
 
 crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
-  lm(yields ~ year, data = .) %>% summary() 
+  lm(yield ~ year, data = .) %>% summary() 
 crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>% 
-  lm(yields ~ year, data = .) %>% summary()
+  lm(yield ~ year, data = .) %>% summary()
 ```
 
 7. 
 ```{r, eval = FALSE}
 crop_ylds %>% filter(crop != "sorghum") %>% group_by(crop, country) %>% 
-  do(prod_ha_lm = lm(yields ~ year, data = .)) %>% 
+  do(prod_ha_lm = lm(yield ~ year, data = .)) %>% 
   broom::tidy(., prod_ha_lm)
 ```
 

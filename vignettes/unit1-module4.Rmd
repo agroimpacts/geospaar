@@ -190,22 +190,22 @@ Which is one of the [definitions](https://cran.r-project.org/web/packages/tidyr/
 
 ### Reshaping
 So we need to reshape the dataset. How? Well, the values "Area harvested" and "Production" in *Element* are both stored in the neighboring *Value* column. We need to make two new columns out of values in *Value*, pulling out the ones corresponding to *Element* "Production" into one new column, and *Element* "Area harvested" into another. This is called **spreading**, or going from long (or tall) to wide:
-```{r, message=FALSE}
+```{r, message=FALSE, results='hold'}
 # Chunk 6
 maize <- maize %>% pivot_wider(names_from = Element, values_from = Value)
 # maize <- maize %>% spread(key = Element, value = Value)
 maize
 ```
 
-We use `tidyr::pivot_wider` to do that, specifying the *Element* column as the one that contains the names of the new columns (`names_from`), and *Value* as the column from which we take the values to fill under each column (`values_from`). Note that this function replaces the commented-out one below it, which is the original `tidyr::spread` function. `pivot_wider` is considered more intuitive. The inverse procedure is `tidyr::pivot_longer`, which is also known as **gathering** (and the older function is `tidyr::gather`), where columns are re-organized into key-value pairs: 
-```{r}
+We use `tidyr::pivot_wider` to do that, specifying the *Element* column as the one that contains the names of the new columns ("names_from"), and *Value* as the column from which we take the values to fill under each column ("values_from"). Note that this function replaces the commented-out one below it, which is the original `tidyr::spread` function. `pivot_wider` is considered more intuitive. The inverse procedure is known as **gathering**, where columns are re-organized into key-value pairs: 
+```{r, results='hold'}
 # Chunk 7
-maize %>% gather(key = Element, value = Value, `Area harvested`, Production)
 maize %>% pivot_longer(cols = c("Area harvested", "Production"), 
-                       names_to = c("Element", "Value"), names_sep = "")
+                       names_to = "Element", values_to = "Value")
+# maize %>% gather(key = Element, value = Value, `Area harvested`, Production)
 ```
 
-Here we use `tidyr::gather` to reshape `maize` back to its original form. We have two arguments, "key", which is the name for new variable that will hold the key, and "value", which will hold the data values corresponding to each key. We then give the column names that we want to gather into key-value pairs. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
+Here we use `tidyr::pivot_longer` (which is busy replacing `tidyr::gather`) to reshape `maize` back to its original form. We have three arguments, "cols", which designates the columns you want to convert to combine into long form, "names_to", which specifies the name of the column that will hold the key variable, and "values_to", which specifies the name of the column that will hold the values. The commented out line shows how to do the same thing with the older `gather` function. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
 
 ***
 <center>
@@ -214,7 +214,7 @@ Here we use `tidyr::gather` to reshape `maize` back to its original form. We hav
 ***
 
 ### Renaming
-We still need to clean it some more though. Note in the `gather` operation above how *Area harvested* has backticks around it. That's because it has a space in the variable name, which is bad practice. We also should remove capitals. 
+We still need to clean it some more though. Note in the `pivot_longer` operation above how *Area harvested* has backticks around it. That's because it has a space in the variable name, which is bad practice. We also should remove capitals. 
 ```{r}
 # Chunk 8
 maize %>% rename(crop = Item, country = Area, year = Year, 
@@ -229,12 +229,12 @@ Okay, so we have just seen a bunch of data tidying steps above. This is a good p
 ```{r}
 # Chunk 9
 crops[[1]] %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-  spread(key = Element, value = Value) %>% 
+  pivot_wider(names_from = Element, values_from = Value) %>% 
   rename(crop = Item, country = Area, year = Year, 
-                 harv_area = `Area harvested`, prod = Production)
+         harv_area = `Area harvested`, prod = Production)
 ```
 
-We grab the first element of `crops`, the maize `tibble`, and apply all three operations sequentially by chaining them together with `%>%`, the pipe operator. This means we are piping the results of each operation to the next: the results from `select` are piped to `spread`, and then the results of those two to `rename`.  
+We grab the first element of `crops`, the maize `tibble`, and apply all three operations sequentially by chaining them together with `%>%`, the pipe operator. This means we are piping the results of each operation to the next: the results from `select` are piped to `pivot_wider`, and then the results of those two to `rename`.  
 
 **Important note:** chaining/piping is not something unique to data tidying, as it applies to operations throughout the tidyverse.
 
@@ -244,7 +244,7 @@ Now that we have our pipes set up, we can apply them to all three datasets in an
 # Chunk 10
 lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    spread(key = Element, value = Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = `Area harvested`, prod = Production)
 })
@@ -268,7 +268,7 @@ Now we'll bind all three `tibble`s into a single large one:
 # Chunk 11
 crops_df <- do.call(rbind, lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    spread(key = Element, value = Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = `Area harvested`, prod = Production)
 }))
@@ -280,7 +280,7 @@ Building on Chunk 10, we apply the tidying procedure and then join the three tid
 # Chunk 12
 crops2 <- lapply(crops, function(x) {
   x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    spread(key = Element, value = Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = `Area harvested`, prod = Production)
 })
@@ -425,7 +425,7 @@ crop_ylds <- left_join(crops_df, yields)
 crop_ylds
 ```
 
-First, we make a new `tibble` that calculates crop yields from production and harvested area (yield = production / harvest area). We use the `mutate` function (more on that in section 2.2.8) to create the new variable, and select just *crop*, *country*, *year*, and *yield* to make a new `yields` `tibble`.  
+First, we make a new `tibble` that calculates crop yield from production and harvested area (yield = production / harvest area). We use the `mutate` function (more on that in section 2.2.8) to create the new variable, and select just *crop*, *country*, *year*, and *yield* to make a new `yields` `tibble`.  
 
 We then use a `left_join` to merge `yields` onto `crops_df`. We specify three columns in this case, because there is no one variable that provides a unique key, nor is there two variables that do. However, the values in *crop*, *country*, and *year* do provide a unique combination for each row, so we join on those. #2 makes that explicit, but we see in #3 that `left_join` handles this for us automatically if we don't. 
 
@@ -565,7 +565,7 @@ Long or tall (i.e. tidy) data formats facilitate split-apply-combine (SAC) analy
 
 ```{r}
 # Chunk 22
-crop_ylds %>% group_by(crop) %>% summarize(mean_yield = mean(yields))
+crop_ylds %>% group_by(crop) %>% summarize(mean_yield = mean(yield))
 ```
 
 We just did an SAC on the `crop_ylds` data that entailed splitting the dataset by crop type, applying the `mean` function, and then combining the results of that into a summary `tibble`.  We can use an `lapply` and `rbind` to illustrate the inner workings of that SAC:
@@ -578,7 +578,7 @@ splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
   cat("\n")  # add empty line
   print(paste("Split out", x))  # print statement to mark split  
   print(dat[1, ])  # print showing first line of split tibble
-  o <- data.frame(crop = x, mean_yield = mean(dat$yields))  # here the apply
+  o <- data.frame(crop = x, mean_yield = mean(dat$yield))  # here the apply
 })
 #
 # #2
@@ -590,7 +590,7 @@ Chunk 23 #1 contains both the split (using base `R` syntax rather than `dplyr`, 
 Now let's look at a more complex SAC:
 ```{r}
 # Chunk 24
-crop_ylds %>% group_by(crop, country) %>% summarize(mean_yield = mean(yields))
+crop_ylds %>% group_by(crop, country) %>% summarize(mean_yield = mean(yield))
 ```
 
 Here we do two splits: the first on crop, the second on country, so after applying and combining we get the mean yield for each crop for each country.  Let's do that with `lapply`:
@@ -605,7 +605,7 @@ splt_apply <- lapply(unique(crop_ylds$crop), function(x) {
     cat("\n")  # add empty line
     print(paste("...then split out", y, x))  # print to mark inner split
     print(dat[1, ])  # print to show 1st line of split tibble
-    o <- data.frame(crop = x, country = y, mean_yield = mean(dat$yields))
+    o <- data.frame(crop = x, country = y, mean_yield = mean(dat$yield))
   })
   do.call(rbind, cntry_splt_apply)
 })
@@ -618,24 +618,24 @@ Making this SAC with `lapply` requires an `lapply` nested in an `lapply`. The ou
 
 Right, so that might look daunting, but not to worry--we are just using those `lapply`s to illustrate the splitting, and also to show how using `dplyr` pipelines can make things much simpler. So we'll forge ahead with those.
 
-What happens if we want to do SAC on an even finer range of data within each split, say, calculate mean yields since the year 2000 by crop and by country: 
+What happens if we want to do SAC on an even finer range of data within each split, say, calculate mean yield since the year 2000 by crop and by country: 
 
 ```{r}
 # Chunk 25b
 crop_ylds %>% filter(year >= 2000) %>% group_by(crop, country) %>% 
-  summarize(mean_yield = mean(yields))
+  summarize(mean_yield = mean(yield))
 ```
 
 We can add `dplyr::filter` with the conditional statement (`year >= 2000`) in it, to select observations since the year 2000, and do the SAC on those. According to `?dplyr::filter`'s function description, we:
 
 > Use filter() to choose rows/cases where conditions are true. Unlike base subsetting with [, rows where the condition evaluates to NA are dropped.
 
-How about pre-2000 mean yields
+How about pre-2000 mean yields?
 
 ```{r}
 # Chunk 26
 crop_ylds %>% filter(year < 2000) %>% group_by(crop, country) %>% 
-  summarize(mean_yield = mean(yields))
+  summarize(mean_yield = mean(yield))
 ```
 
 Same procedure, just a different conditional operator inside `filter`. But maybe we want to compare pre- and post-2000 yields in the same dataset:
@@ -655,11 +655,11 @@ That comparison might be easier if we put the pre- and post-2000 yields next to 
 crop_ylds %>% 
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
   group_by(crop, country, y2k) %>% 
-  summarize(mean_yield = mean(yields)) %>% 
-  spread(key = y2k, value = mean_yield)
+  summarize(mean_yield = mean(yield)) %>% 
+  pivot_wider(names_from = y2k, values_from = mean_yield)
 ```
 
-In this case we just use `spread` with *y2K* as the key, and the mean yields as the value. Much easier to compare, in my opinion, and it shows how much larger post 2000 yields are. Wait, we could calculate how much larger exactly:
+In this case we just use `pivot_wider` with *y2K* as the key, and the mean yields as the value. Much easier to compare, in my opinion, and it shows how much larger post 2000 yields are. Wait, we could calculate how much larger exactly:
 
 ```{r}
 # Chunk 29
@@ -667,7 +667,7 @@ crop_ylds %>%
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
   group_by(crop, country, y2k) %>% 
   summarize(mean_yield = mean(yields)) %>% 
-  spread(key = y2k, value = mean_yield) %>% 
+  pivot_wider(names_from = y2k, values_from = mean_yield) %>%
   mutate(yield_ratio = `2000_2017` / `1961_2000`)
 ```
 
@@ -676,8 +676,8 @@ We use another `mutate` to create another variable that is the ratio of post-200
 # Chunk 30
 crop_ylds %>% filter(crop == "maize") %>% 
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>%
-  group_by(y2k) %>% summarize(mean_yield = mean(yields)) %>% 
-  spread(key = y2k, value = mean_yield) %>% 
+  group_by(y2k) %>% summarize(mean_yield = mean(yield)) %>% 
+  pivot_wider(names_from = y2k, values_from = mean_yield) %>%
   mutate(yield_ratio = `2000_2017` / `1961_2000`)
 ```
 
@@ -865,19 +865,19 @@ Okay, so that's where we will leave it. Now for some practice.
 ### Code
 This coding practice assumes you have created the `crop_ylds` dataset to match its form as of Chunk 21.  
 
-1. Use `dplyr` verbs to subset South Africa sorghum yields from the year 2000 onwards. Do the same but use base `R` syntax.
+1. Use `dplyr` verbs to subset South Africa sorghum yield from the year 2000 onwards. Do the same but use base `R` syntax.
 
-2. Calculate the `mean` and `sd` of *prod*, *harv_area*, and *yields* in the subset you just made, using `dplyr::summarise_all` and `funs`. Chunk 33 is your guide.
+2. Calculate the `mean` and `sd` of *prod*, *harv_area*, and *yield* in the subset you just made, using `dplyr::summarise_all` and `funs`. Chunk 33 is your guide.
 
 3. Now calculate `mean` and `sd` of *harv_area* and *prod* by crops and by country, using `dplyr`. Hint: you will need to use `dplyr::group_by`. Chunk 33 is also a guide. 
 
-4. Use `dplyr` to calculate a correlation table between *yields* and *harv_area* for Zambian maize. Use `cor.test` to evaluate this relationship also. Hint: you will need to use the base `R` approach for this from Chunk 34 #3, but to preserve the subset of Zambia yields, first assign the subset to a new object `dat`.  
+4. Use `dplyr` to calculate a correlation table between *yield* and *harv_area* for Zambian maize. Use `cor.test` to evaluate this relationship also. Hint: you will need to use the base `R` approach for this from Chunk 34 #3, but to preserve the subset of Zambia yields, first assign the subset to a new object `dat`.  
 
 5. Use `dplyr` verbs to calculate the average maize yield (across, rather than within, countries). How close is that to the regression coefficient on *harv_area* from Chunk 36 #1?  
 
-6. Use `lm` to fit regression of between Zambia maize *yields* and *year*, with *year* as the independent variable.  Do the same for South Africa maize yields. Use `dplyr` verbs to create the subsets, but use both the base-centric (Chunk 36) and `dplyr` centric (Chunk 37) way of running the `lm`s. Which country shows the largest annual changes in yields?
+6. Use `lm` to fit regression of between Zambia maize *yield* and *year*, with *year* as the independent variable.  Do the same for South Africa maize yields. Use `dplyr` verbs to create the subsets, but use both the base-centric (Chunk 36) and `dplyr` centric (Chunk 37) way of running the `lm`s. Which country shows the largest annual changes in yields?
 
-7. *Challenge:* Adapt the code in Chunk 39 to create regressions between *yields* and *year* by country and crop, but just for maize and wheat
+7. *Challenge:* Adapt the code in Chunk 39 to create regressions between *yield* and *year* by country and crop, but just for maize and wheat
 
 ***
 <center>
@@ -1073,10 +1073,10 @@ crop_ylds %>% filter(crop == "maize") %>%
   ggplot() + geom_point(aes(x = year, y = yield, color = country)) +
   scale_color_manual(values = c("red", "blue")) + 
   xlab("Year") + ylab("Yield (tons / ha)") + 
-  ggtitle("Maize yields (1961-2017)")
+  ggtitle("Maize yield (1961-2017)")
 ```
 
-Interesting. It seems that both countries show an increasing trend in yields since 1961, with a more rapid increase after 2000, particularly in South Africa. But the point are noisy, so maybe visualizing these as lines would make things a clearer?
+Interesting. It seems that both countries show an increasing trend in yield since 1961, with a more rapid increase after 2000, particularly in South Africa. But the point are noisy, so maybe visualizing these as lines would make things a clearer?
 ```{r}
 # Chunk 50
 crop_ylds %>% filter(crop == "maize") %>% 
@@ -1094,7 +1094,7 @@ For comparison, here is how we would do that same plot with `graphics` methods:
 crop_ylds %>% filter(crop == "maize" & country == "ZMB") %>% 
   plot(yield ~ year, data = ., type = "l", col = "blue", 
        ylim = range(crop_ylds %>% filter(crop == "maize") %>% pull(yield)), 
-       main = "Maize yields (1961-2017)")
+       main = "Maize yield (1961-2017)")
 crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>% 
   lines(yield ~ year, data = ., col = "red")
 ```
@@ -1130,7 +1130,7 @@ crop_ylds %>% filter(crop == "maize") %>%
   geom_smooth(aes(x = year, y = yield, color = country), method = "lm") + 
   scale_color_manual(values = c("red", "blue")) + 
   xlab("Year") + ylab("Yield (tons / ha)") + 
-  ggtitle("Maize yields (1961-2017)")
+  ggtitle("Maize yield (1961-2017)")
 ```
 
 That gives us a straight line fit through each time series, which is calling on the `lm` function to fit the trendlines, which shows a steeper line over the whole time series. 
@@ -1142,7 +1142,7 @@ zmb_maize <- crop_ylds %>% filter(crop == "maize" & country == "ZMB")
 zaf_maize <- crop_ylds %>% filter(crop == "maize" & country == "ZAF")
 yl <- range(crop_ylds[crop_ylds$crop == "maize", "yield"])
 plot(yield ~ year, data = zmb_maize, pch = 16, col = "blue", 
-     ylim = yl, main = "Maize yields (1961-2017)")
+     ylim = yl, main = "Maize yield (1961-2017)")
 abline(lm(yield ~ year, data = zmb_maize), col = "blue")
 points(yield ~ year, data = zaf_maize, pch = 16, col = "red")
 abline(lm(yield ~ year, data = zaf_maize), col = "red")
