@@ -192,14 +192,17 @@ Which is one of the [definitions](https://cran.r-project.org/web/packages/tidyr/
 So we need to reshape the dataset. How? Well, the values "Area harvested" and "Production" in *Element* are both stored in the neighboring *Value* column. We need to make two new columns out of values in *Value*, pulling out the ones corresponding to *Element* "Production" into one new column, and *Element* "Area harvested" into another. This is called **spreading**, or going from long (or tall) to wide:
 ```{r, message=FALSE}
 # Chunk 6
-maize <- maize %>% spread(key = Element, value = Value)
+maize <- maize %>% pivot_wider(names_from = Element, values_from = Value)
+# maize <- maize %>% spread(key = Element, value = Value)
 maize
 ```
 
-We use `tidyr::spread` to do that, using *Element* as the key, and *Value* as the column holding the values. The inverse procedure is called **gathering**, where columns are re-organized into key-value pairs: 
+We use `tidyr::pivot_wider` to do that, specifying the *Element* column as the one that contains the names of the new columns (`names_from`), and *Value* as the column from which we take the values to fill under each column (`values_from`). Note that this function replaces the commented-out one below it, which is the original `tidyr::spread` function. `pivot_wider` is considered more intuitive. The inverse procedure is `tidyr::pivot_longer`, which is also known as **gathering** (and the older function is `tidyr::gather`), where columns are re-organized into key-value pairs: 
 ```{r}
 # Chunk 7
 maize %>% gather(key = Element, value = Value, `Area harvested`, Production)
+maize %>% pivot_longer(cols = c("Area harvested", "Production"), 
+                       names_to = c("Element", "Value"), names_sep = "")
 ```
 
 Here we use `tidyr::gather` to reshape `maize` back to its original form. We have two arguments, "key", which is the name for new variable that will hold the key, and "value", which will hold the data values corresponding to each key. We then give the column names that we want to gather into key-value pairs. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
