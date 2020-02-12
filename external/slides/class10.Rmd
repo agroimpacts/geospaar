@@ -4,11 +4,24 @@ subtitle: Class 10
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class10.css"]
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+---
+```{r, eval=FALSE}
+library(raster)
+library(geospaar)
+data(dem)
+topo <- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
+png(here::here("external/slides/figures/zambia_topo.png"), 
+       width = 6, height = 3, res = 300, units = "in", bg = "grey")
+par(mfrow = c(1, 2), mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
+plot(topo[[1]], main = "TRI", axes = FALSE, box = FALSE)
+plot(topo[[2]], main = "Flow Direction", axes = FALSE, box = FALSE)
+dev.off()
+```
 ---
 
 # Today
@@ -52,6 +65,13 @@ dat2 <- data.frame(m2, "GRP" = v)
 l <- list(m1, m2, m3, dat1, dat2, v)
 names(l) <- c("m1", "m2", "m3", "dat1", "dat2", "v")
 ```
+
+---
+
+## Summarizing datasets
+- Calculate the row and column sums of both `m1` and `dat1`. 
+- Calculate the overall means and sums of all values `m2` and `dat2`
+- From `dat1`, use both the base `aggregate` function and `dplyr` functions `group_by` and `summarise` to calculate the group mean, using `GRP` as the grouping variable. 
 
 ---
 
