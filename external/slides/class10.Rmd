@@ -26,7 +26,7 @@ dev.off()
 
 # Today
 
-- A little R/Rmarkdown syntax
+- A little summarizing
 - Control structures (*apply)
 
 ---
@@ -72,7 +72,6 @@ names(l) <- c("m1", "m2", "m3", "dat1", "dat2", "v")
 - Calculate the row and column sums of both `m1` and `dat1`. 
 - Calculate the overall means and sums of all values `m2` and `dat2`
 - From `dat1`, use both the base `aggregate` function and `dplyr` functions `group_by` and `summarise` to calculate the group mean, using `GRP` as the grouping variable. 
-
 ---
 
 ## Control structures
@@ -81,6 +80,21 @@ names(l) <- c("m1", "m2", "m3", "dat1", "dat2", "v")
   - Not usually vectorized
   - `ifelse` for vectorized branching
   - often done within looping
+
+```{r}
+v <- 1:100
+
+ifelse(v > 50 & v < 70, 0, v)
+
+for(i in 1:length(v)) {
+  if(v[i] > 50 & v[i] < 70) {
+    v[i] <- 0
+  } 
+}
+
+```
+
+
   
 - Looping
 
