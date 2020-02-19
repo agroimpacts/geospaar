@@ -11,138 +11,110 @@ output:
       countIncrementalSlides: false
 ---
 
-### Today
+## Today
 
-- Team-based practicals:
-  - Wednesday wrap-up
+- Team-based practicals, cont:
   - Data preparation
   - Data analysis
+  - Plotting
 
 ---
-### Start-up
+## Practical
+### Part 1
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%>%`, `select`, `pivot_wider`, `rename`. 
+- Combine all these into a single data.frame `crops_df`
+- Best: the previous two points using `lapply` and `do.call(rbind)`
+- Okay: Do this separately for each dataset and then combine with `rbind`
 
-- Shortcuts of the day: CMD/CTRL + Shift + M; ALT + Shift + K
-- Chaining/pipelines 
-```{r, message=FALSE}
-library(dplyr)
-library(tidyr)
-readr::read_csv("~/Desktop/dummy_dataset.csv") %>% 
-  spread(element, value) %>% 
-  mutate(wt_price = Weight / Price) %>% 
-  select(group, Price, Weight, wt_price) %>% 
-  group_by(group) %>% 
-  summarise_all(mean)
+
+```{r, echo=FALSE, eval=FALSE}
+library(geospaar)
+fs <- dir(system.file("extdata/", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
+crops <- lapply(fs, readr::read_csv)
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production)
+}))
+crops_df
 ```
 
 
 ---
-### Practical 1
-- Use the following `lapply` to create `l`: 
+### Part 2
+- Create (`mutate`) a new column *yield*
+- Calculate the mean of production & yield for each crop (`dplyr`)
+- Calculate the mean of production & yield for each crop by country (`dplyr`)
+- Advanced 1: do this with `sapply` as well as `dplyr`
+- Advanced 2:`arrange` mean yield by *crop* and *country* in ascending order
 
-```{r, eval = FALSE}
-seeds <- c(1, 2, 3)  # or 100 * 1:3
-l <- lapply(seeds, function(x) { # lapply with anonymous function
-  set.seed(x)  # what does this do? 
-  # what does this do? 
-  m <- cbind(v1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
-             v3 = sample(1:100, size = 10, replace = TRUE))
-})  # and this
-names(l) <- paste0("m", 1:3)  # and this
-```
+```{r, echo=FALSE, eval=FALSE}
+crops_df <- crops_df %>% mutate(yield = prod / harv_area)
+crops_df %>% group_by(crop) %>% 
+  summarize(prod = mean(prod), yield = mean(yield))
+crops_df %>% group_by(crop) %>% select(prod, yield) %>% 
+  summarize_all(funs(mean))
 
-- Append a `data.frame` `d` to `l`, which is composed of `l$m1` and `V4`, which is a random draw of size 10 from `letters[1:4]`
-- Use `lapply` and `sapply` to apply 1) `mean` and then 2) `sd` to the first three elements of `l`
-- **Challenge**: Do the above, but apply `mean` and `sd` at the same time `l[[1:3]]`
+crops_df %>% group_by(crop, country) %>% select(prod, yield) %>% 
+  summarize_all(funs(mean)) %>% ungroup %>% 
+  arrange(crop, yield)
 
----
-### Practical 1 answers
+sapply(c("Maize", "Sorghum", "Wheat"), function(x) {
+  c(mean(crops_df[crops_df$crop == x, ]$prod), 
+    mean(crops_df[crops_df$crop == x, ]$yield))
+})
+sapply(c("Maize", "Sorghum", "Wheat"), function(x) {
+  sapply(c("South Africa", "Zambia"), function(y) {
+    c(mean(crops_df[crops_df$crop == x & crops_df$country == y, ]$prod), 
+      mean(crops_df[crops_df$crop == x & crops_df$country == y, ]$yield))
+  })
+})
+sapply(c("Maize", "Sorghum", "Wheat"), function(x) {
+  sapply(c("South Africa", "Zambia"), function(y) {
+    d <- crops_df[crops_df$crop == x & crops_df$country == y, ]
+  })
+})
 
-Buried in the Rmarkdown
-```{r, echo = FALSE, eval = FALSE}
-# Practical 1
-l$d <- data.frame(l$m1, v4 = sample(letters[1:5], 10, replace = TRUE))
-lapply(l[1:3], mean)
-lapply(l[1:3], sd)
-sapply(l[1:3], mean)
-sapply(l[1:3], sd)
-lapply(1:3, function(x) c("mean" = mean(l[[x]]), "sd" = sd(l[[x]])))
-# lapply(l[1:3], function(x) c("mean" = mean(x), "sd" = sd(x)))
-sapply(1:3, function(x) c("mean" = mean(l[[x]]), "sd" = sd(l[[x]])))
-```
-
-
----
-### Practical 2
-
-- Use `readr::read_csv` to read `dummy_dataset.csv` into `tb_df`
-- Determine the unique (`distinct`) values in *group* and *element*
-- `spread` `tb_df` so that "Price" and "Weight" have their own columns
-- Do the same as above, but exclude the *group* variable
-- Redo the `spread` that includes *group*, then `arrange` by *group*
-- Redo the `spread` that includes *group*, then `arrange` by *group* (ascending) and by *year* (decending)
-- Create (`mutate`) a new column *wt_price* from `weight / price`
-- **Challenge**: Redo the `spread` that includes *group*, `arrange` by *group* and by *year*, with *year* in descending order, `select` out the values of group *a*, and create (`mutate`) the weight:price ratio just for those
-
----
-
-### Practical 2 answers
-
-Buried in the Rmarkdown
-
-```{r, eval = FALSE}
-tb_df <- readr::read_csv("~/Desktop/dummy_dataset.csv")
-tb_df %>% distinct(group, element)
-# tb_df %>% distinct(group)
-# tb_df %>% distinct(element)
-tb_df %>% spread(key = element, value = value)
-tb_df %>% select(-group) %>% spread(element, value)
-tb_df %>% spread(element, value) %>% arrange(group)
-tb_df %>% spread(element, value) %>% arrange(group, desc(year))
-tb_df %>% spread(element, value) %>% mutate(wt_price = Weight / Price)
-
-# extra
-tb_df %>% spread(element, value) %>% arrange(group, desc(year)) %>%
-  filter(group == "a") %>% mutate(wt_price = Weight / Price)
 ```
 
 ---
-### Practical 3
+### Part 3
+- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
+- Using `ggplot2`, plot a histogram of maize yields for Zambia (blue fill, grey outline)
+- Advanced 1: Do the same for yields, but with base plots
+- Advanced 2: use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this. 
+- Advanced 3: as above, but with histograms. Side by side histogram bars for each country (`position = "dodge"`)
 
-- Use split-apply-combine with `dplyr` pipelines to:
-  - Calculate the `mean` *wt_price* by *group*
-  - Calculate the `mean` and `sd` of *wt_price* by *group*
-  - Calculate the `mean` and `sd` of *Weight* and *Price* by *group*
-  - Calculate the `mean` and `sd` of *Weight* and *Price* by *group* and by a new categorical variable *yr_gtlt80*, in which `year > 1980` gets a 1, otherwise a 0. 
-    - You will need to use `ifelse` within `mutate` to make *yr_gtlt80*
+```{r, echo = FALSE, eval=FALSE}
+ggplot(crops_df) + # %>% #filter(crop == "Maize")) + 
+  geom_line(aes(x = year, y = prod / harv_area, color = country)) + 
+  facet_grid(cols = vars(crop)) +
+  scale_color_manual(values = c("blue", "red"))
+ggplot(crops_df %>% filter(crop == "Maize" & country == "Zambia")) + 
+  geom_histogram(aes(x = prod), bins = 20, fill = "blue", col = "grey")
 
----
-### Practical 3 answers
+# advanced
+plot(yield ~ year, 
+     data = crops_df[crops_df$crop == "Maize" & 
+                       crops_df$country == "South Africa", ], type = "l", 
+     col = "blue", ylim = c(0, 7))
+lines(yield ~ year, 
+      data = crops_df[crops_df$crop == "Maize" & 
+                        crops_df$country == "Zambia", ], col = "red")
 
-Buried in the Rmarkdown
+ggplot(crops_df) + # %>% #filter(crop == "Maize")) + 
+  geom_line(aes(x = year, y = prod / harv_area, color = country)) + 
+  facet_grid(cols = vars(crop)) +
+  scale_color_manual(values = c("blue", "red"))
+ggplot(crops_df) + 
+  geom_histogram(aes(x = prod / harv_area, fill = country), bins = 20,  
+                 col = "grey", position = "dodge") + 
+  scale_fill_manual(values = c("blue", "red")) + 
+  facet_grid(cols = vars(crop)) + xlab("Yield (t / ha)") + 
+  theme_bw()
 
-```{r, echo = FALSE, eval = FALSE}
-tb_dfs <- tb_df %>% spread(element, value) %>% 
-  mutate(wt_price = Weight / Price)
-tb_dfs %>% group_by(group) %>% summarize(wt_price = mean(wt_price))
-tb_dfs %>% group_by(group) %>% 
-  summarize(mu = mean(wt_price), sd = sd(wt_price))
-tb_dfs %>% group_by(group) %>% select(group, Weight, Price) %>% 
-  summarize_all(funs(mean, sd))
-tb_dfs %>% mutate(yr_gtlt80 = ifelse(year > 1980, 1, 0)) %>% 
-  group_by(group, yr_gtlt80) %>% select(group, yr_gtlt80, Weight, Price) %>% 
-  summarize_all(funs(mean, sd))
 ```
-
----
-
-### Data set-up
-```{r, eval = FALSE}
-library(tidyverse)
-set.seed(1)
-tb_df <- tibble(year = rep(1951:2000, 2), 
-                group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
-                value = runif(n = 100, min = 50, max = 100),
-                element = c(rep("Price", 50), rep("Weight", 50)))
-readr::write_csv(tb_df, path = "~/Desktop/dummy_dataset.csv")
-
 
