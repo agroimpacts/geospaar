@@ -468,7 +468,7 @@ dist_cent %>% st_geometry() %>% plot(col = "red", pch = 20, add = TRUE)
 
 Notice that right below the centroid calculation pipeline (#1) is a commented out line, which is the non-pipeline equivalent of the operation.  In #2, we make the plots, setting up the plotting functions for both the `districts` polygons and their centroids on the downstream ends of pipelines.  
 
-Moving on, we can now find out how far apart the centroids of each district are by using another `rgeos` function, `gDistance`
+Moving on, we can now find out how far apart the centroids of each district are by using another `sf` function, `st_distance`
 
 ```{r}
 # Chunk 24

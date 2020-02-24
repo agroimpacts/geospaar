@@ -13,9 +13,9 @@ output:
 
 ### Today
 
-- Team-based practicals:
-  - Data preparation
-  - Data analysis
+- A little review of past section
+- Spatial data beginnings
+- More practice
 
 ---
 ### Tips
@@ -113,106 +113,91 @@ list(); funs()
 # 19 - a full pipeline example
 library(dplyr)
 library(tidyr)
-dat <- readr::read_csv("~/Desktop/dummy_dataset.csv") %>% 
-  spread(element, value) %>% 
-  mutate(wt_price = Weight / Price) %>% 
-  select(group, Price, Weight, wt_price) %>% 
-  group_by(group) %>% 
-  # summarise_all(funs(mean, sd))  # this works but is deprecated
-  summarise_all(list(mean, sd))
+library(geospaar)
+fs <- dir(system.file("extdata", package = "geospaar"), 
+          pattern = "maize", full.names = TRUE)
+dat <- readr::read_csv(fs) %>% 
+  dplyr::select(Item, Area, Element, Year, Value) %>% 
+  pivot_wider(names_from = Element, values_from = Value) %>% 
+  rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
+  mutate(yield = prod / harv_area) %>% 
+  dplyr::select(country, harv_area, prod, yield) %>% 
+  group_by(country) %>% 
+  summarise_all(funs(mean, sd))
 ```
 
 ---
-### Practical 1 - data preparation
+## Spatial
 
-- Read `dummy_dataset.csv` into `dat` (elements #1 and #2)
-- Make a new tidy `tibble` `dat2`, which has "Price" and "Weight" in their own columns (#3, #5)
-- Update `dat2` so that it has a new column *wt_price* from `weight / price` (#4, #5)
-- Update `dat2` so that it is rearranged by *year* from oldest to most recent and by *Price* from cheapest to most expensive (#5, #7)
-- Update `dat2` so that is has a new column *value*, which lists *wt_price* values <1 as "cheap" and values >1 as "pricy" (#4, #5, #10)
-- Create `dat3`, redoing all the steps above, but within a single pipeline (#19)
+- Non-spatial to spatial
+- Read and write spatial
+- CRS
+- Make data from scratch
+- Spatial properties
 
 ---
+### Non-spatial to spatial
 
-### Practical 1 answers
+- Read in farmer data
+```{r, eval = FALSE}
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() 
+farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
 
-Buried in the Rmarkdown
+- Write and read the spatial data
+```{r, eval=FALSE}
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.sqlite")
+farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.sqlite")
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+- Wrangle data
+```{r, eval = FALSE}
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% plot()
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  st_intersects(districts, .) %>% slice(unlist(.))
+  st_geometry %>% plot()
+```
+
+---
+### Make spatial data
 
 ```{r, eval = FALSE}
-dat <- readr::read_csv("~/Desktop/dummy_dataset.csv")
-
-dat2 <- dat %>% spread(key = element, value = value)
-
-dat2 <- dat2 %>% mutate(wt_price = Weight / Price)
-
-dat2 <- dat2 %>% arrange(year, Price)
-
-dat2 <- dat2 %>% mutate(value = ifelse(wt_price < 1, "cheap", "pricy"))
-
-dat3 <- readr::read_csv("~/Desktop/dummy_dataset.csv") %>% 
-  spread(key = element, value = value) %>% 
-  mutate(wt_price = Weight / Price) %>% 
-  arrange(year, Price) %>% 
-  mutate(value = ifelse(wt_price < 1, "cheap", "pricy"))
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
+  cbind(ID = 1:nrow(.), .)
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
 ```
 
 ---
-### Practical 2 - looping
-- Create a new 2-element list `datl` from `dat3`. Use the vector `c("cheap", "pricy")` as your iterator in an `lapply`, selecting (`filter`) on the new *value* variable within the `lapply` to subset the dataset by value (#5, #11, #12)
-- Use a `for` loop to iterate over the rows of `dat3`, using `slice` to pull out each row (i), `select`ing just *Price* and *Weight* from the row. `print` it. (#6, #13-15)
-
----
-### Practical 2 answers
-
-In the Rmarkdown
-
-```{r, eval = FALSE}
-datl <- lapply(c("cheap", "pricy"), function(x) {
-  dat2 %>% filter(value == x)
-})
-names(datl) <- c("cheap", "pricy")
-for(i in 1:nrow(dat3)) print(dat3 %>% slice(i) %>% select(Price, Weight))
+### Spatial properties
+```{r, eval=FALSE}
+pol %>% st_area
+pol %>% st_sf(crs = 4326) %>% st_area
+sline %>% st_sf(crs = 4326) %>% st_length
 ```
 
 ---
-### Practical 3 - data analysis
-
-- From `dat3` calculate the `mean` *wt_price* by *group* (#9, #16)
-- From `dat3` calculate the `mean` and `sd` of *wt_price* by *group* (#9, #16)
-- From `dat3` calculate the `mean`, `sd` of *Weight* and *Price* by *group* and *value* (#9, #16)
-- From `dat3` select *Weight*, *Price*, *wt_price* and calculate the `mean`, `sd` of all three variables at once (#9, #17-19)
-- Do the same as above, but do summarize by value (#6, #9, #17-19)
-- From `dat3`, extract just the cheap *value*s, and calculate the *group*-wise `mean` of *Weight*, *Price*, *wt_price* (#6, #11, #17)
-- **Challenge**: Use a `dplyr` pipeline to fit a regression (`lm`) between *Weight* and *Price*. Get the `summary()` of the `lm` from the tail-end of the pipeline
-- **Even more challenge**. Use a pipeline with `do`, `lm`, and `broom::tidy` to create and output the coefficients of regressions on "cheap" and "pricy" values (see Chunk 39 in Unit 1 - Module 4)
----
-### Practical 3 answers
-
-Buried in the Rmarkdown
-
-```{r, echo = FALSE, eval = FALSE}
-dat3 %>% group_by(group) %>% summarize(wt_price_mu = mean(wt_price))
-
-dat3 %>% group_by(group) %>% 
-  summarize(Weight_mu = mean(Weight), Price_mu = mean(Price),
-            Weight_sd = sd(Weight), Price_sd = sd(Price))
-
-dat3 %>% group_by(value, group) %>% 
-  summarize(Weight_mu = mean(Weight), Price_mu = mean(Price),
-            Weight_sd = sd(Weight), Price_sd = sd(Price))
-
-dat3 %>% select(Weight, Price, wt_price) %>% 
-  summarize_all(list(mu = mean, sd = sd))
-
-dat3 %>% group_by(value, group) %>% select(Weight, Price, wt_price) %>% 
-  summarize_all(list(mean, sd))
-
-dat3 %>% filter(value == "cheap") %>% group_by(group) %>% 
-  select(Weight, Price, wt_price) %>% summarize_all(mean)
-
-dat3 %>% lm(Weight ~ Price, data = .) %>% summary()
-
-dat3 %>% group_by(value) %>% do(lm_res = lm(Weight ~ Price, data = .)) %>% 
-  broom::tidy(., lm_res)
+### Spatial transforms
+```{r, eval=FALSE}
+pol %>% st_sf(crs = 4326) %>% st_transform(., st_crs(roads)) %>% st_area
 ```
+
+---
+### Practice - data analysis and plotting
+
+- Recreate the crop yield dataset
+- Calculate the mean and standard deviations of crop yield by crop and country
+- Use ggplot to plot the histograms of maize yields by country
+- Use ggplot to plot the histograms of yields by country and crop (hint: you need to use `facet_grid` on the *crop* variable)
+- Use `graphics::plot` to create a red line plot of South African maize harvested area by year. Use `lines` to add Zambia maize yields to the same plot (in blue). Make sure they have the same scale (use an appropriate "ylim"). Make the axis labels nicer (e.g. "Harvested area (ha)", "Year") 
+- Fit a regression model to maize yield, where year is the dependent variable. Use base R's `lm` function
+- Plot the linear regression fit between Zambian and South Africa wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`
+
 
