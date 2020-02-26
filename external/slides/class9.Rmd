@@ -4,7 +4,7 @@ subtitle: Class 9
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class9.css"]
     nature:
       highlightStyle: github
       highlightLines: true
@@ -12,13 +12,41 @@ output:
 ---
 
 ```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/cnh_figure.png")
+# knitr::include_graphics("figures/cnh_figure.png")
 ```
+
+```{r, eval = FALSE}
+# code adapted from example from 
+# https://www.r-graph-gallery.com/330-bubble-map-with-ggplot2
+library(tidyverse)
+library(sf)
+library(geospaar)
+districts <- read_sf(
+  system.file("extdata", "districts.shp", package = "geospaar")
+)
+farmers <- read_csv(
+  system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+) %>% group_by(uuid) %>% 
+  summarize(x = mean(x), y = mean(y), n = n()) %>%
+  filter(y > -18) #%>% st_as_sf(coords = c("x", "y"), crs = 4326)
+p <- ggplot() + 
+  geom_sf(data = districts, lwd = 0.1) + 
+  geom_point(data = farmers, 
+             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+  scale_color_viridis_c(guide = FALSE) + theme_void() + 
+  theme(legend.position = c(0.85, 0.2)) +
+  scale_size(range = c(0.1, 5), name = "N reports/week")
+ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "grey")
+```
+
+
 
 ---
 
 # Today
 
+- Indexing continued
 - Summarizing
 - Indexing lists
 - Control structures
@@ -77,6 +105,19 @@ dat2 <- data.frame(m2, "GRP" = v)
 l <- list(m1, m2, m3, dat1, dat2, v)
 names(l) <- c("m1", "m2", "m3", "dat1", "dat2")
 ```
+
+---
+## 1-d/2-d Indexing/subsetting/replacing
+- Select from `m1$V2` all values > 100, and programmatically count how many values were selected
+- Select the first 10 values from `m1`, using a single vector and no row or column information
+- Use a single vector to select the last row, column value from `m1`
+- Replace the value selected above with -99
+- Now select row 3, columns 1:2 from `m1`, and replace them with their values multiplied by 10 
+- Do the same, but select the columns by their name, and reset the new values by dividing by 10
+- Select from `dat1` the values of V3, and square them. Do it using 1) index notation and column name using both 2) `[]`, and 3) `$`
+- Subset the first two rows and columns of `dat1` into a new data.frame `datss`. 
+- Replace `dat1` rows 1:2, column 1:2 with the values -1:-4
+- Reset the part of `dat1` you just changed with the values in `datss`
 
 ---
 ## Index into lists
