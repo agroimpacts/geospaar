@@ -43,7 +43,7 @@ districts2 <- districts2 %>%
       TRUE ~ "D"
     )
   ) %>% dplyr::select(distName, grp, X, Y, yield)
-# ggplot(districts2) + geom_sf(aes(fill = yield))
+ggplot(districts2) + geom_sf(aes(fill = yield))
 ```
 ---
 
@@ -129,9 +129,6 @@ districts2 %>%
 districts_pol <- st_intersection(districts2, st_union(pols))
 ggplot(districts_pol) + geom_sf(aes(fill = distName))
 ```
-
-
-
 
 
 ## Visualization
