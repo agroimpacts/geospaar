@@ -13,11 +13,127 @@ output:
 
 ### Today
 
-- More visualization
-- A bit more analytics practice
-- Maybe some spatial to start
+- More on vectors and analytics
+- Maybe some visualization
 
 ---
+### Data
+
+`geospaar` data
+```{r, eval=FALSE}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+Add some categories
+```{r, eval=FALSE}
+set.seed(2)
+districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
+  dplyr::select(distName, X, Y, yield)
+districts2 <- districts2 %>% 
+  mutate(
+    grp = case_when(
+      grepl("Cha", distName) ~ "A",
+      grepl("Chi", distName) ~ "B", 
+      grepl("^L", distName) ~ "C", 
+      TRUE ~ "D"
+    )
+  ) %>% dplyr::select(distName, grp, X, Y, yield)
+# ggplot(districts2) + geom_sf(aes(fill = yield))
+```
+---
+
+## Analyses
+```{r, eval=FALSE}
+districts2 %>% dplyr::select(yield) %>% summarize_all(funs(mean, sd))
+districts2 %>% summarize(mean(yield), sd(yield))
+districts_mu <- districts2 %>% 
+  mutate(yld_cat = ifelse(yield > 3.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield < 2, "low", yld_cat)) %>% 
+  dplyr::select(1:5, 7) %>% 
+  group_by(yld_cat) %>% summarize(yield = mean(yield))
+ggplot(districts_mu) + geom_sf(aes(fill = yield))
+  
+```
+
+---
+### Spatial joins
+```{r, eval=FALSE}
+farmer_ct <- farmers %>% group_by(uuid) %>% count()
+farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
+farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
+```
+
+---
+### Spatial-non-spatial join
+```{r, eval=FALSE}
+as.data.frame(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
+  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n)) %>% 
+  ggplot() + geom_sf(aes(fill = log10(n)))
+```
+
+---
+### Subsetting
+
+By count
+```{r, eval = FALSE}
+as.data.frame(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
+  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n)) %>% 
+  ggplot() + geom_sf(aes(fill = log10(n)))
+```
+
+By area
+```{r, eval = FALSE}
+p <- ggplot(districts2) + geom_sf()
+districts2 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
+  filter(area == quantile(area, probs = 0.5, type = 1))
+districts2 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
+  arrange(area) %>% slice(nrow(.))
+districts2 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  arrange(area) %>% pull(distName)
+```
+
+---
+## Various
+
+Dataset
+```{r, eval=FALSE}
+pols <- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
+                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
+                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
+                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
+                                          1))))
+pols <- pols %>% st_geometry %>% st_cast("POLYGON") %>% st_as_sf(crs = 4326) %>% 
+  mutate(ID = 1:nrow(.)) %>% #as.data.frame() %>%
+  dplyr::select(ID)
+
+p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
+  geom_sf(data = st_union(pols), fill = "transparent", col = "red")
+```
+
+---
+### Intersects
+```{r, eval=FALSE}
+districts2 %>% 
+  slice(which(st_intersects(districts2, st_union(pols), sparse = FALSE)))
+```
+
+---
+### Intersection
+```{r, eval=FALSE}
+districts_pol <- st_intersection(districts2, st_union(pols))
+ggplot(districts_pol) + geom_sf(aes(fill = distName))
+```
+
+
+
+
+
 ## Visualization
 
 - `graphics` versus `ggplot`
@@ -26,16 +142,28 @@ output:
 library(tidyverse)
 fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
           full.names = TRUE)
-crop_ylds <-  map(fs, function(x) {
-  readr::read_csv(x) %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+crops <- lapply(fs, readr::read_csv)
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
     spread(key = Element, value = Value) %>% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = `Area harvested`, prod = Production) %>% 
-    mutate(yields = prod / harv_area) %>%     
-    mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
-    mutate(country = ifelse(country == "Zambia", "ZMB", country))
-}) %>% reduce(rbind)
+    mutate(harv_km2 = harv_area / 100)
+}))
+crop_ylds <- crops_df %>% mutate(yields = prod / harv_area) %>%     
+  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
+  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
+  mutate(harv_km2 = harv_area / 100)
 ```
+
+---
+### `graphics`
+
+- Need this because we'll use a lot with `sf` and `raster`
+- Key functions: 
+  - `plot`, `barplot`, `hist`, `boxplot`, `par`
+- Other helpers:
+  - `axis`, `text`, `mtext`, `legend`
 
 ---
 ### `graphics` examples
@@ -62,16 +190,15 @@ crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
 # plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
 axis(side = 1, las = 2)
 axis(side = 2, las = 2)
-```
----
-#### Scatter 2
 
-```{r, eval = FALSE}
 crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
   plot(yields ~ year, data = ., col = "blue", type = "l")
 crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
   lines(yields ~ year, data = ., col = "red")
+```
 
+---
+```{r, eval=FALSE}
 # change axes
 dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
 plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
@@ -154,61 +281,3 @@ cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
 ```
 
 ---
-### Practical - data analysis and plotting
-
-- Calculate the mean and standard deviations of crop yield by crop and country
-- Use `graphics::plot` to create a red line plot of South African maize harvested area by year. Use `lines` to add Zambia maize yields to the same plot (in blue). Make sure they have the same scale (use an appropriate "ylim"). Make the axis labels nicer (e.g. "Harvested area (ha)", "Year") 
-- Use ggplot to plot the histograms of maize yields by country
-- Use ggplot to plot the histograms of yields by country and crop (hint: you need to use `facet_grid` on the *crop* variable)
-- Fit a regression model to maize yield, where year is the dependent variable. Use base R's `lm` function
-- Plot the linear regression fit between Zambian and South Africa wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`
-
----
-### Practical answers
-
-Buried in the Rmarkdown
-
-```{r, echo = FALSE, eval = FALSE}
-crop_ylds %>% group_by(crop, country) %>% 
-  # summarize(mu = mean(yields), sd = sd(yields))
-  select(crop, country, yields) %>% summarise_all(list(mu = mean, sd = sd))
-
-par(mar = c(4, 4, 1, 1))
-crop_ylds %>% filter(crop == "Maize" & country == "ZAF") %>% 
-  plot(harv_area ~ year, data = ., type = "l", col = "red", 
-       ylim = c(0, 6000000), ylab = "Harvested area (ha)", xlab = "Year")
-crop_ylds %>% filter(crop == "Maize" & country == "ZMB") %>% 
-  lines(harv_area ~ year, data = ., col = "blue")
-
-crop_ylds %>% filter(crop == "Maize") %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), bins = 15, col = "grey30",
-                 position = "dodge") +
-  scale_fill_manual(values = c("green", "blue")) 
-
-crop_ylds %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
-  scale_fill_manual(values = c("green4", "blue")) + 
-  facet_grid(cols = vars(crop))
-
-crop_ylds %>% filter(crop == "Maize") %>% 
-  lm(yields ~ year, data = .) %>% summary()
-
-crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
-  geom_point(aes(year, yields, color = country)) + 
-  geom_smooth(aes(year, yields, color = country), method = "lm")
-```
-
----
-
-## Spatial beginnings
-
-- Spatial vector data and analyses
-```{r, eval = FALSE}
-library(geospaar)
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read()
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
-  st_read()
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
-```
-
