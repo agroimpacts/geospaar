@@ -118,8 +118,7 @@ fs <- dir(system.file("extdata", package = "geospaar"),
           pattern = "maize", full.names = TRUE)
 dat <- readr::read_csv(fs) %>% 
   dplyr::select(Item, Area, Element, Year, Value) %>% 
-  pivot_wider(names_from = Element, values_from = Value) %>% 
-  rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
+  pivot_wider(names_from = Element, values_from = Value) %>%   rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
   mutate(yield = prod / harv_area) %>% 
   dplyr::select(country, harv_area, prod, yield) %>% 
   group_by(country) %>% 
@@ -153,12 +152,28 @@ districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
 roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
 ```
 
-- Wrangle data
+---
+  
+### Wrangle spatial data
 ```{r, eval = FALSE}
-farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% plot()
+farmers %>% filter(uuid == "009a8424")
+farmers_sf %>% filter(uuid == "009a8424")
 farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
-  st_intersects(districts, .) %>% slice(unlist(.))
-  st_geometry %>% plot()
+  arrange(n) %>% st_geometry %>% plot(pch = 16, cex = 0.5)
+farmers_sf %>% arrange(uuid)
+class(farmers_sf)
+
+
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  st_join(., districts, left = FALSE)
+
+plot(st_geometry(districts))
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+
 ```
 
 ---
