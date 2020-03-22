@@ -20,8 +20,8 @@ knitr::include_graphics(path = "figures/us_corona_Mar112020.png")
 
 ```{r, eval=FALSE}
 # devtools::install_github("RamiKrispin/coronavirus")
-devtools::install_github("thomasp85/patchwork")
 # install.packages("patchwork")
+# install.packages("lwgeom")
 library(coronavirus)
 library(tidyverse)
 library(maps)
@@ -30,6 +30,7 @@ library(patchwork)
 
 counties <- st_as_sf(map(database = "county", plot = FALSE, fill = TRUE)) %>% 
   lwgeom::st_make_valid()
+# plot(counties[, "ID"], border = "transparent")
 # counties %>% filter(grepl("los angeles", ID, ignore.case = TRUE))
 
 # us county level infections
@@ -78,5 +79,6 @@ ggsave(po, filename = fnm, height = 5, width = 5, dpi = 300)
   - Identify all countries with infections
   - Each group take one country and plot Province/State level infections as above
   - If time, select Worcester county, and count number of infections in distances of 20 km, 50 km, 100 km,  200 km. Summarize and map distributions of infections.
+
 ---
 
