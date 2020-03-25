@@ -13,12 +13,13 @@ output:
 
 ### Today
 
-- Visualization basics
+- More spatial stuff 
+- Some visualization
 - A bit more analytics practice
 
 ---
 ## Election Results
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.align="center", fig.width=8, fig.height=5}
 library(tidyverse)
 library(rvest)
 
@@ -32,17 +33,18 @@ cong <- cong %>%
   filter(`Congress (Years)` != colnames(cong)[1]) %>% 
   mutate(year = gsub("(*.*-)|(*.*–)|)|)2", "", `Congress (Years)`)) %>%
   mutate(year = as.numeric(year) - 2) %>% 
-  rename_at(vars(onms), ~newnms) %>% select(-other, -delres) %>%
+  rename_at(vars(onms), ~newnms) %>% 
+  dplyr::select(-other, -delres) %>%
   mutate(seats = substr(seats, 1, 3)) %>% 
   mutate_at(.vars = vars(seats, D, R), as.numeric) %>% 
   mutate(swing = (D - R) / (D + R)) 
 cong %>%  
   ggplot() + geom_line(aes(year, swing)) + 
-  scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 0)) + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 2)) + 
   geom_hline(yintercept = 0, lty = 2, col = "red") + 
   xlab(NULL) + ylab("(D - R) / (D + R)") + 
-  ggtitle("Normalized Party Control Index for US House")
+  ggtitle("Normalized Party Control Index for US House") + theme_linedraw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 ```
 
 ---
@@ -66,185 +68,116 @@ cong <- cong %>%
   mutate(swing = (D - R) / (D + R)) 
 cong %>%  
   ggplot() + geom_line(aes(year, swing)) + 
-  scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 0)) + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
   geom_hline(yintercept = 0, lty = 2, col = "red") + 
   xlab("") + ylab("(D - R) / (D + R)") + 
-  ggtitle("Normalized Party Control Index for US House")
+  ggtitle("Normalized Party Control Index for US House") + theme_linedraw() + 
+  scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 2))
 ```
 
 ---
-## Visualization
+### Spatial vectors
 
-- `graphics` versus `ggplot`
+`geospaar` data
+```{r, eval=FALSE}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
 
+---
+
+### Make spatial data
+
+Points and lines
 ```{r, eval = FALSE}
-library(tidyverse)
-fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
-          full.names = TRUE)
-crops <- lapply(fs, readr::read_csv)
-crops_df <- do.call(rbind, lapply(crops, function(x) {
-  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    spread(key = Element, value = Value) %>% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production) %>% 
-    mutate(harv_km2 = harv_area / 100)
-}))
-crop_ylds <- crops_df %>% mutate(yields = prod / harv_area) %>%     
-  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
-  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
-  mutate(harv_km2 = harv_area / 100)
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
+  cbind(ID = 1:nrow(.), .)
+
+# polyline
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
 ```
-
 ---
-### `graphics`
 
-- Need this because we'll use a lot with `sf` and `raster`
-- Key functions: 
-  - `plot`, `barplot`, `hist`, `boxplot`, `par`
-- Other helpers:
-  - `axis`, `text`, `mtext`, `legend`
-
----
-### `graphics` examples
-- Scatter
-- Histogram
-- multi-panel
-
----
-#### Scatter
+Polygons
 ```{r, eval = FALSE}
-# single line
-cols <- c("red", "orange", "blue", "purple")
-par(mfrow = c(2, 2), mar = rep(0, 4))
-for(i in 1:4) {
-  crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>% 
-    plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
-}
-# multiple lines
-par(mar = rep(3, 4))
-# crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
-# dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-# plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
+# Single polygon
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
 
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l")
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  lines(yields ~ year, data = ., col = "red")
+# single polygon
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+# plot(pol)
+pol <- st_geometry(pol) %>% st_as_sf() %>% st_cast("POLYGON") %>% 
+  cbind(ID = 1:nrow(.), .)
+# plot(pol)
 
-# change axes
-dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
+# multipolygon
+pols <- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
+                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
+                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
+                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
+                                          1))))
+pols <- pols %>% st_geometry %>% st_cast("POLYGON") %>% st_as_sf() %>% 
+  mutate(ID = 1:nrow(.)) %>% #as.data.frame() %>%
+  dplyr::select(ID)
+# plot(pols)
 
-# multiple panels
-par(mfrow = c(2, 1))
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
 ```
 
 ---
-#### Histogram
-```{r, eval = FALSE}
-# basic
-par(mar = c(3, 3, 1, 1))
-crop_ylds %>% filter(crop == "Maize") %>% 
-  pull(yields) %>% hist(., breaks = seq(0, 7, 0.5), main = "Maize yields")
-
-# side-by-side
-par(mfrow = c(1, 2))
-crop_ylds %>% filter(crop == "Maize" & country == "ZAF") %>%
-  pull(yields) %>% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
-crop_ylds %>% filter(crop == "Maize" & country == "ZMB") %>%
-  pull(yields) %>% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
+### Spatial properties
+```{r, eval=FALSE}
+pol %>% st_area
+pol %>% st_sf(crs = 4326) %>% st_area
+sline %>% st_sf(crs = 4326) %>% st_length
 ```
 
 ---
-### ggplot examples
-#### scatters
-```{r, eval = FALSE}
-# basic points
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_point(aes(x = year, y = yields))
-
-# basic lines
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(mapping = aes(x = year, y = yields))
-
-# multiple lines
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue"))
-
-# change axes/theme
-crop_ylds %>% filter(crop == "Maize") %>%   
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  scale_x_continuous(breaks = seq(1960, 2020, 5), expand = c(0, 0)) +
-  theme(axis.text.x = element_text(angle = 90), 
-        panel.background = element_blank())
+### Spatial transforms
+```{r, eval=FALSE}
+pol %>% st_sf(crs = 4326) %>% st_transform(., st_crs(roads)) %>% st_area
 ```
 
 ---
-#### multi-panel
-```{r, eval = FALSE}
-# from a single variable, facet_grid, facet_wrap
-crop_ylds %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  facet_grid(cols = vars(crop))
+### Tidy analysis `sf` data
 
-# multiple variables
-p1 <- crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-p2 <- crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = harv_area, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
+- Let's make some data
 
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
+```{r, eval=FALSE}
+set.seed(1)
+districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
+  dplyr::select(distName, X, Y, yield)
+ggplot(districts2) + geom_sf(aes(fill = yield))
+districts2 <- districts2 %>% 
+  mutate(
+    grp = case_when(
+      grepl("Cha", distName) ~ "A",
+      grepl("Chi", distName) ~ "B", 
+      grepl("^L", distName) ~ "C", 
+      TRUE ~ "D"
+    )
+  ) %>% dplyr::select(distName, grp, X, Y, yield)
+```
+
+- And analyze it
+---
+
+```{r, eval=FALSE}
+districts2 %>% dplyr::select(yield) %>% summarize_all(funs(mean, sd))
+districts2 %>% summarize(mean(yield), sd(yield))
 ```
 
 ---
-### Practical - data analysis and plotting
+### Spatial joins
+```{r, eval=FALSE}
 
-- Calculate the mean and standard deviations of crop yield by crop and country
-- Use ggplot to plot the histograms of maize yields by country
-- Use ggplot to plot the histograms of yields by country and crop (hint: you need to use `facet_grid` on the *crop* variable)
-- Fit a regression model to maize yield, where year is the dependent variable. Use base R's `lm` function
-- Plot the linear regression fit between Zambian and South Africa wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`
-
----
-### Practical answers
-
-Buried in the Rmarkdown
-
-```{r, echo = FALSE, eval = FALSE}
-crop_ylds %>% group_by(crop, country) %>% 
-  summarize(mu = mean(yields), sd = sd(yields))
-crop_ylds %>% filter(crop == "Maize") %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
-  scale_fill_manual(values = c("green", "blue")) 
-crop_ylds %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
-  scale_fill_manual(values = c("green", "blue")) + 
-  facet_grid(cols = vars(crop))
-crop_ylds %>% filter(crop == "Maize") %>% 
-  lm(yields ~ year, data = .) %>% summary()
-crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
-  geom_point(aes(year, yields, color = country)) + 
-  geom_smooth(aes(year, yields, color = country), method = "lm")
 ```
 

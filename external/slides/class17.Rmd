@@ -12,278 +12,229 @@ output:
 ---
 
 ## Today
-
-- Looking ahead to projects
-- `sf` continued
-
----
-
-### Tired
-```{r, eval = FALSE}
-library(geospaar)
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read()
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
-  st_read()
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
-```
-
-### Wired
-```{r, eval = FALSE}
-library(geospaar)
-system.file("extdata/", package = "geospaar") %>% 
-  dir(pattern = "farmer_spatial.csv|[districts|roads]*.*.shp", 
-      full.names = TRUE) %>% 
-  map(function(x) {
-    if(basename(x) == "farmer_spatial.csv") {
-      read_csv(x) %>% st_as_sf(., coords = c("x", "y"), crs = 4326)
-    } else {
-      st_read(x)
-    }
-  }) %>% set_names(c("d", "f", "r")) -> sdat
-```
+- Our first virtual class
+  - Getting up to speed:
+    - Zoom and Slack protocols
+    - Computing and VPNs
+  - Assignments and projects
+- Practical work: 
+  - `dplyr`, `sf`, and `ggplot` wrap up
+- `raster` introduction
 
 ---
-## Reading/Writing/Manipulating
-- read and write
 
-```{r, eval = FALSE}
-st_write(obj = sdat$f, 
-         dsn = file.path(tempdir(), "~/Desktop/farmers.sqlite"))
-st_read(file.path(tempdir(), "~/Desktop/farmers.sqlite"))
-st_read(system.file("extdata/farmer_spatial.csv", package = "geospaar"))
-```
+## COVID-19 case data
 
-- filtering and dates classes and plotting issues
-```{r, eval = FALSE}
-sdat$f %>% filter(season == 1 &
-                    between(date, lubridate::as_date("2015-12-15"),
-                            lubridate::as_date("2015-12-31"))) %>%
-  summarise(reported_rain = sum(rained)) %>% plot()  #pull(reported_rain)
+Let's use the new class `covid19clark` package to assess cases. Let's get the data first.  
+```{r, eval=FALSE}
+devtools::install_github("agroimpacts/covid19clark",  
+                         ref = "feature/add_othercases", force = TRUE)
+library(covid19clark)
+library(sf)
+library(dplyr)
+library(maps)
 
-sdat$d %>% plot(col = "grey", main = NULL, reset = FALSE)
-sdat$d %>% filter(grepl("Chil", distName)) %>% plot(main = NULL, add = TRUE)
-```
+# JHU case data (global)
+# f <- system.file("extdata/covid19_ts.csv", package = "covid19clark")
+# cases <- readr::read_csv(f)
+cases <- covid19clark::get_jhu_ts()
 
-- filtering with spatial properties
-```{r, eval = FALSE}
-sdat$d %>% st_geometry %>% plot(col = "grey")
-sdat$d %>% filter(as.numeric(st_area(.)) / 10^6 > 20000) %>% 
-  plot(col = viridis::inferno(nrow(.)), add = TRUE)
-```
-
----
-## Spatial operations
-- intersects/intersection
-```{r, eval = FALSE}
-farmers_uni <- sdat$f %>% as_tibble %>% distinct(uuid, .keep_all = TRUE) %>%
-  st_as_sf
-farmers_uni %>% 
-  slice(unlist(st_intersects(sdat$d %>% filter(grepl("Choma", distName)), .))
-        ) -> choma_farmers
-sdat$d %>% st_geometry %>% plot(col = "grey")
-choma_farmers %>% st_geometry %>% 
-  plot(col = "red", pch = 20, cex = 0.1, add = TRUE)
-```
-
-- merge/union/dissolve
-```{r, eval = FALSE}
-sdat$d %>% st_union %>% plot(col = "grey")
-sdat$d %>% mutate(area = as.numeric(st_area(.))) %>% 
-  summarize(area = mean(area)) %>% plot
-```
-
-- buffer & difference
-```{r, eval = FALSE}
-zam_alb <- sdat$d %>% st_union %>% st_transform(st_crs(roads))
-sdat$r %>% filter(as.numeric(st_length(.)) / 1000 > 500) %>% 
-  st_buffer(dist = 25000) %>% st_union %>% 
-  st_difference(zam_alb, .) %>% plot(col = "grey")
-```
----
-
-- buffer & intersect
-```{r, eval = FALSE}
-sdat$d %>% st_transform(st_crs(roads)) %>%  
-  plot(col = "grey", main = NULL, reset = FALSE, border = "transparent")
-sdat$r %>% filter(as.numeric(st_length(.)) / 1000 > 500) %>% 
-  st_buffer(dist = 25000) %>% st_union %>% 
-  st_intersection(sdat$d %>% st_transform(st_crs(roads)), .) %>% 
-  plot(add = TRUE)
-```
-
----
-## Exercises
-- Select roads between 300 and 500 km long
-- Create 25 km buffer around those
-- Intersect with districts and plot result (don't forget district is in GCS)
-- Different with districts and plot result
-- Plot previous with `ggplot`
-- Reduce farmers to unique points (UUID) 
-- Use roads buffers to select and plot intersecting farmers points
-
----
-## Code Appendix
-
-- On following slides
-
----
-### Practical answers from previous class
-- Use ggplot to plot the histograms of yields by country and crop (hint: you need to use `facet_grid` on the *crop* variable)
-- Fit a regression model to maize yield, where year is the dependent variable. Use base R's `lm` function
-- Plot the linear regression fits between Zambian wheat yields by year, and South Africa wheat yields by year, using `ggplot` and `geom_smooth`, with `method = "lm"`
-- Use `cowplot::plot_grid` to create a two-panel plot, putting the previous figure in the left panel, and a point scatter of wheat harvested area (log10 transformed) by year by country, in the right panel. Change the defaults colors to green4 and blue4. *Make sure that only one legend is plotted on the far right.* 
-- Answers on next slide...
-
----
-```{r, eval = FALSE}
-crop_ylds %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
-  scale_fill_manual(values = c("green4", "blue")) + 
-  facet_grid(cols = vars(crop))
-
-crop_ylds %>% filter(crop == "Maize") %>% 
-  lm(yields ~ year, data = .) %>% summary()
-
-p1 <- crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
-  geom_point(aes(year, yields, color = country)) + 
-  geom_smooth(aes(year, yields, color = country), method = "lm") + 
-  scale_color_manual(values = c("green4", "blue4")) + xlab("")
-
-p2 <- crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
-  geom_line(aes(year, log10(harv_area), color = country)) + 
-  scale_color_manual(values = c("green4", "blue4")) + 
-  ylab("Harvested area (log10(ha))") + xlab("")
-cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                   p2 + theme(legend.position = "none"), 
-                   cowplot::get_legend(p1), nrow = 1, 
-                   rel_widths = c(1, 1, 0.2))
+# latest daily case data
+# f <- system.file("extdata/covid19_ts.csv", package = "covid19clark")
+# daily_cases <- readr::read_csv(f)
+daily_cases <- covid19clark::get_jhu_daily()
+# ma_cases <- get_ma_cases()  # scrapes the most recent case update from MASS DPH
+# ma_cases
 ```
 
 ---
 
-### Practical answers from penultimate class
+## Analyses and visualizations
+- Prepare data and plot cases
+- Make a bubble plot of cases in Massachusetts
+- Select all cases within ~50, 100, 200 km of Worcester
+- Count how many there are
 
-- Calculate the mean and standard deviations of crop yield by crop and country
-- Use `graphics::plot` to create a red line plot of South African maize harvested area by year. Use `lines` to add Zambia maize yields to the same plot (in blue). Make sure they have the same scale (use an appropriate "ylim"). Make the axis labels nicer (e.g. "Harvested area (ha)", "Year") 
-- Use ggplot to plot the histograms of maize yields by country
+---
+### Analyses
+Select all cases within 50 km of Worcester. Locate Worcester. One easy way
+```{r, eval=FALSE}
+worcester <- maps::world.cities %>% 
+  filter(country.etc == "USA" & name == "Worcester") %>% 
+  st_as_sf(coords = c("long", "lat"), crs = 4326)
+```
 
-```{r, echo = FALSE, eval = FALSE}
-crop_ylds %>% ggplot() + 
-  geom_histogram(aes(x = yields, fill = country), position = "dodge") +
-  scale_fill_manual(values = c("green4", "blue")) + 
-  facet_grid(cols = vars(crop))
+Another way:
+```{r, eval=FALSE}
+worcester <- st_as_sf(data.frame(name = "Worcester", x = -71.81, y = 42.27), 
+                      coords = c("x", "y"), crs = 4326)
+```
 
-crop_ylds %>% filter(crop == "Maize") %>% 
-  lm(yields ~ year, data = .) %>% summary()
-
-crop_ylds %>% filter(crop == "Wheat") %>% ggplot() + 
-  geom_point(aes(year, yields, color = country)) + 
-  geom_smooth(aes(year, yields, color = country), method = "lm")
+Polygons of US counties
+```{r, eval=FALSE}
+# data("counties")
+# data("states", package = "covid19clark")
+counties <- st_as_sf(maps::map("county", plot = FALSE, fill = TRUE)) %>%
+  lwgeom::st_make_valid() %>%  # fixed bad geometries
+  mutate(state = gsub(",.*", "", ID)) %>%  # separate states
+  mutate(county = gsub(".*,", "", ID)) %>%  # separate counties
+  dplyr::select(state, county) 
 ```
 
 ---
-## Base
-### Scatters
+### Plot
+```{r, eval=FALSE}
+library(ggplot2)
+northeast <- c("massachusetts", "connecticut", "rhode island", "maine",
+               "vermont", "new hampshire", "new york")
+ggplot(counties %>% filter(state %in% northeast)) + geom_sf(aes(fill = state))
+# plot(counties %>% filter(state %in% northeast) %>% dplyr::select(state))
+```
+
+- Create a map of just states
 ```{r, eval = FALSE}
-# Base scatters
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l")
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  lines(yields ~ year, data = ., col = "red")
-
-# change axes
-dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
-
-# multiple panels
-par(mfrow = c(2, 1))
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
+states <- counties %>% group_by(state) %>% summarize(n_counties = n())
+ne_states <- states %>% filter(state %in% northeast)
+ggplot(states) + geom_sf() + 
+  geom_sf(data = ne_states, aes(fill = state)) +
+  coord_sf(xlim = st_bbox(ne_states)[c(1, 3)],
+           ylim = st_bbox(ne_states)[c(2, 4)]) + theme_minimal()
 ```
 
 ---
-### Multiple panels
+### Add bubbles
+
+Let's add the case numbers as a bubble plot. First we have to manipulate the data a bit.
+
+Separate county and state names. Why? 
 ```{r, eval = FALSE}
-# multiple panels
-par(mfrow = c(2, 1))
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
+cases %>% filter(country == "US") %>% 
+  filter(grepl("Massachusetts|, MA", admin)) %>% sample_n(10)
 ```
 
-
----
-## ggplot
-### scatters
+Create state and county columns
 ```{r, eval = FALSE}
-# basic points
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_point(aes(x = year, y = yields))
+us_cases <- cases %>% filter(country == "US") %>%  # get US cases
+  mutate(county = ifelse(grepl(",", admin), gsub(",.*", "", admin), NA)) %>%
+  mutate(state = ifelse(grepl(",", admin), gsub(".*, ", "", admin), admin)) %>%
+  dplyr::select(state, county, date, cases)
+```
 
-# basic lines
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(mapping = aes(x = year, y = yields))
-
-# multiple lines
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue"))
-
-# change axes/theme
-crop_ylds %>% filter(crop == "Maize") %>%   
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  scale_x_continuous(breaks = seq(1960, 2020, 5), expand = c(0, 0)) +
-  theme(axis.text.x = element_text(angle = 90), 
-        panel.background = element_blank())
+Now separate county and state cases. The dataset mixes state totals with individual county reports. The former are most accurate, the latter don't seem to be updated. 
+```{r, eval=FALSE}
+state_cases <- us_cases %>% filter(is.na(county)) %>% 
+  mutate(state = tolower(state)) # get county-less data, state names to lower
+county_cases <- daily_cases %>% filter(ctry == "US")
+# county_cases <- us_cases %>% filter(!is.na(county)) # get county-less data
 ```
 
 ---
-### Multi-panel
+### Get coordinates for state case data
+
+We need to get coordinate for the state data. We are going to use `sf` objects to do this but convert back to `tibble`
+```{r, eval=FALSE}
+state_centers <- states %>% st_centroid %>% 
+  mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2]) %>% 
+  as_tibble %>% dplyr::select(state, x, y)
+state_cases2 <- left_join(state_cases, state_centers) %>% 
+  dplyr::select(state, county, x, y, date, cases) %>% 
+  filter(!is.na(x) | !is.na(y))
+  
+# full pipeline
+state_cases3 <- states %>% st_centroid %>% 
+  mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2]) %>% 
+  as_tibble %>% dplyr::select(state, x, y) %>% 
+  left_join(state_cases, .) %>% 
+  dplyr::select(state, county, x, y, date, cases) %>% 
+  filter(!is.na(x) | !is.na(y))
+all(state_cases2 %>% select(-county) == state_cases3 %>% select(-county))
+
+```
+
+---
+### Now let's plot
+
+State cases
+```{r, eval=FALSE}
+state_cases3 %>% filter(state %in% northeast) %>% 
+  ggplot() + geom_line(aes(x = date, y = log10(cases), color = state)) 
+
+ggplot(states) + geom_sf() + 
+  geom_point(data = state_cases3 %>% filter(date == max(date)), 
+             aes(x = x, y = y, size = cases), col = "red") +
+  coord_sf(xlim = st_bbox(ne_states)[c(1, 3)],
+           ylim = st_bbox(ne_states)[c(2, 4)])
+```
+
+County cases
 ```{r, eval = FALSE}
-# from a single variable, facet_grid, facet_wrap
-crop_ylds %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  facet_grid(cols = vars(crop))
-
-# multiple variables
-p1 <- crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-p2 <- crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = harv_area, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
+mass_box <- st_bbox(states %>% filter(state == "massachusetts"))
+ggplot(counties %>% filter(state == "massachusetts")) + geom_sf() + 
+  geom_point(data = county_cases %>% filter(prov == "Massachusetts"),
+             aes(x = x, y = y, size = cases), col = "red") +
+  coord_sf(xlim = mass_box[c(1, 3)], ylim = mass_box[c(2, 4)])
 ```
 
 ---
 
-## Histograms (base and ggplot)
+## Cases within X km of Worcester
 ```{r, eval = FALSE}
-# basic
-par(mar = c(3, 3, 1, 1))
-crop_ylds %>% filter(crop == "Maize") %>% 
-  pull(yields) %>% hist(., breaks = seq(0, 7, 0.5), main = "Maize yields")
+buffers <- lapply(c(0.52, 1, 2), function(x) st_buffer(worcester, dist = x))
+# plot(buffers[[1]])
 
-# side-by-side
-par(mfrow = c(1, 2))
-crop_ylds %>% filter(crop == "Maize" & country == "ZAF") %>%
-  pull(yields) %>% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
-crop_ylds %>% filter(crop == "Maize" & country == "ZMB") %>%
-  pull(yields) %>% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
+nearby_cases <- lapply(buffers, function(x) {
+  st_intersection(
+    county_cases %>% st_as_sf(coords = c("x", "y"), crs = 4326), x
+  ) %>% mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2])
+})
+nearby_cases_tbl <- lapply(nearby_cases, as_tibble)
+
+ggplot(states) + geom_sf() + 
+  geom_point(data = nearby_cases_tbl[[3]], aes(x, y, size = cases), 
+             col = "red") + 
+  geom_point(data = nearby_cases_tbl[[2]], aes(x, y, size = cases), 
+             col = "orange") + 
+  geom_point(data = nearby_cases_tbl[[1]], aes(x, y, size = cases), 
+             col = "yellow") + 
+  coord_sf(xlim = st_bbox(ne_states)[c(1, 3)],
+           ylim = st_bbox(ne_states)[c(2, 4)])
+  
+sapply(nearby_cases_tbl, function(x) x %>% summarize(cases = sum(cases)))
+# st_buffer(worcester, dist = 1) %>% st_area() %>% units::set_units("km2")
+# st_buffer(worcester, dist = 0.52) %>% st_area() / 10000 / 100
+# (pi * 100^2)
 ```
 
+Now do the same for a city of your choice
+---
+### Preparing global Admin 2 level data 
+Australia
+```{r, eval = FALSE}
+australia <- raster::getData(country = "AUS", level = 2) %>% st_as_sf()
+```
 
+Simplify boundaries
+```{r, eval=FALSE}
+library(rmapshaper)
+australia %>% filter(NAME_2 == "Ballina") %>% ggplot() + geom_sf()
+australia %>% filter(NAME_2 == "Ballina") %>% 
+  ms_simplify(., keep = 0.005, weighting = 1) %>% ggplot() + geom_sf()
+
+aus_simple <- ms_simplify(australia, keep = 0.005, weighting = 1)
+ggplot(aus_simple) + geom_sf()
+```
+
+---
+
+## Raster data
+
+- Raster basics
+  - classes
+  - dummy rasters
+  - reading and writing
+  - rasterize, raster to vector
+
+  
+
+
+  

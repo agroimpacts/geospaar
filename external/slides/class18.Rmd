@@ -4,7 +4,7 @@ subtitle: Class 18
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class15plus.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
     nature:
       highlightStyle: github
       highlightLines: true
@@ -13,101 +13,63 @@ output:
 
 ## Today
 
-- Vector challenges
 - Raster intro
+  - classes
+  - dummy rasters
+  - reading and writing
+  - rasterize, raster to vector
+
+
+---
+```{r, echo=FALSE, out.width="50%", results='hold'}
+dem1 <- "figures/zam_dem_raster.png"
+dem2 <- "figures/zam_dem_stars.png"
+knitr::include_graphics(c(dem1, dem2))
+```
+---
+
+### Code used
+
+```{r, eval=FALSE}
+library(stars)
+library(raster)
+zlim <- c(250, 2250)
+png(here::here("external/slides/figures/zam_dem_raster.png"), 
+    height = 4, width = 5, res = 300, units = "in")
+par(bg = "grey40", mar = c(0, 0, 0, 3))
+plot(dem, col = viridis::cividis(100), axes = FALSE, box = FALSE, zlim = zlim)
+dev.off()
+png(here::here("external/slides/figures/zam_dem_stars.png"), 
+    height = 4, width = 5, res = 300, units = "in", bg = "grey40")
+st_as_stars(dem) %>%
+  plot(main = NULL, col = viridis::cividis(100), zlim = zlim)
+dev.off()
+```
 
 ---
 
 ### Data
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 library(geospaar)
-system.file("extdata/", package = "geospaar") %>% 
-  dir(pattern = "farmer_spatial.csv|[districts|roads]*.*.shp", 
-      full.names = TRUE) %>% 
-  map(function(x) {
-    if(basename(x) == "farmer_spatial.csv") {
-      read_csv(x) %>% st_as_sf(., coords = c("x", "y"), crs = 4326)
-    } else {
-      st_read(x)
-    }
-  }) %>% set_names(c("d", "f", "r")) -> sdat
-```
-
----
-## Exercises
-- Select roads between 300 and 500 km long
-- Create 25 km buffer around those
-- Intersect buffered roads with districts and plot result (don't forget district is in GCS)
-- Difference buffered roads with districts and plot result
-- Plot previous with `ggplot`
-- Reduce farmers to unique points (UUID) 
-- Use roads buffers to select and plot intersecting farmers points
-
----
-
-```{r, echo=FALSE, fig.align='center', warning=FALSE}
-rd_sel <- sdat$r %>% filter(between(as.numeric(st_length(.)) / 1000, 300, 500))
-rd_sel %>% plot
-```
----
-
-```{r, echo=FALSE, fig.align='center', warning=FALSE}
-rd_sel_buff <- rd_sel %>% st_buffer(dist = 25000)
-# rd_sel %>% st_buffer(dist = 25000) %>% plot
-# rd_sel_buff %>% st_geometry %>% st_union %>% plot
-# rd_sel_buff %>% st_geometry %>% plot
-st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
-  st_intersection(x = ., y = rd_sel_buff) %>% st_geometry %>% 
-  plot(col = bpy.colors(length(.)))
-
-```
-
----
-```{r, echo=FALSE, fig.align='center', warning=FALSE}
-st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
-  st_difference(x = ., y = rd_sel_buff %>% st_union) %>% 
-  st_geometry %>% plot(col = "grey")
-# st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
-#   st_difference(x = ., y = rd_sel_buff) %>% st_geometry %>% 
-#   plot(col = "grey")
-```
-
----
-```{r, echo=FALSE, fig.align='center', warning=FALSE}
-st_transform(sdat$d, crs = st_crs(sdat$r)) %>% 
-  st_difference(x = ., y = rd_sel_buff %>% st_union) %>% st_geometry %>% 
-  ggplot() + geom_sf(fill = "lightblue")
-```
-
----
-```{r, echo=FALSE, fig.align='center'}
-farmers_uni <- sdat$f %>% as_tibble %>% distinct(uuid, .keep_all = TRUE) %>% 
-  st_as_sf %>% st_transform(., st_crs(sdat$r))
-ind <- farmers_uni %>% st_intersects(rd_sel_buff, .) %>% unlist
-
-par(mar = rep(0, 4))
-rd_sel_buff %>% st_union %>% plot(col = "grey")
-farmers_uni %>% slice(ind) %>% st_geometry %>% 
-  plot(add = TRUE, pch = 20, col = "blue1", cex = 0.2)
-
-par(mar = rep(0, 4))
-rd_sel_buff %>% st_union %>% plot(col = "grey")
-farmers_uni %>% slice(ind) %>% st_buffer(dist = 100000) %>% st_geometry %>% 
-  plot(add = TRUE, col = "blue1", cex = 0.2)
-
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
+  read_csv %>% distinct(uuid, .keep_all = TRUE) %>% select(uuid, x, y) %>% 
+  mutate(count = 1) %>% st_as_sf(coords = c("x", "y"))
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
+  st_read
 ```
 
 ---
 ## Reading/Writing/Manipulating rasters
 
 - create
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 r <- raster(extent(30, 31, -14, -13), res = 0.1, 
             crs = "+proj=longlat +datum=WGS84")
 values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
 
 par(mar = c(0, 0, 0, 0))
-plot(sdat$d %>% st_geometry)
+plot(districts %>% st_geometry)
 plot(r, add = TRUE)
 plot(r)
 
@@ -117,11 +79,21 @@ plot(s)
 
 b <- brick(s)
 plot(b)
+
+b2 <- lapply(1:10, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.1, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% stack %>% brick
 ```
+
+---
 
 - read and write
 
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
 raster(file.path(tempdir(), "mydummy.tif"))
 
@@ -129,30 +101,78 @@ brick(s, filename = file.path(tempdir(), "mydumbrick.tif"))
 brick(file.path(tempdir(), "mydumbrick.tif"))
 ```
 
-
 - plot
-```{r, eval = FALSE, echo = FALSE}
-
+```{r, eval = FALSE}
+plot(b)
+plot(b2)
+plot_noaxes(b)
+plot_noaxes(b2, main = paste("Random", 1:10))
+plot_noaxes(b, legend = FALSE)
+plot_noaxes(b[[1]], legend = FALSE)
+legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
+       bty = "n")
+rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b[[1]])
+rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
+  scale_fill_viridis_c()
+ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
+  geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+st_as_stars(b) %>% plot(col = viridis::viridis(10))
 ```
 
 ---
 ## Pre-processing
 - Aggregating/disaggregating
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
 aggregate(b, fact = 2) %>% plot
 disaggregate(b, fact = 2) %>% plot
-```
-
-- Projecting
-```{r, eval = FALSE, echo = FALSE}
-```
-
-- Rasterize/vectorize
-```{r, eval = FALSE, echo = FALSE}
+disaggregate(b, fact = 2, bilinear = TRUE) %>% plot
 ```
 
 - Masking
-```{r, eval = FALSE, echo = FALSE}
+```{r, eval = FALSE}
+data(chirps)
+plot_noaxes(chirps[[1]])
+chirpsz <- mask(chirps, districts)
+plot_noaxes(chirpsz[[1]])
+# rasterVis::levelplot(chirpsz[[1:5]])
+plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
+            legend = FALSE, zlim = c(0, 50))
 ```
+
+---
+
+- Projecting
+```{r, eval = FALSE}
+chirpsz %>% projectRaster(., crs = crs(roads), res = 5000) -> chirpsz_alb
+chirpsz_alb %>% print
+```
+
+- Rasterize/vectorize
+```{r, eval = FALSE}
+distsr <- districts %>% rasterize(., chirpsz)
+distsr %>% plot_noaxes
+distsr_pol <- rasterToPolygons(distsr, dissolve = TRUE)
+distsr_pol %>% st_as_sf %>% st_geometry %>% plot
+distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
+```
+
+---
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+---
+## Exercises
+
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall > 10 mm
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
 
 
