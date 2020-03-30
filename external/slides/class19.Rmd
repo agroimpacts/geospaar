@@ -1,0 +1,192 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 19
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Raster continued
+
+
+---
+
+## Exercises from last class
+
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall > 10 mm
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+---
+### Data
+```{r, warning=FALSE, message=FALSE, results='hide'}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
+  read_csv %>% distinct(uuid, .keep_all = TRUE) %>% select(uuid, x, y) %>% 
+  mutate(count = 1) %>% st_as_sf(coords = c("x", "y"))
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
+  st_read
+```
+
+---
+## Exercises
+### Dummy raster using District 49
+```{r, eval = FALSE}
+r <- raster(extent(districts %>% slice(49)), res = 0.1, 
+            crs = "+proj=longlat +datum=WGS84")
+values(r) <- sample(1:100, size = ncell(r), replace = TRUE)
+par(mar = rep(0, 4))
+plot(st_geometry(districts))
+plot(r, add = TRUE)
+```
+
+### Reproject
+```{r, eval = FALSE}
+ralb <- projectRaster(r, crs = crs(roads), res = 5000)
+par(mar = rep(0, 4))
+st_transform(districts, crs = st_crs(roads)) %>% st_geometry() %>% plot()
+plot(ralb, add = TRUE)
+
+ralb <- projectRaster(r, crs = crs(roads), res = 5000, method = "ngb")
+par(mar = rep(0, 4))
+st_transform(districts, crs = st_crs(roads)) %>% st_geometry() %>% plot()
+plot(ralb, add = TRUE)
+```
+
+---
+## Exercises
+### Disaggregate to 0.02 degrees (bilinear and NGB)
+
+```{r, eval = FALSE}
+r02 <- disaggregate(r, fact = 5)
+r02b <- disaggregate(r, fact = 5, method = "bilinear")
+plot_noaxes(stack(r02, r02b), nr = 1, nc = 2)
+```
+
+---
+## Exercises
+### Sum of rainfall from `chirps`
+```{r, eval=FALSE}
+data("chirps")
+rainsum <- calc(chirps, fun = sum)
+plot_noaxes(rainsum)
+plot(st_geometry(districts), add = TRUE)
+```
+
+### Rainfall > 10 mm
+```{r, eval=FALSE}
+plot_noaxes(rainsum > 10)
+plot(st_geometry(districts), add = TRUE)
+plot_noaxes(stack(rainsum > 10, rainsum > 50, rainsum > 100))
+
+# cellStats(rainsum, max)
+plot_noaxes(cut(rainsum, breaks = seq(0, 200, 50)))
+```
+
+Can you add a categorical legend? 
+
+---
+## Exercises
+### Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+```{r, eval = FALSE}
+rainmu <- cellStats(chirps[[15]], mean)
+plot_noaxes(chirps[[15]], 
+            main = paste("Mean rainfall =", round(rainmu, 3), "mm"))
+plot(st_geometry(districts), add = TRUE)
+```
+
+
+---
+# Moving on
+## The `Raster*` class
+- accessing slots
+```{r, eval = FALSE}
+str(districts)
+str(chirpsz[[1]])
+```
+
+---
+## Calculations and statistics
+```{r, echo=FALSE}
+chirpsz <- mask(chirps, mask = districts)
+```
+
+- raster algebra
+```{r, eval = FALSE}
+chirpsz <- mask(chirps, mask = districts)
+(chirpsz[[1]] + chirpsz[[2]]) %>% plot_noaxes
+(1 + 1.456 * chirpsz[[nlayers(chirpsz)]]) %>% plot_noaxes
+```
+
+- statistics: The mean rainfall value is `r round(cellStats(chirpsz[[1]], mean), 3)`
+
+```{r, eval = FALSE}
+cellStats(chirpsz[[1]], mean)
+cellStats(chirpsz[[1]], range)
+cellStats(chirpsz[[1]], sd)
+sapply(c("mean", "range", "sd"), function(x) cellStats(chirpsz[[1]], x)) 
+sapply(c("mean", "range", "sd"), function(x) cellStats(chirpsz, x)) 
+```
+
+- focal
+```{r, eval = FALSE}
+mat <- matrix(rep(1, 9), nrow = 3, ncol = 3)
+focal(chirpsz[[1]], w = mat, fun = mean) %>% plot_noaxes
+focal(chirpsz[[1]], w = mat, fun = mean, na.rm = TRUE) %>% plot_noaxes
+focal(chirpsz[[1]], w = mat / 9, fun = sum) %>% plot_noaxes
+focal(chirpsz[[1]], w = mat / 9, fun = sum, na.rm = TRUE) %>% plot_noaxes
+```
+
+---
+- zonal
+```{r, eval = FALSE}
+distsr <- districts %>% mutate(ID = 1:nrow(.)) %>% 
+  rasterize(x = ., y = raster(extent(chirpsz), res = 0.05), field = "ID")
+zonal(x = chirpsz[[1]], z = distsr) %>% as.data.frame %>% 
+  subs(x = distsr, y = .) %>% plot_noaxes
+```
+
+---
+
+- z dimension stats
+```{r, eval = FALSE}
+calc(chirpsz, mean) %>% plot_noaxes
+calc(chirpsz, sd) %>% plot_noaxes
+stack(lapply(c(mean, sd), function(x) calc(chirpsz, fun = x))) %>% 
+  plot_noaxes
+
+# regression
+time <- 1:nlayers(chirpsz)
+fun <- function(x) {
+  if(any(is.na(x))) {
+    o <- NA
+  } else {
+    o <- lm(x ~ time)$coefficients[2]  
+  }
+  o
+}
+chirpsz_reg <- calc(chirpsz, fun = fun)
+chirpsz_reg %>% plot_noaxes
+
+quartz(height = 7, width = 10)
+plot_noaxes(chirpsz, nr = 5, nc = 6, maxnl = 30)
+stars::st_as_stars(chirpsz) %>% 
+  plot(breaks = seq(0, 20, 2), col = rev(terrain.colors(10)))
+```
+---
+## Exercises
+
+- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
+- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
+- Calculate the average elevation and slope in each district of Zambia
