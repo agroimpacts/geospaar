@@ -1,0 +1,259 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 22
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Projects!!!!
+- Exercises from last class
+- Lingering questions on Unit2 Module 2
+- Alternative plotting methods
+
+---
+## Exercises
+
+- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
+- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
+- Calculate the average elevation and slope in each district of Zambia
+
+---
+
+### Data
+```{r, warning=FALSE, message=FALSE, results='hide'}
+library(geospaar)
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
+  st_read
+data(chirps)
+chirpsz <- mask(chirps, districts)
+```
+
+---
+### Exercise 1
+```{r, eval=FALSE}
+raintot <- calc(chirpsz, sum)
+raincat <- cut(raintot, c(0, 50, 100, 200), include.lowest = TRUE)
+plot_noaxes(raincat, col = c("grey", "lightblue", "blue3"), legend = FALSE)
+legend("right", legend = c("low", "medium", "high"),
+       fill = c("grey", "lightblue", "blue3"), border = FALSE, bty = "n")
+```
+
+### Exercise 2
+```{r, eval=FALSE}
+mat <- matrix(rep(1, 25), nrow = 5, ncol = 5)
+focal(raintot, w = mat, fun = mean, na.rm = TRUE) %>% plot_noaxes
+mysum <- function(x) sum(x, na.rm = TRUE)
+focal(raintot, w = mat / 25, fun = mysum) %>% plot_noaxes
+focal(raintot, w = mat / 25, fun = sum) %>% plot_noaxes
+```
+
+---
+### Exercise 3
+```{r, eval=FALSE}
+distsr <- districts %>% mutate(ID = 1:nrow(.)) %>% 
+  rasterize(x = ., y = raster(extent(dem), res = 0.05), field = "ID")
+crs(distsr) <- crs(dem)
+dem05 <- resample(dem, distsr)
+zonal(x = dem05, z = distsr) %>% as.data.frame %>% 
+  subs(x = distsr, y = .) %>% plot_noaxes
+terrain(dem05) %>% zonal(x = ., z = distsr) %>% as.data.frame %>% 
+  subs(x = distsr, y = .) %>% plot_noaxes
+```
+
+### rasterVis
+
+```{r, eval = FALSE}
+library(rasterVis)
+png("external/slides/figures/chirps_rvis.png", height = 3, width = 7, 
+    units = "in", res = 300)
+levelplot(chirpsz[[1:10]])
+dev.off()
+```
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/chirps_rvis.png")
+```
+
+---
+
+### rasterVis cont.
+
+```{r, eval = FALSE}
+raintot <- calc(chirpsz, sum)
+p <- gplot(raintot) + geom_tile(aes(fill = value)) +
+  scale_fill_viridis_c() + coord_equal()
+p
+```
+
+---
+
+### ggmap
+```{r, eval=FALSE}
+library(ggmap)
+pt <- st_union(districts) %>% st_centroid %>% st_coordinates %>% unlist
+hdf <- get_map(location = pt[1, ], zoom = 5, 
+               source = "google")
+```
+
+---
+### mapView
+```{r, eval = FALSE}
+library(mapview)
+mapview(districts)
+viewRGB(x = chirpsz[[1:3]])
+mapview(raintot) + mapView(districts, alpha.regions = 0, legend = FALSE)
+
+kili_data <- system.file("extdata", "kiliNDVI.tif", package = "mapview") %>%
+  raster::stack(.)
+mapview(kili_data[[1:3]])
+```
+
+---
+
+### tmap
+```{r, eval = FALSE}
+library(tmap)
+data(World)
+# tmaptools::palette_explorer()
+tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
+  tm_shape(districts) + tm_borders() + 
+  tm_layout(bg.color = "grey", inner.margins = 0.1) # +
+  # tm_shape(World) + tm_borders()
+```
+---
+
+### leaflet
+```{r, echo = FALSE, eval=FALSE}
+load(file.path("~/Dropbox/projects/activelearning/labeller/spatial/data/test",
+               "inspect_user_maps_data.rda"))
+```
+```{r, eval = FALSE}
+
+
+# set up some plotting options
+library(leaflet)
+falseparm <- "&redBand=3&greenBand=2&blueBand=1"
+xyz <- list("OS" = scene %>% filter(season == "OS") %>% pull(tms_url),
+            "GS" = scene %>% filter(season == "GS") %>% pull(tms_url))
+xyz <- c(xyz, lapply(xyz, function(x) paste0(x, falseparm)))
+names(xyz)[3:4] <- paste0(names(xyz)[3:4], "F")
+xyz <- xyz[c("OS", "OSF", "GS", "GSF")]
+
+# plotting options
+slist <- list("color" = "white")
+label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'top',
+                           textOnly = TRUE)
+```
+---
+
+### leaflet cont.
+
+```{r, eval = FALSE}
+xy <- suppressWarnings(st_centroid(gpoly)) %>% st_coordinates
+m <- leaflet() %>% addProviderTiles("Esri.WorldImagery") %>%
+  setView(xy[, "X"], xy[, "Y"], zoom = 14)
+for(i in 1:length(xyz)) m <- m %>% addTiles(xyz[[i]], group = names(xyz)[i])
+m <- m %>%
+  addPolygons(data = gpoly, fill = FALSE, color = "white", group = "Cell",
+              weight = 2)
+if(!is.null(user_polys)) {
+  cols <- topo.colors(7)[which(categories$category %in% user_polys$category)]
+  pal <- colorFactor(cols, domain = categories$category)
+  m <- m %>% addPolygons(data = user_polys, fillOpacity = 0.8, 
+                         fillColor = ~pal(category), 
+                         color = "grey", group = "Maps", weight = 1)
+} else {
+  m <- m
+}
+m <- m %>% addLabelOnlyMarkers(xy[, "X"], xy[, "Y"], label = gpoly$name,
+                               labelOptions = label_opts) %>%
+  addLayersControl(overlayGroups = c("Cell", "Maps", names(xyz)),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
+m
+
+```
+
+---
+### RStoolbox
+```{r, eval = FALSE}
+library(RStoolbox)
+data(lsat)
+ggRGB(lsat, stretch = "lin")
+ggR(lsat[[1]])
+ggR(lsat[[1]], stretch = "hist")
+ggR(raintot)
+```
+
+---
+
+### RStoolbox::spectralIndices
+```{r, eval = FALSE}
+ndvi <- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "NDVI")
+ggR(ndvi, geom_raster = TRUE) +
+  scale_fill_gradientn(colours = c("black", "white"))
+  # scale_fill_viridis_c()
+
+
+mtlFile  <- system.file("external/landsat/LT52240631988227CUB02_MTL.txt", 
+                        package="RStoolbox")
+lsat_ref <- radCor(lsat, mtlFile, method = "apref")
+
+SI <- spectralIndices(lsat_ref, red = "B3_tre", nir = "B4_tre")
+plot(SI)
+# rasterVis::levelplot(SI)
+```
+
+---
+### Plotly
+
+Many examples in code demos section of `plotly` help
+
+```{r, eval=FALSE}
+library(plotly)
+library(sf)
+
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+p <- ggplot(nc) + geom_sf(aes(fill = AREA))
+ggplotly(p)
+
+# If not supplied, coord_sf() will take the CRS from the first layer
+# and automatically transform all other layers to use that CRS. This
+# ensures that all data will correctly line up
+nc_3857 <- sf::st_transform(nc, "+init=epsg:3857")
+p2 <- ggplot() +
+  geom_sf(data = nc) +
+  geom_sf(data = nc_3857, colour = "red", fill = NA)
+ggplotly(p2)
+```
+
+---
+
+### Plotly cont.
+```{r, eval=FALSE}
+# Unfortunately if you plot other types of feature you'll need to use
+# show.legend to tell ggplot2 what type of legend to use
+nc_3857$mid <- sf::st_centroid(nc_3857$geometry)
+p3 <- ggplot(nc_3857) +
+  geom_sf(colour = "white") +
+  geom_sf(aes(geometry = mid, size = AREA), show.legend = "point")
+ggplotly(p3)
+
+# You can also use layers with x and y aesthetics: these are
+# assumed to already be in the common CRS.
+p4 <- ggplot(nc) +
+  geom_sf() +
+  annotate("point", x = -80, y = 35, colour = "red", size = 4)
+ggplotly(p4)
+```
+
+
+

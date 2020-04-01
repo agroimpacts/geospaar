@@ -87,6 +87,21 @@ b2 <- lapply(1:10, function(x) {
   values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
   r
 }) %>% stack %>% brick
+plot(b2)
+```
+
+---
+### A large brick
+```{r, eval = FALSE}
+b3 <- lapply(1:10, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% stack %>% brick
+plot(b3)
+
 ```
 
 ---
@@ -95,10 +110,14 @@ b2 <- lapply(1:10, function(x) {
 
 ```{r, eval = FALSE}
 writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
-raster(file.path(tempdir(), "mydummy.tif"))
+# rm(r)
+r <- raster(file.path(tempdir(), "mydummy.tif"))
+plot(r)
 
-brick(s, filename = file.path(tempdir(), "mydumbrick.tif"))
+brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
+brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
 brick(file.path(tempdir(), "mydumbrick.tif"))
+brick(file.path(tempdir(), "mydumbrick.grd"))
 ```
 
 - plot
@@ -107,24 +126,44 @@ plot(b)
 plot(b2)
 plot_noaxes(b)
 plot_noaxes(b2, main = paste("Random", 1:10))
+plot(b2, main = paste("Random", 1:10))
 plot_noaxes(b, legend = FALSE)
 plot_noaxes(b[[1]], legend = FALSE)
 legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
        bty = "n")
+
+# plotting with larger datasets
+plot_noaxes(b3, main = paste("Random", 1:10))
+rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
+
 rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
 rasterVis::levelplot(b[[1]])
 rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
   scale_fill_viridis_c()
 ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
-  geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
+  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
 st_as_stars(b) %>% plot(col = viridis::viridis(10))
+st_as_stars(b) %>% plot()
 ```
+
+---
+## Raster to other types
+```{r}
+b[1:10]
+b[1:ncell(b)]
+as.matrix(b)
+as.data.frame(b) %>% as_tibble()
+```
+
 
 ---
 ## Pre-processing
 - Aggregating/disaggregating
 ```{r, eval = FALSE}
 aggregate(b, fact = 2) %>% plot
+# aggregate(b, fun = min, fact = 2) %>% plot
+# aggregate(b, fun = sd, fact = 2) %>% plot
 disaggregate(b, fact = 2) %>% plot
 disaggregate(b, fact = 2, bilinear = TRUE) %>% plot
 ```
@@ -135,9 +174,12 @@ data(chirps)
 plot_noaxes(chirps[[1]])
 chirpsz <- mask(chirps, districts)
 plot_noaxes(chirpsz[[1]])
+plot(st_geometry(districts), add = TRUE)
 # rasterVis::levelplot(chirpsz[[1:5]])
 plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
             legend = FALSE, zlim = c(0, 50))
+plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
+     legend = FALSE, zlim = c(0, 50))
 ```
 
 ---
@@ -152,6 +194,7 @@ chirpsz_alb %>% print
 ```{r, eval = FALSE}
 distsr <- districts %>% rasterize(., chirpsz)
 distsr %>% plot_noaxes
+# stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
 distsr_pol <- rasterToPolygons(distsr, dissolve = TRUE)
 distsr_pol %>% st_as_sf %>% st_geometry %>% plot
 distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
