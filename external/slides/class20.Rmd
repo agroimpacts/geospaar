@@ -42,9 +42,13 @@ chirpsz <- mask(chirps, districts)
 raintot <- calc(chirpsz, sum)
 raincat <- cut(raintot, c(0, 50, 100, 200), include.lowest = TRUE)
 plot_noaxes(raincat, col = c("grey", "lightblue", "blue3"), legend = FALSE)
+# legend("topleft", legend = c("low", "medium", "high"),
+#        fill = c("grey", "lightblue", "blue3"), border = FALSE, bty = "n")
 legend("right", legend = c("low", "medium", "high"),
        fill = c("grey", "lightblue", "blue3"), border = FALSE, bty = "n")
 ```
+
+---
 
 ### Exercise 2
 ```{r, eval=FALSE}
@@ -53,6 +57,19 @@ focal(raintot, w = mat, fun = mean, na.rm = TRUE) %>% plot_noaxes
 mysum <- function(x) sum(x, na.rm = TRUE)
 focal(raintot, w = mat / 25, fun = mysum) %>% plot_noaxes
 focal(raintot, w = mat / 25, fun = sum) %>% plot_noaxes
+focal(raintot, w = mat / 25, fun = sum, na.rm = TRUE) %>% plot_noaxes
+```
+
+Why is the weighted mean different?
+```{r, eval = FALSE}
+w <- mat[1:length(mat)] / 25
+v <- sample(100:200, size = 25)
+sum(w * v)
+mean(v)
+v[1:10] <- NA
+sum(w * v, na.rm = TRUE)
+mean(v, na.rm = TRUE)
+cbind(w, v)
 ```
 
 ---
@@ -60,11 +77,14 @@ focal(raintot, w = mat / 25, fun = sum) %>% plot_noaxes
 ```{r, eval=FALSE}
 distsr <- districts %>% mutate(ID = 1:nrow(.)) %>% 
   rasterize(x = ., y = raster(extent(dem), res = 0.05), field = "ID")
+plot(distsr)
 crs(distsr) <- crs(dem)
 dem05 <- resample(dem, distsr)
+plot(dem05)
 zonal(x = dem05, z = distsr) %>% as.data.frame %>% 
   subs(x = distsr, y = .) %>% plot_noaxes
-terrain(dem05) %>% zonal(x = ., z = distsr) %>% as.data.frame %>% 
+terrain(dem05, units = "degrees") %>% 
+  zonal(x = ., z = distsr) %>% as.data.frame %>% 
   subs(x = distsr, y = .) %>% plot_noaxes
 ```
 
@@ -89,7 +109,7 @@ knitr::include_graphics("figures/chirps_rvis.png")
 ```{r, eval = FALSE}
 raintot <- calc(chirpsz, sum)
 p <- gplot(raintot) + geom_tile(aes(fill = value)) +
-  scale_fill_viridis_c() + coord_equal()
+  scale_fill_viridis_c() + coord_equal() + theme_linedraw()
 p
 ```
 
@@ -159,7 +179,7 @@ label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'top',
 ```{r, eval = FALSE}
 xy <- suppressWarnings(st_centroid(gpoly)) %>% st_coordinates
 m <- leaflet() %>% addProviderTiles("Esri.WorldImagery") %>%
-  setView(xy[, "X"], xy[, "Y"], zoom = 14)
+  setView(xy[, "X"], xy[, "Y"], zoom = 11)
 for(i in 1:length(xyz)) m <- m %>% addTiles(xyz[[i]], group = names(xyz)[i])
 m <- m %>%
   addPolygons(data = gpoly, fill = FALSE, color = "white", group = "Cell",
@@ -190,6 +210,7 @@ data(lsat)
 ggRGB(lsat, stretch = "lin")
 ggR(lsat[[1]])
 ggR(lsat[[1]], stretch = "hist")
+ggR(lsat[[1]], stretch = "lin")
 ggR(raintot)
 ```
 
@@ -224,6 +245,7 @@ library(sf)
 nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 p <- ggplot(nc) + geom_sf(aes(fill = AREA))
 ggplotly(p)
+ggplot() + geom_sf(data = nc, aes(fill = AREA))
 
 # If not supplied, coord_sf() will take the CRS from the first layer
 # and automatically transform all other layers to use that CRS. This
