@@ -22,8 +22,8 @@ library(sf)
 library(dplyr)
 f <- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
 farmers <- readr::read_csv(f)
-farmers <- farmers %>% select(uuid, lat, lon) %>% distinct() %>% 
-  st_as_sf(., coords = c("lon", "lat"))
+farmers <- farmers %>% select(uuid, x, y) %>% distinct() %>% 
+  st_as_sf(., coords = c("x", "y"))
 f <- system.file("extdata", "districts.shp", package = "geospaar")
 dists <- read_sf(f)
 st_crs(farmers) <- st_crs(dists)
@@ -35,7 +35,7 @@ farmer_count <- count(as_tibble(farmers_in_dists), distName)
 dists_w_farmers <- left_join(dists, farmer_count) %>% 
   mutate(n = ifelse(is.na(n), 0, n))
 
-png("inst/slides/figures/sms-farmers.png", height = 4, width = 5, res = 300,
+png("external/slides/figures/sms-farmers.png", height = 4, width = 5, res = 300,
     units = "in")
 plot(dists_w_farmers["n"], breaks = c(0, 5, 10, 15, 20, 50, 500), 
      reset = FALSE, main = "Number of SMS Farmers by District")
