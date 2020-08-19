@@ -35,13 +35,13 @@ Originally developed for statistics, free and open source R is now one of the mo
 
 ## Meeting Time/Place
 
-- Jonas Clark 103, MW 12-13.15
-- Jonas Clark 105 (TA office hours), F 13.25-14.40
+- ASEC 304, MW 1600-1715
+- Online, F 1700-1850
 
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
-Lyndon   | Jefferson 105    | Wednesday 0930-1130 
+Lyndon   | Jefferson 105 (**Virtual appointments only**) | Tuesday 1000-1200 
 Lei Song | Jefferson 102  | Tuesday 1500-1700
 
 
@@ -55,9 +55,9 @@ Here are some other aspects regarding this course that you may wish to consider 
 
 1. ___Assignments in this class are problem-oriented, not recipe-based___: 
 
-    I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in `R`, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out precise steps needed to arrive at a solution will not take you as far towards R fluency, and will prevent you from learning the diversity of this language. 
+    I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in `R`, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out precise steps needed to arrive at a solution will not take you as far towards `R` fluency, and will prevent you from learning the diversity of this language. 
     
-    It can be very rewarding to figure out programming problems (I personally prefer programming to writing papers), but some people can find it boring or even frustrating. If you fall into the latter camp, please consider the possibility that this course might not be for you. Let's discuss.
+    It can be very rewarding to figure out programming problems (I personally prefer programming to writing papers), but it can often be frustrating. Feeling frustrated is quite normal, and please don't take it as a sign that you are not good at programming, or that it is not for you. 
     
 2. ___The order in which material is introduced will occasionally be non-linear___: 
 
@@ -65,16 +65,16 @@ Here are some other aspects regarding this course that you may wish to consider 
 
 3. ___This is a flipped class___:
 
-    Materials and problems are expected to be done before class.  There will be some lecturing on key concepts, but class is intended to function more like a lab (and the lab period is intended for students seeking extra help), in which you work through practical problems, clarify concepts that are unclear, or  present your work to your peers. 
+    Materials and problems are expected to be done before class. **This is particularly true this semester, when we are working more than half the time in an online mode.**  There will be some lecturing on key concepts, but class is intended to function more like a lab (and the lab period is intended for students seeking extra help), in which you work through practical problems, clarify concepts that are unclear, or  present your work to your peers. 
     
 4. ___I am not a computer scientist___:
 
-    Full disclosure: I am self-taught programmer. That means that the way I teach this course might differ from the way a formally trained computer or (even data) scientist would teach it. I don't know if that's the case, but those of you have taken computer science courses might notice some differences. 
+    Full disclosure: I am self-taught programmer. That means that the way I teach this course might differ from the way a formally trained computer scientist would teach it. I don't know if that's the case, but those of you have taken computer science courses might notice some differences. 
     
 <a href="#top">Back to top</a>
     
 ## Required Texts, Reading, and Assignments
-There is no required textbook for this course. There is a huge amount of well-developed R material that is freely available on the web. We draw on and those resources for this class and integrate them into our own content (citing/linking to show where they come from). 
+There is no required textbook for this course. There is a huge amount of well-developed `R` material that is freely available on the web. We draw on and those resources for this class and integrate them into our own content (citing/linking to show where they come from). 
 
 __Readings and assignments__ should be completed ___before___ the class they are listed under. This is key to learning the language, ***as it is difficult to learn programming by just listening to lectures.*** 
 
@@ -103,7 +103,7 @@ colnames(mat) <- c("Component", "GEOG246", "GEOG346")
 kable(mat)                 
 ```
 
-Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette ___[still under construction]___.
+Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette.
 
 Courses at Clark are worth 4 credit hours, which equates to 180 hours of engaged academic time. The breakdown of that time is estimated to be: 
 
@@ -129,10 +129,10 @@ Class attendance is expected. It is the primary time in which to get help on und
 
 For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, many, if not most, of the projects will be team-based (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
 
-We abide by, and will enforce, the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
+We will follow the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
 
 ### Communications
-We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #spring2020 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
+We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #fall2020 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
 
 <a href="#top">Back to top</a>
 
@@ -141,7 +141,7 @@ The following is an overview of the course structure. Note that this structure w
 
 ## Unit 1. An introduction to R and related reproducibility skills
 
-In this first part of the course, we will learn the basics of working with R, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
+In this first part of the course, we will learn the basics of working with `R`, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
 
 This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
 
@@ -189,8 +189,8 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 ### Weeks 11-13 - Project work
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
 
-### Weeks 14-15 - Project work and presentations 
-These last two weeks will be used to give final presentations, which will cover progress-to-date and plans for finishing the semester project. Presentations will be on the order of 8-12 minutes per person, thus 8-12 slides. 
+### Weeks 14 - Course completion week
+The class periods in this week can be used for continued project work. **The final presentation and project will be submitted at the end of this week.** The presentation should be submitted as a pre-recorded video. 
 
 ***
 <center>
@@ -200,7 +200,7 @@ These last two weeks will be used to give final presentations, which will cover 
 
 
 # Resources {#Resources}
-The following are some helpful resources that you may wish to follow-up on as you learn R. 
+The following are some helpful resources that you may wish to follow-up on as you learn `R`. 
 
 ## Books etc
 - [The R Inferno](http://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
@@ -224,6 +224,8 @@ The following are some helpful resources that you may wish to follow-up on as yo
 - [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/)
 - [Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
 - [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
+- [Deep learning in R, 1](https://blog.rstudio.com/2018/02/06/tensorflow-for-r/)
+- [Deep learning in R, 2](https://datascienceplus.com/deep-learning-with-r/)
 
 ### Reproducibility
 - [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
@@ -233,16 +235,19 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 ### R versus python
 
-This is a big topic, but I will post some links here as I find them. 
+This is a big topic, but here are a few links to get started. 
 
-- [Why I'll stick with R](https://md.ekstrandom.net/blog/2016/04/using-r/)
+- [*R Vs Python: What’s the Difference?*](https://www.guru99.com/r-vs-python.html)
+- [*R vs. Python: Which is a better programming language for data science?*](https://www.techrepublic.com/article/r-vs-python-which-is-a-better-programming-language-for-data-science/)
+- [*Why I'll stick with R*](https://md.ekstrandom.net/blog/2016/04/using-r/)
+- [Why not both?](https://www.r-bloggers.com/the-best-of-both-worlds-r-meets-python-via-reticulate/)
 
 ### R spatial
 - [A short R spatial tutorial](https://pakillo.github.io/R-GIS-tutorial/), with some good examples for connecting to Google Maps. 
 - [Another R spatial tutorial](https://cran.r-project.org/doc/contrib/intro-spatial-rl.pdf), with `ggplot2` and `tmap`
 
 ### Blogs/twitter to follow
-
+- [R-Ladies](https://rladies.org/)
 - [R-bloggers](https://www.r-bloggers.com/)
 - [R-spatial](http://r-spatial.org/)
 - [\@RLangTip](https://twitter.com/RLangTip)

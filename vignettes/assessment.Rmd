@@ -23,8 +23,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
-__[In revision]__
-
 ***
 <center>
 [Back to **vignette index**](toc.html)
@@ -37,10 +35,9 @@ __[In revision]__
 
 Final letter grades will be assigned as follows
 ```{r, echo = FALSE}
-gr <- rbind(c(99, 93, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60, 0), 
-            c(100, 98, 92, 89, 87, 82, 79, 77, 72, 69, 67, 62, 59))
-lt <- c("A+", "A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-", "D+", "D ", "D-",
-        "F ")
+gr <- rbind(c(93, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60, 0), 
+            c(100, 93, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60))
+lt <- c("A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-", "D+", "D ", "D-", "F ")
 DF <- cbind(c("lower", "upper", "grade"), rbind.data.frame(gr, lt))
 colnames(DF) <- rep("", ncol(DF))
 kable(DF)
