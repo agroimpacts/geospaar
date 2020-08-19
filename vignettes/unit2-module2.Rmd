@@ -223,7 +223,7 @@ values(zamr2) <- 1:ncell(zamr2)
 
 # #2
 farmersr <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  select(x, y) %>% mutate(count = 1) %>% 
+  dplyr::select(x, y) %>% mutate(count = 1) %>% 
   st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
   rasterize(x = ., y = zamr2, field = "count", fun = sum) %>% print()
 
@@ -370,9 +370,8 @@ distsr <- system.file("extdata/districts.shp", package = "geospaar") %>%
   rasterize(x = ., y = zamr, field = "ID")
 
 zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
-farmersr <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() %>% distinct(uuid, .keep_all = TRUE) %>% 
-  select(x, y) %>% mutate(count = 1) %>% 
+farmersr <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%   read_csv() %>% distinct(uuid, .keep_all = TRUE) %>% 
+  dplyr::select(x, y) %>% mutate(count = 1) %>% 
   st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
   rasterize(x = ., y = zamr2, field = "count", fun = sum)
 ```
@@ -652,8 +651,8 @@ rain_statsf <- do.call(cbind, rain_stats) %>% data.frame %>%
 
 # #3
 ps <- lapply(c("mean", "sum", "sd", "cv"), function(x) { # x <- "mean"
-  ggplot(rain_statsf %>% select(date, x)) + geom_line(aes_string("date", x)) +
-    xlab("")
+  ggplot(rain_statsf %>% dplyr::select(date, x)) + 
+    geom_line(aes_string("date", x)) + xlab("")
 })
 cowplot::plot_grid(plotlist = ps)
 ```
@@ -719,7 +718,7 @@ To map zonal statistics back onto their zones, we need to use another function, 
 
 ```{r, out.width="50%"}
 # Chunk 33
-distr_rfmu <- zonemu %>% data.frame %>% select(1:2) %>% 
+distr_rfmu <- zonemu %>% data.frame %>% dplyr::select(1:2) %>% 
   subs(x = distsr_rs, y = ., by = "zone")
 plot_noaxes(distr_rfmu)
 ```
@@ -893,10 +892,9 @@ values(zamr2) <- 1:ncell(zamr2)
 distsr <- rasterize(x = districts, y = zamr, field = "ID")
 distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
 
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%   
-  read_csv
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%   read_csv
 farmersr <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  select(x, y) %>% mutate(count = 1) %>% 
+  dplyr::select(x, y) %>% mutate(count = 1) %>% 
   st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
   rasterize(x = ., y = zamr2, field = "count", fun = sum) %>% print()
 ```
@@ -968,6 +966,9 @@ Having made `distrain` safe for calculating statistics, in #4 we then identify t
 Sometimes you will want to create a categorical raster from a continous one. We will look at two different ways of doing that. 
 
 Method 1:
+```{r, echo=FALSE}
+raintot <- rain_stack[[5]]
+```
 
 ```{r cut, out.width="50%"}
 # Chunk 38
@@ -1022,7 +1023,7 @@ Here we will use points and polygons:
 # Chunk 40
 # #1
 farmers_env <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  select(uuid, x, y) %>% st_as_sf(coords = c("x", "y")) %>% 
+  dplyr::select(uuid, x, y) %>% st_as_sf(coords = c("x", "y")) %>% 
   mutate(rain = raster::extract(x = raintot, y = .)) %>%
   mutate(district = raster::extract(x = distsr_rs, y = .)) %>% print
 
@@ -1033,7 +1034,7 @@ distrain <- districts %>% filter(ID %in% farmdistid) %>%
 
 # #3
 rain_stats <- bind_rows(
-  farmers_env %>% drop_na %>% select(rain) %>% mutate(dat = "Farmers"), 
+  farmers_env %>% drop_na %>% dplyr::select(rain) %>% mutate(dat = "Farmers"), 
   tibble(rain = distrain, dat = "Districts")
 )
 
@@ -1147,7 +1148,7 @@ distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
 
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%    read_csv
 farmers_env <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  select(uuid, x, y) %>% st_as_sf(coords = c("x", "y"))
+  dplyr::select(uuid, x, y) %>% st_as_sf(coords = c("x", "y"))
 
 farmersr <- farmers_env %>% mutate(count = 1) %>% 
   st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
@@ -1172,6 +1173,8 @@ plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
 dem <- dem * 1
 save(dem, file = "data/dem.rda")
 
+zamr_alb <- projectRaster(from = zamr, res = 1000, crs = crs(roads), 
+                          method = "ngb")
 demalb <- projectRaster(from = dem, to = zamr_alb)  # default is bilinear
 # #2
 # slope <- terrain(x = demalb, opt = 'slope', unit = 'degrees')  # slope
@@ -1183,7 +1186,9 @@ terrvars <- stack(lapply(1:length(vars), function(x) {
   tv <- terrain(x = demalb, opt = vars[x], unit = "degrees")
 }))
 names(terrvars) <- vars
-usethis::use_data(terrvars)
+
+writeRaster(demalb, file = here::here("inst/extdata/demalb.tif"))
+brick(terrvars, file = here::here("inst/extdata/terrvars.tif"))
 ```
 
 ```{r, echo = FALSE, out.width="70%"}
@@ -1255,8 +1260,17 @@ The example above shows how more advanced plot annotations can be done. It also 
 ### Basic terrain variables
 
 `raster::terrain` allows us to calculate five different terrain variables, four of which we show below: 
+```{r, echo=FALSE}
+terrvars <- brick(system.file("extdata", "terrvars.tif", package = "geospaar"))
+vars <- c("slope", "aspect", "flowdir", "tri")
+names(terrvars) <- vars
 
-```{r terrain, out.width="60%"}
+png(here::here("vignettes/fig/u2m2_terrainvars.png"), height = 400, 
+    width = 600)
+plot_noaxes(terrvars)
+dev.off()
+```
+```{r terrain, eval=FALSE}
 # Chunk 45
 # #1
 zamr <- raster(x = extent(districts), crs = crs(districts), res = res(dem))
@@ -1277,6 +1291,9 @@ terrvars <- stack(lapply(1:length(vars), function(x) {
 names(terrvars) <- vars
 
 plot_noaxes(terrvars)
+```
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_terrainvars.png")
 ```
 
 We need the DEM in a projected coordinate system for `terrain` to work, per the help file: 
@@ -1388,7 +1405,7 @@ In #4, we provide the initial steps for implementing ordinary kriging. In line a
 
 Block #5 takes the fitted variogram model (`m`) and uses that to create the rainfall surface. The steps in this block are basically the same as in #3, except that we use the kriging model. 
 
-```{r, echo = FALSE}
+```{r, echo=FALSE}
 # rebuild raintotalb
 raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
 names(raintotalb) <- "rain"
@@ -1403,7 +1420,7 @@ names(raintotalb) <- "rain"
 ## Distance
 If you want to calculate how far any point on a grid is from a particular point or points, `raster` offers a few functions for finding euclidean distances:
 
-```{r, fig.width=6.5, fig.height=4}
+```{r distance, fig.width=6.5, fig.height=4}
 # Chunk 47
 # #1
 set.seed(1)
@@ -1448,7 +1465,7 @@ Beyond this, there are more sophisticated distance analyses that can be done, su
 Although there are many, many more analyses and capabilities we could illustrate with rasters, we will end this section with a relatively simple modeling example. In this, we will use ordinary linear regression to try model rainfall values collected at point locations, based on their correlations with certain predictors.  
 
 First, we will use `getData` to download the Worldclim global precipitation layer (at a resolutMion of 2.5 minutes of a degree), then `crop` the data to Zambia's extent, sum the resulting cropped monthly values into a single annual value, mask the result, and then save it so that it becomes available as a lazy load with the `geospaar` package. The code for doing this is below, which doesn't execute as part of this vignette.  
-```{r, eval = FALSE}
+```{r getworldclim, eval = FALSE}
 # Chunk 48
 wcprec <- getData("worldclim", var = "prec", res = 2.5, path = p_data)
 zamprec <- crop(wcprec, y = districts)
@@ -1457,7 +1474,11 @@ save(zamprec, file = "data/zamprec.rda")
 ```
 
 After doing that (and rebuilding `geospaar`), we can do our analysis, loading in the `zamprec` data as we need it.
-```{r, fig.width=7, fig.height = 3}
+```{r, echo=FALSE}
+demalb <- raster(system.file("extdata", "demalb.tif", package = "geospaar"))
+```
+
+```{r predict, fig.width=7, fig.height = 3}
 # Chunk 49
 # #1
 data(zamprec)
@@ -1469,8 +1490,10 @@ elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
 set.seed(1)
 pts <- sampleRandom(x = zamprecalb, size = 500, sp = TRUE) %>% st_as_sf
 pts <- pts %>% mutate(elev = raster::extract(x = elev, y = .)) 
-pts_dat <- bind_cols(pts %>% data.frame %>% select(-geometry) %>% as_tibble, 
-                     st_coordinates(pts) %>% as_tibble) %>% drop_na
+pts_dat <- bind_cols(
+  pts %>% data.frame %>% dplyr::select(-geometry) %>% as_tibble, 
+  st_coordinates(pts) %>% as_tibble
+) %>% drop_na
   
 # #3
 p1 <- ggplot(pts_dat) + geom_point(aes(X, rain), col = "steelblue") +

@@ -8,6 +8,7 @@
 #' @param ... Graphical parameters. Any argument that can be passed to
 #' image.plot and to plot, such as main='title', ylab='latitude'
 #' @return A plotted raster
+#' @importFrom graphics par
 #' @examples
 #' data(chirps)
 #' plot_noaxes(x = chirps[[1]])
