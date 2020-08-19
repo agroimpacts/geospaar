@@ -27,7 +27,7 @@ install.packages(c("knitr", "kableExtra", "prettydoc"))
 Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
 ```R
 library(devtools)
-install_github("agroimpacts/geospaar", build_vignettes = TRUE)
+install_github("agroimpacts/geospaar@fall2020", build_vignettes = TRUE)
 ```
 
 #### 4. Browse the course materials
