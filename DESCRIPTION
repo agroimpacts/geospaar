@@ -12,7 +12,8 @@ LazyData: true
 Depends:
     raster,
     sf,
-    tidyverse
+    tidyverse,
+    R (>= 3.3.6)
 Imports:
     cowplot,
     lwgeom,
@@ -24,4 +25,5 @@ Suggests:
     prettydoc,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/agroimpacts/geospaar
 RoxygenNote: 7.0.2

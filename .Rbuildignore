@@ -5,3 +5,6 @@
 ^\.Rprofile$
 ^data_raw$
 
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

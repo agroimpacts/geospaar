@@ -1260,7 +1260,7 @@ The example above shows how more advanced plot annotations can be done. It also 
 ### Basic terrain variables
 
 `raster::terrain` allows us to calculate five different terrain variables, four of which we show below: 
-```{r, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 terrvars <- brick(system.file("extdata", "terrvars.tif", package = "geospaar"))
 vars <- c("slope", "aspect", "flowdir", "tri")
 names(terrvars) <- vars

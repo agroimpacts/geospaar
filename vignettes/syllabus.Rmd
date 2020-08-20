@@ -28,13 +28,11 @@ library(knitr)
 ***
 
 # Overview{#overview}
-
 Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
 
 <a href="#top">Back to top</a>
 
 ## Meeting Time/Place
-
 - ASEC 304, MW 1600-1715
 - Online, F 1700-1850
 
@@ -42,7 +40,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 Instructor | Office | Office hours
 ---------|------------------|------------------
 Lyndon   | Jefferson 105 (**Virtual appointments only**) | Tuesday 1000-1200 
-Lei Song | Jefferson 102  | Tuesday 1500-1700
+Lei Song | Jefferson 102  | Tuesday 1600-1800
 
 
 ## Philosophy
