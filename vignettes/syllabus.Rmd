@@ -33,7 +33,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 <a href="#top">Back to top</a>
 
 ## Meeting Time/Place
-- ASEC 304, MW 1600-1715
+- ASEC 304, MW 1615-1730
 - Online, F 1700-1850
 
 ## Office Hours
