@@ -34,13 +34,11 @@ Each student will undertake an R-based final project for this class. This projec
 This list is currently in thumbnail form, and will fill out during the next few weeks. 
 
 # Potential project list
-## Port `AquacropOS` to R
-Port the code for the crop simulator `AquacropOS` from matlab into R, integrating into the existing `rcropmod` package. Final project results will include running and presenting gridded crop yield simulations, based on the output of a sophisticated crop model. Skills that will be picked up on the way: matlab -> R translation; `data.table`, `raster`, among others.  
-
+## Add on to our COVID-19 tracker
+Have a look at our existing [repo/package](https://github.com/agroimpacts/covid19clark), and some of the initial dashboards our previous class made. Potential projects include converting the current code to an operational shiny dashboard (as opposed to a local one) and integrating more measures. For example, write a scraper to ingest the [Mass DPH's weekly town-level](https://www.mass.gov/info-details/covid-19-response-reporting#covid-19-daily-dashboard-) case rates and map these. 
 
 ## Analyzing agro-climatological data 
 ### Over Zambia
-
 #### Develop a rainfall onset metric
 Apply and evaluate various objective rainfall onset metrics, using data from the sensors, the SMS survey, and gridded rainfall products. Can a measure applied just to farmer SMS survey responses (e.g. change point detection) produce a similar answer date compared to a metric derived from continuous rainfall measurements from the sensors or gridded rainfall products (e.g. first three consecutive days of rain)?
 
@@ -79,7 +77,7 @@ Among possible ideas are Shiny dashboards for: 1) displaying pod data over time;
 
 ## Using UAS to detect the spread of a crop disease
 
-Use R-implemented machine learning techniques to classify fungal blight in UAS time series collected over cranberry bogs in New Jersey.
+Use R-implemented machine learning techniques to classify fungal blight in UAS time series collected over cranberry bogs in New Jersey. This would be a great project for getting a deep learning model running in `R`.
 
 ## Analyzing Ghanaian croplands 
 
@@ -100,24 +98,20 @@ Come up with `shiny` solution for presenting and analyzing map data.
 </center>
 ***
 
-## Help defeat gerrymandering
-### Implement a Shiny interface
-
+## Politics
+### Gerrymandering
+#### Implement a Shiny interface
 There are several potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics. These ideas come the [Princeton Gerrymandering project](http://gerrymander.princeton.edu).  
-### Voting Precinct Demography
+
+#### Voting Precinct Demography
 The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. (Builds on class project from prior year)
 
-### Districting and Population Visualizations
-
+#### Districting and Population Visualizations
 The goal is to demonstrate how redistricters gerrymander congressional districts by "packing" or "cracking" high population areas. Background on the issue can be seen in this LA Times [article](http://www.latimes.com/opinion/op-ed/la-oe-wang-remlinger-gerrymandering-20170505-story.html), in which the graphics were mostly made with R with some Adode Illustrator post-hoc manipulations done by the newspaper. What we would really like to do is represented by the purple-yellow scale map of North Carolina [here](http://gerrymander.princeton.edu/info), which didn't make the article, but was done to support it. The goal is to create a package that can: 
 1. Take population data from a given year, and congressional district boundary polygons from a corresponding year
 2. Convert them quickly and efficiently into similar maps
 3. Create the package so that it installs and demos with data from North Carolina (all available years), and, depending on data availability, possibly one or two other states (e.g. Pennsylvania).
 4. Additionally, if the same package can also create maps that, together with the population density information, show which party won the district, [as in this visualization](https://static01.nyt.com/images/2017/09/03/magazine/03gerrymandering_map/03gerrymandering_map-superJumbo.gif), that would be even better.  
-
-### GIS Arguments against Compactness/Map Metrics
-
-There is a strong perception that gerrymandering can be foiled by GIS techniques, using things such as a compactness metric (e.g. perimeter/area ratio) as a standard to prove or prevent gerrymandering. However, such standards cannot be applied in law. One reason has to do with how perimeters are measured. That requires GIS, yet the scale and density with which the polygon defining a district has a large impact on perimeter values. The goal here would be to write an R package to demonstrate and visualize how such variations in polygon delineation can impact perimeter:area ratios. This could be done quite simply with the creation of toy polygons and the use of introduced errors into node x,y coordinates. If successful and compelling, it could have an important impact on policy. 
 
 ***
 <center>

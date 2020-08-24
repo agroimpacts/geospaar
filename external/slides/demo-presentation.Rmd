@@ -1,0 +1,96 @@
+---
+title: "Final Presentation Template"
+author: "Lyndon Estes"
+date: "4/29/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+- An example set of slides for final class presentations 
+- With demo for displays of code the executes when knitting
+- And for code that displays results of code that executes offline 
+
+## Results from code executing at knit-time
+```{r, message = FALSE, warning = FALSE}
+library(geospaar)
+library(sf)
+library(ggplot2)
+
+data("dem")
+dists <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+```
+
+## Results from executed code, plotted
+
+```{r, out.width='70%', fig.align='center'}
+plot_noaxes(dem)
+plot(st_geometry(dists), add = TRUE)
+```
+
+ 
+## Results from "offline" code
+
+Code chunk that does the analysis but saves results (in this case a png)
+```{r, eval = FALSE}
+library(geospaar)
+library(sf)
+library(ggplot2)
+data("zamprec")
+dists <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+mymean <- function(x, na.rm = na.rm) mean(x, na.rm = na.rm)
+rfmu <- raster::extract(zamprec, dists, fun = mymean, na.rm = TRUE)
+dists <- dists %>% dplyr::mutate(rain = rfmu)
+
+# use png to save plot on disk with plot.sf
+png(filename = here::here("external/slides/figures/demo_rain_sf.png"), 
+    height = 4, width = 4, res = 300, units = "in")
+plot(dists["rain"], main = NULL)
+dev.off()
+
+# use ggsave with ggplot figures
+p <- ggplot(dists) + geom_sf(aes(fill = rain)) + theme_linedraw()
+ggsave(p, filename = here::here("external/slides/figures/demo_rain_gg.png"), 
+       height = 4, width = 4, dpi = 300)
+```
+
+## Results from offline code, plotted 1
+`plot.sf` version (hint: look at the .Rmd to see the hidden code that plots this)
+```{r, echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics(here::here("external/slides/figures/demo_rain_sf.png"))
+```
+
+## Results from offline code, plotted 2
+`ggplot` version 
+```{r, echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics(here::here("external/slides/figures/demo_rain_gg.png"))
+```
+
+## Save analytical results "offline" 
+To use in downstream chunk. Good for cases where analysis takes a long time to execute
+
+Here is the offline analysis (code chunk set to `eval=FALSE`)
+```{r, eval=FALSE}
+tri <- raster::terrain(dem, opt = "TRI")
+save(tri, file = here::here("external/slides/output/tri.rda"))
+```
+
+## Plot saved results in live chunk
+
+After the long analysis runs and saves the results, you can read it back in to a "live" chunk (one that executes at knit-time) and do something with it.
+```{r, out.width='50%', fig.align='center'}
+load(here::here("external/slides/output/tri.rda"))
+plot_noaxes(tri, main = "Topographic Ruggedness Index")
+```
+
+## Final words
+
+- The examples above apply to both vignettes and slides
+- You can choose ioslides or slidy versions of the presentations
+- Both versions are offered in RMarkdown presentation templates (see File > New File > R Markdown > Presentation)
+- This example uses slidy
+
