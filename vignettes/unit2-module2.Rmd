@@ -463,7 +463,7 @@ The new `chirpsz` dataset contains all rainfall days with the values outside of 
 
 If we need to chop a raster down to a smaller region, we can `crop` it. `crop` uses the extent of another object to achieve this. 
 
-```{r crop, fig.width=5, fig.height=2.75, warning = FALSE}
+```{r crop, fig.width=5, fig.height=2.75, warning = FALSE, message=FALSE}
 # Chunk 18
 chirps1_dist72 <- crop(x = chirpsz[[1]], y = districts %>% slice(72))
 
@@ -651,7 +651,7 @@ rain_statsf <- do.call(cbind, rain_stats) %>% data.frame %>%
 
 # #3
 ps <- lapply(c("mean", "sum", "sd", "cv"), function(x) { # x <- "mean"
-  ggplot(rain_statsf %>% dplyr::select(date, x)) + 
+  ggplot(rain_statsf %>% dplyr::select(date, all_of(x))) + 
     geom_line(aes_string("date", x)) + xlab("")
 })
 cowplot::plot_grid(plotlist = ps)
