@@ -37,6 +37,8 @@ dev.off()
 - COVID preparedness
 - Zoom considerations
 
+---
+
 ## Class Overview
 
 - By the end of this class, you should:
