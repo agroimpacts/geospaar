@@ -59,7 +59,8 @@ dev.off()
 - Next module
 ---
 # Issues arising? 
-
+- Do I need to install `glue`? **Yes**
+- How to organize assignments in project repo? 
 
 ---
 
