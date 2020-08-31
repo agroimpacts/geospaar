@@ -50,6 +50,7 @@ dev.off()
 
 ---
 # Today's Topics
+- Pressing/burning issues? 
 - Overview of assignment
 - Keeping up to date with class materials
 - More on installing/building `R` packages
@@ -57,8 +58,12 @@ dev.off()
 - More on `git` / GitHub
 - Next module
 ---
+# Issues arising? 
 
-# Clarification on Assignment 1
+
+---
+
+# Assignment 1
 
 ```{r, out.width = "90%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/class3_assn6.png")
