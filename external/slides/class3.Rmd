@@ -52,7 +52,7 @@ dev.off()
 # Today's Topics
 - Overview of assignment
 - Keeping up to date with class materials
-- More on installing `R` packages
+- More on installing/building `R` packages
 - Seeking help as a skillset
 - More on `git` / GitHub
 - Next module
