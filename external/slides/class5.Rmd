@@ -108,7 +108,6 @@ knitr::include_graphics("figures/class5_u1m2.png")
 - Control structures
 - Package functions
 - Generic functions
-
 ---
 
 ## OO
