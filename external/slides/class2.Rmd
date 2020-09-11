@@ -21,9 +21,8 @@ load("external/data/gkey.rda")
 m <- get_googlemap(center = c(-71.8229, 42.2511), zoom = 17, maptype = "hybrid",
                    key = gkey)
 mp <- ggmap(m, extent = "device")
-ggsave(filename = "inst/slides/figures/clark.png", plot = mp, 
+ggsave(filename = "external/slides/figures/clark.png", plot = mp, 
        bg = "transparent", width = 4, height = 4, units = "in", dpi = 300)
-
 ```
 
 ---
