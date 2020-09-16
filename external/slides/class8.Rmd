@@ -35,16 +35,16 @@ ggsave(here::here("external/slides/figures/africa_capitals.png"),
 
 # Today
 
-- More coding practice
-  - Indexing
-  - A little bit of summarizing
-  - Control structures (maybe)
+- Creating datasets
+- Indexing
+- A little bit of summarizing
+- Control structures (maybe)
 
 ---
 
 ## Create your own data
 
-- Create the following:
+- Create the following 1-D structures
   - `a`: a random vector of integers with 10 elements drawn from 1-20:
     - Use the `sample` function with `set.seed(10)`
     - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
@@ -52,12 +52,11 @@ ggsave(here::here("external/slides/figures/africa_capitals.png"),
       - Create the identical vector of names using the `paste` function.
   - `b`: Using `a` as an index to select from `letters`
   - `d`: Use `rnorm` with a mean = 100 and an sd of 20
-  - Why did I skip `c`? 
+    - Why did I skip `c`? 
   - Create a list `l` from `a`, `b`, `d`. 
     - Assign the names of the vectors in `l` to the `l`'s elements
 
----
-```{r}
+```{r, echo=FALSE, eval=FALSE}
 set.seed(10)
 a <- sample(1:20, 10, replace = TRUE)
 names(a) <- paste0("V1", 1:10)
@@ -68,9 +67,9 @@ l <- list("a" = a, "b" = b, "d" = d)
 l
 ```
 ---
-## 2-d structures
+## Create your own data
 
-- Create the following:
+- Create the following 2-d structures
   - `m`: a matrix with three integer columns named "V1", "V2", "V3"
     - Create each column first as its own vector, then combine
     - `V1` = 1:10
@@ -81,8 +80,7 @@ l
   - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
     - `V4` is a random selection of the letters A-E
     
----
-```{r}
+```{r, echo=FALSE, eval=FALSE}
 set.seed(10)
 m <- cbind(V1 = 1:10, 
            V2 = sample(1:100, size = 10, replace = TRUE), 
@@ -105,9 +103,7 @@ dat
 - Select from `d` all values between 90 and 110, and replace them with 100
 - Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l` 
 
----
-
-```{r, eval = FALSE}
+```{r, echo=FALSE, eval = FALSE}
 a[c(1, 2, 10)]
 a[c("V1", "V2", "V3")]
 a[(length(a) - 1)] <- "sasquatch"
@@ -129,9 +125,8 @@ d[d >= 90 & d <= 110] <- 100
 - Subset the first two rows and columns of `dat` into a new data.frame `datss`. 
 - Replace `dat` rows 1:2, column 1:2 with the values -1:-4
 - Reset the part of `dat` you just changed with the values in `datss`
----
 
-```{r, eval = FALSE}
+```{r, echo=FALSE, eval = FALSE}
 m[1:10, ]
 m[length(m)]
 m[length(m)] <- -99
@@ -154,7 +149,7 @@ dat[1:2, 1:2] <- datss
 - From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable. 
 
 ---
-### Looping practice
+## Looping practice
 
 - Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
 - Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
