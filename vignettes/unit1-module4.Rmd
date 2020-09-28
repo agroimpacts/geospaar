@@ -666,7 +666,7 @@ In this case we just use `pivot_wider` with *y2K* as the key, and the mean yield
 crop_ylds %>% 
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
   group_by(crop, country, y2k) %>% 
-  summarize(mean_yield = mean(yields)) %>% 
+  summarize(mean_yield = mean(yield)) %>% 
   pivot_wider(names_from = y2k, values_from = mean_yield) %>%
   mutate(yield_ratio = `2000_2017` / `1961_2000`)
 ```
