@@ -28,7 +28,70 @@ dev.off()
 
 # Today
 
-- Coding practice
+- R ecosystem continued
+- A start on coding: creating your own datasets
+- Indexing and subsetting
+
+---
+
+## Functions
+- Primitives
+- Operators
+- Control structures
+- Package functions
+- Generic functions
+---
+
+## OO
+
+- Procedural versus object-oriented (OO) programming
+- OO bundles together data and functions into an object
+- Class defines type/structure of object and what methods (functions) are used with it
+- 3+ types of OO in R
+
+---
+
+## OO
+
+### Base system? 
+```{r}
+x <- 1:10
+!is.object(x)  # if TRUE, base object. 
+```
+
+### S3 system?
+```{r}
+x <- lm(x ~ rev(x))
+!is.object(x)  # if TRUE, base object. 
+!isS4(x)  # it’s S3
+```
+
+---
+## OO
+
+### S4 system? 
+```{r}
+x <- raster::raster(nrow = 10, ncol = 10)
+!is.object(x)  # if TRUE, base object. 
+!isS4(x)  # it’s S3
+!is(x, "refClass") # it’s S4; otherwise it’s RC.
+```
+
+---
+
+## Environments
+```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap="http://adv-r.had.co.nz/Environments.html"}
+knitr::include_graphics("figures/class5_envs.png")
+```
+
+---
+## Environments
+- Global environment
+- Package environment
+    - external interface to package - how we find functions 
+- Namespace environment
+    - internal interface to packge - how functions find variables
+- Function environment
 
 ---
 
@@ -86,6 +149,7 @@ dev.off()
 - Replace `dat` rows 1:2, column 1:2 with the values -1:-4
 - Reset the part of `dat` you just changed with the values in `datss`
 ---
+
 ## Summarizing datasets
 - Calculate the row and column sums of both `m` and `dat`. 
 - Calculate the overall means and sums of all values in each dataset

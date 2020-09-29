@@ -644,7 +644,7 @@ Same procedure, just a different conditional operator inside `filter`. But maybe
 crop_ylds %>% 
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
   group_by(crop, country, y2k) %>% 
-  summarize(mean_yield = mean(yields))
+  summarize(mean_yield = mean(yield))
 ```
 
 That's a little more complex, and doesn't use `filter`. Instead, we first use `mutate` with `ifelse` to create a new variable (*y2k*), which indicates whether years are before 2000, or 2000 and onward. We then use *y2k* to apply a third split to the data after our crop and country splits, and finally end with the mean yields from our three-way splits. 
@@ -666,7 +666,7 @@ In this case we just use `pivot_wider` with *y2K* as the key, and the mean yield
 crop_ylds %>% 
   mutate(y2k = ifelse(year < 2000, "1961_2000", "2000_2017")) %>% 
   group_by(crop, country, y2k) %>% 
-  summarize(mean_yield = mean(yields)) %>% 
+  summarize(mean_yield = mean(yield)) %>% 
   pivot_wider(names_from = y2k, values_from = mean_yield) %>%
   mutate(yield_ratio = `2000_2017` / `1961_2000`)
 ```

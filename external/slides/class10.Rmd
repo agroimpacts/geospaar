@@ -75,15 +75,61 @@ names(l) <- c("m1", "m2", "m3", "dat1", "dat2", "v")
 ---
 
 ## Control structures
-- Branching
+### Branching
 
+```{r}
+a <- 5
+if(a > 10) {
+  print("Greater than 10!")
+} else {
+  print("Less than or equal to 10")
+}
+```
+
+---
+
+Branching is:
   - Not usually vectorized
   - `ifelse` for vectorized branching
-  - often done within looping
+  - often done within loops
+
+```{r, error=TRUE}
+a <- 1:10
+if(a > 5) {
+  print("Too high")
+} else {
+  print("too low")
+}
+
+ifelse(a > 5, "too high", "too low")
+ifelse(a > 5, "5+", a)
+```
+
+---
+### Looping
+- Looping
+  - `for`
+  - `while`
+  - `*apply`
+
+```{r}
+b <- 1:3
+for(i in b) print(i)
+```
+
+---
+
+```{r, echo=FALSE, fig.align="center", fig.cap="From https://www.educba.com/loops-in-r/"}
+pth <- glue::glue("https://cdn.educba.com/academy/wp-content/",
+                  "uploads/2019/07/Loops-in-R-1.png")
+knitr::include_graphics(pth)
+```
+
+---
+### Branching with looping
 
 ```{r}
 v <- 1:100
-
 ifelse(v > 50 & v < 70, 0, v)
 
 for(i in 1:length(v)) {
@@ -91,18 +137,15 @@ for(i in 1:length(v)) {
     v[i] <- 0
   } 
 }
+print(v)
 
 ```
 
-
-  
-- Looping
-
-  - `for`, `while`
-  - `*apply`
-      - A special form of looping
-      - Intended for *applying* a function to data
-      - Returns results of loop directly into object
+---
+## *apply
+- A special form of looping
+- Intended for *applying* a function to data
+- Returns results of loop directly into object
 
 ---
 
