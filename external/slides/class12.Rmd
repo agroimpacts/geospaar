@@ -11,12 +11,408 @@ output:
       countIncrementalSlides: false
 ---
 
-## Today
-
-- Team-based practicals, cont:
-  - Data preparation
-  - Data analysis
+- So far:
+  - **Reproducibility (packages, `git`/GitHub)**
+  - **Indexing**
+  - _Control structures (`for` and `*apply`)_
+  - Data shaping
+  - Analysis: SAC
   - Plotting
+
+---
+## Data
+- Create three matrices, `m1`, `m2`, `m3`
+  - `m1`: 
+      - Random number seed: `set.seed(100)`
+      - `V1` = 1:20
+      - `V2` 20 random numbers from 1:100
+      - `V3` 20 numbers from `rnorm`, mean = 500, sd = 100)
+  - `m2`: Same variables, but `set.seed(200)`
+  - `m3`: Same variables, but `set.seed(300)`
+- Create vector `v`: 20 random draws from `LETTERS[1:5]`; `set.seed(1)`
+- Create 2 `data.frame`s: `dat1` (`m1` & `v`), `dat2` (`m2` & `v`)
+  - Name the column holding `v` "GRP"
+- Create list `l` combining `m1`, `m2`, `m3`, `dat1`, `dat2`, `v`
+  - Name the list elements the same as the object name.
+
+---
+
+```{r}
+set.seed(100)
+m1 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+set.seed(200)
+m2 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+set.seed(300)
+m3 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+set.seed(1)
+v <- sample(LETTERS[1:5], size = 20, replace = TRUE)
+dat1 <- data.frame(m1, "GRP" = v)
+dat2 <- data.frame(m2, "GRP" = v)
+l <- list(m1, m2, m3, dat1, dat2, v)
+names(l) <- c("m1", "m2", "m3", "dat1", "dat2", "v")
+```
+
+---
+
+### Looping practice
+
+---
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+
+```{r, eval = FALSE}
+for(i in 1:10) print(i * 10)
+
+o <- list()
+for(i in 1:10) o[[i]] <- i * 10
+
+o <- lapply(1:10, function(x) x * 10)
+o <- sapply(1:10, function(x) x * 10)
+```
+
+---
+
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- Let's use `sapply` to find which elements of `l` are `matrix`
+
+```{r, eval = FALSE}
+# for(i in 1:10) print(i * 10)
+# 
+# o <- list()
+# for(i in 1:10) o[[i]] <- i * 10
+# 
+# o <- lapply(1:10, function(x) x * 10)
+# o <- sapply(1:10, function(x) x * 10)
+```
+
+---
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- Let's use `sapply` to find which elements of `l` are `matrix`
+
+```{r, eval = FALSE}
+# for(i in 1:10) print(i * 10)
+# 
+# o <- list()
+# for(i in 1:10) o[[i]] <- i * 10
+# 
+# o <- lapply(1:10, function(x) x * 10)
+# o <- sapply(1:10, function(x) x * 10)
+
+sapply(l, is.matrix)
+
+```
+
+---
+
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- ~~Let's use `sapply` to find which elements of `l` are `matrix`~~
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+
+```{r, eval = FALSE}
+# for(i in 1:10) print(i * 10)
+# 
+# o <- list()
+# for(i in 1:10) o[[i]] <- i * 10
+# 
+# o <- lapply(1:10, function(x) x * 10)
+# o <- sapply(1:10, function(x) x * 10)
+# 
+# sapply(l, is.matrix)
+```
+
+---
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- ~~Let's use `sapply` to find which elements of `l` are `matrix`~~
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+
+```{r, eval = FALSE}
+# for(i in 1:10) print(i * 10)
+# 
+# o <- list()
+# for(i in 1:10) o[[i]] <- i * 10
+# 
+# o <- lapply(1:10, function(x) x * 10)
+# o <- sapply(1:10, function(x) x * 10)
+# 
+# sapply(l, is.matrix)
+
+lapply(l[:15], function(x) colMeans(x[, 1:3]))
+lapply(1:5, function(x) colMeans(l[[x]][, 1:3]))
+```
+---
+
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- ~~Let's use `sapply` to find which elements of `l` are `matrix`~~
+- ~~Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`~~
+- Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`
+
+```{r, eval = FALSE}
+# for(i in 1:10) print(i * 10)
+# 
+# o <- list()
+# for(i in 1:10) o[[i]] <- i * 10
+# 
+# o <- lapply(1:10, function(x) x * 10)
+# o <- sapply(1:10, function(x) x * 10)
+# 
+# sapply(l, is.matrix)
+# 
+# lapply(l[1:5], function(x) colMeans(x[, 1:3]))
+# lapply(1:5, function(x) colMeans(l[[x]][, 1:3]))
+```
+
+---
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+- Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`
+
+```{r, eval = FALSE}
+# for(i in 1:10) print(i * 10)
+# 
+# o <- list()
+# for(i in 1:10) o[[i]] <- i * 10
+# 
+# o <- lapply(1:10, function(x) x * 10)
+# o <- sapply(1:10, function(x) x * 10)
+# 
+# sapply(l, is.matrix)
+# 
+# lapply(l[1:5], function(x) colMeans(x[, 1:3]))
+# lapply(1:5, function(x) colMeans(l[[x]][, 1:3]))
+lapply(l[1:3], function(x) c(mean(x), sd(x))
+```
+
+---
+
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- ~~Let's use `sapply` to find which elements of `l` are `matrix`~~
+- ~~Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`~~
+- ~~Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`~~
+- Do the same, but use conditional to test whether each element of `l` is `matrix`, then calculate `mean`, `sd`.  
+
+```{r, eval = FALSE}
+# lapply(l[1:3], function(x) c(mean(x), sd(x))
+```
+
+---
+
+- ~~Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10~~
+- ~~Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`~~
+- ~~Do the same as above, but use an `lapply` that assigns output to `o`~~
+- ~~Do the same as above, but use `sapply` instead of `lapply`~~
+- ~~Let's use `sapply` to find which elements of `l` are `matrix`~~
+- ~~Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`~~
+- ~~Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`~~
+- Do the same, but use conditional to test whether each element of `l` is `matrix`, then calculate `mean`, `sd`.  
+
+```{r, eval = FALSE}
+# lapply(l[1:3], function(x) c(mean(x), sd(x))
+
+lapply(l, function(x) {
+  if(is.matrix(x)) c("mu" = mean(x), "sd" = sd(x))
+})
+
+sapply(l, function(x) {
+  if(is.matrix(x)) {
+    c("mu" = mean(x), "sd" = sd(x))
+  } else if(is.data.frame(x)) {
+    c("mu" = mean(unlist(x[, 1:3])), "sd" = sd(unlist(x[, 1:3])))
+  } else {
+    c("mu" = NA, "sd" = NA)
+  }
+})
+```
+
+---
+### Data shaping exercises
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+
+---
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+```{r, eval=FALSE}
+tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
+```
+---
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+
+---
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+
+```{r, eval = FALSE}
+# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
+tb_df %>% distinct(group, element)
+```
+
+---
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+
+---
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+
+```{r, eval = FALSE}
+# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
+# tb_df %>% distinct(group, element)
+tb_df %>% pivot_wider(names_from = element, values_from = value)
+```
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+
+---
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+
+```{r, eval = FALSE}
+# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
+# tb_df %>% distinct(group, element)
+# tb_df %>% pivot_wider(names_from = element, values_from = value)
+tb_df %>% select(-group) %>% 
+  pivot_wider(names_from = element, values_from = value)
+```
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+
+```{r, eval = FALSE}
+# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
+# tb_df %>% distinct(group, element)
+# tb_df %>% pivot_wider(names_from = element, values_from = value)
+# tb_df %>% select(-group) %>% 
+#   pivot_wider(names_from = element, values_from = value)
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group)
+```
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
+
+```{r, eval = FALSE}
+# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_dataset.csv"))
+# tb_df %>% distinct(group, element)
+# tb_df %>% pivot_wider(names_from = element, values_from = value)
+# tb_df %>% select(-group) %>% 
+#   pivot_wider(names_from = element, values_from = value)
+# tb_df %>% 
+#   pivot_wider(names_from = element, values_from = value) %>% 
+#   arrange(group)
+tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group, desc(year))
+```
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
+- Calculate a new column that describes the weight:price ratio
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
+- Calculate a new column that describes the weight:price ratio
+
+```{r, eval = FALSE}
+# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
+# tb_df %>% distinct(group, element)
+# tb_df %>% pivot_wider(names_from = element, values_from = value)
+# tb_df %>% select(-group) %>% 
+#   pivot_wider(names_from = element, values_from = value)
+# tb_df %>% 
+#   pivot_wider(names_from = element, values_from = value) %>% 
+#   arrange(group)
+# tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+#   arrange(group, desc(year))
+tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+  mutate(wt_price = Weight / Price)
+```
+
+---
+
+- A little extra
+```{r, eval=FALSE}
+tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group, desc(year)) %>%
+  filter(group == "a") %>% mutate(wt_price = Weight / Price)
+
+```
 
 ---
 ## Practical

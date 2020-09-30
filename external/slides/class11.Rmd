@@ -84,7 +84,11 @@ sapply(l2, mean)
 
 ```{r}
 apply(l2[[1]], MARGIN = 1, FUN = mean)
+rowMeans(l2[[1]])
+rowMeans(m1)
 apply(l2[[1]], MARGIN = 2, FUN = mean)
+colMeans(l2[[1]])
+colMeans(m1)
 ```
 
 ---
@@ -97,13 +101,18 @@ apply(l2[[1]], MARGIN = 2, FUN = mean)
 # Simple
 o <- lapply(1:2, function(x) l2[[x]])
 o
+
+index_function <- function(x) l2[[x]]
+lapply(1:2, index_function)
+lapply(1:2, function(x) l2[[x]])
+
 ```
 
 ---
 ```{r}
 # More complex
-o2 <- lapply(1:5, function(x) {
-  l2[[1]][x] - l2[[2]][x]
+o2 <- lapply(1:5, function(x) {  # x <- 2
+  l2[[1]][x, "V2"] - l2[[2]][x, "V2"]
 })
 o2
 ```
