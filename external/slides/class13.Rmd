@@ -13,24 +13,8 @@ output:
 
 ### Today
 
-- A little review of past section
+- Reshaping/analysis/plotting - fix the error!
 - Spatial data beginnings
-- More practice
-
----
-### Tips
-
-- Shortcuts: CTRL + Alt + i; CMD/ctrl + shift + enter; CMD/ctrl + alt + n
-- Chunk settings:
-
-    ````r
-    `r ''````{r, eval=FALSE, message=FALSE, warning=FALSE, error=TRUE, echo=FALSE}
-    # Your code in here
-    ```
-    ````
-
-- Pay attention to style guide and syntax!!!
-  - It will help minimize coding errors
 
 ---
 ### Syntax dos and don'ts
@@ -61,64 +45,207 @@ dat$ v1 # no
 dat $ v1 # no
 dat       $      v1  # hell no
 ```
-    
+
 ---
-#### Code elements
-```{r, eval = FALSE}
-# 1
-p <- "~/Desktop/dummy_dataset.csv"
-# 2
-readr::read_csv()
-# 3
-spread()
-# 4
-mutate()
-# 5
-dat2 <- dat
-# 6
-select()
-# 7
-arrange()
-# 8
-desc()
-# 9
-group_by()
-# 10
-ifelse()
-# 11
-filter()
+## Practice
+
+### Make these work
+#### # 1
+```{r, eval=FALSE}
+tb_df <- readr:read_csv("external/notebooks/data/dummy_data.csv")
 ```
 
 ---
-#### Code elements continued
-```{r, eval = FALSE}
-# 12
-lapply(1:nrow(dat), function(x) {
-  # code here
-})
-# 13 
-nrow()
-# 14
-slice()
-# 15 
-for(i in 1:nrow(dat) {
-  # code here
-}
-# 16
-summarize()
-# 17
-summarize_all()
-# 18 
-list(); funs()  
-# 19 - a full pipeline example
-library(dplyr)
-library(tidyr)
+
+#### # 2 Reshape
+
+So that price and element have their own columns
+```{r, eval=FALSE}
+tb_df2 <- tb_df %>% 
+  pivot_wider(names_from = valu, values_from = element) %>% 
+  arrange(-group)
+tb_df2
+```
+
+Result should look like this:
+```
+# A tibble: 50 x 4
+    year group Price Weight
+   <dbl> <chr> <dbl>  <dbl>
+ 1  1960 a      70.3   79.9
+ 2  1962 a      64.7   86.6
+ 3  1974 a      66.7   58.7
+ 4  1977 a      93.2   75.6
+ 5  1984 a      66.3   82.1
+ 6  1988 a      56.1   76.3
+ 7  1997 a      72.8   58.8
+ 8  1951 b      73.9   82.7
+ 9  1952 b      93.1   67.7
+10  1955 b      53.5   81.7
+# … with 40 more rows
+```
+---
+
+#### # 3 Make a new variable 
+
+Make `tb_df2` have a `wt_price` column that is the ratio of weight to price (weight / price) 
+```{r, eval=FALSE}
+tb_df3 <- tb_df2 %> 
+  select(wt_price = Weight / Price)
+tb_df3
+```
+
+Result should look like this:
+```
+# A tibble: 50 x 5
+    year group Price Weight wt_price
+   <dbl> <chr> <dbl>  <dbl>    <dbl>
+ 1  1960 a      70.3   79.9    1.14 
+ 2  1962 a      64.7   86.6    1.34 
+ 3  1974 a      66.7   58.7    0.880
+ 4  1977 a      93.2   75.6    0.811
+ 5  1984 a      66.3   82.1    1.24 
+ 6  1988 a      56.1   76.3    1.36 
+ 7  1997 a      72.8   58.8    0.807
+ 8  1951 b      73.9   82.7    1.12 
+ 9  1952 b      93.1   67.7    0.727
+10  1955 b      53.5   81.7    1.53 
+# … with 40 more rows
+```
+
+---
+#### # 4 Calculate the mean of Price, Weight, and wt_price
+
+```{r, eval=FALSE}
+tb_df3 %>% 
+  summary(Price = mean("Price"), Weight = mean("Weight"), 
+          wt_price = mean("wt_price"))
+```
+
+What you should get:
+```
+# A tibble: 1 x 3
+  Price Weight wt_price
+  <dbl>  <dbl>    <dbl>
+1  75.2   75.0     1.03
+```
+
+---
+
+#### # 5 Plot Weight versus Price using a scatter plot
+
+
+```{r, eval=FALSE}
+tb_df3 %>% 
+  ggplot() + geom_point(x = Price, y = Weight)
+```
+Should look like:
+```{r, echo = FALSE, fig.align='center'}
+knitr::include_graphics("figures/weight_v_price.png")
+```
+
+---
+#### # 6 Plot 2: 
+Weight versus Price using a scatter plot, but with different plots per group
+
+```{r, eval=FALSE}
+tb_df3 %>% 
+  ggplot() + group_by(group) + geom_point(x = Price, y = Weight)
+```
+
+Should look like:
+```{r, echo = FALSE, fig.align='center'}
+knitr::include_graphics("figures/weight_v_price_grp.png")
+```
+
+---
+
+#### # 7 Using `lapply` to read in and reshape `geospaar` data
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+
+```{r, echo=FALSE, eval=FALSE}
 library(geospaar)
+fs <- dir(system.file("extdat", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
+crops <- lapply(fs, readr::read_csv)
+crops
+```
+
+Should see...
+```
+[[1]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   <chr>         <chr>        <dbl> <chr>          <dbl> <chr>  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+# … with 218 more rows, and 8 more variables: `Item Code` <dbl>,
+...
+
+[[2]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   <chr>         <chr>        <dbl> <chr>          <dbl> <chr>  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+
+...
+
+[[3]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   <chr>         <chr>        <dbl> <chr>          <dbl> <chr>  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+...
+```
+
+#### # 8 Reshape in `lapply`
+
+- Reshape each of the three datasets in `crops` by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. 
+- Combine all these into a single data.frame `crops_df`
+
+
+```{r, echo=FALSE, eval=FALSE}
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% select(Item, Area, Element, Year, Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = Area harvested, prod = Production)
+}))
+crops_df
+```
+
+Should see:
+
+```
+> crops_df
+# A tibble: 342 x 5
+   crop  country       year harv_area    prod
+   <chr> <chr>        <dbl>     <dbl>   <dbl>
+ 1 Maize South Africa  1961   4118000 5293000
+ 2 Maize South Africa  1962   4341000 6024000
+ 3 Maize South Africa  1963   4339000 6127000
+ 4 Maize South Africa  1964   4433000 4310000
+ 5 Maize South Africa  1965   4290000 4608000
+ 6 Maize South Africa  1966   4241000 5161000
+ 7 Maize South Africa  1967   4589000 9802000
+ 8 Maize South Africa  1968   4728000 5358000
+ 9 Maize South Africa  1969   4387000 5378000
+10 Maize South Africa  1970   4418000 6179000
+# … with 332 more rows
+```
+
+
+---
+#### Pipeline example
+```{r, eval = FALSE}
 fs <- dir(system.file("extdata", package = "geospaar"), 
           pattern = "maize", full.names = TRUE)
 dat <- readr::read_csv(fs) %>% 
   dplyr::select(Item, Area, Element, Year, Value) %>% 
-  pivot_wider(names_from = Element, values_from = Value) %>%   rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
+  pivot_wider(names_from = Element, values_from = Value) %>% 
+  rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
   mutate(yield = prod / harv_area) %>% 
   dplyr::select(country, harv_area, prod, yield) %>% 
   group_by(country) %>% 
