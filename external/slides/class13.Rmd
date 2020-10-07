@@ -163,7 +163,7 @@ knitr::include_graphics("figures/weight_v_price_grp.png")
 #### # 7 Using `lapply` to read in and reshape `geospaar` data
 - read in the three `geospaar` FAO datasets into a list using `lapply`
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, eval=FALSE}
 library(geospaar)
 fs <- dir(system.file("extdat", package = "geospaar"), 
           pattern = "FAOSTAT", full.names = TRUE)
