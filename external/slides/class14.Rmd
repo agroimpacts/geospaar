@@ -33,6 +33,7 @@ webpage <- read_html(URL)
 cong <- as_tibble(html_table(webpage)[[1]])
 onms <- colnames(cong)
 newnms <- c("congress", "seats", "D", "R", "other", "delres")
+
 cong <- cong %>% 
   slice((which(grepl("^Republican", `Anti-Administration`))[1] + 1):nrow(.)) %>%
   filter(`Congress (Years)` != colnames(cong)[1]) %>% 

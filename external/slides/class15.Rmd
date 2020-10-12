@@ -17,16 +17,47 @@ output:
 - Maybe some visualization
 
 ---
-### Data
+### Spot the bug
 
-`geospaar` data
+#### Reading in `geospaar` data
 ```{r, eval=FALSE}
 library(geospaar)
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
-districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+  read_csv() %>% st_as_sfc(coords = c("X", "y"))
+districts <- st_reader(
+  system.file("extdata/districts.shp", package = "geospaar")
+)
+roads <- read_sfc(system.file("extdata/roads.shp", package = "geospaar"))
 ```
+
+---
+
+### Wrangle data
+
+- Count number of records per farmer and arrange from most to least
+```{r, eval=FALSE}
+farmers %>% groupby(uuid) %>% summarize(n = n) %>% arrange(n)
+```
+
+---
+### Wrangle data
+- Spatial join
+```{r, eval=FALSE}
+farmers_trim <- farmers %>% groupby(uuid) %>% summarize(n = n) %>% 
+  st_joins(., districts, Left = FALSE)
+```
+
+---
+### Wrangle data
+
+- Reproject and spatial properties
+
+```{r, eval=FALSE}
+districts %>% st_transforms(., stcrs(roads)) %>% st_areas()
+```
+
+---
+### Adding to data
 
 Add some categories
 ```{r, eval=FALSE}
