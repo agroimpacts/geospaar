@@ -83,9 +83,9 @@ ggplot(districts2) + geom_sf(aes(fill = yield))
 districts2 %>% dplyr::select(yield) %>% summarize_all(funs(mean, sd))
 districts2 %>% summarize(mean(yield), sd(yield))
 districts_mu <- districts2 %>% 
-  mutate(yld_cat = ifelse(yield > 3.5, "high", "other"), 
+  mutate(yld_cat = ifelse(yield > 4.5, "high", "other"), 
          yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
-         yld_cat = ifelse(yield < 2, "low", yld_cat)) %>% 
+         yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
   dplyr::select(1:5, 7) %>% 
   group_by(yld_cat) %>% summarize(yield = mean(yield))
 ggplot(districts_mu) + geom_sf(aes(fill = yield))
