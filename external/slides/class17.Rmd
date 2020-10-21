@@ -103,8 +103,9 @@ dists_in_buff <- districts3 %>%
 
 (4) Use the buffer to do an intersection with `districts3`
 ```{r, eval=FALSE}
-buff_int_dists <- st_intersection(...
-# p + geom_sf(data = buff_int_dists, aes(fill = distName))
+buff_int_dists <- st_intersection(districts3, smallest_buffer)
+p <- ggplot(districts3) + geom_sf()
+p + geom_sf(data = buff_int_dists, aes(fill = distName))
 ```
 
 (5) Calculate the area of the intersection, converting the area to hectares, and dropping all other variables from `buff_int_dists` except "distName", and the new "int_area"

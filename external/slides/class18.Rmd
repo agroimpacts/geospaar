@@ -13,7 +13,7 @@ output:
 
 ## Today
 
-- Raster intro
+- Raster intro, continued
   - classes
   - dummy rasters
   - reading and writing
@@ -21,29 +21,102 @@ output:
 
 
 ---
-```{r, echo=FALSE, out.width="50%", results='hold'}
-dem1 <- "figures/zam_dem_raster.png"
-dem2 <- "figures/zam_dem_stars.png"
-knitr::include_graphics(c(dem1, dem2))
+```{r, echo=FALSE, out.width="92%", results='hold', fig.align='center'}
+knitr::include_graphics("figures/cropcover_with_insets.png")
 ```
 ---
 
-### Code used
-
 ```{r, eval=FALSE}
 library(stars)
-library(raster)
-zlim <- c(250, 2250)
-png(here::here("external/slides/figures/zam_dem_raster.png"), 
-    height = 4, width = 5, res = 300, units = "in")
-par(bg = "grey40", mar = c(0, 0, 0, 3))
-plot(dem, col = viridis::cividis(100), axes = FALSE, box = FALSE, zlim = zlim)
-dev.off()
-png(here::here("external/slides/figures/zam_dem_stars.png"), 
-    height = 4, width = 5, res = 300, units = "in", bg = "grey40")
-st_as_stars(dem) %>%
-  plot(main = NULL, col = viridis::cividis(100), zlim = zlim)
-dev.off()
+library(ggplot2)
+library(aws.s3)
+library(RStoolbox)
+library(cowplot)
+
+segment_files <- dir(here("external/data/results/segments/merged"),
+                     pattern = "boundarymerge", full.names = TRUE)
+iid <- as.numeric(gsub("[[:alpha:]]|_|\\.", "", basename(segment_files)))
+segment_files <- tibble(file = segment_files, order = iid) %>% arrange(iid)
+segment_files <- segment_files %>% filter(!grepl("aoi3_*.*merge.geojson", file))
+
+fdensity <- stars::read_stars(
+  system.file("extdata", "field_density005.tif", package = "activemapper")
+)
+
+# OS images
+osimgs <- get_bucket_df(
+  bucket = "activemapper", prefix = "planet/composite_sr_buf_fix/OS/", max = Inf
+) %>% as_tibble %>% select(Key)
+
+# example tiles
+flds_1 <- read_sf(segment_files$file[1])
+flds_5 <- read_sf(segment_files$file[5])
+flds_11 <- read_sf(segment_files$file[11])
+flds_15 <- read_sf(segment_files$file[15])
+
+tile_ss <- tiles %>% filter(tile %in% c(486794, 539730, 591243, 616490))
+flds_tile1 <- flds_1 %>% filter(st_intersects(., tile_ss[1, ], sparse = FALSE))
+flds_tile2 <- flds_5 %>% filter(st_intersects(., tile_ss[2, ], sparse = FALSE))
+flds_tile3 <- flds_11 %>% filter(st_intersects(., tile_ss[3, ], sparse = FALSE))
+flds_tile4 <- flds_15 %>% filter(st_intersects(., tile_ss[4, ], sparse = FALSE))
+
+```
+---
+
+```{r, eval=FALSE}
+impath <- osimgs %>% 
+  filter(grepl(paste0(tile_ss$tile, collapse = "|"), Key)) %>% 
+  mutate(pth = paste0("/vsis3/activemapper/", Key)) %>% pull(pth)
+
+# inset maps
+fld_tiles <- list(flds_tile1, flds_tile2, flds_tile3, flds_tile4)
+isets <- lapply(1:4, function(x) {
+  imgr <- brick(impath[x])[[2:4]]
+  xylims <- st_bbox(imgr)
+  iset <- ggplot() + 
+    ggRGB(imgr, maxpixels = 50000, stretch = "lin", ggLayer = TRUE) +
+    geom_sf(data = fld_tiles[[x]], fill = "transparent", color = "yellow", 
+            size = 0.2) + 
+    geom_sf(data = tile_ss[x, ], color = "red", fill = "transparent") + 
+    scale_x_continuous(expand = c(0, 0)) + 
+    scale_y_continuous(expand = c(0, 0)) + 
+    coord_sf(xlim = xylims[c(1, 3)], ylim = xylims[c(2, 4)]) + 
+    theme_void()
+})
+```
+
+---
+```{r, eval=FALSE}
+# Main map
+xylims <- st_coordinates(ghana)
+# twk <- diff(range(xylims[, 1])) * 0.05
+maprange <-  c(range(xylims[, 1]) + c(-1.25, 1.25), 
+               range(xylims[, 2]))
+
+inset_cols <- c("red", "orange", "pink", "brown")
+p <- ggplot(africa) + 
+  geom_sf(fill = "gray40", color = "grey", size = 0.25) +  
+  geom_stars(data = fdensity * 100) +
+  geom_sf(data = aois, size = 0.1, fill = "transparent", col = "grey") +
+  geom_sf(data = tile_ss, fill = "red", col = "red") +
+  scale_fill_viridis_c(name = "% cover", na.value = "transparent") +
+  coord_sf(xlim = maprange[1:2], ylim = maprange[3:4]) + 
+  theme_void() + 
+  theme(legend.position = "bottom", 
+        legend.text = element_text(colour = "white"), 
+        legend.title = element_text(colour = "white"))
+
+inset_map <- ggdraw() +
+  draw_plot(p) +
+  draw_plot(isets[[1]], x = 0.07, y = 0.77, width = 0.2, height = 0.2) + 
+  draw_plot(isets[[2]], x = 0.72, y = 0.6, width = 0.2, height = 0.2) + 
+  draw_plot(isets[[3]], x = 0.04, y = 0.37, width = 0.2, height = 0.2) + 
+  draw_plot(isets[[4]], x = 0.76, y = 0.25, width = 0.2, height = 0.2)
+
+ggsave(filename = here("presentations/figures/cropcover_with_insets.png"), 
+       plot = inset_map, bg = "transparent", width = diff(maprange[1:2]), 
+       height = diff(maprange[3:4]), units = "in", dpi = 300)
+
 ```
 
 ---
@@ -120,6 +193,8 @@ brick(file.path(tempdir(), "mydumbrick.tif"))
 brick(file.path(tempdir(), "mydumbrick.grd"))
 ```
 
+---
+
 - plot
 ```{r, eval = FALSE}
 plot(b)
@@ -149,7 +224,7 @@ st_as_stars(b) %>% plot()
 
 ---
 ## Raster to other types
-```{r}
+```{r, eval=FALSE}
 b[1:10]
 b[1:ncell(b)]
 as.matrix(b)
