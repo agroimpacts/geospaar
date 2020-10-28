@@ -15,19 +15,11 @@ output:
 
 - Projects!!!!
 - Exercises from last class
-- Lingering questions on Unit2 Module 2
 - Alternative plotting methods
 
 ---
-## Exercises
+## Data
 
-- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
-- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
-- Calculate the average elevation and slope in each district of Zambia
-
----
-
-### Data
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 library(geospaar)
 districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
@@ -37,8 +29,23 @@ chirpsz <- mask(chirps, districts)
 ```
 
 ---
+
+## Exercises
+
+### Last class
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall > 10 mm
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+### New
+- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
+- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
+- Calculate the average elevation and slope in each district of Zambia
+
+
+---
 ### Exercise 1
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 raintot <- calc(chirpsz, sum)
 raincat <- cut(raintot, c(0, 50, 100, 200), include.lowest = TRUE)
 plot_noaxes(raincat, col = c("grey", "lightblue", "blue3"), legend = FALSE)
@@ -51,7 +58,7 @@ legend("right", legend = c("low", "medium", "high"),
 ---
 
 ### Exercise 2
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 mat <- matrix(rep(1, 25), nrow = 5, ncol = 5)
 focal(raintot, w = mat, fun = mean, na.rm = TRUE) %>% plot_noaxes
 mysum <- function(x) sum(x, na.rm = TRUE)
@@ -74,7 +81,7 @@ cbind(w, v)
 
 ---
 ### Exercise 3
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=FALSE}
 distsr <- districts %>% mutate(ID = 1:nrow(.)) %>% 
   rasterize(x = ., y = raster(extent(dem), res = 0.05), field = "ID")
 plot(distsr)
@@ -87,6 +94,8 @@ terrain(dem05, units = "degrees") %>%
   zonal(x = ., z = distsr) %>% as.data.frame %>% 
   subs(x = distsr, y = .) %>% plot_noaxes
 ```
+
+---
 
 ### rasterVis
 
