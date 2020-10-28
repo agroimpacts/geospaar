@@ -1,10 +1,10 @@
 ---
 title: "Geospatial Analysis with R"
-subtitle: Class 17
+subtitle: Class 18
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class15plus.css"]
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
     nature:
       highlightStyle: github
       highlightLines: true
@@ -12,229 +12,267 @@ output:
 ---
 
 ## Today
-- Our first virtual class
-  - Getting up to speed:
-    - Zoom and Slack protocols
-    - Computing and VPNs
-  - Assignments and projects
-- Practical work: 
-  - `dplyr`, `sf`, and `ggplot` wrap up
-- `raster` introduction
 
----
-
-## COVID-19 case data
-
-Let's use the new class `covid19clark` package to assess cases. Let's get the data first.  
-```{r, eval=FALSE}
-devtools::install_github("agroimpacts/covid19clark",  
-                         ref = "feature/add_othercases", force = TRUE)
-library(covid19clark)
-library(sf)
-library(dplyr)
-library(maps)
-
-# JHU case data (global)
-# f <- system.file("extdata/covid19_ts.csv", package = "covid19clark")
-# cases <- readr::read_csv(f)
-cases <- covid19clark::get_jhu_ts()
-
-# latest daily case data
-# f <- system.file("extdata/covid19_ts.csv", package = "covid19clark")
-# daily_cases <- readr::read_csv(f)
-daily_cases <- covid19clark::get_jhu_daily()
-# ma_cases <- get_ma_cases()  # scrapes the most recent case update from MASS DPH
-# ma_cases
-```
-
----
-
-## Analyses and visualizations
-- Prepare data and plot cases
-- Make a bubble plot of cases in Massachusetts
-- Select all cases within ~50, 100, 200 km of Worcester
-- Count how many there are
-
----
-### Analyses
-Select all cases within 50 km of Worcester. Locate Worcester. One easy way
-```{r, eval=FALSE}
-worcester <- maps::world.cities %>% 
-  filter(country.etc == "USA" & name == "Worcester") %>% 
-  st_as_sf(coords = c("long", "lat"), crs = 4326)
-```
-
-Another way:
-```{r, eval=FALSE}
-worcester <- st_as_sf(data.frame(name = "Worcester", x = -71.81, y = 42.27), 
-                      coords = c("x", "y"), crs = 4326)
-```
-
-Polygons of US counties
-```{r, eval=FALSE}
-# data("counties")
-# data("states", package = "covid19clark")
-counties <- st_as_sf(maps::map("county", plot = FALSE, fill = TRUE)) %>%
-  lwgeom::st_make_valid() %>%  # fixed bad geometries
-  mutate(state = gsub(",.*", "", ID)) %>%  # separate states
-  mutate(county = gsub(".*,", "", ID)) %>%  # separate counties
-  dplyr::select(state, county) 
-```
-
----
-### Plot
-```{r, eval=FALSE}
-library(ggplot2)
-northeast <- c("massachusetts", "connecticut", "rhode island", "maine",
-               "vermont", "new hampshire", "new york")
-ggplot(counties %>% filter(state %in% northeast)) + geom_sf(aes(fill = state))
-# plot(counties %>% filter(state %in% northeast) %>% dplyr::select(state))
-```
-
-- Create a map of just states
-```{r, eval = FALSE}
-states <- counties %>% group_by(state) %>% summarize(n_counties = n())
-ne_states <- states %>% filter(state %in% northeast)
-ggplot(states) + geom_sf() + 
-  geom_sf(data = ne_states, aes(fill = state)) +
-  coord_sf(xlim = st_bbox(ne_states)[c(1, 3)],
-           ylim = st_bbox(ne_states)[c(2, 4)]) + theme_minimal()
-```
-
----
-### Add bubbles
-
-Let's add the case numbers as a bubble plot. First we have to manipulate the data a bit.
-
-Separate county and state names. Why? 
-```{r, eval = FALSE}
-cases %>% filter(country == "US") %>% 
-  filter(grepl("Massachusetts|, MA", admin)) %>% sample_n(10)
-```
-
-Create state and county columns
-```{r, eval = FALSE}
-us_cases <- cases %>% filter(country == "US") %>%  # get US cases
-  mutate(county = ifelse(grepl(",", admin), gsub(",.*", "", admin), NA)) %>%
-  mutate(state = ifelse(grepl(",", admin), gsub(".*, ", "", admin), admin)) %>%
-  dplyr::select(state, county, date, cases)
-```
-
-Now separate county and state cases. The dataset mixes state totals with individual county reports. The former are most accurate, the latter don't seem to be updated. 
-```{r, eval=FALSE}
-state_cases <- us_cases %>% filter(is.na(county)) %>% 
-  mutate(state = tolower(state)) # get county-less data, state names to lower
-county_cases <- daily_cases %>% filter(ctry == "US")
-# county_cases <- us_cases %>% filter(!is.na(county)) # get county-less data
-```
-
----
-### Get coordinates for state case data
-
-We need to get coordinate for the state data. We are going to use `sf` objects to do this but convert back to `tibble`
-```{r, eval=FALSE}
-state_centers <- states %>% st_centroid %>% 
-  mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2]) %>% 
-  as_tibble %>% dplyr::select(state, x, y)
-state_cases2 <- left_join(state_cases, state_centers) %>% 
-  dplyr::select(state, county, x, y, date, cases) %>% 
-  filter(!is.na(x) | !is.na(y))
-  
-# full pipeline
-state_cases3 <- states %>% st_centroid %>% 
-  mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2]) %>% 
-  as_tibble %>% dplyr::select(state, x, y) %>% 
-  left_join(state_cases, .) %>% 
-  dplyr::select(state, county, x, y, date, cases) %>% 
-  filter(!is.na(x) | !is.na(y))
-all(state_cases2 %>% select(-county) == state_cases3 %>% select(-county))
-
-```
-
----
-### Now let's plot
-
-State cases
-```{r, eval=FALSE}
-state_cases3 %>% filter(state %in% northeast) %>% 
-  ggplot() + geom_line(aes(x = date, y = log10(cases), color = state)) 
-
-ggplot(states) + geom_sf() + 
-  geom_point(data = state_cases3 %>% filter(date == max(date)), 
-             aes(x = x, y = y, size = cases), col = "red") +
-  coord_sf(xlim = st_bbox(ne_states)[c(1, 3)],
-           ylim = st_bbox(ne_states)[c(2, 4)])
-```
-
-County cases
-```{r, eval = FALSE}
-mass_box <- st_bbox(states %>% filter(state == "massachusetts"))
-ggplot(counties %>% filter(state == "massachusetts")) + geom_sf() + 
-  geom_point(data = county_cases %>% filter(prov == "Massachusetts"),
-             aes(x = x, y = y, size = cases), col = "red") +
-  coord_sf(xlim = mass_box[c(1, 3)], ylim = mass_box[c(2, 4)])
-```
-
----
-
-## Cases within X km of Worcester
-```{r, eval = FALSE}
-buffers <- lapply(c(0.52, 1, 2), function(x) st_buffer(worcester, dist = x))
-# plot(buffers[[1]])
-
-nearby_cases <- lapply(buffers, function(x) {
-  st_intersection(
-    county_cases %>% st_as_sf(coords = c("x", "y"), crs = 4326), x
-  ) %>% mutate(x = st_coordinates(.)[, 1], y = st_coordinates(.)[, 2])
-})
-nearby_cases_tbl <- lapply(nearby_cases, as_tibble)
-
-ggplot(states) + geom_sf() + 
-  geom_point(data = nearby_cases_tbl[[3]], aes(x, y, size = cases), 
-             col = "red") + 
-  geom_point(data = nearby_cases_tbl[[2]], aes(x, y, size = cases), 
-             col = "orange") + 
-  geom_point(data = nearby_cases_tbl[[1]], aes(x, y, size = cases), 
-             col = "yellow") + 
-  coord_sf(xlim = st_bbox(ne_states)[c(1, 3)],
-           ylim = st_bbox(ne_states)[c(2, 4)])
-  
-sapply(nearby_cases_tbl, function(x) x %>% summarize(cases = sum(cases)))
-# st_buffer(worcester, dist = 1) %>% st_area() %>% units::set_units("km2")
-# st_buffer(worcester, dist = 0.52) %>% st_area() / 10000 / 100
-# (pi * 100^2)
-```
-
-Now do the same for a city of your choice
----
-### Preparing global Admin 2 level data 
-Australia
-```{r, eval = FALSE}
-australia <- raster::getData(country = "AUS", level = 2) %>% st_as_sf()
-```
-
-Simplify boundaries
-```{r, eval=FALSE}
-library(rmapshaper)
-australia %>% filter(NAME_2 == "Ballina") %>% ggplot() + geom_sf()
-australia %>% filter(NAME_2 == "Ballina") %>% 
-  ms_simplify(., keep = 0.005, weighting = 1) %>% ggplot() + geom_sf()
-
-aus_simple <- ms_simplify(australia, keep = 0.005, weighting = 1)
-ggplot(aus_simple) + geom_sf()
-```
-
----
-
-## Raster data
-
-- Raster basics
+- Finish up exercises from last class
+- Raster intro
   - classes
   - dummy rasters
   - reading and writing
   - rasterize, raster to vector
 
-  
+
+---
+```{r, echo=FALSE, out.width="50%", results='hold'}
+dem1 <- "figures/zam_dem_raster.png"
+dem2 <- "figures/zam_dem_stars.png"
+knitr::include_graphics(c(dem1, dem2))
+```
+---
+
+### Code used
+
+```{r, eval=FALSE}
+library(stars)
+library(raster)
+zlim <- c(250, 2250)
+png(here::here("external/slides/figures/zam_dem_raster.png"), 
+    height = 4, width = 5, res = 300, units = "in")
+par(bg = "grey40", mar = c(0, 0, 0, 3))
+plot(dem, col = viridis::cividis(100), axes = FALSE, box = FALSE, zlim = zlim)
+dev.off()
+png(here::here("external/slides/figures/zam_dem_stars.png"), 
+    height = 4, width = 5, res = 300, units = "in", bg = "grey40")
+st_as_stars(dem) %>%
+  plot(main = NULL, col = viridis::cividis(100), zlim = zlim)
+dev.off()
+```
+
+---
+
+### Data
+```{r, warning=FALSE, message=FALSE, results='hide'}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
+  read_csv %>% distinct(uuid, .keep_all = TRUE) %>% select(uuid, x, y) %>% 
+  mutate(count = 1) %>% st_as_sf(coords = c("x", "y"))
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
+  st_read
+
+set.seed(2)
+districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
+  mutate(yld_cat = ifelse(yield > 4.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
+  dplyr::select(distName, X, Y, yield, yld_cat)
+
+farmer_ct <- farmers %>% group_by(uuid) %>% count() %>% 
+  st_set_crs(st_crs(districts))
+farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
+farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
+
+districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
+  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n))
+
+```
+
+---
+## On your own exercises from last class
+
+(1) Select the smallest district in Zambia from `districts3`, and convert that
+to centroid
+```{r, eval = FALSE}
+smallest_centroid <- districts3 %>% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
+  filter
+```
+
+(2) Create a buffer of width 0.5 around that
+```{r, eval = FALSE}
+smallest_buffer <- smallest_centroid %>% st_buf...
+```
+
+(3) Use the buffer to select the districts from `districts` that intersect with it
+```{r, eval = FALSE}
+dists_in_buff <- districts3 %>% 
+  filter(st_intersects(., smallest_buffer...
+```
+
+---
+
+(4) Use the buffer to do an intersection with `districts3`
+```{r, eval=FALSE}
+buff_int_dists <- st_intersection(districts3, smallest_buffer)
+p <- ggplot(districts3) + geom_sf()
+p + geom_sf(data = buff_int_dists, aes(fill = distName))
+```
+
+(5) Calculate the area of the intersection, converting the area to hectares, and dropping all other variables from `buff_int_dists` except "distName", and the new "int_area"
+```{r, eval=FALSE}
+buff_int_dists %>% mutate(int_area = units::set_units...
+```
 
 
-  
+---
+## Reading/Writing/Manipulating rasters
+
+- create
+```{r, eval = FALSE}
+r <- raster(extent(30, 31, -14, -13), res = 0.1, 
+            crs = "+proj=longlat +datum=WGS84")
+values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+
+par(mar = c(0, 0, 0, 0))
+plot(districts %>% st_geometry)
+plot(r, add = TRUE)
+plot(r)
+
+s <- stack(r, log10(r))
+names(s) <- c("dummy", "log10dummy")
+plot(s)
+
+b <- brick(s)
+plot(b)
+
+b2 <- lapply(1:10, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.1, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% stack %>% brick
+plot(b2)
+```
+
+---
+### A large brick
+```{r, eval = FALSE}
+b3 <- lapply(1:10, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% stack %>% brick
+plot(b3)
+
+```
+
+---
+
+- read and write
+
+```{r, eval = FALSE}
+writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
+# rm(r)
+r <- raster(file.path(tempdir(), "mydummy.tif"))
+plot(r)
+
+brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
+brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
+brick(file.path(tempdir(), "mydumbrick.tif"))
+brick(file.path(tempdir(), "mydumbrick.grd"))
+```
+
+---
+
+- plot
+```{r, eval = FALSE}
+plot(b)
+plot(b2)
+plot_noaxes(b)
+plot_noaxes(b2, main = paste("Random", 1:10))
+plot(b2, main = paste("Random", 1:10))
+plot_noaxes(b, legend = FALSE)
+plot_noaxes(b[[1]], legend = FALSE)
+legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
+       bty = "n")
+
+# plotting with larger datasets
+plot_noaxes(b3, main = paste("Random", 1:10))
+rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
+
+rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b[[1]])
+rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
+  scale_fill_viridis_c()
+ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
+  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
+  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+st_as_stars(b) %>% plot(col = viridis::viridis(10))
+st_as_stars(b) %>% plot()
+```
+
+---
+## Raster to other types
+```{r, eval=FALSE}
+b[1:10]
+b[1:ncell(b)]
+as.matrix(b)
+as.data.frame(b) %>% as_tibble()
+```
+
+
+---
+## Pre-processing
+- Aggregating/disaggregating
+```{r, eval = FALSE}
+aggregate(b, fact = 2) %>% plot
+# aggregate(b, fun = min, fact = 2) %>% plot
+# aggregate(b, fun = sd, fact = 2) %>% plot
+disaggregate(b, fact = 2) %>% plot
+disaggregate(b, fact = 2, bilinear = TRUE) %>% plot
+```
+
+- Masking
+```{r, eval = FALSE}
+data(chirps)
+plot_noaxes(chirps[[1]])
+chirpsz <- mask(chirps, districts)
+plot_noaxes(chirpsz[[1]])
+plot(st_geometry(districts), add = TRUE)
+# rasterVis::levelplot(chirpsz[[1:5]])
+plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
+            legend = FALSE, zlim = c(0, 50))
+plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
+     legend = FALSE, zlim = c(0, 50))
+```
+
+---
+
+- Projecting
+```{r, eval = FALSE}
+chirpsz %>% projectRaster(., crs = crs(roads), res = 5000) -> chirpsz_alb
+chirpsz_alb %>% print
+```
+
+- Rasterize/vectorize
+```{r, eval = FALSE}
+distsr <- districts %>% rasterize(., chirpsz)
+distsr %>% plot_noaxes
+# stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
+distsr_pol <- rasterToPolygons(distsr, dissolve = TRUE)
+distsr_pol %>% st_as_sf %>% st_geometry %>% plot
+distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
+```
+
+---
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+---
+## Exercises
+
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall > 10 mm
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+
+
