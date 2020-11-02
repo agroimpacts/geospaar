@@ -13,9 +13,12 @@ output:
 
 ## Today
 
-- Projects!!!!
-- Exercises from last class
 - Alternative plotting methods
+- Project work in breakout rooms
+  - Data
+  - Methods
+  - Who works on what
+  - Project package
 
 ---
 ## Data
@@ -26,114 +29,9 @@ districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
   st_read
 data(chirps)
 chirpsz <- mask(chirps, districts)
-```
-
----
-
-## Exercises
-
-### Last class
-- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1 [completed]
-- Reproject to Albers [completed]
-- Disaggregate to 0.02 degrees (bilinear and NGB) 
-- Calculate the sum of rainfall from `chirpsz`
-- Identify all areas of total rainfall > 10 mm
-- Calculate the mean rainfall in Zambia for the 15th day in `chirpsz`
-
-### New
-- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
-- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
-- Calculate the average elevation and slope in each district of Zambia
-
-
----
-### Exercise 1
-```{r, eval=FALSE, echo=FALSE}
 raintot <- calc(chirpsz, sum)
-raincat <- cut(raintot, c(0, 50, 100, 200), include.lowest = TRUE)
-plot_noaxes(raincat, col = c("grey", "lightblue", "blue3"), legend = FALSE)
-# legend("topleft", legend = c("low", "medium", "high"),
-#        fill = c("grey", "lightblue", "blue3"), border = FALSE, bty = "n")
-legend("right", legend = c("low", "medium", "high"),
-       fill = c("grey", "lightblue", "blue3"), border = FALSE, bty = "n")
 ```
 
----
-
-### Exercise 2
-```{r, eval=FALSE, echo=FALSE}
-mat <- matrix(rep(1, 25), nrow = 5, ncol = 5)
-focal(raintot, w = mat, fun = mean, na.rm = TRUE) %>% plot_noaxes
-mysum <- function(x) sum(x, na.rm = TRUE)
-focal(raintot, w = mat / 25, fun = mysum) %>% plot_noaxes
-focal(raintot, w = mat / 25, fun = sum) %>% plot_noaxes
-focal(raintot, w = mat / 25, fun = sum, na.rm = TRUE) %>% plot_noaxes
-```
-
-Why is the weighted mean different?
-```{r, eval = FALSE}
-w <- mat[1:length(mat)] / 25
-v <- sample(100:200, size = 25)
-sum(w * v)
-mean(v)
-v[1:10] <- NA
-sum(w * v, na.rm = TRUE)
-mean(v, na.rm = TRUE)
-cbind(w, v)
-```
-
----
-### Exercise 3
-```{r, eval=FALSE, echo=FALSE}
-distsr <- districts %>% mutate(ID = 1:nrow(.)) %>% 
-  rasterize(x = ., y = raster(extent(dem), res = 0.05), field = "ID")
-plot(distsr)
-crs(distsr) <- crs(dem)
-dem05 <- resample(dem, distsr)
-plot(dem05)
-zonal(x = dem05, z = distsr) %>% as.data.frame %>% 
-  subs(x = distsr, y = .) %>% plot_noaxes
-terrain(dem05, units = "degrees") %>% 
-  zonal(x = ., z = distsr) %>% as.data.frame %>% 
-  subs(x = distsr, y = .) %>% plot_noaxes
-```
-
----
-
-### rasterVis
-
-```{r, eval = FALSE}
-library(rasterVis)
-png("external/slides/figures/chirps_rvis.png", height = 3, width = 7, 
-    units = "in", res = 300)
-levelplot(chirpsz[[1:10]])
-dev.off()
-```
-
-```{r, out.width = "80%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/chirps_rvis.png")
-```
-
----
-
-### rasterVis cont.
-
-```{r, eval = FALSE}
-raintot <- calc(chirpsz, sum)
-p <- gplot(raintot) + geom_tile(aes(fill = value)) +
-  scale_fill_viridis_c() + coord_equal() + theme_linedraw()
-p
-```
-
----
-
-### ggmap
-```{r, eval=FALSE}
-library(ggmap)
-pt <- st_union(districts) %>% st_centroid %>% st_coordinates %>% unlist
-hdf <- get_map(location = pt[1, ], zoom = 5, 
-               source = "google")
-```
 
 ---
 ### mapView
@@ -141,7 +39,7 @@ hdf <- get_map(location = pt[1, ], zoom = 5,
 library(mapview)
 mapview(districts)
 viewRGB(x = chirpsz[[1:3]])
-mapview(raintot) + mapView(districts, alpha.regions = 0, legend = FALSE)
+mapView(districts, alpha.regions = 0, legend = FALSE) + mapview(raintot) 
 
 kili_data <- system.file("extdata", "kiliNDVI.tif", package = "mapview") %>%
   raster::stack(.)
@@ -169,7 +67,6 @@ load(file.path("~/Dropbox/projects/activelearning/labeller/spatial/data/test",
 ```
 ```{r, eval = FALSE}
 
-
 # set up some plotting options
 library(leaflet)
 falseparm <- "&redBand=3&greenBand=2&blueBand=1"
@@ -183,6 +80,8 @@ xyz <- xyz[c("OS", "OSF", "GS", "GSF")]
 slist <- list("color" = "white")
 label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'top',
                            textOnly = TRUE)
+load(system.file("extdata/instance_tbls.rda", package = "activemapper"))
+categories <- instance_tbls$categories
 ```
 ---
 
@@ -191,7 +90,7 @@ label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'top',
 ```{r, eval = FALSE}
 xy <- suppressWarnings(st_centroid(gpoly)) %>% st_coordinates
 m <- leaflet() %>% addProviderTiles("Esri.WorldImagery") %>%
-  setView(xy[, "X"], xy[, "Y"], zoom = 11)
+  setView(xy[, "X"], xy[, "Y"], zoom = 15)
 for(i in 1:length(xyz)) m <- m %>% addTiles(xyz[[i]], group = names(xyz)[i])
 m <- m %>%
   addPolygons(data = gpoly, fill = FALSE, color = "white", group = "Cell",
@@ -234,7 +133,6 @@ ndvi <- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "NDVI")
 ggR(ndvi, geom_raster = TRUE) +
   scale_fill_gradientn(colours = c("black", "white"))
   # scale_fill_viridis_c()
-
 
 mtlFile  <- system.file("external/landsat/LT52240631988227CUB02_MTL.txt", 
                         package="RStoolbox")
