@@ -1,0 +1,22 @@
+---
+title: "Cheatsheets"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Cheatsheets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+- [RStudio IDE](https://rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
+- [R markdown](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+- [Base R](https://rstudio.com/wp-content/uploads/2016/10/r-cheat-sheet-3.pdf)
+- [Git/GitHub](https://education.github.com/git-cheat-sheet-education.pdf)
+- [Git/GitHub2](https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet)
+

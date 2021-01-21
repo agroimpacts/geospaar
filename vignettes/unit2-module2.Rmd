@@ -1,15 +1,13 @@
 ---
 title: "Unit 2 Module 2"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](toc.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+  rmdformats::readthedown:
+    highlight: pygments
     fig_caption: yes
     number_sections: yes
     toc_depth: 4
-    toc: yes
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 2 Module 2}
@@ -26,12 +24,6 @@ knitr::opts_chunk$set(
 library(knitr)
 options(width = 100)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Working with raster data{#working-with-raster-data}
 
@@ -97,12 +89,6 @@ res(r)
 ```
 
 `r` is an S4 object that has fairly different slots compared to `sf` objects. We are not going to go into all of them, but it is useful to know the @file, @data, @extent, and @crs slots. @file itself holds a number of slots, but you should know the @file@name slot, which contains the file name and path for grids that that are read in from disk (it is empty in the case of `r`, since it is held in memory). @data contains many slots also, but the main one of interest is the @data@values slot, which can be accessed with the `values` function directly, or less directly using `slot` (both approaches are shown above). Interestingly, the resolution information is not stored in any of the slots of `r`, but rather calculated from the @extent and @ncols and @nrows slots by the `res` function.  
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### RasterStack and RasterBrick
 
@@ -180,13 +166,6 @@ In #1 above, we use `writeRaster` to write out each of the three individual rast
 
 Blocks #2 and #3 illustrate how `stack` can be used to create a three-dimensional grid from different files, which differ from what you see next in #4, where the "b.tif" is read back into a brick. You will see the comment there that says that the first line in #4 is incorrect, because using `raster` only results in the first `raster` being read in. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
-
 ## From vector to raster and back again
 
 Now that you know the major `Raster*` classes, and how to read and write them to disk, let's figure out how to change between raster and vector types. 
@@ -248,12 +227,6 @@ roadsr <- roads %>% filter(as.numeric(st_length(.)) > 1000000) %>%
   mutate(ID = 1:nrow(.)) %>% st_transform(crs = 4326) %>% 
   rasterize(., zamr, field = "ID")
 ```
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Raster to vector
 
@@ -341,13 +314,6 @@ A bilinear interpolation is more appropriate for a raster of continuous values, 
 
 5. Convert `distsr` to an `sf` polygons object, using `rasterToPolygons` with `dissolve = TRUE`. Plot the result without coercing to `st_geometry`. 
 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 # Pre-processing and local to global statistics 
 This unit starts to focus on some of the analyses you can do with raster data, focusing specifically on calculating statistics from rasters. We will start in on that after doing a bit more raster processing and preparation.  
 
@@ -403,12 +369,6 @@ for(i in 1:3) {
 The above plots the first three dates in `chirps` and drapes Zambia's outline over it. These data are obviously not just confined to Zambia, so that sets up our next set of processing steps we need to do.  But let's first examine the plotting code a bit more, which shows us two new things. First, there is the use of `ifelse`, which we use to set up a conditional placement of a legend for iteration 3. When `i == 3`, we tell `plot` to add the legend to the figure panel being plotted by making the variable `leg == TRUE` (otherwise it is `FALSE`). `leg` is passed to the "legend" argument of `plot`. We did this because we wanted just one legend that reflects the range set by the "zlim" argument within `plot`. "zlim" sets a limit on the range of data values that are plotted, which in this case falls between 0 and the maximum rainfall value observed across all three of the plotted dates (`max(chirps[1:3])`). That gives all three plots a common scale, so, given that, why clutter up the plots with three legends showing the same thing?  
 
 The second thing: we haven't discussed this yet, but you will see in the example above that indexing into a `RasterStackBrick` to select a particular layer or layers is achieved through `[[]]`. This applies to both single (`[[x]]`) and multiple/recursive (`[[x:y]]`) indexing, which differs from indexing into a `list`, where you use `[x:y]` for multiple selection. Selection by layer names also works (`chirps[[c("Y16299", "Y16300")]]`; `chirps[["Y16299"]]`)
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Masking
 
@@ -487,12 +447,6 @@ districts %>% st_centroid %>% st_coordinates %>%
   text(x = ., labels = row.names(.))
 ```
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 #### A function-writing detour
 As we write this, we find ourselves growing weary of repeatedly writing "axes = FALSE, box = FALSE" into the `plot` function, even with RStudio's handy tab completion. This repeated use of the exact same code is the sort of situation that calls for writing your own function.  
 
@@ -543,12 +497,6 @@ The first option is the default one, which just breaks apart each pixel into the
 
 The second way (commented out), is to set `method = bilinear`, which interpolates during disaggregation. In this case, `disaggregate` does the job using the `resample` function, which we will see next.  
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Resampling
 
 Resampling is done for many reasons, but one particularly common case is as a final step following aggregation or disaggregation, when it is needed to co-register the resulting grid to another grid. 
@@ -598,12 +546,6 @@ We can then stack and perform subsequent analyses that draw on both layers, e.g.
 plot_noaxes(s$farmer_count > 1 & s$rain > 1)
 # (s$rain > 1 & s$farmer_count > 1) %>% plot_noaxes  # also works
 ```
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Analyses
 
@@ -686,12 +628,6 @@ f <- freq(chirpsz[[1]]) %>% print()
 ```
 
 Here we apply `freq` to a dataset with continuous values, although this function is probably best reserved for categorical rasters. However, it produces reasonable results here.
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Local statistics
 
@@ -776,12 +712,6 @@ In #4, we again pass `mean` to `focal`, and have a 5X5 neighborhood, but here we
 
 The improper way of removing NAs from focal calculations is shown in #5, this time using the faster approach demonstrated in Block 1. The lower right plot shows how pixels near Zambia's border have artificially low values. This result is because the approach relies on a weighted mean, and because NAs are removed, the weights do not sum to 1 and thus the mean is underestimated. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Analyzing the Z dimension
 
 If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we want to analyze the values in the Z dimension (which may represent time, spectral bands, or unrelated spatial predictors in a model) without altering the x and y dimensions. 
@@ -838,13 +768,6 @@ In #2 we then stack the three outputs, and rename the layers something meaningfu
 
 You will see from the resulting plot that "Min" has only one value, 0, which makes sense for a rainfall time series (every pixel is likely to have at least one day of no rainfall over the course of a month).
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
-
 ## Practice
 ### Questions
 1. How do `cellStats`, `focal`, and `zonal` differ from one another? 
@@ -867,12 +790,6 @@ You will see from the resulting plot that "Min" has only one value, 0, which mak
 5. Crop `chirpsz[[1]]` using the extent of `districts[57, ]`, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using `plot_noaxes`.
 
 6. Use `calc` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot with meaningful titles using `plot_noaxes` (hint: name the layers of the `stack`), outputting plots on 1 row with 3 columns. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Algebra, categorizing, and sampling
 
@@ -956,14 +873,8 @@ In #3, we examine total rainfall within district 54. This is done in several ste
 
 Having made `distrain` safe for calculating statistics, in #4 we then identify the areas in district 54 that received more rainfall than the district mean rainfall during the 28 days. In #5, we do the same thing, but for all of Zambia.  
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Categorizing
-Sometimes you will want to create a categorical raster from a continous one. We will look at two different ways of doing that. 
+Sometimes you will want to create a categorical raster from a continuous one. We will look at two different ways of doing that. 
 
 Method 1:
 ```{r, echo=FALSE}
@@ -1000,12 +911,6 @@ legend(x = "bottomright", legend = c("High", "Intermediate", "Low"),
 In the first step, we reuse the previously calculated terciles to create a reclassification matrix (`rclmat`). This matrix contains the lower bound of the range of the category in column 1, the upper bound in column 2, and then the new class value that will be assigned in column 3. There are three rows, one per category. This matrix is passed to the `rcl` argument of `reclassify`, in which we also specify the same `include.lowest = TRUE` argument. 
 
 This approach requires slightly more work, but there are cases where you might need to use it, e.g. to reclassify another categorical raster using non-sequential categories. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Sampling
 
@@ -1056,12 +961,6 @@ In #2, we first pull out of `farmer_env` a vector of the distinct district IDs. 
 
 In #3, we do some gymnastics in preparation for setting up `ggplot` boxplots (#4) that compare the distributions of rainfall values. That is, we set up a tibble that binds by row the extracted district and farmer rainfall values, which allows `ggplot` to automatically create side-by-side boxplots using `fill = dat`. We create some theme options for `ggplot` ahead of that `bp_theme`, so that we can recycle these in the next example. The plot shows that the rainfall data selected at farmer locations provide a biased estimate of district mean rainfall.  
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Random sampling
 Alternatively, you might want to draw a random sample directly from a raster, without all the trials and tribulations of field work (field logistics often make it hard to capture truly randomized, and thus representative, samples). `raster` has functions for this, and we will build off the previous example to demonstrate them. 
 
@@ -1104,7 +1003,7 @@ In #4, we redo the boxplots, showing the results from the two approaches to rand
 
 ## Practice
 ### Questions
-1. What are two ways of converting a continous to categorical raster? 
+1. What are two ways of converting a continuous to categorical raster? 
 
 2. What are two methods of sampling from a `raster`? Are the others (a look in `raster`s help files will be informative)?
 
@@ -1113,17 +1012,11 @@ In #4, we redo the boxplots, showing the results from the two approaches to rand
 
 2. Use raster algebra to find the country-wide average standard deviation, and then identify which areas of Zambia have values **less** than that. 
 
-3. Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries together with `cut`. Use `plot_noaxes` to show the result. 
+3. Create a new categorical raster from `raintot`, using the quantile to define the new category boundaries together with `cut`. Use `plot_noaxes` to show the result. 
 
-4. Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts randomly selected using `dplyr::sample_n` (use a seed of 11) from `districts`. Use `raintot` as the rasterization target. Mask `raintot` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. 
+4. Create a new sub-sample of rasterized districts, `randdistsr`, totaling 15 districts randomly selected using `dplyr::sample_n` (use a seed of 11) from `districts`. Use `raintot` as the rasterization target. Mask `raintot` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. 
 
 5. Use `sampleRandom` with a size of 300 to get a random sample of rainfall values from `newrandrain` (use a seed of 1), saving the result as `randsamp`. Use `sampleStratified` with `cell = TRUE` to get a sample of 300 / 15 samples from `randdistsr`. Use the cell IDs to extract the rainfall values from `newrandrain`, saving the output vector as `stratsamp`. Create a tibble that binds these two vectors by row (as in Chunk 41 #4), and then plot the two results as side-by-side boxplots with `ggplot`. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Terrain analysis, interpolation, and modeling
 
@@ -1251,12 +1144,6 @@ ggplot(tibble(mu, sdev)) + geom_point(aes(mu, sdev)) +
 
 The example above shows how more advanced plot annotations can be done. It also shows that the code can get somewhat complicated; it always takes a ton of time and a number of internet searches to figure out how to do this. We won't explain this in detail here, but the code provides a template that you can hack at if you want to get fancy with labelling your plots. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Basic terrain variables
 
 `raster::terrain` allows us to calculate five different terrain variables, four of which we show below: 
@@ -1303,12 +1190,6 @@ We need the DEM in a projected coordinate system for `terrain` to work, per the 
 So we create (#1) a 1 km projected version of the DEM, allowing the default bilinear interpolation to do its work during reprojection. 
 
 In #2 we calculate slope, aspect, flow direction, and the topographic ruggedness index. The commented out code illustrates how each of these variables can be calculated separately, although we prefer to do the job using `lapply`. Note that in the `lapply` we pass the "unit" argument into the calculation of all four variables, even though it only is used for slope and aspect; this is fine, because `terrain` simply ignores the argument value in calculating flow direction or TRI. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Interpolation
 
@@ -1411,12 +1292,6 @@ raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
 names(raintotalb) <- "rain"
 ```
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Distance
 If you want to calculate how far any point on a grid is from a particular point or points, `raster` offers a few functions for finding euclidean distances:
 
@@ -1453,12 +1328,6 @@ Block #3 does pretty much the same thing, but in this case we use the `distance`
 The plot shows that the two approaches produce identical results. 
 
 Beyond this, there are more sophisticated distance analyses that can be done, such as cost distance analysis, which are provided by the package `gdistance`. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Model prediction
 
@@ -1556,12 +1425,6 @@ We plot three maps in #7 for comparison: the "actual" rainfall (the scare quotes
 
 So that's about it for this module. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Practice
 ### Questions
 1. How do we estimate the pixel area of rasters when they are in non-projected coordinate systems? 
@@ -1578,12 +1441,6 @@ So that's about it for this module.
 3. Select (`filter`) districts 15, 20, 25, 30, 35, 40, 45, and 50 out of `districts`. Convert the resulting subset of districts to Albers projection, and then extract the centroids of those districts. Convert the centroids to an `sp` object using `as_Spatial`. Using `raintotalb` as your target, use `distance` or `distanceFromPoints` to calculate the distances from any point in Zambia to the centroids of those selected districts. Mask the result (you can use `raintotalb` again for the mask target) and plot it using `plot_noaxes`. 
 
 4. Redo the code in Chunk 49, but use a new random draw of just 25 points to collect the predictors (ref. #2). How much more poorly does this model do than the one with denser observations?
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Unit assignment
 ## Set-up
@@ -1646,7 +1503,7 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 
 ***
 <center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+[Back to **vignette index**](toc.html)
 </center>
 ***
 

@@ -1,14 +1,12 @@
 ---
 title: "Unit 2 - Handling and analyzing spatial data with R"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](toc.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+  rmdformats::readthedown:
+    highlight: pygments
     fig_caption: yes
     number_sections: yes
-    toc_depth: 3
-    toc: yes
+    toc_depth: 4
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 2}
@@ -20,12 +18,6 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Overview{#unit2overview}
 
@@ -54,6 +46,6 @@ This section is broken into three modules (the materials can be accessed by foll
 
 ***
 <center>
-[Back to top](#unit2overview) || [Back to **vignette index**](toc.html)
+[Back to **vignette index**](toc.html)
 </center>
 ***

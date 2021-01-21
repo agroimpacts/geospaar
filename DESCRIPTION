@@ -1,7 +1,7 @@
 Package: geospaar
 Type: Package
 Title: Course materials for Clark University's GEOG 246/346
-Version: 0.2.5-2
+Version: 0.2.5-3
 Author: Lyndon Estes
 Maintainer: Lyndon Estes <LEstes@clarku.edu>
 Description: This package contains the course materials for Geospatial 
@@ -23,7 +23,8 @@ Suggests:
     kableExtra,
     knitr, 
     prettydoc,
-    rmarkdown
+    rmarkdown,
+    rmdformats
 VignetteBuilder: knitr
 URL: https://github.com/agroimpacts/geospaar
 RoxygenNote: 7.0.2

@@ -19,11 +19,15 @@ code { /* Code block */
   margin-bottom: 10px;
 }
 pre { /* Code block - determines code spacing between lines */
-  font-size: 10px;
+  font-size: 12px;
   padding: 10px;
   background: #F5FAFA;
 }
 pre code {
   padding: 0;
   background-color: #F5FAFA;
+}
+
+ul{
+ font-size:12px;
 }

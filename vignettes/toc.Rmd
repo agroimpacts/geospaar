@@ -3,9 +3,10 @@ title: "Guide to Vignettes"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Guide to Vignettes}
@@ -17,7 +18,9 @@ vignette: >
 - [Syllabus](syllabus.html)
 - [Assessment Criteria](assessment.html)
 - [List of Potential Projects](projects.html)
-- [Help](help.html)
+- [Git/GitHub](git-github.html)
+- [Cheatsheets](cheatsheets.html)
+- [Known issues](known-issues.html)
 
 ## Materials
 - [Unit 1](unit1.html) - Overview

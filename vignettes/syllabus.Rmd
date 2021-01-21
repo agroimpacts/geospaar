@@ -1,6 +1,7 @@
 ---
-title: "Geography 246/346 Syllabus"
-date: "`r Sys.Date()`"
+title: "Syllabus"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()` [Back to home](toc.html)"
 output:
   rmdformats::readthedown:
     highlight: pygments
@@ -137,7 +138,7 @@ We will follow the University's policies on plagiarism and cheating. Please fami
 We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #fall2020 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
 
 # Course Structure{#structure}
-The following is an overview of the course structure. Note that this structure will evolve during the semester, given that this is its first run, and we will adjust material to match the pace of learning. 
+The following is an overview of the course structure. Note that this structure will evolve during the semester, and we will adjust material to match the pace of learning. 
 
 ```{r timetable, echo = FALSE, warning=F, message=F}
 library(kableExtra)
@@ -285,7 +286,7 @@ This is a big topic, but here are a few links to get started.
 
 ***
 <center>
-[Back to top](#overview) || [Back to **vignette index**](toc.html)
+[Back to **vignette index**](toc.html)
 </center>
 ***
 
