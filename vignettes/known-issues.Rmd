@@ -68,6 +68,6 @@ Then restart Rstudio and proceed again with `devtools::install*` steps. This ste
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***

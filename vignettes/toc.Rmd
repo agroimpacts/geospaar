@@ -1,5 +1,5 @@
 ---
-title: "Guide to Vignettes"
+title: "Course home"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
@@ -9,28 +9,32 @@ output:
     toc_depth: 3
     css: unit.css
 vignette: >
-  %\VignetteIndexEntry{Guide to Vignettes}
+  %\VignetteIndexEntry{*** Course home}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-## Organizational
+## Resources
 - [Syllabus](syllabus.html)
 - [Assessment Criteria](assessment.html)
-- [List of Potential Projects](projects.html)
+- [Software installation](software-installation.html)
 - [Git/GitHub](git-github.html)
 - [Cheatsheets](cheatsheets.html)
-- [Known issues](known-issues.html)
 
-## Materials
+## Course content
 - [Unit 1](unit1.html) - Overview
   - [Module 1](unit1-module1.html) - A general overview of R and an introduction to reproducibility tools
   - [Module 2](unit1-module2.html) - Basic `R` programming concepts and skills
   - [Module 3](unit1-module3.html) - Introduction to `R` programming
   - [Module 4](unit1-module4.html) - Data analysis and visualization
-  - [Appendix](unit1-appendix.html) - Unit appendix
+  - [Unit1 practice answers](unit1-practice-answers.html) - Answers and code for Unit1 practice
 
 - [Unit 2](unit2.html) - Overview
   - [Module 1](unit2-module1.html) - Working with vector data
   - [Module 2](unit2-module2.html) - Working with raster data
-  - [Appendix](unit2-appendix.html) - Unit appendix
+  - [Unit2 practice answers](unit2-practice-answers.html) - Answers and code for Unit2 practice
+  
+- [Potential Projects](projects.html)
+
+## Appendix
+- [Known issues](known-issues.html)

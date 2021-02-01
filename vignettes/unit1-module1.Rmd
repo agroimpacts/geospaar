@@ -726,6 +726,6 @@ For the first assignment of this class, you are going to do the following:
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***

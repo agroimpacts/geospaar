@@ -1458,6 +1458,6 @@ As with the previous assignment, this assignment should be delivered as R packag
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***

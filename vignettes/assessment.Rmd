@@ -330,6 +330,6 @@ kbl(DF, escape = F, align = "l") %>%
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***

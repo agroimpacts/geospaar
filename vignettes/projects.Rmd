@@ -153,6 +153,6 @@ For this final assignment, assessment will be out of 50 points using simplified 
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***

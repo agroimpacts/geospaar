@@ -512,7 +512,7 @@ Okay, so that's it for environments, and actually for this whole module. There i
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***
 

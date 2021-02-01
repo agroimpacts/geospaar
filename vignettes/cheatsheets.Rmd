@@ -1,7 +1,7 @@
 ---
 title: "Cheatsheets"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](toc.html)"
 output:
   rmdformats::readthedown:
     highlight: pygments
@@ -20,3 +20,8 @@ vignette: >
 - [Git/GitHub](https://education.github.com/git-cheat-sheet-education.pdf)
 - [Git/GitHub2](https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet)
 
+***
+<center>
+[Back to home](toc.html)
+</center>
+***

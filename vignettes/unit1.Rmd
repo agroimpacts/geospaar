@@ -49,6 +49,6 @@ This section is broken into four modules (the materials can be accessed by follo
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***

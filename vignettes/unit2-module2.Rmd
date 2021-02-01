@@ -1503,7 +1503,7 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***
 

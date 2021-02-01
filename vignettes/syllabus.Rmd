@@ -286,7 +286,7 @@ This is a big topic, but here are a few links to get started.
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***
 

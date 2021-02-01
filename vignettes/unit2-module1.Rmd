@@ -45,14 +45,7 @@ library(geospaar)
 
 That means that `rgdal` allows us to call these external libraries that give us the ability to read in a wide range of raster and vector formats, provided we have these libraries already installed on our computer.  
 
-You may have to install `rgdal` separately to get things to work. Platform specific instructions follow.
-
-### Windows
-
-You should be able to do most of the work in this section by simply installing the `rgdal` library.  
-
-### Mac
-The same holds as for Windows (just install `rgdal`), but you might also have to install the full GDAL and PROJ.4 libraries. The easiest way to do that is to go to William Kyngesburye's website to [download the latest QGIS version](http://www.kyngchaos.com/software/qgis), which as of writing (9 October, 2017) is 2.18.13-1. The installer bundles in GDAL and PROJ.4 along with QGIS, doing it all for you in one go.  Read the page first and then the various readme's accompanying the install files you extract from the .dmg. 
+You may have to install `rgdal` separately to get things to work. Go to [Software installation](software-installation.html) and follow step 5 to install GDAL.
 
 ## Set-up{#set-up}
 You should already have your class Rstudio project setup, with a `notebooks/` folder within it. If you don't already have it, create a `data/` folder within `notebooks/`, which is where you will practice writing spatial data files.  
@@ -975,6 +968,6 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 
 ***
 <center>
-[Back to **vignette index**](toc.html)
+[Back to home](toc.html)
 </center>
 ***
