@@ -26,7 +26,7 @@ library(knitr)
 
 # Introduction{#unit1mod2intro}
 
-In this module, we will begin to learn about the `R` language, starting with the different types of `R` objects, and how and where (in environments) they interact with one another. As I was trained as an ecologist, I find it helpful to think of how the language functions in ecological terms. First, we can think of `R` *objects* (data and functions that are held in memory) as being like species (plant or animal) with their own classification system, or taxonomy, and these objects are found in and interact within different environments (note: this conceptual framework is not the same as the "R ecosystem" terminology you might see online (e.g. [this](https://fg2re.sellorm.com)), which refers to the array of user-contributed packages and `R`-related tools, e.g. RStudio).   
+In this module, we will begin to learn about the `R` language, starting with the different types of `R` objects, and how and where (in environments) they interact with one another. As I was trained as an ecologist, I find it helpful to think of how the language functions in ecological terms. First, we can think of `R` *objects* (data and functions that are held in memory) as being like species (plant or animal) with their own classification system, or taxonomy, and these objects are found in and interact within different environments (note: this conceptual framework is not the same as the "R ecosystem" terminology you might see online (e.g. [this](https://fg2re.sellorm.com)), which refers to the array of user-contributed packages and `R`-related tools, e.g. RStudio).
 
 So let's first look at `R`'s species. 
 

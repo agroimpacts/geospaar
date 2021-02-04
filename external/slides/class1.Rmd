@@ -84,7 +84,7 @@ knitr::include_graphics("figures/class1_2.png")
 - Get yourself a GitHub account, if you haven't
 - Send us your GitHub name
 - Install `git` on your local computer(s)
-- Set up your [personal access token](`r here::here("vignettes/help.html")`)
+- Set up your [personal access token](`r here::here("vignettes/git-github.html")`)
 - Install the `geospaar` library
 - Learn how to create your own github repo under the [@agroimpacts/geog246346 team](https://github.com/agroimpacts)
 
