@@ -35,7 +35,30 @@ dev.off()
 ## Introductions 
 
 - COVID preparedness
-- Zoom considerations
+- Lecture: Grace conference room in Higgins University Center
+- Lab sections: JC103
+
+---
+
+## Class Overview
+
+- *By the end of this class, you should:*
+    - Be comfortable in working with R, including most common geospatial functions
+    - Have a good sense of where R is headed as a language
+    - Know where to look when don't know how to do something
+    - Be using R as part of a ___reproducible___ workflow
+
+- Course approach
+    - (Largely) flipped model and emphasis on problem solving
+        - Programming should be fun! (or at least intriguing)
+    - Lab and office hours as help sessions
+---
+
+## Reproducibility
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class1_reproducibility.png")
+```
 
 ---
 
@@ -47,25 +70,10 @@ dev.off()
     - Know where to look when don't know how to do something
     - Be using R as part of a ___reproducible___ workflow
 
-- Course approach
+- *Course approach*
     - (Largely) flipped model and emphasis on problem solving
         - Programming should be fun! (or at least intriguing)
     - Lab and office hours as help sessions
-
----
-
-## Reproducibility 1
-
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class1_1.png")
-```
-
----
-
-## Reproducibility 2
-```{r, out.width = "50%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class1_2.png")
-```
 ---
 
 ## Course Requirements
@@ -79,16 +87,50 @@ knitr::include_graphics("figures/class1_2.png")
 
 ---
 
-## Getting Set Up
+## Overview of R
+### History of R
+If we go back, R is actually an implementation of S language.
 
+- *1976*: John Chambers created S as the very first interactive and easily extensible data analysis programming language at Bell Labs. The primary version of S was implemented as Fortran libraries.
+- *1988*: S was rewritten in C and was ensemble the system that we have today and was known as S3. 
+- *1998*: The latest version of the S standard "S4" was released. It provides advanced object-oriented features.
+- *After then*: S got some complex history, and survive.
+
+---
+
+## Overview of R
+### History of R
+R is a relatively young language:
+
+- *1992*: **R**obert Gentleman and **R**oss Ihaka started to develop R as a research project.
+- *1995*: Convinced by Martin Maechler, R became open-source software under GPL2 license.
+- *1997 - 2000*: A critical stage for early development, including R core group, CRAN, and r-project.org. 
+- *2000*: R 1.0.0 was released at February 29.
+
+---
+
+## Overview of R
+### R system
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class1_r_system.png")
+```
+
+---
+
+## Next class
+
+Next class, we will learn together about:
+- RStudio and R markdown.
+- Fundamentals of R (data types and structures, and basic operations).
+- With the highlight of coding style in R.
+---
+
+## Homework
+
+- Read Unit1-Module 1, section 1.7 Style in Syllabus, and cheatsheet of RStudio and R markdown.
 - Get yourself a GitHub account, if you haven't
-- Send us your GitHub name
+- Send us your GitHub name (**!!**)
 - Install `git` on your local computer(s)
 - Set up your [personal access token](`r here::here("vignettes/git-github.html")`)
-- Install the `geospaar` library
-- Learn how to create your own github repo under the [@agroimpacts/geog246346 team](https://github.com/agroimpacts)
-
-
-
-
-
+- Go to our GitHub group page [agroimpacts](https://github.com/agroimpacts) and get yourself familiar with it (Repositories, People, Teams, etc.)

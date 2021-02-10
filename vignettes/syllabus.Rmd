@@ -41,13 +41,17 @@ office_ta <- ''
 hours_ta <- ''
 hours <- rbind(c(instructor, office_instructor, hours_instructor), 
             c(ta, office_ta, hours_ta))
-colnames(hours) <- c("Instructor", "Office", "Office hours")
+colnames(hours) <- c("Instructor/TA", "Office", "Office hours")
 kbl(hours, escape = F, align = "l") %>%
   kable_paper("striped", full_width = F,
               html_font = "Helvetica Neue") %>%
   kable_styling(font_size = 16) 
 ```
 
+## Class materials
+- [Class materials web page]()
+- [Class materials R package](https://github.com/agroimpacts/geospaar)
+- [Class GitHub group](https://github.com/agroimpacts)
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also introduces additional skills and concepts related to ___reproducible___ research. 
@@ -135,7 +139,7 @@ For assignments in the first two units, students can work together to figure out
 We will follow the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
 
 ### Communications
-We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #fall2020 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
+We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #sprint2021 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
 
 # Course Structure{#structure}
 The following is an overview of the course structure. Note that this structure will evolve during the semester, and we will adjust material to match the pace of learning. 
@@ -149,14 +153,14 @@ timetable <- data.frame(Week = 1:14) %>%
          day2 = format(start_date + Week * 7 - 1, '%b-%d')) %>% 
   mutate(Date = paste(day1, day2, sep = ' - ')) %>% 
   dplyr::select(-c(day1, day2)) %>% 
-  mutate(Objective = c('Overview of R and Reproducibility',
-                       'Reproducibility Continued / R fundamentals and Skills',
-                       'R fundamentals and Skills / Data preparation and visualization',
-                       'Data preparation and visualization / Basic analytics',
+  mutate(Objective = c('R and R fundamentals',
+                       'Reproducibility and related R skills',
+                       'Data preparation and operation',
+                       'Data manipulation and visualization',
                        'Introduction',
-                       'Working with vector data',
+                       'Vector data',
                        'Vectors continued',
-                       'Working with raster data',
+                       'Raster data',
                        'Raster data continued',
                        'Project selection',
                        'Project work',
@@ -185,15 +189,15 @@ In this first part of the course, we will learn the basics of working with `R`, 
 
 This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
 
-**Week 1. Overview of R and Reproducibility**
+**Week 1. R and R fundamentals**
 
-**Week 2. Reproducibility Continued / R fundamentals and Skills**
+**Week 2. Reproducibility and related R skills**
 
 - Unit 1 Module 1 assignment (#1) due
 
-**Week 3. R fundamentals and Skills / Data preparation and visualization**
+**Week 3. Data preparation and operation**
 
-**Week 4. Data preparation and visualization / Basic analytics**
+**Week 4. Data manipulation and visualization**
 
 - Unit 1 Module 2/3 assignment (#2) due
 
@@ -205,13 +209,13 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 
 - Unit 1 Module 4 assignment (#3) due
 
-**Week 6. - Working with vector data**
+**Week 6. - Vector data**
 
 **Week 7. - Vectors continued**
 
 - Unit 2 Module 1 assignment (#4) due
 
-**Week 8. - Working with raster data**
+**Week 8. - Raster data**
 
 **Week 9. - Raster data continued**
 
