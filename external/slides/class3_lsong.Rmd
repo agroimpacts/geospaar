@@ -385,6 +385,14 @@ Let's run a demo.
 
 ---
 
+## Version control
+
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_vc.png")
+```
+
+---
+
 ## `git`/GitHub
 
 ```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "kevintshoemaker.github.io/StatsChats/GIT_tutorial"}
@@ -405,6 +413,10 @@ knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
 
 ---
 
+## Git/GitHub
+
+Let's go back to our demo to do some git stuff.
+
 ## Next class
 
 - Simulation in terms of reproducibility
@@ -416,5 +428,6 @@ knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
 ## Homework
 
 - Practice Git/GitHub.
+- Read Git/Github page in appendix.
 - Find out what you feel confused on what we have learned.
 

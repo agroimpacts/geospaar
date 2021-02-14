@@ -66,7 +66,7 @@ Any questions?
 - Simulation in terms of reproducibility.
 - Debugging and getting help.
 - Write Package.
-- Git/GitHub.
+- More on Git/GitHub.
 
 ---
 
@@ -178,6 +178,87 @@ knitr::include_graphics("figures/class3_5.png")
 ```{r, out.width = "90%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/class3_3.png")
 ```
+
+---
+
+## Package
+
+General common parts of a package.
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_pkg_structure.png")
+```
+
+---
+
+## Package
+
+```{r, out.width = "55%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_pkg_other.png")
+```
+
+---
+
+## Package
+### Function
+
+As an author, we should write the help document of all functions as clear as possible.
+
+```
+#' An example of function documentation
+#'
+#' @description This function shows an example function.
+#' @param arg1 numeric, the first argument.
+#' @param arg2 logical, the secoond argument.
+#' @return describe about the return.
+#' @export
+#' @examples
+#' func_exp(32, TRUE)
+
+func_exp <- function(arg1, arg2) {
+  do something here
+  return(rts)
+}
+```
+
+---
+
+## Package
+### Vignette
+
+Vignette is a special R markdown. It has extra parameters setting in YAML header:
+
+```
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```
+
+---
+
+## Package
+### Vignette
+
+- Write the YAML header manually based on the **right format**.
+- Create an Rmarkdown from package vignette templates.
+- Or use `usethis::use_vignette()` to create one.
+
+---
+
+## Git/GitHub
+### Commands
+
+[Basic commands](git-github.html)
 
 ---
 
