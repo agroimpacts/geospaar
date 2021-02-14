@@ -409,7 +409,7 @@ knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
 
 - Simulation in terms of reproducibility
 - Debugging and getting help
-- More on Git/GitHub
+- More on package and Git/GitHub
 
 ---
 
