@@ -1,0 +1,64 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 4
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/weekly-rf.png")
+```
+
+---
+
+```{r, eval = FALSE}
+data("chirps")
+library(rasterVis)
+library(lubridate)
+zam <- getData("GADM", country = "ZMB", level = 1)
+
+dates <- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
+dates <- data.frame(dates, w = unlist(lapply(1:4, function(x) rep(x, 7))))
+rfweek <- stack(lapply(unique(dates$w), function(x) {
+  w <- which(dates$w == x)
+  calc(chirps[[x]], sum)
+}))
+wk <- as_date(sapply(unique(dates$w), function(x) dates[dates$w == x, 1][1]))
+names(rfweek) <- wk
+
+mapTheme <- rasterTheme(region = brewer.pal(9, "Blues"))
+pstrip <- list(cex = 1, col = "white")
+png("inst/slides/figures/weekly-rf.png", height = 5, width = 5, res = 300,
+    units = "in", bg = "transparent")
+p <- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
+               names.attr = paste("Week of", wk), axes = FALSE, xlab = "",
+               ylab = "", par.strip.text = pstrip, 
+               main = list("Weekly Rainfall (mm)", col = "White"), 
+               colorkey = list(axis.line = list(col = "white"), 
+                               axis.text = list(col = "white")))
+p2 <- p + layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
+p2
+dev.off()
+```
+
+---
+
+## We have learned
+
+- Overview of R.
+- Fundamentals of R.
+- Functions and packages.
+- Environment and scoping.
+- Reproducibility.
+
+Any questions?
+
+---
+
+

@@ -346,7 +346,9 @@ First, to provide a very simplistic definition of what an environment is, it is 
 Environments in `R` are actually lists, which are nested in ways such that objects found in one environment are isolated from other environments. There are three major environments you should know about: 
 
 1. The global environment
+
 2. The package environment
+
 3. The execution environment
 
 ## The global environment
@@ -495,20 +497,24 @@ f(x = x)
 
 The function is modified to return the value from `environment`, which returns the name of the execution environment, which is simply a complicated hex-string. Note, however, that the string changes on each execution, indicating that the environment is not the same. 
 
-**This is important to know because you cannot modify the value of a global object from within a function's execution environment.** 
+The super assign symbol `<<-` can be used within an execution environment to modify a global object. You have to use it with caution because it is very easy to lose control. 
 
-The only way to do that is using a control structure such as a for loop. 
 ```{r}
 x <- 10
-for(i in 1:3) {
+f1 <- function(x) {
   x <- 20 * x
-  print(x)
-  print(environment())
 }
+f1(x)
+x
+
+f2 <- function(x) {
+  x <<- 20 * x
+}
+f2(x)
 x
 ```
 
-Note that the value of `x` gets updated it each iteration, and the environment inside the `{}` is still part of the global environment (and thus not the execution environment of a function).
+Note that the value of `x` within global environment doesn't change after running function `f1`, but got updated after running function `f2`.
 
 Okay, so that's it for environments, and actually for this whole module. There is no formal assignment for this module, just some questions to answer. 
 

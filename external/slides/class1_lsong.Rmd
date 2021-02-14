@@ -118,9 +118,14 @@ knitr::include_graphics("figures/class1_r_system.png")
 
 ---
 
+## RStudio
+
+[RStudio IDE Cheat Sheet](https://rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf)
+
+---
+
 ## Next class
 
-Next class, we will learn together about:
 - RStudio and R markdown.
 - Fundamentals of R (data types and structures, and basic operations).
 - With the highlight of coding style in R.
@@ -128,9 +133,9 @@ Next class, we will learn together about:
 
 ## Homework
 
-- Read Unit1-Module 1, section 1.7 Style in Syllabus, and cheatsheet of RStudio and R markdown.
+- **Read** Unit1-Module 1 before section 3.2.1, section 1.7 Style in Syllabus, and cheatsheet of RStudio and R markdown.
 - Get yourself a GitHub account, if you haven't
 - Send us your GitHub name (**!!**)
-- Install `git` on your local computer(s)
+- Install all necessary software on your local computer(s).
 - Set up your [personal access token](`r here::here("vignettes/git-github.html")`)
 - Go to our GitHub group page [agroimpacts](https://github.com/agroimpacts) and get yourself familiar with it (Repositories, People, Teams, etc.)

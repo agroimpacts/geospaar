@@ -180,7 +180,7 @@ kbl(timetable, escape = F, caption = "Timeline") %>%
             5, 9, label_row_css = "background-color: #666; color: #fff;") %>% 
   pack_rows("Unit 3 Projects", 
             10, 14, label_row_css = "background-color: #666; color: #fff;") %>% 
-  footnote(general = "The red cell indicates assignment due week (Friday).")
+  footnote(general = "The red cell indicates assignment due week (Friday midnight).")
 ```
 
 ## Unit 1. An introduction to R and related reproducibility skills
