@@ -1,0 +1,303 @@
+---
+title: "Syllabus"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()` [Back to home](https://agroimpacts.github.io/geospaar/)"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Syllabus}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Overview{#overview}
+Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
+
+## Meeting Time/Place
+- GRACE, MW 12:00PM - 1:15PM
+- JC103 (Lab), F 01:25PM - 02:40PM or 02:50PM - 04:05PM
+
+## Office Hours
+
+```{r, echo = FALSE}
+library(kableExtra)
+# a <- c(20, 30, 40)
+# a / sum(a)
+instructor <- 'Lei Song'
+office_instructor <- 'Geography building 102A'
+hours_instructor <- 'Tuesday 10:00AM - 12:00AM (Virtual appointments only)'
+ta <- 'Pilar Delpino Marimón'
+office_ta <- ''
+hours_ta <- ''
+hours <- rbind(c(instructor, office_instructor, hours_instructor), 
+            c(ta, office_ta, hours_ta))
+colnames(hours) <- c("Instructor/TA", "Office", "Office hours")
+kbl(hours, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = F,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 16) 
+```
+
+## Class materials
+- [Class materials web page]()
+- [Class materials R package](https://github.com/agroimpacts/geospaar)
+- [Class GitHub group](https://github.com/agroimpacts)
+
+## Philosophy
+Although our primary focus is learning how to use `R` for geospatial analysis, the course also introduces additional skills and concepts related to ___reproducible___ research. 
+
+## Caveats/things to consider
+Here are some other aspects regarding this course that you may wish to consider before committing: 
+
+1. ___Assignments in this class are problem-oriented, not recipe-based___: 
+
+    I believe that the best way to learn R (and any human or computational language, for that matter) is to figure out how to use it to solve specific problems. There are usually multiple paths that can be taken to solve a problem, particularly in `R`, which has a huge number of contributors and over 10,000 packages. Coding recipes that spell out precise steps needed to arrive at a solution will not take you as far towards `R` fluency, and will prevent you from learning the diversity of this language. 
+    
+    It can be very rewarding to figure out programming problems (I personally prefer programming to writing papers), but it can often be frustrating. Feeling frustrated is quite normal, and please don't take it as a sign that you are not good at programming, or that it is not for you. 
+    
+2. ___The order in which material is introduced will occasionally be non-linear___: 
+
+    Primarily because we are introducing reproducibility concepts up front in this class, which entails learning about some things that people might ordinarily get around to after they know a bit of `R` code.  However, I believe that this order of things will enable you to learn `R` (or any other programming language) more rapidly. It might even make it more fun. 
+
+3. ___This is a flipped class___:
+
+    Materials and problems are expected to be done before class. **This is particularly true this semester, when we are working more than half the time in an online mode.**  There will be some lecturing on key concepts, but class is intended to function more like a lab (and the lab period is intended for students seeking extra help), in which you work through practical problems, clarify concepts that are unclear, or  present your work to your peers. 
+    
+4. ___I am not a computer scientist___:
+
+    Full disclosure: I am self-taught programmer. That means that the way I teach this course might differ from the way a formally trained computer scientist would teach it. I don't know if that's the case, but those of you have taken computer science courses might notice some differences. 
+    
+## Required Texts, Reading, and Assignments
+There is no required textbook for this course. There is a huge amount of well-developed `R` material that is freely available on the web. We draw on and those resources for this class and integrate them into our own content (citing/linking to show where they come from). 
+
+__Readings and assignments__ should be completed ___before___ the class they are listed under. This is key to learning the language, ***as it is difficult to learn programming by just listening to lectures.*** 
+
+___Practical assignments___. During the first two units, there will be a total of 5 assignments (see links within the individual modules). The sixth assignment is your project proposal. Unless otherwise assignments are given on a Monday and will due before class on Monday of the same week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join [GitHub](http://github.com) (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
+
+__Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
+
+## Style
+There are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow [Hadley Wickham's style guide](http://adv-r.had.co.nz/Style.html). Please study it.    
+
+## Assessment and engaged time
+
+Your progress in this class will be assessed as follows: 
+
+```{r, echo = FALSE}
+# a <- c(20, 30, 40)
+# a / sum(a)
+mat <- rbind(c("Practical assignments (n=6)", "33% of grade", "22% of grade"), 
+            c("Oral presentation of semester project", "22% of grade", 
+              "33% of grade"),
+            c("Final report on semester project", "45% of grade", 
+              "45% of grade"))
+colnames(mat) <- c("Component", "GEOG246", "GEOG346")
+# kable(mat)
+kbl(mat, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = F,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 16) 
+```
+
+Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette.
+
+Courses at Clark are worth 4 credit hours, which equates to 180 hours of engaged academic time. The breakdown of that time is estimated to be: 
+
+```{r, echo = FALSE}
+gr <- c(37, 12, 40, 65, 10, 16)
+ug <- c(37, 14, 50, 59, 8, 12)
+DF <- cbind.data.frame(c("Class meetings", "Readings", "Practicals", 
+                         "Semester projects-analysis", 
+                         "Semester projects-presentation",
+                         "Semester projects-final report", "Total hours"), 
+                       c(gr, sum(gr)), c(ug, sum(ug)))
+colnames(DF) <- c("", "GEOG246 hours", "GEOG346 hours")
+# kable(DF)             
+kbl(DF, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = F,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 16) 
+```
+
+## Expectations
+Since class is flipped, this is a time for questions and discussion, between us and you, and often between yourselves. However, please keep any conversations low and necessary to the task at hand if they are one-on-one.   
+
+Class attendance is expected. It is the primary time in which to get help on understanding reading materials and assignments (see next section on Communications). Late assignments (including presentations and final report) are not accepted, barring any emergency or reasonable conflicts that prevent on-time submissions. 
+
+For assignments in the first two units, students can work together to figure out coding problems and to understand the material, but final assignments should reflect each student's own work and coding effort (i.e. not copying code from someone else). For final projects, many, if not most, of the projects will be team-based (2-3 per team, depending on the nature of the assignment) on some if not all of the available topics.
+
+We will follow the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
+
+### Communications
+We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #sprint2021 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
+
+# Course Structure{#structure}
+The following is an overview of the course structure. Note that this structure will evolve during the semester, and we will adjust material to match the pace of learning. 
+
+```{r timetable, echo = FALSE, warning=F, message=F}
+library(kableExtra)
+library(dplyr)
+start_date <- as.Date('2021-02-22')
+timetable <- data.frame(Week = 1:14) %>% 
+  mutate(day1 = format(start_date + (Week - 1) * 7, '%b-%d'),
+         day2 = format(start_date + Week * 7 - 1, '%b-%d')) %>% 
+  mutate(Date = paste(day1, day2, sep = ' - ')) %>% 
+  dplyr::select(-c(day1, day2)) %>% 
+  mutate(Objective = c('R and R fundamentals',
+                       'Reproducibility and related R skills',
+                       'Data preparation and operation',
+                       'Data manipulation and visualization',
+                       'Introduction',
+                       'Vector data',
+                       'Vectors continued',
+                       'Raster data',
+                       'Raster data continued',
+                       'Project selection',
+                       'Project work',
+                       'Project work continued',
+                       'Project work continued',
+                       'Course completion week'))
+due_date <- timetable$Date[c(2, 4, 5, 7, 9, 10)]
+timetable$Date <- cell_spec(timetable$Date, 
+                            background = ifelse(timetable$Date %in% due_date, 
+                                           "red", ''))
+kbl(timetable, escape = F, caption = "Timeline") %>%
+  kable_paper("striped", html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 16)  %>% 
+  pack_rows("Unit 1 An introduction to R and related reproducibility skills", 
+            1, 4, label_row_css = "background-color: #666; color: #fff;") %>%
+  pack_rows("Unit 2 Handling and analyzing spatial data with R", 
+            5, 9, label_row_css = "background-color: #666; color: #fff;") %>% 
+  pack_rows("Unit 3 Projects", 
+            10, 14, label_row_css = "background-color: #666; color: #fff;") %>% 
+  footnote(general = "The red cell indicates assignment due week (Friday midnight).")
+```
+
+## Unit 1. An introduction to R and related reproducibility skills
+
+In this first part of the course, we will learn the basics of working with `R`, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
+
+This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
+
+**Week 1. R and R fundamentals**
+
+**Week 2. Reproducibility and related R skills**
+
+- Unit 1 Module 1 assignment (#1) due
+
+**Week 3. Data preparation and operation**
+
+**Week 4. Data manipulation and visualization**
+
+- Unit 1 Module 2/3 assignment (#2) due
+
+## Unit 2. Handling and analyzing spatial data with R
+
+In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
+
+**Week 5. Introduction**
+
+- Unit 1 Module 4 assignment (#3) due
+
+**Week 6. - Vector data**
+
+**Week 7. - Vectors continued**
+
+- Unit 2 Module 1 assignment (#4) due
+
+**Week 8. - Raster data**
+
+**Week 9. - Raster data continued**
+
+- Unit 2 Module 2 assignment (#5) due
+
+## Unit 3. Projects
+
+**Week 10. - Project selection**
+
+- Assignment #6 due
+
+**Weeks 11-13. - Project work**
+
+Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
+
+**Weeks 14. - Course completion week**
+
+The class periods in this week can be used for continued project work. **The final presentation and project will be submitted at the end of this week.** The presentation should be submitted as a pre-recorded video. 
+
+# Resources {#Resources}
+The following are some helpful resources that you may wish to follow-up on as you learn `R`. 
+
+## Books etc
+- [The R Inferno](http://www.burns-stat.com/pages/Tutor/R_inferno.pdf)
+- [Efficient R Programming](https://csgillespie.github.io/efficientR/index.html#building-the-book)
+- [Swirl Stats](http://swirlstats.com) and the `swirl` package
+
+## The intertubes
+### R general
+    
+- [CRAN](https://cran.r-project.org), particularly an [Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) the Task view [Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
+- [R Exercises](http://www.r-exercises.com)
+- [ROpenSci](https://ropensci.org)
+- [Kelly Black's R tutorial](http://www.cyclismo.org/tutorial/R/#)
+- [Creating reproducible examples](https://stackoverflow.com/questions/5963269/how-to-make-a-great-r-reproducible-example) (read this before posting to one of the mailing lists)
+- [R mailing lists/listservs](https://www.r-project.org/mail.html)
+- [Speeding up R](http://www.noamross.net/blog/2013/4/25/faster-talk.html)
+- [tidyverse tutorial video](https://www.youtube.com/watch?v=9q7gssUP8UA)
+
+### Advanced analytics
+- [Generalized Additive Models](http://multithreaded.stitchfix.com/blog/2015/07/30/gam/)
+- [Regression Trees, Random Forests, Gradient Boosting](https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/)
+- [Support Vector Machines](https://eight2late.wordpress.com/2017/02/07/a-gentle-introduction-to-support-vector-machines-using-r/)
+- [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
+- [Deep learning in R, 1](https://blog.rstudio.com/2018/02/06/tensorflow-for-r/)
+- [Deep learning in R, 2](https://datascienceplus.com/deep-learning-with-r/)
+
+### Reproducibility
+- [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)
+- [Rmarkdown cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf)
+- [Tools for Reproducible Research](http://kbroman.org/Tools4RR/)
+- [manuscriptPackage](https://github.com/jhollist/manuscriptPackage): An R package that provides a package template for ___writing a Latex manuscript using Rmarkdown___, complete with citations. 
+
+### R versus python
+
+This is a big topic, but here are a few links to get started. 
+
+- [*R Vs Python: What’s the Difference?*](https://www.guru99.com/r-vs-python.html)
+- [*R vs. Python: Which is a better programming language for data science?*](https://www.techrepublic.com/article/r-vs-python-which-is-a-better-programming-language-for-data-science/)
+- [*Why I'll stick with R*](https://md.ekstrandom.net/blog/2016/04/using-r/)
+- [Why not both?](https://www.r-bloggers.com/the-best-of-both-worlds-r-meets-python-via-reticulate/)
+
+### R spatial
+- [A short R spatial tutorial](https://pakillo.github.io/R-GIS-tutorial/), with some good examples for connecting to Google Maps. 
+- [Another R spatial tutorial](https://cran.r-project.org/doc/contrib/intro-spatial-rl.pdf), with `ggplot2` and `tmap`
+
+### Blogs/twitter to follow
+- [R-Ladies](https://rladies.org/)
+- [R-bloggers](https://www.r-bloggers.com/)
+- [R-spatial](http://r-spatial.org/)
+- [\@RLangTip](https://twitter.com/RLangTip)
+
+***
+<center>
+[Back to home](toc.html)
+</center>
+***
+
+
+
+
+
+
+
+

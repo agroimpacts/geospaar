@@ -1,0 +1,335 @@
+---
+title: "Assessment"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()` [Back to home](https://agroimpacts.github.io/geospaar/)"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Assessment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Grading{#grading}
+## Overall
+
+Final letter grades will be assigned as follows
+```{r, echo = FALSE}
+library(kableExtra)
+gr <- rbind(c(93, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60, 0), 
+            c(100, 93, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60))
+lt <- c("A ", "A-", "B+", "B ", "B-", "C+", "C ", "C-", "D+", "D ", "D-", "F ")
+DF <- cbind(c("lower", "upper", "grade"), rbind.data.frame(gr, lt))
+colnames(DF) <- rep("", ncol(DF))
+kbl(DF, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = F,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 12) 
+```
+
+## For assignments
+
+Assessment: Can we load the data you used, run your code, and arrive at the same result you reported?
+
+We will grade using this rubric (or one close to it that captures the results/style/reproducibility dimensions).
+
+```{r, echo=FALSE}
+mat <- rbind(c("Expected results all wrong (0-5%)", 0, 
+               "Can't be made to run", 0, 
+               "Indecipherable code, no comments or documentation", 
+               0), 
+             c("Expected results mostly wrong (5-25%)", 4,
+               "Doesn't work", 4,
+               "Indecipherable code, no comments or documentation", 
+               2), 
+             c("Expected results more wrong than right (25-50%)", 8, 
+               "Doesn't run without numerous fixes", 8, 
+               "Code indecipherable or no comments/documentation", 
+               4), 
+             c("Expected results more right than wrong (50-75%)", 12,
+               "Runs after a handful of fixes", 12,
+               "Code readable but wrong style/some commenting/doc'tation",
+               6), 
+             c("Expected results almost entirely correct (75-95%)", 16,
+               "Runs after some minor tweaks", 16,
+               "Code pretty clean/decent commenting & documentation", 8), 
+             c("Expected results all right (95-100%)", 20, 
+               "Runs out of the box", 20,
+               "Code elegant and stylish/well commented & documented", 10))
+DF <- as.data.frame(mat, stringsAsFactors = FALSE)
+colnames(DF) <- c("Accuracy", "Acc. Points", "Elegance", "Ele. Points",
+                  "Reproducibility", "Repro. Points")
+for(i in colnames(DF)[c(2, 4, 6)]) DF[, i] <- as.numeric(DF[, i])
+# reshape2::dcast(DF, Accuracy + Elegance + Reproducibility ~ Points)
+# DF2 <- rbind(t(DF[1:6, 1:3]), DF[1:6, 4])
+kbl(DF, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = F,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 12) 
+```
+
+## For presentations
+
+Herewith some guidance regarding the final presentations:
+
+### Time
+
+Presentations should last 7 minutes per person: that is, if you are working on a project on your own, you should expect to present for 7 minutes, with an additional 3 minutes to field questions. If you are part of a two-person team, each person should plan to present for up to 7 minutes, and you will jointly have 6 minutes to field questions. 
+
+### Medium
+
+Present your material using RMarkdown slides. Use the `geospaar` slides as a template. That means you should make a "slides" folder under the vignettes folder of your package, and you should commit your slides .Rmd file that lives in the folder to git/GitHub. 
+
+Since your time limit is 7 minutes, you should plan to have 5-7 slides at most. 
+
+Group presentations should have a single set of slides in the master branch of their package, with each member presenting the portion of slides most relevant to their work. One possible way to split up the presentation could be as follows: 
+
+- Team Member A presents the introduction and the part of methods that A will be undertaking, and the results expected/already produced from those methods 
+- Team Member B presents the part of methods that B will be undertaking, any expected or achieved results from those methods, and then present the final way forward section
+
+Other ways of splitting up the presentation equitably are possible. Please see me if you would like to follow a different approach. See the next section for more details on presentation structure and content.
+
+> Note: to create the html of slides, the knit button on RStudio doesn't always make the html output appear in the folder where you want it. To overcome this, I use the following commands: 
+
+>```{r, eval = FALSE}
+setwd(dir = "vignettes/slides")
+rmarkdown::render(input = "myslides.Rmd", output_file = "myslides.html")
+```
+
+### Structure and content
+
+Your presentation should be structured as follows: 
+
+- 1-3 slides introducing your project, what questions you are answering, and why it is of interest
+- 2-4 slides describing the data and methods, focusing particularly on planned coding approach, including the primary packages you intend to use, and any planned functions you might write as part of your own project package. 
+    - You should show visuals of the primary input datasets you are using in this section, which may be maps or, if relevant, plots of key summary statistics (e.g. histograms, bar plots, xy scatter plots), or both. 
+- 2-4 slides describing your anticipated results, and illustrating any partial steps towards those results, or any completed results you already have. 
+- 1-3 slides describing the way forward to complete the project, including:
+    - Any challenges that need to be overcome
+    - What new aspect of R programming you learned from your project, i.e. something that you weren't introduced to during Units 1 and 2 of the course, and which might be of interest to your peers. 
+
+If you are working on your own, use the lower end of the slide range as your guide. If you are working as part of a two-person team, the upper end is the target amount of slides.  If you are presenting as a group of more than two people, let's discuss the structure. 
+
+### Assessment
+
+Assessment is out of 70 pts, and will be based on four categories: 
+
+- **Quality** evaluates the content of the material in your presentation, focusing on the workability and your demonstrated understanding of the methods and overall project. This is similar to the Quality of Plan rubric used for Assignment 6
+- **Progress** assesses how much progress you have made against your plan since submitting assignment 6. The expectations for this category vary according to when you give the presentation--some people have to go the Wednesday after Thanksgiving, others will be able to go the final Monday of classes.  
+- **Clarity** relates to the presentation itself--how clear your slides are, particularly the graphics, how well it conforms to the presentation structure outlined above, how clearly you conveyed the information. 
+- **Timing** simply assesses how closely you stuck to your time limits--too short (because didn't have enough to present) or too long (cutting into other people's time) is to be avoided, particularly the latter. 
+
+```{r, echo = FALSE}
+quality <- c(paste("Plan/objectives/methods unclear,", 
+                   "project mostly not understood"), 
+             paste("Plan/objectives/methods discernable but cloudy,", 
+                   "understanding of project less than half"), 
+             paste("Plan/objectives/methods about 50% clear,", 
+                   "project about 50% understood"),
+             paste("Plan/objectives/methods 75% clear,", 
+                   "project about 75% understood"),
+             paste("Plan/objectives/methods crystal clear,", 
+                   "project completely understood"))
+pts1 <- c(0, 7.5, 15, 22.5, 30)
+progress <- c("None since A6", "Only a little", "Modest progress", 
+              "On target, maybe a touch ahead", 
+              "Much greater than expected")
+pts2 <- c(0, 5, 10, 15, 20)
+clarity <- c(paste("Presentation a complete mess,",
+                   "graphics absent or totally confusing,",
+                   "text on slides a word salad,",
+                   "narrative impossible to follow"),
+             paste("Presentation more unclear than clear;", 
+                   "graphics present but hard to decipher;", 
+                   "too texty, text somewhat confusing;", 
+                   "narrative hard to follow"), 
+             paste("Presentation reasonable graphics decent,", 
+                   "not spectacular, maybe hard to decipher;",
+                   "text still a bit distracting, causes some confusion;",
+                   "narrative mostly clear"), 
+             paste("Presentation good;", 
+                   "graphics mostly clear, no major questions;",
+                   "text understood and gets the job done;", 
+                   "narrative clear"), 
+             paste("Presentation outstanding; graphics spectacular,", 
+                   "tell a clear story without need for narration;", 
+                   "text crystal clear and right amount;", 
+                   "gripping narrative"))
+pts3 <- c(0, 2.5, 5, 10, 15)
+timing <- c("<3 minutes", "3-6 minutes", "7-10 minutes", ">10 minutes", 
+            "6-7 minutes")
+pts4 <- c(1, 3, 3, 1, 5)
+
+DF <- cbind.data.frame(quality, pts1, progress, pts2, clarity, pts3,
+                       timing, pts4, stringsAsFactors = FALSE)
+colnames(DF) <- c("Quality", "QPts", "Progress", "PrPts", "Clarity",
+                  "Cpts", "Timing", "TPts")
+                  
+kbl(DF, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = F,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 12) 
+```
+
+## For final paper/report
+
+The following are the requirements and assessment approach for the final project:
+
+### Overall scope
+
+The purpose of the final product is to provide an overview of the results of the project you have been working on during the final unit of the class, building on the work you will have already presented in class during one of the last four sessions. The nature of this product can vary according to the type of project you are pursuing, which I would broadly define into two groups: 
+
+1. Those that are more focused on developing a package that provides a set of R functions that will be more broadly useful; 
+
+2. Those that are more analytical in nature, i.e. using R to answer particular questions of interest. 
+
+In the former case, we will want to see a good presentation of worked examples presented in your package vignette(s). In the latter case, your package vignette(s) should give an informative overview of your key findings and (if applicable) way forward for the project. Some projects may fall somewhere in between these two extremes.    
+
+### Structure and content
+
+Regardless of the type of project you are developing, you will submit it as an R package, as we have been doing all semester. That R package should be fully reproducible, i.e.
+
+```{r, eval = FALSE}
+devtools::install_github("agroimpacts/yourproject", build_vignettes = TRUE)
+browseVignettes("yourproject")
+```
+
+Works perfectly and gives us results that contain everything we need to evaluate the project. Datasets that are too large to be committed to the package repo should be linked to, but the code used to process them should be clear, and any figures built from them should be committed to the repo and incorporated in your package vignettes. Vignettes will contain the material we are most interested in, but we will also examine your DESCRIPTION, NAMESPACE, function documentation (if applicable), i.e. the key components of making an R package and delivering it in a reproducible manner. 
+
+Jointly authored vignettes in group projects should have team member initials indicating which section each member worked on which section. Otherwise, separately authored ones should have team member titles at the top.  
+
+As stated before, if there are clear, separable tasks that lend themselves to separate development efforts, team members should work on those and make frequent commits within their own repo branches. 
+
+R code should follow the [style](http://adv-r.had.co.nz/Style.html) we have been using all along. 
+
+The main item in your package that we will assess is/are the package vignette/vignettes. 
+
+### Vignette(s)
+
+You can choose to have one or several vignettes, depending on how much sense it makes to break down the information into separate documents. Regardless, your vignette or vignettes should contain the following information (the names of the headings can vary though according to what makes sense)
+
+#### Introduction (or Overview)
+A more detailed and informative overview of the project's purpose and objectives than what your provided in assignment 6. Approximate maximum length of 400 (individual) to 800 (team, assuming a single package vignette) words.  
+
+#### Methods (or Approach)
+
+For a more analytical project, provide a complete description of the methods you used to undertake the analysis, complete with informative illustrations and summaries of the input datasets. Approximate maximum length of 400 (individual) to 800 words. 
+
+For a project that is more tools-oriented, use this section to describe the purpose and rationale of the functions/capabilities you are developing, what other packages/software/tools it is building on, and provide informative illustrations and summaries of the dataset(s) you are using to demonstrate your functions. Same approximate length. 
+
+#### Results (Worked Examples)
+
+For analytical projects, describe and illustrate your results, using standard scientific reporting conventions: 1) plan on having 2-4 figures; 2) a similar number of statistical summaries; 3) describe the results in your figures and tables in (up to) 400-800 words (range refers to individual versus team efforts). 
+
+For tools-oriented projects, provide and illustrate 2-4 worked examples of how to use the functions in your package, with descriptive accompanying text that will help users to understand what the functions do and how to apply them (up to 400-800 words; range refers to individual versus team efforts). 
+
+#### Discussion
+
+For analytical projects, briefly provide your interpretation of the results, any uncertainties/difficulties encountered, and any next steps to be taken. Up to 400-800 words (range refers to individual versus team efforts).
+
+For tools-oriented projects, describe any limitations of the package, improvements that can be made, and any plans to undertake these. Up to 400-800 words (range refers to individual versus team efforts).  
+
+### Assessment
+
+Assessment is out of 70 pts (note that there a minimum points floor, which assumes that a final project has been submitted), and will be based on four categories: 
+
+- **Quality** evaluates the **content** of the material in your package, focusing on the information and ideas conveyed in your descriptions, figures, and tables. How well did you understand and execute the project, and how well did you convey what you did? 
+- **Progress** evaluates whether you achieved the objectives put forward in your Assignment 6 and final presentation, focusing more on the latter due to course corrections (and incorporating any necessary changes we discussed)
+- **Clarity** examines the clarity of the writing (is it easy to understand, no typos or missed words), the visual aspects of figures (does the color choice make sense, legend sensible, size appropriate, text readable?), formatting (did html lists end up as lists? do headings make sense?), and code syntax. This basically covers the stylistic components of your vignettes and code.
+- **Reproducibility** relates to the now familiar criteria about whether your package builds for another user without error, and with browsable vignettes.  
+
+
+```{r, echo = FALSE, message = FALSE}
+# library(dplyr)
+# html_table_width <- function(kable_output, width){
+#   width_html <- paste0(paste0('<col width="', width, '">'), collapse = "\n")
+#   sub("<table>", paste0("<table>\n", width_html), kable_output)
+# }
+quality <- c(paste("Objectives/methods/results/interpretations unclear,", 
+                   "poor understanding conveyed", 
+                   "replete with analytical/methodological errors", 
+                   "Findings/interpretations/examples absent"), 
+             paste("Objectives/methods/results/interpretations cloudy,", 
+                   "understanding of project less than half",
+                   "many analytical/methodological errors", 
+                   "Findings/interpretations/examples present but weak/wrong"), 
+             paste("Objectives/methods/results/interpretations 50% clear,", 
+                   "project about 50% understood", 
+                   "some analytical/methodological errors", 
+                   "Findings/interpretations/examples about half wrong"),
+             paste("Objectives/methods/results/interpretations 75% clear,", 
+                   "project about 75% understood", 
+                   "few analytical/methodological errors", 
+                   "Findings/interpretations/examples interesting/correct"),
+             paste("Objectives/methods/results/interpretations crystal clear,", 
+                   "project completely understood", 
+                   "no obvious analytical/methodological errors", 
+                   "Findings/interpretations/examples novel/really well done"))
+pts1 <- c(10, 15, 20, 25, 30)
+progress <- c("None since presentation", "Only a little", "Modest progress", 
+              "Project mostly complete", "Much greater than expected")
+pts2 <- c(5, 7.5, 10, 12.5, 15)
+clarity <- c(paste("Vignette(s) a complete mess,",
+                   "graphics absent/totally confusing,",
+                   "text a word salad,",
+                   "narrative impossible to follow", 
+                   "code a mess/doesn't follow style"),
+             paste("Vignette(s) more unclear than clear;", 
+                   "graphics present but hard to decipher;", 
+                   "text somewhat confusing;", 
+                   "narrative hard to follow", 
+                   "code messy/mostly doesn't follow style"), 
+             paste("Vignette(s) not unreasonable; graphics so-so,", 
+                   "not spectacular, maybe hard to decipher;",
+                   "text still a bit distracting, causes some confusion;",
+                   "narrative mostly clear", 
+                   "code sloppy/half follows style"), 
+             paste("Vignette(s) good;", 
+                   "graphics mostly clear, no major questions;",
+                   "text understood and gets the job done;", 
+                   "narrative clear", 
+                   "code clear/mostly follows style"), 
+             paste("Vignette(s) outstanding; graphics spectacular,", 
+                   "tell a clear and easily understood story supporting text;", 
+                   "text crystal clear and right amount;", 
+                   "gripping narrative", 
+                   "code tight, perfect style"))
+pts3 <- c(5, 7.5, 10, 12.5, 15)
+reproducibility <- c("Can't be built/no R package structure", 
+                     "Runs after many fixes", "Runs after 4-6 fixes",
+                     "Runs after 1-3 fixes",
+                     "Runs out of the box/with no fixes needed")
+pts4 <- c(3, 5, 7, 8.5, 10)
+
+DF <- cbind.data.frame(quality, pts1, progress, pts2, clarity, pts3,
+                       reproducibility, pts4, stringsAsFactors = FALSE)
+colnames(DF) <- c("Quality", "QPts", "Progress", "PrPts", "Clarity",
+                  "Cpts", "Reproducbility", "RPts")
+# y <- knitr::kable(DF, format = "html")
+# kableExtra::column_spec(y, column = 1:8, width = "10em")
+# kable(DF[, 3:4], format = "html") %>% html_table_width(c(50, 20))
+# kable(DF[, 5:6], format = "html") %>% html_table_width(c(50, 20))
+# kable(DF[, 7:8], format = "html") %>% html_table_width(c(50, 20))
+# kable(DF, align = "r") 
+kbl(DF, escape = F, align = "l") %>%
+  kable_paper("striped", full_width = T,
+              html_font = "Helvetica Neue") %>%
+  kable_styling(font_size = 12) 
+```
+
+***
+<center>
+[Back to home](toc.html)
+</center>
+***

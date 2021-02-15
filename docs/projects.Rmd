@@ -1,0 +1,158 @@
+---
+title: "Semester Projects"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()` [Back to home](https://agroimpacts.github.io/geospaar/)"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Projects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview{#overview}
+
+Each student will undertake an R-based final project for this class. This project could be one related to your own thesis work, which we will discuss and agree upon. Alternatively, you can choose to undertake one of the projects listed below. Some of these are individual projects, some of these you will work on as part of a team. 
+
+This list is currently in thumbnail form, and will fill out during the next few weeks. 
+
+# Potential project list
+## Add on to our COVID-19 tracker
+Have a look at our existing [repo/package](https://github.com/agroimpacts/covid19clark), and some of the initial dashboards our previous class made. Potential projects include converting the current code to an operational shiny dashboard (as opposed to a local one) and integrating more measures. For example, write a scraper to ingest the [Mass DPH's weekly town-level](https://www.mass.gov/info-details/covid-19-response-reporting#covid-19-daily-dashboard-) case rates and map these. 
+
+## Analyzing agro-climatological data 
+### Over Zambia
+#### Develop a rainfall onset metric
+Apply and evaluate various objective rainfall onset metrics, using data from the sensors, the SMS survey, and gridded rainfall products. Can a measure applied just to farmer SMS survey responses (e.g. change point detection) produce a similar answer date compared to a metric derived from continuous rainfall measurements from the sensors or gridded rainfall products (e.g. first three consecutive days of rain)?
+
+#### Quantify the spatial variability of rainfall
+Use geostatistics to see what the farmers' SMS survey rainfall responses and 2016-2017 sensor data can tell us about the spatial variability of rainfall, at weekly and daily timesteps. How much does rainfall vary between two (or more) different points at a 5, 10, or 25 km scale (the typical pixel size of the gridded rainfall products we use)?
+
+#### Develop a mid-season agricultural drought metric
+Use the SMS survey and co-located sensor rainfall data to identify mid-season dry-spells of potential agricultural significance. For example, two or more consecutive rainless weeks close to maize flowering or grain-filling times. Can you detect a signficant drop in farmers' anticipated harvest amounts around such events (we might expect a sudden drop in expected harvest amounts)? How about a significant change in the rate of reduction in farmers' reported maize storage levels fall (if farmers are concerned about crop loss, they might slow their rate of consumption of stored food)? 
+
+#### Evaluate the skill of gridded weather products
+Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS's Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors' incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?  
+
+#### Quantify Zambia's maize planting season
+Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. How long was the season from planting to harvest?  What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?
+
+#### Predicting farmers' reported yields
+The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
+
+### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
+
+Put another way, do farming communities in areas with higher rainfall variability show higher variability between farmers in terms of when crops are planted?  We hypothesize that this might be the case, as it might be a community-level adaptive response for dealing with climatic uncertainty.  
+
+This analysis would be undertaken using remotely sensed datasets: NDVI time series, gridded rainfall datasets, and a cropland mask. The NDVI time series are processed into values that identify the date of green-up over ~18 years. The rainfall data should be used to calculate the coefficient of variation (CV) of rainfall in the first 2 months of the growing season, and the long-term mean rainfall. Comparing croplands from areas of similar mean rainfall, see if there is a relationship between CV of rainfall and CV of green-up date. 
+
+## In Sutton, MA
+
+Continuing analyses of UAS, satellite, and sensor datasets collected during the  past two summers in Sutton MA. 
+
+Among possible ideas are Shiny dashboards for: 1) displaying pod data over time; 2) displaying "cones of uncertainty" from projected crop yield simulations.
+
+## Using UAS to detect the spread of a crop disease
+
+Use R-implemented machine learning techniques to classify fungal blight in UAS time series collected over cranberry bogs in New Jersey. This would be a great project for getting a deep learning model running in `R`.
+
+## Analyzing Ghanaian croplands 
+
+The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05$^\circ$ tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: 
+
+### Evaluating field characteristics
+Use the vector data to examine field size class distributions in different agro-ecosystems. Is there a link between these and any socio-economic datasets (e.g. World Bank LSMS data)? Use the cropland probability images and input satellite imagery to identify whether the degree of certainty in probability images is informative about the status of fields (e.g. fallow versus active).  
+
+### Vector refining
+With many vector data come many data processing challenges. Can you code up methods for merging adjacent polygons from neighboring tiles, or simplifying polygons in a way that preserves adjacency? There are `R`-based solutions for these. 
+
+### Map visualization
+Come up with `shiny` solution for presenting and analyzing map data. 
+
+## Politics
+### Gerrymandering
+#### Implement a Shiny interface
+There are several potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics. These ideas come the [Princeton Gerrymandering project](http://gerrymander.princeton.edu).  
+
+#### Voting Precinct Demography
+The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. (Builds on class project from prior year)
+
+#### Districting and Population Visualizations
+The goal is to demonstrate how redistricters gerrymander congressional districts by "packing" or "cracking" high population areas. Background on the issue can be seen in this LA Times [article](http://www.latimes.com/opinion/op-ed/la-oe-wang-remlinger-gerrymandering-20170505-story.html), in which the graphics were mostly made with R with some Adode Illustrator post-hoc manipulations done by the newspaper. What we would really like to do is represented by the purple-yellow scale map of North Carolina [here](http://gerrymander.princeton.edu/info), which didn't make the article, but was done to support it. The goal is to create a package that can: 
+1. Take population data from a given year, and congressional district boundary polygons from a corresponding year
+2. Convert them quickly and efficiently into similar maps
+3. Create the package so that it installs and demos with data from North Carolina (all available years), and, depending on data availability, possibly one or two other states (e.g. Pennsylvania).
+4. Additionally, if the same package can also create maps that, together with the population density information, show which party won the district, [as in this visualization](https://static01.nyt.com/images/2017/09/03/magazine/03gerrymandering_map/03gerrymandering_map-superJumbo.gif), that would be even better.  
+
+# Assignment
+
+The final assignment of this course is to provide a plan for your semester research project.
+
+## Set-up
+We are saying goodbye to the repos/packages we used for assignments 1-5 (e.g. your version of `xyza1`). Start a new package with a Git/GitHub repo, naming it something short but descriptive of the project you are doing. Follow the R package naming conventions to setup your repo name. This should be a private repo under the agroimpacts organization. 
+
+As with your previous assignments, your work should be structured as an R package. That does not mean that you will necessarily need to be writing functions that are native to the package (i.e. documented functions living in the R folder that build with the package), but you should be writing your project up and showing your code and analysis within vignettes.  
+
+## Tasks
+
+For this assignment, you should write a single vignette called "overview.Rmd", which has the following sections: 
+
+1. Summary: A brief (up to 250 words) description of the project, and a bullet point or enumerated list of its primary objectives. 
+
+2. Approach and Method: An outline of the analytical methods and code you plan to use, including the names of key packages that you will draw on. This section should be composed of the following sub-sections: 
+
+3. Data: A brief (~250 words) description **and** visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset.  
+
+4. Code: A bullet point summary of the analysis and coding approach that you propose to follow. For teams, this section should include a description of which member will be responsible for each bullet point. 
+
+5. Timelines: Provide a timeline for when each portion of the analysis will be completed. These timelines should be constructed relative to the time period of presentations (during the last two weeks of class) and final project submission (during exam week). For teams, names should be associated with each step on the timeline. 
+
+6. Anticipated outcomes: Briefly describe, as bullet points, the outcomes you expect for each of your primary project objectives
+
+## An additional note for teams
+
+For this last assignment, it doesn't make sense that team members do separate work in different branches of the repo, with the exception of cases where data fetching and wrangling tasks needed to describe and visualize the data are partitioned between members. In this case, team members should have separate vignettes in their respective branches describing the data gathering and processing steps to date. Otherwise, the expectation is that this assignment is presented as a jointly written vignette that builds with the package in the master branch. Please put your initials next to sections that you were responsible for writing. If you want to get really advanced, you can each jointly work on a version of overview in your own branches, and then do a merge and reconcile of your differing version in the master branch. 
+
+
+## Assessment
+
+For this final assignment, assessment will be out of 50 points using simplified and somewhat different categories: 
+
+1. Quality of plan:
+
+    - No plan (analysis/coding approach and timelines) provided: 0 pts
+    - Plan (analysis/coding approach and timelines) is provided but mostly unworkable, many holes or inconsistencies in logic or approach: 7.5 pts
+    - Probably workable plan, but with a fair number of holes or inconsistencies that need to be addressed: 15 pts
+    - A pretty well thought-out and workable plan, with just a handful of holes or inconsistencies remain: 22.5 pts
+    - Excellent, well thought plan, no obvious flaws in approach: 30 pts
+
+2. Structure and completeness: 
+
+    - Assignment does not at all follow required structure or provide requested information: 0 pts
+    - Assignment barely follows required structure or provide requested information: 2.5 pts
+    - Assignment partially follows structure and provides part of the information: 5 pts 
+    - Assignment mostly follows structure and provides most of the required information: 7.5 pts
+    - Assignment perfectly follows structure and provideds all the required information: 10 pts
+
+3. Reproducibility:
+
+    - Doesn't work at all/no R package structure: 0 pts
+    - Runs after numerous fixes: 2.5 pts
+    - Runs after several fixes: 5 pts
+    - Runs after one or two fixes: 7.5 pts
+    - Runs out of the box: 10 pts
+
+***
+<center>
+[Back to home](toc.html)
+</center>
+***

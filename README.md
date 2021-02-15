@@ -22,27 +22,13 @@ Add these ones as well, while you are at it:
 install.packages(c("knitr", "kableExtra", "prettydoc"))
 ```
 
-#### 3. install the `geospaar` package
+#### 2. install the `geospaar` package
 
 Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
 ```R
 library(devtools)
-install_github("agroimpacts/geospaar@fall2020")
+install_github("agroimpacts/geospaar@spring2021")
 ```
-
-If you plan to browse the vignettes locally, you could set `build_vignettes = TRUE`.
-```R
-library(devtools)
-install_github("agroimpacts/geospaar@fall2020", build_vignettes = TRUE)
-```
-
-#### 4. Browse the course materials
-If you build the vignettes together with the package, then:
-```R
-browseVignettes("geospaar")
-```
-
-These materials are updated periodically, so check for updates. 
 
 ## For Clark students
 

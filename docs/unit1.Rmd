@@ -1,0 +1,54 @@
+---
+title: "Unit 1 - Overview of R and Reproducibility"
+date: "`r Sys.Date()` [Back to home](https://agroimpacts.github.io/geospaar/)"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+# Overview {#unit1overview}
+
+This section provides the detailed syllabus for the first unit of ___GEOG246-346: Geospatial Analysis with R___ (please return to the main  [Syllabus](syllabus.html) for a general course overview). 
+
+In this unit, we will learn the basics of working with `R`, starting with non-spatial data, as well as additional skills related to ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis. These skills include using version control software (`git` and [github](https://github.com)), creating `R` packages, and using `Rmarkdown` to document and present your analyses. 
+
+Our learning goals for this unit as are follows--by the end of this unit you should:
+
+- ___Understand___: R's origins and its strengths and weaknesses; the concept of reproducibility and R's role within that; how `R`, Rstudio, GitHub, and Rmarkdown play together; R's data type and structures, objects, classes, and environments; the evolutionary trajectories emerging in the R language. 
+
+- Be able to comfortably* ___do the following___: create a `git` repo and manage it through RStudio (and its shell environment); perform and document analyses in Rmarkdown; create and document a basic `R` package; read and write data in `R`; use control structures (including `apply` functions, particularly for split-apply-combine operations); write a simple function; reshape, analyze (with basic statistical functions), and visualize non-spatial data; write clean code following our [selected R style guide](http://adv-r.had.co.nz/Style.html)
+
+    *Comfortably does not mean fluent. Fluent means you can do all of these things without having to look at past code, help files, or web-based examples to get the job done. Comfortable means that you know what you have to do, and what functions you need to do it, but 1) you probably have to look at and adapt past code and/or search help files or the web to get the exact syntax/arguments you need, and 2) you might need several iterations until it works. 
+
+# Unit modules 
+
+This section is broken into four modules (the materials can be accessed by following the links): 
+
+[**Module 1**](unit1-module1.html): R and R fundamentals. 
+
+[**Module 2**](unit1-module2.html): Reproducibility and related R skills. 
+
+[**Module 3**](unit1-module3.html): Data preparation and operation.
+
+[**Module 4**](unit1-module4.html): Data manipulation and visualization.
+
+[**Unit1 practice answers**](unit1-appendix.html): Answers and code for Unit1 practice.
+
+***
+<center>
+[Back to home](toc.html)
+</center>
+***
