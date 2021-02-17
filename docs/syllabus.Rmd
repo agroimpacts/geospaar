@@ -34,14 +34,12 @@ library(kableExtra)
 # a <- c(20, 30, 40)
 # a / sum(a)
 instructor <- 'Lei Song'
-office_instructor <- 'Geography building 102A'
-hours_instructor <- 'Tuesday 10:00AM - 12:00AM (Virtual appointments only)'
+hours_instructor <- 'Tuesday 02:00PM - 04:00PM (Virtual appointments only)'
 ta <- 'Pilar Delpino Marimón'
-office_ta <- ''
-hours_ta <- ''
-hours <- rbind(c(instructor, office_instructor, hours_instructor), 
-            c(ta, office_ta, hours_ta))
-colnames(hours) <- c("Instructor/TA", "Office", "Office hours")
+hours_ta <- 'Wednesday 02:00PM - 04:00PM (Virtual appointments only)'
+hours <- rbind(c(instructor, hours_instructor), 
+            c(ta, hours_ta))
+colnames(hours) <- c("Instructor/TA", "Office hours")
 kbl(hours, escape = F, align = "l") %>%
   kable_paper("striped", full_width = F,
               html_font = "Helvetica Neue") %>%

@@ -78,12 +78,12 @@ knitr::include_graphics("figures/class1_reproducibility.png")
 
 ## Course Requirements
 
-- Let's have a look at the [Syllabus](`r here::here("vignettes/syllabus.html")`)
+- Let's have a look at the [Syllabus](https://agroimpacts.github.io/geospaar/syllabus.html)
 
 ---
 
 ## Projects
-- Projects [page](`r here::here("vignettes/projects.html")`)
+- Projects [page](https://agroimpacts.github.io/geospaar/projects.html)
 
 ---
 
@@ -137,5 +137,5 @@ knitr::include_graphics("figures/class1_r_system.png")
 - Get yourself a GitHub account, if you haven't
 - Send us your GitHub name (**!!**)
 - Install all necessary software on your local computer(s).
-- Set up your [personal access token](`r here::here("vignettes/git-github.html")`)
+- Set up your [personal access token](https://agroimpacts.github.io/geospaar/git-github.html)
 - Go to our GitHub group page [agroimpacts](https://github.com/agroimpacts) and get yourself familiar with it (Repositories, People, Teams, etc.)

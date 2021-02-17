@@ -1,5 +1,5 @@
 # GEOG 246/346: Geospatial Analysis with R
-Clark University, Spring 2021
+Instructor: Lei Song, Clark University, Spring 2021
 
 ## Resources
 - [Syllabus](syllabus.html)
@@ -9,6 +9,9 @@ Clark University, Spring 2021
 - [Cheatsheets](cheatsheets.html)
 
 ## Course materials
+
+The class materials are mostly designed by Dr. Lyndon Estes.
+
 - [Unit 1](unit1.html) - Overview
   - [Module 1](unit1-module1.html) - R and R fundamentals
   - [Module 2](unit1-module2.html) - Reproducibility and related R skills
@@ -27,10 +30,14 @@ Clark University, Spring 2021
 
 - Week 1
   - [Class 1](slides/class1.html)
+    - <a href="slides/class1.html">Download class1.html</a>
   - [Class 2](slides/class2.html)
-- Week 2
-  - [Class 3](slides/class3.html)
-  - [Class 4](slides/class4.html)
+    - <a href="slides/class2.html">Download class2.html</a>
+    <!---
+    - <a href="demos/class2_markdown_demo.Rmd">Download class2_markdown_demo.Rmd</a>
+    - <a href="demos/class2_objects_demo.R">Download class2_objects_demo.R</a>
+    - <a href="practices/class2_practice.Rmd">Download class2_practice.Rmd</a>
+    -->
 
 ## Appendix
 - [Known issues](known-issues.html)

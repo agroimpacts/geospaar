@@ -186,18 +186,19 @@ knitr::include_graphics("figures/class2_vector.png")
 Any objects have attributes. If nothing is set, the attributes of an object is `NULL`. Some common attributes include:
 
 - `names`/`dimnames`/`rownames`/`colnames`
-- `length`, and more specifically `dim` for matrix and array. Resetting `dim` attribute can convert a vector to matrix/array or reconstruct a matrix/array. 
-
-  * When we use `length` to a matrix or array, it will give you the whole number of items.
-  
+- Overall `length`, and more specifically `dim` for matrix and array. Resetting `dim` attribute can convert a vector to matrix/array or reconstruct a matrix/array. 
 - `class`: it is a bit different from function `class`.
-- function `attr(object, attr_name)` can be used to query or set an attribute of an object. This is super useful when we want to add some meta data for an object.
+- function `attr(object, attr_name)` can be used to query or set an attribute of an object. 
 - function `attributes(x)` can be used to get all attributes of an object.
 - function `str(object)` will print out a nice overview of an object.
 
 ---
 
 ## Practice
+
+Let's run a R markdown practice and overview what we learned today.
+
+[Expected output](https://agroimpacts.github.io/geospaar/practices/class2_practice.html)
 
 ---
 

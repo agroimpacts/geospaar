@@ -1,0 +1,231 @@
+---
+title: "Homework"
+output: 
+  learnr::tutorial:
+    theme: united
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+gradethis::gradethis_setup()
+tutorial_options(exercise.completion = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Class 1
+
+### Quiz
+
+```{r quiz_c1}
+quiz(
+  # Took this question from https://github.com/rstudio/learnr/blob/master/inst/tutorials/ex-setup-r/ex-setup-r.Rmd
+  question("What is the RStudio IDE?",
+    answer("An application that makes it easier to use R.", 
+           correct = TRUE, 
+           message = "RStudio organizes your workspace and makes it easier to write, use, debug, and save R code."),
+    answer("An application that let's you use R without writing any code", 
+           message = "Code provides a reproducible record of your work, which is essential for data science."),
+    answer("A spreadsheet program like Microsoft Excel."),
+    answer("Another name for R", 
+           message = "R and RStudio are two separate things. R is a language, like English. Think of RStudio as a program that helps you use the language, kind of like how a word processing program helps you write in English."),
+    random_answer_order = TRUE, allow_retry = TRUE
+  )
+)
+```
+
+## Class 2
+
+### Quiz
+
+```{r quiz_c2}
+quiz(
+  question("What of items listed below are atomic data types?",
+    answer("chracter", correct = TRUE),
+    answer("vector", message = 'Vector is an object.'),
+    answer("integer", correct = TRUE),
+    answer("factor", message = 'Factor is a special integer type, but not atomic type.'),
+    answer("logical", correct = TRUE),
+    answer("raw", correct = TRUE),
+    answer("Date", message = 'Date is a special double type, but not atomic type.'),
+    correct = "6 atomic data type in R: character, double, integer, logical, complex, and raw.",
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("A matrix is ___dimensional object? ",
+    answer("1", message = 'A matrix has dimension attribute, which means it is not one dimensional.'),
+    answer("2", correct = TRUE),
+    answer("3", message = 'An array is the obejct that could have 3 or higher dimensions.'),
+    answer("Higher", message = 'An array is the obejct that could have 3 or higher dimensions.'),
+    correct = "A matrix is 2 dimensional object. A vector is 1 dimensional, and array is higher dimensional.",
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("Attributes of an object (if any) can be accessed using function ___.",
+    answer("`attributes()`", correct = TRUE),
+    answer("`str()`", message = '`str()` function is used for compactly displaying the internal structure of a R object.'),
+    answer("`attr()`", message = '`attr()` function is used to get or set specific attributes of an object.'),
+    answer("`summary()`", message = '`summary()` is a generic function used to produce result summaries of the results'),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("Which one of the following expressions assigns the number 10 to the variable x?",
+    answer("`x == 10`", message = '`==` is used to compare two objects.'),
+    answer("`x <- 10`", correct = TRUE),
+    answer("`x - 10`", message = '`-` is used to minus.'),
+    answer("`x = 10`", correct = TRUE, 
+           message = 'Even though it works, but it is highly recommended to use `<-` .'),
+    correct = '`<-` and `=` both works in R to assign values, but it is highly recommended to use `<-`.', 
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("Which one of the following function could split a string?",
+    answer("`strsplit`", correct = TRUE),
+    answer("`gsub`", message = '`gsub` is a function to replace sub-string within a string.'),
+    answer("`paste`", message = '`paste` is a function to put two strings together with a defined sep symbol.'),
+    answer("`paste0`",  message = '`paste0` is a function to put two strings together without a sep symbol.'),
+    correct = '`strsplit` is a function to split a string. `gsub` is a function to replace sub-string within a string. `paste` is a function to put two strings together with a defined sep symbol. `paste0` could paste two strings without a sep symbol.', 
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("Suppose I have a vector x <- c(12, 10, 17, 14, 4, 5, 13) and I want to get the indexes of all elements of this vector that are greater than 10. What R code should I use?",
+    answer("`which(x > 10)`", correct = TRUE),
+    answer("`any(x > 10)`", message = '`any` is a function to check if at least one of the values bigger than 10.'),
+    answer("`all(x > 10`", message = '`all` is a function to check if all values of x bigger than 10.'),
+    answer("`10 %in% x`",  message = '`%in%` is a function to check if 10 is in x.'),
+    correct = '`which` is a function to get the indexes of elements match a checking condition. `any` is a function to check if at least one of the elements match a checking condition. `all` is a function to check if all elements match a checking condition. `%in%` a function to check if object(s) is in another object.', 
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("Suppose I have a vector x <- c(12, 10, 17, 8), a vector y <- c(7, 10, 12), and a vector z <- c(9, 10). What I will get if run `x + y` and `x + z`?",
+    answer("`c(19, 20, 29, 15)` and `c(21, 20, 26, 18)`", correct = TRUE),
+    answer("`c(19, 20, 29)` and `c(21, 20)`", message = 'When two vectors with different length do calculation, R will repeat the shorter one to match with the longer one.'),
+    answer("`c(19, 20, 29, 8)` and `c(21, 20, 17, 8)`", message = 'When two vectors with different length do calculation, R will repeat the shorter one to match with the longer one.'),
+    answer("Syntax error", message = 'This is runnable in R.'),
+    correct = 'When two vectors with different length do calculation, R will repeat the shorter one to match with the longer one. If the length of longer one is not a multiple of shorter one, it will give you a warning.', 
+    random_answer_order = TRUE, allow_retry = TRUE
+  )
+)
+```
+
+### Exercise 
+
+Write the R code with proper style required to:
+
+1. create `i` as a vector of 1:5.
+2. create `f` as a vector of `c(11.1, 18.74, 29.02, 47.45, 76.2)`
+3. use `cbind` to bind `i` and `f` as a matrix `mc` of integer. And set the column names as "a" and "b".
+4. print out `mc`.
+5. use `rbind` to bind `i` and `f` as a matrix `mr` of double. And set the row names as "a" and "b".
+6. print out `mr`.
+7. create `V` as a vector of a:e.
+8. create `b` as a vector of `c(TRUE, TRUE, FALSE, FALSE, TRUE)`.
+9. collect `i`, `f`, `V` and `b` into a list `l`, and set their names.
+10. add a meta data (attribute) 'objective' to `l` with value "combine objects into list".
+11. check the attributes of `l`.
+12. print out `l`.
+13. combine `i`, `f`, `V` and `b` into columns of a data.frame `df`, and set their names.
+14. check the attributes of `df`.
+15. print out `df`.
+
+```{r v_int, exercise=TRUE, exercise.lines = 33}
+# Create a
+
+# Create b
+
+# Create mc and set names
+
+
+# Print out mc
+
+# Create mr and set names
+
+
+# Print out mr
+
+# Create V
+
+# Create b
+
+# Create l
+
+# Add attribute to l
+
+# Check the attributes of l
+
+# print out l
+
+# Create df
+
+# Check attributes of df
+
+# print out df
+
+```
+
+Expected output:
+
+```{r v_int_result, echo = F, eval = T}
+# Create a
+i <- 1:5
+# Create b
+f <- c(11.1, 18.74, 29.02, 47.45, 76.2)
+# Create mc and set names
+mc <- cbind(i, as.integer(f))
+colnames(mc) <- c('a', 'b')
+# Print out mc
+mc
+# Create mr and set names
+mr <- rbind(as.double(i), f)
+rownames(mr) <- c('a', 'b')
+# Print out mr
+mr
+# Create V
+V <- c('a', 'b', 'c', 'd', 'e')
+# Create b
+b <- c(TRUE, TRUE, FALSE, FALSE, TRUE)
+# Create l
+l <- list(i = i, f = f, V = V, b = b)
+# Add attribute to l
+attr(l, 'objective') <- "combine objects into list"
+# Check the attributes of l
+attributes(l)
+# print out l
+l
+# Create df
+df <- data.frame(i = i, f = f, V = V, b = b)
+# Check attributes of df
+attributes(df)
+# print out df
+df
+```
+
+```{r v_int-solution, exercise.reveal_solution = T}
+# Create a
+i <- 1:5
+# Create b
+f <- c(11.1, 18.74, 29.02, 47.45, 76.2)
+# Create mc and set names
+mc <- cbind(i, as.integer(f))
+colnames(mc) <- c('a', 'b')
+# Print out mc
+mc
+# Create mr and set names
+mr <- rbind(as.double(i), f)
+rownames(mr) <- c('a', 'b')
+# Print out mr
+mr
+# Create V
+V <- c('a', 'b', 'c', 'd', 'e')
+# Create b
+b <- c(TRUE, TRUE, FALSE, FALSE, TRUE)
+# Create l
+l <- list(i = i, f = f, V = V, b = b)
+# Add attribute to l
+attr(l, 'objective') <- "combine objects into list"
+# Check the attributes of l
+attributes(l)
+# print out l
+l
+# Create df
+df <- data.frame(i = i, f = f, V = V, b = b)
+# Check attributes of df
+attributes(df)
+# print out df
+df
+```
