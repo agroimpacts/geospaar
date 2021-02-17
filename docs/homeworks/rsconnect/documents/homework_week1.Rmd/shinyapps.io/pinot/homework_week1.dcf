@@ -1,0 +1,12 @@
+name: homework_week1
+title: homework_week1
+username:
+account: pinot
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3655176
+bundleId: 4237967
+url: https://leisong.shinyapps.io/homework_week1/
+when: 1613605286.58515
+asMultiple: FALSE
+asStatic: FALSE

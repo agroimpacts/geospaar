@@ -198,7 +198,7 @@ Any objects have attributes. If nothing is set, the attributes of an object is `
 
 Let's run a R markdown practice and overview what we learned today.
 
-[Expected output](https://agroimpacts.github.io/geospaar/practices/class2_practice.html)
+[Expected output](https://agroimpacts.github.io/geospaar/class2_practice.html)
 
 ---
 

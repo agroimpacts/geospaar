@@ -29,16 +29,12 @@ The class materials are mostly designed by Dr. Lyndon Estes.
 ## Course slides
 
 - Week 1
-  - [Class 1](slides/class1.html)
-    - <a href="slides/class1.html">Download class1.html</a>
-  - [Class 1 Homework](homeworks/class_homework.html)
-  - [Class 2](slides/class2.html)
-    - <a href="slides/class2.html">Download class2.html</a>
-    <!---
-    - <a href="demos/class2_markdown_demo.Rmd">Download class2_markdown_demo.Rmd</a>
-    - <a href="demos/class2_objects_demo.R">Download class2_objects_demo.R</a>
-    - <a href="practices/class2_practice.Rmd">Download class2_practice.Rmd</a>
-    -->
+  - [Week 1 Homework](https://leisong.shinyapps.io/homework_week1/)
+  - [Class 1](class1.html)
+  - [Class 2](class2.html)
+    - [class2_markdown_demo.Rmd](class2_markdown_demo.Rmd)
+    - [class2_objects_demo.R](class2_objects_demo.R)
+    - [class2_practice.Rmd](class2_practice.Rmd)
 
 ## Appendix
 - [Known issues](known-issues.html)
