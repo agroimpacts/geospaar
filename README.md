@@ -39,7 +39,7 @@ Get a [personal access token](https://help.github.com/articles/creating-a-person
 - Generate a new token, name it something meaningful, and check the "repo" box
 
 <p align="center">
-  <img width="793" height="328" src="vignettes/fig/pat4.png">
+  <img width="793" height="328" src="docs/fig/pat4.png">
 </p>
 
 - Copy the token and paste it somewhere safe (e.g. a secure password manager) 

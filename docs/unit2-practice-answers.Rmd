@@ -516,6 +516,6 @@ for(i in 1:3) {
 
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***

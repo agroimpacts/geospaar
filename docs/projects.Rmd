@@ -153,6 +153,6 @@ For this final assignment, assessment will be out of 50 points using simplified 
 
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***

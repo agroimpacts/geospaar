@@ -50,6 +50,6 @@ GDAL is a widely used library for geospatial data. A lot of R geospatial package
     
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***

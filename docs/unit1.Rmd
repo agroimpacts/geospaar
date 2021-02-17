@@ -21,7 +21,7 @@ library(knitr)
 
 # Overview {#unit1overview}
 
-This section provides the detailed syllabus for the first unit of ___GEOG246-346: Geospatial Analysis with R___ (please return to the main  [Syllabus](syllabus.html) for a general course overview). 
+This section provides the detailed syllabus for the first unit of ___GEOG246-346: Geospatial Analysis with R___ (please return to the main  [Syllabus](https://agroimpacts.github.io/geospaar/syllabus.html) for a general course overview). 
 
 In this unit, we will learn the basics of working with `R`, starting with non-spatial data, as well as additional skills related to ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis. These skills include using version control software (`git` and [github](https://github.com)), creating `R` packages, and using `Rmarkdown` to document and present your analyses. 
 
@@ -37,18 +37,18 @@ Our learning goals for this unit as are follows--by the end of this unit you sho
 
 This section is broken into four modules (the materials can be accessed by following the links): 
 
-[**Module 1**](unit1-module1.html): R and R fundamentals. 
+[**Module 1**](https://agroimpacts.github.io/geospaar/unit1-module1.html): R and R fundamentals. 
 
-[**Module 2**](unit1-module2.html): Reproducibility and related R skills. 
+[**Module 2**](https://agroimpacts.github.io/geospaar/unit1-module2.html): Reproducibility and related R skills. 
 
-[**Module 3**](unit1-module3.html): Data preparation and operation.
+[**Module 3**](https://agroimpacts.github.io/geospaar/unit1-module3.html): Data preparation and operation.
 
-[**Module 4**](unit1-module4.html): Data manipulation and visualization.
+[**Module 4**](https://agroimpacts.github.io/geospaar/unit1-module4.html): Data manipulation and visualization.
 
-[**Unit1 practice answers**](unit1-appendix.html): Answers and code for Unit1 practice.
+[**Unit1 practice answers**](https://agroimpacts.github.io/geospaar/unit1-appendix.html): Answers and code for Unit1 practice.
 
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***

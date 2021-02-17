@@ -155,6 +155,6 @@ include_graphics("fig/branches.png")
     
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***

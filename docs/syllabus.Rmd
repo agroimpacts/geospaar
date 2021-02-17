@@ -47,7 +47,7 @@ kbl(hours, escape = F, align = "l") %>%
 ```
 
 ## Class materials
-- [Class materials web page]()
+- [Class materials web page](https://agroimpacts.github.io/geospaar/)
 - [Class materials R package](https://github.com/agroimpacts/geospaar)
 - [Class GitHub group](https://github.com/agroimpacts)
 
@@ -82,7 +82,7 @@ __Readings and assignments__ should be completed ___before___ the class they are
 
 ___Practical assignments___. During the first two units, there will be a total of 5 assignments (see links within the individual modules). The sixth assignment is your project proposal. Unless otherwise assignments are given on a Monday and will due before class on Monday of the same week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join [GitHub](http://github.com) (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
-__Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
+__Projects__ Each student will be required to undertake a final project. Please see the [projects](https://agroimpacts.github.io/geospaar/projects.html) page for more detail.
 
 ## Style
 There are many ways to write code and get the results you want. However, not all ways of writing code are equal. Some code is messy and hard to read. Other code is organized, clean, and easy to read. The latter is what we are aiming for, as it helps to foster reproducibility. In this class, we will follow [Hadley Wickham's style guide](http://adv-r.had.co.nz/Style.html). Please study it.    
@@ -107,7 +107,7 @@ kbl(mat, escape = F, align = "l") %>%
   kable_styling(font_size = 16) 
 ```
 
-Grading will be based on the rubrics found under the [Assessment](assessment.html) vignette.
+Grading will be based on the rubrics found under the [Assessment](https://agroimpacts.github.io/geospaar/assessment.html) vignette.
 
 Courses at Clark are worth 4 credit hours, which equates to 180 hours of engaged academic time. The breakdown of that time is estimated to be: 
 
@@ -185,7 +185,7 @@ kbl(timetable, escape = F, caption = "Timeline") %>%
 
 In this first part of the course, we will learn the basics of working with `R`, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
 
-This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
+This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](https://agroimpacts.github.io/geospaar/unit1.html), as well as the overall learning goals for the unit.  
 
 **Week 1. R and R fundamentals**
 
@@ -201,7 +201,7 @@ This syllabus provides the general subject for each week and class. The detailed
 
 ## Unit 2. Handling and analyzing spatial data with R
 
-In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
+In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](https://agroimpacts.github.io/geospaar/unit2.html).
 
 **Week 5. Introduction**
 
@@ -288,7 +288,7 @@ This is a big topic, but here are a few links to get started.
 
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***
 

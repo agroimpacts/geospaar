@@ -31,6 +31,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
 - Week 1
   - [Class 1](slides/class1.html)
     - <a href="slides/class1.html">Download class1.html</a>
+  - [Class 1 Homework](homeworks/class_homework.html)
   - [Class 2](slides/class2.html)
     - <a href="slides/class2.html">Download class2.html</a>
     <!---

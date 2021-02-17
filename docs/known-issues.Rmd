@@ -68,6 +68,6 @@ Then restart Rstudio and proceed again with `devtools::install*` steps. This ste
 
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***

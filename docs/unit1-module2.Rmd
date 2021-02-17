@@ -702,6 +702,6 @@ For the first assignment of this class, you are going to do the following:
 
 ***
 <center>
-[Back to home](toc.html)
+[Back to home](https://agroimpacts.github.io/geospaar/)
 </center>
 ***
