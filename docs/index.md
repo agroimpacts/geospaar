@@ -1,5 +1,7 @@
 # GEOG 246/346: Geospatial Analysis with R
-Instructor: Lei Song (lsong@clarku.edu) &nbsp; &nbsp; &nbsp;Teaching assistant: Pilar Delpino Marimón (PDelpinoMarimon@clarku.edu)
+Instructor: Lei Song (lsong@clarku.edu) 
+
+Teaching assistant: Pilar Delpino Marimón (PDelpinoMarimon@clarku.edu)
 
 Clark University, Spring 2021
 
