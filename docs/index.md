@@ -1,5 +1,7 @@
 # GEOG 246/346: Geospatial Analysis with R
-Instructor: Lei Song, Clark University, Spring 2021
+Instructor: Lei Song (lsong@clarku.edu) &nbsp; &nbsp; &nbsp;Teaching assistant: Pilar Delpino Marimón (PDelpinoMarimon@clarku.edu)
+
+Clark University, Spring 2021
 
 ## Resources
 - [Syllabus](syllabus.html)
@@ -35,6 +37,13 @@ The class materials are mostly designed by Dr. Lyndon Estes.
     - [class2_markdown_demo.Rmd](class2_markdown_demo.Rmd)
     - [class2_objects_demo.R](class2_objects_demo.R)
     - [class2_practice.Rmd](class2_practice.Rmd)
+- Week 2
+- Week 3
+- Week 4
+- Week 5
+- Week 6
+- Week 7
+- Week 8
 
 ## Appendix
 - [Known issues](known-issues.html)
