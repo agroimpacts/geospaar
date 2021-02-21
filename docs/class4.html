@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class3plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 4
+
+---
+
+
+&lt;img src="figures/weekly-rf.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+data("chirps")
+library(rasterVis)
+library(lubridate)
+zam &lt;- getData("GADM", country = "ZMB", level = 1)
+
+dates &lt;- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
+dates &lt;- data.frame(dates, w = unlist(lapply(1:4, function(x) rep(x, 7))))
+rfweek &lt;- stack(lapply(unique(dates$w), function(x) {
+  w &lt;- which(dates$w == x)
+  calc(chirps[[x]], sum)
+}))
+wk &lt;- as_date(sapply(unique(dates$w), function(x) dates[dates$w == x, 1][1]))
+names(rfweek) &lt;- wk
+
+mapTheme &lt;- rasterTheme(region = brewer.pal(9, "Blues"))
+pstrip &lt;- list(cex = 1, col = "white")
+png("inst/slides/figures/weekly-rf.png", height = 5, width = 5, res = 300,
+    units = "in", bg = "transparent")
+p &lt;- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
+               names.attr = paste("Week of", wk), axes = FALSE, xlab = "",
+               ylab = "", par.strip.text = pstrip, 
+               main = list("Weekly Rainfall (mm)", col = "White"), 
+               colorkey = list(axis.line = list(col = "white"), 
+                               axis.text = list(col = "white")))
+p2 &lt;- p + layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
+p2
+dev.off()
+```
+
+---
+
+## We have learned
+
+- Overview of R.
+- Fundamentals of R.
+- Functions and packages.
+- Environment and scoping.
+- Reproducibility.
+
+Any questions?
+
+---
+
+## Today
+
+- Simulation in terms of reproducibility.
+- Debugging and getting help.
+- Write Package.
+- More on Git/GitHub.
+
+---
+
+## Simulation and sampling
+
+- `runif`, generate random number from a uniform distribution.
+- `rnorm`, generate random number from a normal distribution.
+- `sample`, get samples from a vector.
+
+---
+
+## Set seed
+
+In terms of reproducibility, it is a MUST to set seed (function `set.seed()`) every time before using any simulation and sampling functions. 
+
+
+```r
+# run one time
+runif(5, 0, 1)
+```
+
+```
+## [1] 0.7565123 0.4942755 0.9357780 0.8434892 0.2919458
+```
+
+```r
+# run another time, get the different numbers
+runif(5, 0, 1)
+```
+
+```
+## [1] 0.09525987 0.38016446 0.43569763 0.82938628 0.06997447
+```
+
+```r
+# set seed
+set.seed(10)
+runif(5, 0, 1)
+```
+
+```
+## [1] 0.50747820 0.30676851 0.42690767 0.69310208 0.08513597
+```
+
+```r
+# run again, get the same numbers
+set.seed(10)
+runif(5, 0, 1)
+```
+
+```
+## [1] 0.50747820 0.30676851 0.42690767 0.69310208 0.08513597
+```
+
+---
+
+## Set seed
+
+Different seed will control to generate different numbers.
+
+
+```r
+# use seed 10
+set.seed(10)
+sample(1:100, 5)
+```
+
+```
+## [1]  9 74 76 55 72
+```
+
+```r
+# use seed 11
+set.seed(11)
+sample(1:100, 5)
+```
+
+```
+## [1] 34 56 25 16 37
+```
+
+```r
+# use seed 567
+set.seed(567)
+sample(1:100, 5)
+```
+
+```
+## [1] 13 28 69 71 87
+```
+
+---
+
+## Set seed
+
+`set.seed()` and any random function need to be used in pair. In other word, once `set.seed()` is used by a random function, it expires. So we have to set again.
+
+
+```r
+set.seed(11)
+sample(1:100, 10)
+```
+
+```
+##  [1] 34 56 25 16 37 60 12 85 86 62
+```
+
+```r
+sample(1:100, 10)
+```
+
+```
+##  [1]  94 100  85  35  93  39  45  34  49  40
+```
+
+```r
+sample(1:100, 10)
+```
+
+```
+##  [1] 47 39  6 67 82 12 93  3 10 80
+```
+
+```r
+set.seed(11)
+sample(1:100, 10)
+```
+
+```
+##  [1] 34 56 25 16 37 60 12 85 86 62
+```
+
+---
+
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+## Search Engine Science
+
+ - Sometimes you just need the error message
+&lt;img src="figures/class3_4.jpeg" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Search Engine Science
+
+- Sometimes you need to search
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+- How you search matters
+
+---
+
+&lt;img src="figures/class3_5.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Listserves
+
+&lt;img src="figures/class3_3.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Package
+
+General common parts of a package.
+
+&lt;img src="figures/class4_pkg_structure.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Package
+
+&lt;img src="figures/class4_pkg_other.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Package
+### Function
+
+As an author, we should write the help document of all functions as clear as possible.
+
+```
+#' An example of function documentation
+#'
+#' @description This function shows an example function.
+#' @param arg1 numeric, the first argument.
+#' @param arg2 logical, the secoond argument.
+#' @return describe about the return.
+#' @export
+#' @examples
+#' func_exp(32, TRUE)
+
+func_exp &lt;- function(arg1, arg2) {
+  do something here
+  return(rts)
+}
+```
+
+---
+
+## Package
+### Vignette
+
+Vignette is a special R markdown. It has extra parameters setting in YAML header:
+
+```
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "2021-02-21"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+vignette: &gt;
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```
+
+---
+
+## Package
+### Vignette
+
+- Write the YAML header manually based on the **right format**.
+- Create an Rmarkdown from package vignette templates.
+- Or use `usethis::use_vignette()` to create one.
+
+---
+
+## Git/GitHub
+### Commands
+
+[Basic commands](git-github.html)
+
+---
+
+## Next class
+
+- Indexing and subsetting
+- Advanced calculation
+
+---
+
+## Homework
+
+- Finish assignment 1 (due this Friday).
+- Read Unit1-Module3.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

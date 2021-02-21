@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.6/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class3plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 3
+
+---
+
+
+
+
+
+```r
+library(raster)
+library(ggplot2)
+library(rasterVis)
+library(gstat)
+
+# dummy grids, with spatial autocorrelation, normalized
+xy &lt;- expand.grid(1:50, 1:50)
+names(xy) &lt;- c('x', 'y')
+
+set.seed(2)  # 2
+gdummy &lt;- gstat(formula = z ~ 1, locations = ~x + y, dummy = TRUE, beta = 1,
+                model = vgm(psill = 0.35, range = 30, model = 'Sph'), 
+                nmax = 20)
+
+yy &lt;- predict(gdummy, newdata = xy, nsim = 4)
+gridded(yy) &lt;- ~x + y
+yy &lt;- raster(yy)
+yy &lt;- focal(yy, w = matrix(1, 3, 3), mean, na.rm = TRUE, pad = TRUE)
+
+png("inst/slides/figures/random-raster.png", height = 5, width = 5, res = 300,
+    units = "in", bg = "transparent")
+lattice.options(layout.heights = list(bottom.padding = list(x = 0), 
+                                      top.padding = list(x = 0)),
+                layout.widths = list(left.padding = list(x = 0), 
+                                     right.padding = list(x = 0)))
+levelplot(yy, scales = list(draw = FALSE), axes = FALSE,  
+          colorkey = list(axis.line = list(col = "white"), 
+                          axis.text = list(col = "white")))
+dev.off()
+```
+
+---
+
+## We have learned
+
+- Overview of R
+- R markdown
+- Data types and objects, and basic operations
+- Coding style
+
+Any questions?
+
+---
+
+## Today
+
+- Basic control structure.
+- Functions and scoping.
+- Packages and environments.
+- Object-oriented programming in R.
+- Reproducibility (Package, Version control, GitHub)
+
+---
+
+## Control structure
+
+Commonly used control structure:
+
+- `if` and `else`, which test a condition and do things correspondingly.
+- `switch`, which branches 
+- `for`, which execute a loop for a specific number of times.
+- `while`, which execute a loop when a condition is true.
+- `repeat`, which execute a repeat work until break out the loop.
+- `break`, which can control to exit a loop.
+-  `next`, which can skip an iteration of a loop.
+
+**Note**: we will learn later and then mainly use native R loop functions `*apply` for loops.
+---
+
+## Control structure
+### `if` - `else`
+
+
+```r
+# one line
+if (4 &gt; 5) print('4 is larger than 5.') else print("4 is smaller than 5.")
+
+# paragraph
+if (4 &gt; 5) {
+  print('4 is larger than 5.')
+} else print("4 is smaller than 5.")
+
+# or could get longer
+if (4 &gt; 5) {
+  print('4 is larger than 5.')
+} else if (4 == 5){
+  print("4 is equal to 5.")
+} else {
+  print("4 is smaller than 5.")
+}
+
+# ifelse
+ifelse(4 &gt; 5, print('4 is larger than 5.'), print("4 is smaller than 5."))
+x &lt;- 4
+y &lt;- 10
+z &lt;- ifelse(x &gt; y, x, y)
+```
+
+---
+
+### `switch`
+
+
+```r
+x &lt;- 'b'
+
+# If - else structure
+if (x == "a") {
+    "option 1"
+  } else if (x == "b") {
+    "option 2" 
+  } else if (x == "c") {
+    "option 3"
+  } else {
+    stop("Invalid `x` value")
+  }
+
+# switch
+switch(x,
+    a = "option 1",
+    b = "option 2",
+    c = "option 3",
+    stop("Invalid `x` value")
+)
+```
+
+The last component of a `switch()` should always throw an error, otherwise unmatched inputs will invisibly return `NULL`.
+
+---
+
+## Control structure
+### `for`
+
+
+```r
+for (i in 1:10) print(i)
+for (i in 1:10){
+  print(i)
+  print(i + 1)
+}
+
+# nested for
+for (i in 1:10){
+  for (j in 2:11){
+    print(x + y)
+  }
+}
+```
+
+---
+
+## Control structure
+### `while` and `repeat`
+
+
+```r
+# while
+x &lt;- 0
+while(x &lt; 10){
+  print(x)
+  x &lt;- x + 1 # Change the checking condition
+}
+
+# repeat
+x &lt;- 0
+repeat{
+  print(x)
+  x &lt;- x + 1
+  if (x == 10){
+    print('Finish repeat!')
+    break
+  }
+}
+```
+
+---
+
+## Control structure
+### `break` and `next`
+
+
+```r
+x &lt;- 0
+repeat{
+  x &lt;- x + 1 # what if we move this line after the first if?
+  if (x &lt; 5){
+    print('Skip this interation!')
+    next
+  }
+  if (x == 10){
+    print('Finish repeat!')
+    break
+  }
+  print(x)
+}
+```
+
+---
+
+## Functions
+
+Invoking a function is straightforward, just type the function name and give it the necessary parameters.
+
+```r
+sum(1, 3)
+
+# Assign the result to an object
+x &lt;- sum(c(1:10))
+
+is.vector(x)
+
+# open the help document using ?+function_name
+?sum
+```
+
+**What is generic function?**
+
+---
+
+## Functions
+### Components
+
+
+```r
+function_name &lt;- function(arg1, 
+                          arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)){
+  body
+}
+```
+
+Three essential components of a function:
+- `formals()`, which is a list of arguments. Could be NULL.
+- `body()`, the code in the function. R function will return the last thing generated by the function body automatically. If you want to return something else, use `return(x)`.
+- `environment()`, where the function finds the values. It might change based on where the function is defined.
+
+Except primitive functions, which are written in C in base package. E.g. `sum`.
+
+Without name, the function is called anonymous function. 
+---
+
+## Practice
+
+ - Define a function to convert Fahrenheit to Celsius.
+
+`$$Celsius = (Fahrenheit - 32) / 1.8$$`
+
+- Exam a sequence of temperature in Fahrenheit `c(70, 34, 25, 10, 89, 92, 15)`, when the temperature in Celsius is lower than -10, give a warning "Stay inside." and print out this temperature in Celsius.
+
+
+```r
+# Define the function
+c_to_f &lt;- function(fah = 0){
+  
+}
+
+# Initialize the temperature vector
+fahs &lt;- c(70, 34, 25, 10, 89, 92, 15)
+
+# Loop over the temperature to check
+for (fah in fahs){
+  
+}
+```
+
+The result should be:
+
+
+```
+## [1] "Stay inside."
+## [1] -12.22222
+```
+
+---
+
+## Practice
+
+
+```r
+c_to_f &lt;- function(fah = 0){
+  # returns the the temperature in Celsius 
+  # when get a value in Fahrenheit
+  # Example: c_to_f(25)
+  (fah - 32) / 1.8
+}
+fahs &lt;- c(70, 34, 25, 10, 89, 92, 15)
+for (fah in fahs){
+  cel &lt;- c_to_f(fah)
+  if (cel &lt; -10){
+    print('Stay inside.')
+    print(cel)
+  }
+}
+```
+
+```
+## [1] "Stay inside."
+## [1] -12.22222
+```
+
+**Note:** it is always a good manner to add description block within the function.
+
+---
+
+## Lexical scoping
+
+Let's guess some results:
+
+```r
+# Name masking
+x &lt;- 10
+f1 &lt;- function() {
+  x &lt;- 1
+  x &lt;- x + 1
+  print(x)
+}
+f1()
+
+# Fresh start
+f1()
+```
+
+---
+
+
+```r
+# Search level up
+x &lt;- 10
+f1 &lt;- function() {
+  y &lt;- 12
+  f2 &lt;- function(){
+    z &lt;- 14
+    print(x + y + z)
+  }
+  f2()
+}
+f1()
+
+# What about this?
+x &lt;- 10
+f1 &lt;- function(x) {
+  print(x)
+}
+f1()
+```
+
+---
+
+## Packages
+### Usage
+
+Installation
+
+
+```r
+# CRAN package
+install.packages('package_name')
+
+# Non-CRAN package, e.g. GitHub, devtools
+devtools::install_github('repo')
+
+# Non-CRAN package, e.g. GitHub, remotes
+remotes::install_github('tidyverse/dplyr')
+```
+
+Using
+
+
+```r
+# Load package into working directory
+library(remotes)
+install_github('tidyverse/dplyr')
+
+# Specify namespace using ::
+remotes::install_github('tidyverse/dplyr')
+```
+
+---
+
+## Environment and namespace
+
+&lt;img src="figures/class3_env_nsp.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Strategies to deal with conflicts
+
+- Based on the above figure, the most efficient way is to load the package with the function you want to use later.
+
+- We also could specify the package by using `package_name::function_name()`.
+
+- Other recent packages to deal with conflicts if you are interested in, e.g. `import`, and `conflicted`.
+
+---
+
+## Reproducibility
+### Build your own package and R project
+
+Let's run a demo.
+
+---
+
+## Version control
+
+&lt;img src="figures/class3_vc.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `git`/GitHub
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://kevintshoemaker.github.io/StatsChats/GIT1.png" alt="kevintshoemaker.github.io/StatsChats/GIT_tutorial" width="70%" /&gt;
+&lt;p class="caption"&gt;kevintshoemaker.github.io/StatsChats/GIT_tutorial&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://kevintshoemaker.github.io/StatsChats/GIT2.png" alt="kevintshoemaker.github.io/StatsChats/GIT_tutorial" width="70%" /&gt;
+&lt;p class="caption"&gt;kevintshoemaker.github.io/StatsChats/GIT_tutorial&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://i.stack.imgur.com/yof9f.png" alt="stackoverflow.com/questions/7212740/why-git-is-called-a-distributed-source-control-system" width="70%" /&gt;
+&lt;p class="caption"&gt;stackoverflow.com/questions/7212740/why-git-is-called-a-distributed-source-control-system&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+## Git/GitHub
+
+Let's go back to our demo to do some git stuff.
+
+---
+
+## Next class
+
+- Simulation in terms of reproducibility
+- Debugging and getting help
+- More on package and Git/GitHub
+
+---
+
+## Homework
+
+- Practice Git/GitHub.
+- Read Git/Github page on Course web.
+- Find out what you feel confused on what we have learned.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

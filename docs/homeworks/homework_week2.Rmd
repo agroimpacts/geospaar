@@ -1,0 +1,179 @@
+---
+title: "Week 1"
+output: 
+  learnr::tutorial:
+    theme: united
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+gradethis::gradethis_setup()
+tutorial_options(exercise.completion = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Class 3
+
+### Quiz
+
+```{r quiz_c1}
+quiz(
+  question('What does `switch("x", x = , y = 2, z = 3)` return?',
+    answer("`NULL`", 
+           message = "In `switch`, right hand side = empty and the input will “fall through” to the next value."),
+    answer("`2`", 
+           correct = T),
+    answer("`3`", message = "In `switch`, right hand side = empty and the input will “fall through” to the next value."),
+    answer("Syntax error", 
+           message = "In `switch`, right hand side = empty and the input will “fall through” to the next value."),
+    correct = "In `switch`, right hand side = empty and the input will “fall through” to the next value.",
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question('Which function is used to exist the entire `for` loop?',
+    answer("`break`", 
+           correct = T),
+    answer("`next`", 
+           message = "`next` exits the current iteration."),
+    answer("`exit`", message = "Not a commonly used function in R."),
+    answer("`quit`", 
+           message = "`quit` terminate the current R session."),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question('What are the three components of a function?',
+    answer("body", 
+           correct = T),
+    answer("arguments", 
+           correct = T),
+    answer("environment", 
+           correct = T),
+    answer("name", 
+           message = "Anonymous function have no name."),
+    correct = 'The three components of a function are its body, arguments, and environment.',
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question('What you will get?\n```
+  a <- 15; b <- 12
+  f <- function(a) {a * 10 + b}
+  f(20)',
+    answer("`212`", 
+           correct = T),
+    answer("`162`",
+           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
+    answer("`312`",
+           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
+    answer("Syntax error.", 
+           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
+  correct = 'Here uses two rules: name masking and searching level up.',
+    random_answer_order = TRUE, allow_retry = TRUE
+  )
+)
+```
+
+## Class 4
+
+### Quiz
+
+```{r quiz_c2}
+quiz(
+  # reference to https://learn.co/lessons/git-github-learn-quiz
+  question("Which function we should use to make all simulation in R reproducible?",
+    answer("`set.seed()`", correct = TRUE),
+    answer("`seed()`"),
+    answer("`random.seed()`"),
+    answer("`make.seed()`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to download a repository from GitHub to your local machine freshly?",
+    answer("`git clone`", correct = TRUE),
+    answer("`git fork`", message = '`git fork` is a not a git command'),
+    answer("`git push`"),
+    answer("`git pull`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("Which command creates an empty Git repository in the specified directory?",
+    answer("`git init`", correct = TRUE),
+    answer("`git log`"),
+    answer("`git reset`"),
+    answer("`git config`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to upload your changes to GitHub?",
+    answer("`git push`", correct = TRUE),
+    answer("`git add`"),
+    answer("`git status`"),
+    answer("`git clone`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to check the state of local repo since last commit?",
+    answer("`git status`", correct = TRUE),
+    answer("`git add`"),
+    answer("`git commit`"),
+    answer("`git diff`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to stage files for a commit?",
+    answer("`git add`", correct = TRUE),
+    answer("`git commit`"),
+    answer("`git status`"),
+    answer("`git reset`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to save the current state of your repo into git?",
+    answer("`git commit`", correct = TRUE),
+    answer("`git add`"),
+    answer("`git init`"),
+    answer("`git diff`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the shortcut to stage all the changes that you made?",
+    answer("`git add .`", correct = TRUE),
+    answer("`git add all`"),
+    answer("`git commit .`"),
+    answer("`git commit all`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("How do you supply a commit message to a commit?",
+    answer('`git commit -m "Commit message"`', correct = TRUE),
+    answer('`git commit "Commit message"`'),
+    answer('`git add -m "Commit message"`'),
+    answer('`git add "Commit message"`'),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("How do you commit for all changes with a message?",
+    answer('`git commit -am "Commit message"`', correct = TRUE),
+    answer('`git commit -a "Commit message"`'),
+    answer('`git add -am "Commit message"`'),
+    answer('`git add -a "Commit message"`'),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("When you commit changes to git, which one comes first: staging with `git add` or committing with `git commit`?",
+    answer('Staging with `git add`', correct = TRUE),
+    answer('Committing with `git commit`'),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to unstage a currently staged file called geospaar.txt?",
+    answer('`git checkout -- geospaar.txt`', correct = TRUE),
+    answer('`git reset geospaar.txt`'),
+    answer('`git HEAD^ -- geospaar.txt`'),
+    answer('`git unstage -- geospaar.txt`'),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to make a new branch?",
+    answer('`git branch`', correct = TRUE),
+    answer('`git -b`'),
+    answer('`git new branch`'),
+    answer('`git checkout branch`'),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question("What is the git command to switch to another branch?",
+    answer('`git branch`'),
+    answer('`git -b`'),
+    answer('`git new branch`'),
+    answer('`git checkout branch`', correct = TRUE),
+    random_answer_order = TRUE, allow_retry = TRUE
+  )
+)
+```
+
