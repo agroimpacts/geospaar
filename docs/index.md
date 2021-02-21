@@ -34,8 +34,8 @@ The class materials are mostly designed by Dr. Lyndon Estes.
 
 - Week 1
   - [Week 1 Homework](https://leisong.shinyapps.io/homework_week1/)
-  - [Class 1 slides](class1.html) -[Download Rmd](class1.Rmd)
-  - [Class 2 slides](class2.html) -[Download Rmd](class2.Rmd)
+  - [Class 1 slides](class1.html)
+  - [Class 2 slides](class2.html)
     <!---
     - [class2_markdown_demo.Rmd](class2_markdown_demo.Rmd)
     - [class2_objects_demo.R](class2_objects_demo.R)
@@ -43,8 +43,8 @@ The class materials are mostly designed by Dr. Lyndon Estes.
     -->
 - Week 2
   - [Week 2 Homework](https://leisong.shinyapps.io/homework_week2/)
-  - [Class 3 slides](class3.html) -[Download Rmd](class3.Rmd)
-  - [Class 4 slides](class4.html) -[Download Rmd](class4.Rmd)
+  - [Class 3 slides](class3.html)
+  - [Class 4 slides](class4.html)
 - Week 3
 - Week 4
 - Week 5
