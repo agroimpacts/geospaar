@@ -36,7 +36,7 @@ library(kableExtra)
 instructor <- 'Lei Song'
 hours_instructor <- 'Tuesday 02:00PM - 04:00PM (Virtual appointments only)'
 ta <- 'Pilar Delpino Marimón'
-hours_ta <- 'Wednesday 02:00PM - 04:00PM (Virtual appointments only)'
+hours_ta <- 'Wednesday 04:00PM - 06:00PM (Virtual appointments only)'
 hours <- rbind(c(instructor, hours_instructor), 
             c(ta, hours_ta))
 colnames(hours) <- c("Instructor/TA", "Office hours")
