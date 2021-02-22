@@ -69,7 +69,7 @@ Here are some other aspects regarding this course that you may wish to consider 
 
 3. ___This is a flipped class___:
 
-    Materials and problems are expected to be done before class. **This is particularly true this semester, when we are working more than half the time in an online mode.**  There will be some lecturing on key concepts, but class is intended to function more like a lab (and the lab period is intended for students seeking extra help), in which you work through practical problems, clarify concepts that are unclear, or  present your work to your peers. 
+    Materials and problems are expected to be done before class. There will be some lecturing on key concepts, but class is intended to function more like a lab (and the lab period is intended for students seeking extra help), in which you work through practical problems, clarify concepts that are unclear, or  present your work to your peers. 
     
 4. ___I am not a computer scientist___:
 
