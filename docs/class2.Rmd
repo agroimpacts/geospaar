@@ -29,9 +29,9 @@ ggsave(filename = "external/slides/figures/clark.png", plot = mp,
 
 ## We have learned
 
-- Setting up work tools and GitHub
 - Overview of R
 - R system
+- RStudio
 
 Any questions so far?
 ---
@@ -149,7 +149,7 @@ There are 6 atomic data types (or we could say classes of objects):
   * A vector is a sequence of objects of the **same class**.
   * Arrays and matrices are special type of vectors with dimensions.
   
-      - Matrices have 3 dimensions.
+      - Matrices have 2 dimensions.
       - Arrays could have higher dimensions.
 
 - Lists

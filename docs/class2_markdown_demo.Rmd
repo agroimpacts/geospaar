@@ -58,7 +58,7 @@ Have an unordered list first:
     * sub-item
       + sub-sub-item
       + sub-sub-item
-* item-3
+- item-3
 * item-4
 
 Have an ordered list then:
@@ -89,12 +89,12 @@ Inline code with evaluation `r 4 * 3` .
 Inline code just for display `sum`.
 
 ### Image
-Insert an image using ![](imgs/r.png)
+Insert an image using ![](figures/r.png)
 
 or we could use code chunk to insert:
 
 ```{r, out.width = "20%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("r.png")
+knitr::include_graphics("figures/r.png")
 ```
 
 ### Link
