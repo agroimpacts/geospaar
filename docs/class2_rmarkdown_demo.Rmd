@@ -1,0 +1,133 @@
+---
+title: 'Class 2: R markdown demo'
+author: 
+- Lei Song^1^, Author Two^2^
+- ^1^ Clark Unversity, ^2^ Xxx University
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    toc_float: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Plain text
+In this document, we will start to learn the basic syntax to use R markdown to write document. Within a R markdown file, we could have descriptive text, math equations, code chunk, and other settings. R markdown also ignore     multiple spaces, like            this, would     just get one     space. If you really want to add extra space within your text, use non breaking space tag: &nbsp; &nbsp; &nbsp;, then you got extra three space.
+Want a new line, but fail even though with a carriage return. 
+
+Start a new line with two blank spaces. Within R markdown, trying two blank spaces works like rebooting your machine when something does not work.
+
+## Heading
+# level-1
+## level-2
+### level-3
+#### level-4
+##### level-...
+
+## Basic format
+
+*italics* and **bold** or _italics_ and __bold__.
+
+~~strikethrough~~
+
+superscript^2^
+
+subscript~3~
+
+There is no defined underline syntax in R markdown. But R markdown also takes HTML tags, so we could use <ins>underline</ins> for underline.
+
+We also could use them together, e.g. **<ins>underline and bold</ins>**, ***italics and bold***, ***<ins>underline and bold and italics</ins>***
+
+A footnote [^1]
+
+[^1]: here is footnote 1.
+
+## List
+
+Have an unordered list first:
+
+* unordered list
+* another one
+    * sub-item (indented)
+    * sub-item
+      + sub-sub-item
+      + sub-sub-item
+- item-3
+* item-4
+
+Have an ordered list then:
+
+1. ordered list
+2. another item
+    + sub-unordered item
+    + sub-unordered item
+      1. sub-sub-ordered item
+      2. sub-sub-ordered item
+3. item-3
+1. item-4 (even though I type 1, it still show 4 in the text)
+      
+Sometimes, two blank spaces are necessary between two items when using some template.
+
+## Insert
+### Code
+R code chunk:
+```{r chunk_exp, eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+x <- 2
+print(x)
+```
+
+It is better to name your code chunk. Two chunks cannot have the same name. And specify chunk options based on your need.
+
+Inline code with evaluation `r 4 * 3` .
+
+Inline code just for display `sum`.
+
+### Image
+Insert an image using ![](figures/r.png)
+
+or we could use code chunk to insert:
+
+```{r, out.width = "20%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/r.png")
+```
+
+### Link
+We could insert a link using [link](https://www.r-project.org).
+
+### Math equation
+Inline equation: $A = \pi*r^{2}$
+
+Equation chunk: $$A = \pi*r^{2}$$
+
+## Blockquote
+
+### One block
+
+> blockquote here
+
+### Block with multiple paragraphs
+
+> blockquote paragraph1
+>
+> blockquote paragraph2
+
+### Nested block
+
+> blockquote
+>
+>> Nested blockquote
+
+### A formatted block
+
+> ### inside of blockquote, other also works
+>
+> - quote 1
+> - quote 2
+>
+>> Nested **blockquote**
