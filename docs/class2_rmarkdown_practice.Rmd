@@ -54,6 +54,14 @@ The most basic object in R is atomic vector. It only takes the same data type. I
 $$logical < integer < double < character$$
 We could use function `c` to concatenate multiple items within a vector. When a vector has dimensions, it will become a matrix (2 dimensions), or array (3 or more dimensions). We could use function `rbind` or `cbind` to bind multiple vectors into matrix.
 
+#### An example
+```{r example_vector}
+x <- c(1:10)
+y <- c(5:14)
+m <- rbind(x, y)
+m
+```
+
 ### List
 
 Being very similar to vector, but list can store items of different data types.
