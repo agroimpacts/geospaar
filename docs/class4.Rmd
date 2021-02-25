@@ -53,8 +53,7 @@ dev.off()
 
 - Overview of R.
 - Fundamentals of R.
-- Functions and packages.
-- Environment and scoping.
+- Functions and scoping
 - Reproducibility.
 
 Any questions?
@@ -63,10 +62,59 @@ Any questions?
 
 ## Today
 
+- Packages and environments.
+- Object-oriented programming in R.
 - Simulation in terms of reproducibility.
 - Debugging and getting help.
 - Write Package.
 - More on Git/GitHub.
+
+---
+
+## Packages
+### Usage
+
+Installation
+
+```{r, eval=F}
+# CRAN package
+install.packages('package_name')
+
+# Non-CRAN package, e.g. GitHub, devtools
+devtools::install_github('repo')
+
+# Non-CRAN package, e.g. GitHub, remotes
+remotes::install_github('tidyverse/dplyr')
+```
+
+Using
+
+```{r, eval=F}
+# Load package into working directory
+library(remotes)
+install_github('tidyverse/dplyr')
+
+# Specify namespace using ::
+remotes::install_github('tidyverse/dplyr')
+```
+
+---
+
+## Environment and namespace
+
+```{r, out.width = "45%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_env_nsp.png")
+```
+
+---
+
+## Strategies to deal with conflicts
+
+- Based on the above figure, the most efficient way is to load the package with the function you want to use later.
+
+- We also could specify the package by using `package_name::function_name()`.
+
+- Other recent packages to deal with conflicts if you are interested in, e.g. `import`, and `conflicted`.
 
 ---
 

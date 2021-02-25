@@ -54,8 +54,7 @@ dev.off()
 
 - Overview of R
 - R markdown
-- Data types and objects, and basic operations
-- Coding style
+- Data types and objects
 
 Any questions?
 
@@ -63,11 +62,44 @@ Any questions?
 
 ## Today
 
+- Continue on objects and operations
 - Basic control structure.
 - Functions and scoping.
-- Packages and environments.
-- Object-oriented programming in R.
 - Reproducibility (Package, Version control, GitHub)
+
+---
+
+## Fundamentals of R
+### Vectors
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class2_vector.png")
+```
+
+---
+
+## Fundamentals of R
+### Creation
+
+  * Function `vector(mode, length)` can be used to initialize a vector of specific data type with defined length.
+  * More commonly, function `c` (short for concatenate) can be used to create vectors.
+  * `cbind` and `rbind` are functions can bind `vector`s to a `matrix`. Function `matrix(data_vector, nrow, ncol)` also can be used to create a matrix, and `array(data_vector, dim)` for array.
+  * Anything can feed in function `list` to create a list, the same as `data.frame`.
+  * `is.xxx(x)` and `as.xxx(x)` also works for vector, matrix, array, list, and data.frame.
+  
+---
+
+## Fundamentals of R
+### Atrributes
+
+Any objects have attributes. If nothing is set, the attributes of an object is `NULL`. Some common attributes include:
+
+- `names`/`dimnames`/`rownames`/`colnames`
+- Overall `length`, and more specifically `dim` for matrix and array. Resetting `dim` attribute can convert a vector to matrix/array or reconstruct a matrix/array. 
+- `class`: it is a bit different from function `class`.
+- function `attr(object, attr_name)` can be used to query or set an attribute of an object. 
+- function `attributes(x)` can be used to get all attributes of an object.
+- function `str(object)` will print out a nice overview of an object.
 
 ---
 
@@ -149,7 +181,10 @@ The last component of a `switch()` should always throw an error, otherwise unmat
 ### `for`
 
 ```{r, eval=F}
+# One line
 for (i in 1:10) print(i)
+
+# code paragraph
 for (i in 1:10){
   print(i)
   print(i + 1)
@@ -364,53 +399,6 @@ f1()
 
 ---
 
-## Packages
-### Usage
-
-Installation
-
-```{r, eval=F}
-# CRAN package
-install.packages('package_name')
-
-# Non-CRAN package, e.g. GitHub, devtools
-devtools::install_github('repo')
-
-# Non-CRAN package, e.g. GitHub, remotes
-remotes::install_github('tidyverse/dplyr')
-```
-
-Using
-
-```{r, eval=F}
-# Load package into working directory
-library(remotes)
-install_github('tidyverse/dplyr')
-
-# Specify namespace using ::
-remotes::install_github('tidyverse/dplyr')
-```
-
----
-
-## Environment and namespace
-
-```{r, out.width = "45%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class3_env_nsp.png")
-```
-
----
-
-## Strategies to deal with conflicts
-
-- Based on the above figure, the most efficient way is to load the package with the function you want to use later.
-
-- We also could specify the package by using `package_name::function_name()`.
-
-- Other recent packages to deal with conflicts if you are interested in, e.g. `import`, and `conflicted`.
-
----
-
 ## Reproducibility
 ### Build your own package and R project
 
@@ -454,6 +442,8 @@ Let's go back to our demo to do some git stuff.
 
 ## Next class
 
+- Packages and environments.
+- Object-oriented programming in R.
 - Simulation in terms of reproducibility
 - Debugging and getting help
 - More on package and Git/GitHub

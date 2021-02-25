@@ -204,10 +204,9 @@ Let's run a R markdown practice and overview what we learned today.
 
 ## Next class
 
+- Continue on objects and operations
 - Basic control structure.
 - Functions and packages.
-- Object-oriented programming in R.
-- Environment and scoping in R.
 - Reproducibility (Package, Version control, GitHub)
 
 ---

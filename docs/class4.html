@@ -60,8 +60,7 @@ dev.off()
 
 - Overview of R.
 - Fundamentals of R.
-- Functions and packages.
-- Environment and scoping.
+- Functions and scoping
 - Reproducibility.
 
 Any questions?
@@ -70,10 +69,59 @@ Any questions?
 
 ## Today
 
+- Packages and environments.
+- Object-oriented programming in R.
 - Simulation in terms of reproducibility.
 - Debugging and getting help.
 - Write Package.
 - More on Git/GitHub.
+
+---
+
+## Packages
+### Usage
+
+Installation
+
+
+```r
+# CRAN package
+install.packages('package_name')
+
+# Non-CRAN package, e.g. GitHub, devtools
+devtools::install_github('repo')
+
+# Non-CRAN package, e.g. GitHub, remotes
+remotes::install_github('tidyverse/dplyr')
+```
+
+Using
+
+
+```r
+# Load package into working directory
+library(remotes)
+install_github('tidyverse/dplyr')
+
+# Specify namespace using ::
+remotes::install_github('tidyverse/dplyr')
+```
+
+---
+
+## Environment and namespace
+
+&lt;img src="figures/class3_env_nsp.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Strategies to deal with conflicts
+
+- Based on the above figure, the most efficient way is to load the package with the function you want to use later.
+
+- We also could specify the package by using `package_name::function_name()`.
+
+- Other recent packages to deal with conflicts if you are interested in, e.g. `import`, and `conflicted`.
 
 ---
 
@@ -96,7 +144,7 @@ runif(5, 0, 1)
 ```
 
 ```
-## [1] 0.7565123 0.4942755 0.9357780 0.8434892 0.2919458
+## [1] 0.8027920 0.3550483 0.8247905 0.1379965 0.7576215
 ```
 
 ```r
@@ -105,7 +153,7 @@ runif(5, 0, 1)
 ```
 
 ```
-## [1] 0.09525987 0.38016446 0.43569763 0.82938628 0.06997447
+## [1] 0.9676329 0.8042036 0.6276487 0.7144623 0.1718334
 ```
 
 ```r
@@ -293,7 +341,7 @@ Vignette is a special R markdown. It has extra parameters setting in YAML header
 ---
 title: "Vignette Title"
 author: "Vignette Author"
-date: "2021-02-21"
+date: "2021-02-24"
 output:
   prettydoc::html_pretty:
     theme: cayman

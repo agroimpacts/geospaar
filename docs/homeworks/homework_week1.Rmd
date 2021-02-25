@@ -105,6 +105,11 @@ quiz(
 
 ### Exercise 
 
+#### R markdown
+
+Write an R markdown file to ensure the knit result is as follow: [expected result](https://agroimpacts.github.io/geospaar/class2_rmarkdown_practice.html). And then share your html in our slack channel.
+
+#### Coding
 Write the R code with proper style required to:
 
 1. create `i` as a vector of 1:5.
