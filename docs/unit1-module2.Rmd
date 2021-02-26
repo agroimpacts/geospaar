@@ -180,7 +180,7 @@ You will also notice the `git` tab in lower left of the image, which has a listi
 
 ```bash
 $ git status
-On branch master
+On branch main
 
 No commits yet
 
@@ -286,7 +286,8 @@ Add the repository that matches the name of your local one (i.e. the name of you
 
 ```bash
 git remote add origin https://github.com/agroimpacts/lde346.git
-git push -u origin master
+git branch -M main
+git push -u origin main
 ```
 
 Note that if you have just set up your SSH keys in RStudio, you might be prompted to enter your GitHub user name and password after the second command.
