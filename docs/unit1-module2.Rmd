@@ -168,7 +168,9 @@ Replace the prompt text in the above commands with your GitHub user name and ema
 ## Your first commit
 Let's start to use `git` now. We are going to do this using Rstudio's `git` interface, and the project you just created in the previous section. So open that project (mine is lde346.Rproj, which is found in the lde346 folder on my computer--I can open it and Rstudio up by double-clicking the .Rproj file).
 
-Once in there, click on the "Files" tab, and you will see your directory structure, which should look like what you see in the image below.
+Once in there, go to Tools -> Project Options again, and navigate to Git/SVN panel. Then select Git as Version control system. Once you click yes, RStudio will restart. Git tab in RStudio will appear in Environment/History/Connections... pane. Since now, the R project is initialized with `git`.  
+
+Then click on the "Files" tab, and you will see your directory structure, which should look like what you see in the image below.
 
 ```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="New Rstudio package project file structure (yellow arrow) and git tab (orange arrow). Rstudio's Editor theme is 'Idle Fingers'."}
 include_graphics("fig/u1m1-7.png") 
