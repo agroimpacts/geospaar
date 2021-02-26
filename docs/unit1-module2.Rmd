@@ -88,7 +88,7 @@ The first thing you need to do is to install `R`, Rstudio, and `git` on the mach
 
 - Install `git` by following [links here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) to get the version for your OS. If you are installing `git` for Windows, install using the default options. 
 - Then install `R` for your OS from Rstudio's link to [CRAN's R downloads](https://cran.rstudio.com) (use default options)
-- And then [download] (https://www.rstudio.com/products/rstudio/download/#download) and install Rstudio (use default options).
+- And then [download](https://www.rstudio.com/products/rstudio/download/#download) and install Rstudio (use default options).
 
 ### Your first Rstudio project{#your-first-rstudio-project}
 
@@ -291,6 +291,15 @@ git push -u origin main
 ```
 
 Note that if you have just set up your SSH keys in RStudio, you might be prompted to enter your GitHub user name and password after the second command.
+
+**Fun fact:** if you accidentally added something else rather than your own repo as your `origin`, you could do this in terminal to fix it:
+
+```bash
+# remove origin
+git remote remove origin
+# re-add your origin
+git remote add origin path/to/your/repo.git
+```
 
 Now, go back to the GitHub repository, and refresh the page, and you will see your committed files in there. 
 
