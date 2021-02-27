@@ -1,13 +1,13 @@
 name: homework_week2
 title: homework_week2
 username:
-account: pinot
+account: leisong
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3673919
-bundleId: 4253309
+bundleId: 4279968
 url: https://leisong.shinyapps.io/homework_week2/
-when: 1613940525.93021
+when: 1614467980.55143
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: homework_week1.html|homework_week1.Rmd

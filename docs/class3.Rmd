@@ -56,15 +56,13 @@ dev.off()
 - R markdown
 - Data types and objects
 
-Any questions?
-
 ---
 
 ## Today
 
 - Continue on objects and operations
 - Basic control structure.
-- Functions and scoping.
+- Functions and packages.
 - Reproducibility (Package, Version control, GitHub)
 
 ---
@@ -100,6 +98,17 @@ Any objects have attributes. If nothing is set, the attributes of an object is `
 - function `attr(object, attr_name)` can be used to query or set an attribute of an object. 
 - function `attributes(x)` can be used to get all attributes of an object.
 - function `str(object)` will print out a nice overview of an object.
+
+---
+
+## Fundamentals of R
+### Data.frame
+
+As we said before, data.frame is a list as well, but it is designed for tabular data by mimicking some behavior of matrix:
+
+* Methods and attributes of list also works on data.frame. E.g. `data.frame(col1 = 1:10, col2 = 2:11)` is to create a data.frame.
+* Each item of the list can be treated as a column, and the length of each item of the list is row numbers. So for data.frame, each column must have same length. 
+* Comparing to list, data.frame has some special attributes `row.names` to store the names of rows. `names` is still can be used to store names of column. `nrow` and `ncol` to get the number of rows and columns. `dim` function works for data.frame to get the dimensions (An evidence that data.frame mimic some behavior of matrix).
 
 ---
 
@@ -357,44 +366,31 @@ for (fah in fahs){
 
 ---
 
-## Lexical scoping
+## Packages
+### Usage
 
-Let's guess some results:
+Installation
+
 ```{r, eval=F}
-# Name masking
-x <- 10
-f1 <- function() {
-  x <- 1
-  x <- x + 1
-  print(x)
-}
-f1()
+# CRAN package
+install.packages('package_name')
 
-# Fresh start
-f1()
+# Non-CRAN package, e.g. GitHub, devtools
+devtools::install_github('repo')
+
+# Non-CRAN package, e.g. GitHub, remotes
+remotes::install_github('tidyverse/dplyr')
 ```
 
----
+Using
 
 ```{r, eval=F}
-# Search level up
-x <- 10
-f1 <- function() {
-  y <- 12
-  f2 <- function(){
-    z <- 14
-    print(x + y + z)
-  }
-  f2()
-}
-f1()
+# Load package into working directory
+library(remotes)
+install_github('tidyverse/dplyr')
 
-# What about this?
-x <- 10
-f1 <- function(x) {
-  print(x)
-}
-f1()
+# Specify namespace using ::
+remotes::install_github('tidyverse/dplyr')
 ```
 
 ---
@@ -442,8 +438,8 @@ Let's go back to our demo to do some git stuff.
 
 ## Next class
 
-- Packages and environments.
-- Object-oriented programming in R.
+- Scoping and environments
+- Object-oriented programming in R
 - Simulation in terms of reproducibility
 - Debugging and getting help
 - More on package and Git/GitHub
@@ -452,7 +448,6 @@ Let's go back to our demo to do some git stuff.
 
 ## Homework
 
-- Practice Git/GitHub.
-- Read Git/Github page on Course web.
+- Continue to practice Git/GitHub (Git/Github page on Course web).
+- Take challenge 1 under class 3 slides. 
 - Find out what you feel confused on what we have learned.
-

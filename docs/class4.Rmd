@@ -62,7 +62,7 @@ Any questions?
 
 ## Today
 
-- Packages and environments.
+- Scoping and environments.
 - Object-oriented programming in R.
 - Simulation in terms of reproducibility.
 - Debugging and getting help.
@@ -71,31 +71,44 @@ Any questions?
 
 ---
 
-## Packages
-### Usage
+## Lexical scoping
 
-Installation
-
+Let's guess some results:
 ```{r, eval=F}
-# CRAN package
-install.packages('package_name')
+# Name masking
+x <- 10
+f1 <- function() {
+  x <- 1
+  x <- x + 1
+  print(x)
+}
+f1()
 
-# Non-CRAN package, e.g. GitHub, devtools
-devtools::install_github('repo')
-
-# Non-CRAN package, e.g. GitHub, remotes
-remotes::install_github('tidyverse/dplyr')
+# Fresh start
+f1()
 ```
 
-Using
+---
 
 ```{r, eval=F}
-# Load package into working directory
-library(remotes)
-install_github('tidyverse/dplyr')
+# Search level up
+x <- 10
+f1 <- function() {
+  y <- 12
+  f2 <- function(){
+    z <- 14
+    print(x + y + z)
+  }
+  f2()
+}
+f1()
 
-# Specify namespace using ::
-remotes::install_github('tidyverse/dplyr')
+# What about this?
+x <- 10
+f1 <- function(x) {
+  print(x)
+}
+f1()
 ```
 
 ---

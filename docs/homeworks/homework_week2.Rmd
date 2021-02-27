@@ -9,7 +9,7 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-gradethis::gradethis_setup()
+# gradethis::gradethis_setup()
 tutorial_options(exercise.completion = FALSE)
 knitr::opts_chunk$set(echo = FALSE)
 ```
@@ -52,23 +52,196 @@ quiz(
            message = "Anonymous function have no name."),
     correct = 'The three components of a function are its body, arguments, and environment.',
     random_answer_order = TRUE, allow_retry = TRUE
-  ),
-  question('What you will get?\n```
-  a <- 15; b <- 12
-  f <- function(a) {a * 10 + b}
-  f(20)',
-    answer("`212`", 
-           correct = T),
-    answer("`162`",
-           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
-    answer("`312`",
-           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
-    answer("Syntax error.", 
-           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
-  correct = 'Here uses two rules: name masking and searching level up.',
-    random_answer_order = TRUE, allow_retry = TRUE
   )
 )
+```
+
+### Exercise
+
+Fill up the R code chunk below required to:
+
+1. Make a data.frame `df` with 50 rows by defining columns:
+   - Column `a` is a vector of random integers from `1:100`.
+   - Column `b` is a vector of random numbers from a uniform distribution.
+   - Column `g` is a vector of random elements in `r paste0('group', 1:5)`.
+2. Once got the `df`, fo the following:
+
+   - Define a function to mimic function `dimnames`.
+   - Define a function to convert column `a` of `df` from number to level based on the rules: A: 100 >= a > 90, B: 90 >= a > 60, C: a 60 >= a > 0.
+   - Define a function to check a character is equal to 'group5' or not. Then use for loop function to check each element in column `g` of `df`.
+   - Define a function to:
+  
+     1. Check if column `a` of `df` has any value larger than 50.
+     2. And if column `b` of `df` has all values larger than 0.
+     3. If both yes, then return the sum of `a * b`.
+     
+Hints: 
+
+1. The place with "`___`" is the place for you to fill in code. So double click "`___`" and replace it with your code.
+1. Use the syntax `df$a` to get an column out from a data.frame as a vector. 
+1. If you don't know how to use a function, use `?function_name` to open the help document to learn how to use it.
+1. Pay attention to the hints and requirements provided in the code chunk.
+
+```{r df, exercise=TRUE, exercise.lines = 80}
+# Define number of row
+num_row <- ___ # a number
+
+# Make a
+set.seed(10)
+a <- sample(___, num_row) # a vector
+
+# Create b
+set.seed(10)
+b <- runif(___, min = 0, max = 2) # an object
+
+# Create g
+g <- ___('group', sample(1:5, 50, replace = T)) # a function
+
+# Combine them to make the df
+df <- data.frame(a = ___, b = ___, g = ___) # objects
+df
+
+## Define a function to mimic function dimnames
+### Could use any functions related to attributes
+dimnames_mimic <- function(df){
+  # A function to mimic dimnames
+  # Example: dimnames_ls(df)
+  nms_row <- ___(df) # a function
+  nms_col <- ___ # call a function
+  
+  list(___, ___) # objects
+}
+
+dimnames_mimic(df) # should be the same as dimnames(df)
+
+## Define a function to convert column a of df from number to level
+## based on the rules: A: 100 >= a > 90, B: 90 >= a > 60, C: a 60 >= a > 0
+## Question 1: ifelse or if-else? why? Think about the output shape.
+## Hint 2: use df$a to get the a column from df
+convert_level <- function(___){ # an object name
+  # A function to convert numbers to levels
+  # Example: convert_level(1:100)
+  ifelse(x > 90 & x <= 100, ___, # a character
+         ifelse(___, 'B', # a checking condition
+                ifelse(x > 0, 'C', NA)))
+}
+
+levels_df <- convert_level(___); levels_df # a vector
+
+## Define a function to check a character is equal to 'group5' or not.
+## Then use for loop function to check each element in column g of df.
+## Requirement 1: use switch for the check function
+check_group <- function(x){
+  # A function to check if a character is equal to 'group5'
+  # Example: check_group('group3')
+  switch(x,
+         group1 = ___, # could use "fall through"
+         ___ = ___, 
+         ___ = ___,
+         ___ = 'No',
+         group5 = 'Yes', 
+         stop('Not valid `x` value.'))
+}
+
+# for loop
+for (i in ___){ # a vector
+  i_check <- ___ # call a function
+  print(i_check)
+}
+
+## Define a function to:
+## 1. Check if column a of df has any value larger than 50
+## 2. And if column b of df has all values larger than 0.
+## If both yes, then return the sum of a * b
+sum_a_b <- function(a, b){
+  if (___(a > 50) & (!___(b <= 0))){ # function
+    sum(a ___ b) # an operator
+  } else{
+    # always good to catch other conditions
+    print('a or b does not match the condtion.')
+  }
+}
+```
+
+```{r df-solution, exercise.reveal_solution = T}
+# Define number of row
+num_row <- 50
+
+# Make a
+set.seed(10)
+a <- sample(1:100, num_row)
+
+# Create b
+set.seed(10)
+b <- runif(num_row, min = 0, max = 2)
+
+# Create g
+g <- paste0('group', sample(1:5, 50, replace = T))
+
+# Combine them to make the df
+df <- data.frame(a = a, b = b, g = g)
+df
+
+## Define a function to mimic function dimnames
+### Could use any functions related to attributes
+dimnames_ls <- function(df){
+  # A function to mimic dimnames
+  # Example: dimnames_ls(df)
+  nms_row <- rownames(df) # or row.names(df) or attr(df, 'names')
+  nms_col <- colnames(df) # or names(df) or attr(df, 'row.names')
+  
+  list(nms_row, nms_col)
+}
+
+dimnames_ls(df) # should be the same as dimnames(df)
+
+## Define a function to convert column a of df from number to level
+## based on the rules: A: 100 >= a > 90, B: 90 >= a > 60, C: a 60 >= a > 0
+## Hint 1: ifelse or if-else? why? Think about the output shape
+## Hint 2: use df$a to get the a column from df
+convert_level <- function(x){
+  # A function to convert numbers to levels
+  # Exampple: convert_level(1:100)
+  ifelse(x > 90 & x <= 100, 'A',
+         ifelse(x > 60, 'B',
+                ifelse(x > 0, 'C', NA)))
+}
+
+levels_df <- convert_level(df$a); levels_df
+
+## Define a function to check a character is equal to 'group5' or not.
+## Then use for loop function to check each elemnet in column g of df.
+## Requirement 1: use switch for the check function
+check_group <- function(x){
+  # A function to check if a character is equal to 'group5'
+  # Example: check_group('group3')
+  switch(x,
+         group1 = , # could use "fall through"
+         group2 = ,
+         group3 = ,
+         group4 = 'No',
+         group5 = 'Yes',
+         stop('Not valid `x` value.'))
+}
+
+# for loop
+for (i in df$g){
+  i_check <- check_group(i)
+  print(i_check)
+}
+
+## Define a function to:
+## 1. Check if column a of df has any value larger than 50
+## 2. And if column b of df has all values larger than 0.
+## If both yes, then return the sum of a * b
+sum_a_b <- function(a, b){
+  if (any(a > 50) & (!all(b <= 0))){
+    sum(a * b)
+  } else{
+    # always good to catch other conditions
+    print('a or b does not match the condtion.')
+  }
+}
 ```
 
 ## Class 4
@@ -83,6 +256,21 @@ quiz(
     answer("`seed()`"),
     answer("`random.seed()`"),
     answer("`make.seed()`"),
+    random_answer_order = TRUE, allow_retry = TRUE
+  ),
+  question('What you will get?\n```
+  a <- 15; b <- 12
+  f <- function(a) {a * 10 + b}
+  f(20)',
+    answer("`212`", 
+           correct = T),
+    answer("`162`",
+           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
+    answer("`312`",
+           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
+    answer("Syntax error.", 
+           message = "Function `f` will take the input `a` value, and then search level up for b in global environment."),
+  correct = 'Here uses two rules: name masking and searching level up.',
     random_answer_order = TRUE, allow_retry = TRUE
   ),
   question("What is the git command to download a repository from GitHub to your local machine freshly?",
