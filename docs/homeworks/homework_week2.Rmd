@@ -56,6 +56,77 @@ quiz(
 )
 ```
 
+### In-class practice
+
+ - Define a function to convert Fahrenheit to Celsius.
+
+$$Celsius = (Fahrenheit - 32) / 1.8$$
+
+- Exam a sequence of temperature in Fahrenheit `c(70, 34, 25, 10, 89, 92, 15)`, when the temperature in Celsius is lower than -10, give a warning "Stay inside." and print out this temperature in Celsius.
+
+```{r temp, exercise=TRUE, exercise.lines = 18}
+# Define the function
+c_to_f <- function(fah = 0){
+  
+}
+
+# Initialize the temperature vector
+fahs <- c(70, 34, 25, 10, 89, 92, 15)
+
+# Loop over the temperature to check
+for (fah in fahs){
+  
+  
+  
+  
+  
+}
+```
+
+The result should be:
+
+```{r temp_result, echo = F, eval = T}
+# Define the function
+c_to_f <- function(fah = 0){
+  # This is a function to convert Fahrenheit to Celsius.
+  # The argument is fah with a default value 0.
+  (fah - 32) / 1.8
+}
+
+# Initialize the temperature vector
+fahs <- c(70, 34, 25, 10, 89, 92, 15)
+
+# Loop over the temperature to check
+for (fah in fahs){
+  cel <- c_to_f(fah)
+  if (cel < -10){
+    print('Stay inside.')
+    print(cel)
+  }
+}
+```
+
+```{r temp-solution, exercise.reveal_solution = T}
+# Define the function
+c_to_f <- function(fah = 0){
+  # This is a function to convert Fahrenheit to Celsius.
+  # The argument is fah with a default value 0.
+  (fah - 32) / 1.8
+}
+
+# Initialize the temperature vector
+fahs <- c(70, 34, 25, 10, 89, 92, 15)
+
+# Loop over the temperature to check
+for (fah in fahs){
+  cel <- c_to_f(fah)
+  if (cel < -10){
+    print('Stay inside.')
+    print(cel)
+  }
+}
+```
+
 ### Exercise
 
 Fill up the R code chunk below required to:

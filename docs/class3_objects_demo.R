@@ -1,3 +1,9 @@
+# Title     : Demo script for objects and operations
+# Objective : Include necessary examples to show how to create objects,
+#             query or set their attributes, and operations between vectors.
+# Created by: Lei Song
+# Created on: 03/01/21
+
 #####################
 ##     Vector      ##
 #####################
@@ -91,9 +97,9 @@ attributes(x)
 # set a new attribute
 attr(x, 'type') <- 'roster'
 
-attr(x, 'type')
-
 attributes(x)
+
+attr(x, 'type')
 
 ### include NAs
 x_n <- c('John', 'Chris', NA, 'Rachel', NA)
@@ -119,9 +125,11 @@ y_converted <- as.integer(y_logic); y_converted
 #####################
 
 ### convert a vector to matrix
+y
 length(y)
 y1 <- matrix(y, nrow = 2, ncol = 5); y1 # one way
 dim(y1)
+
 y2 <- y
 y2
 dim(y2)
@@ -143,7 +151,8 @@ dimnames(y3_cbind)
 
 ### to array
 y <- 1:40
-y3 <- array(y, dim = c(2, 5, 4)); y3 # one way
+y3 <- array(y, dim = c(2, 5, 2, 2)); y3 # one way
+
 y4 <- y
 dim(y4)
 dim(y4) <- c(2, 5, 4); y4 # another way
@@ -167,14 +176,16 @@ typeof(p)
 ##      List       ##
 #####################
 # Use list to store things with different classes
-n <- list(1, 'John', T, 98.3); n
+n <- list(1:3, c('John', 'Chris', 'Rachel'),
+          c(T, T, T), c(98.3, 98.5, 99)); n
 length(n)
 dim(n)
 names(n) <- c('id', 'name', 'pass', 'grade')
 n
 names(n)
 
-n <- list(id = 1, name = 'John', pass = T, grade = 98.3); n # the same to set names
+n <- list(id = 1:3, name = c('John', 'Chris', 'Rachel'),
+          pass = c(T, T, T), grade = c(98.3, 98.5, 99)); n # the same to set names
 attr(n, 'type') <- 'roster'
 n
 attributes(n)
@@ -184,6 +195,7 @@ attributes(n)
 #####################
 n
 df <- as.data.frame(n)
+df
 is.data.frame(df)
 str(df)
 attributes(df)
@@ -202,8 +214,8 @@ colnames(df) # also works
 ### One fact: within R,
 ### a single number/character/... is actually a vector of length 1
 1.5 + 2.3 - (0.6 + 2.1) * 1.2 - 1.5 / 0.5 + 2^3
-5 %/% 3
-5 %% 3
+5 %/% 3 # integral division operator
+5 %% 3 # x mode y
 
 ## vectors with the same length
 x1 <- c(1, 5)
@@ -238,7 +250,6 @@ x1 + x2
 x1 <- sample(1:100, 10)
 x1
 sort(x1)
-order(x1) # give you the index
 
 
 ## logical type
@@ -251,7 +262,7 @@ c(1:4) > c(3:5) # still will repeat the shorter one
 c(1, NA, 2) <= 4
 
 ## check NAs
-is.na(c(1, NA, 2))
+anyNA(c(1, NA, 2))
 
 # %in% check if an item within a vector or not
 3 %in% 3
@@ -275,7 +286,7 @@ num <- c(3, 2, 4, 23, 5, 10, 3)
 any(num > 10)
 all(num < 10)
 
-which(num > 5)
+which(num > 5) # give you index
 
 duplicated(num)
 unique(num)
