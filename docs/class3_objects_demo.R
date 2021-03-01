@@ -32,7 +32,7 @@ as.character(x_f)
 as.integer(x)
 as.integer(x_f) # it is convertible because factor is a sequence of integers with labels
 
-## See a very mental-damaging example
+## See a very brain-damaging example
 f <- factor(c(1:4, 10))
 f
 f_int <- as.integer(f)
@@ -155,10 +155,10 @@ dim(y4) <- c(2, 5, 4); y4 # another way
 # logical < integer < double < character
 
 n <- c(1, 'John', T, 98.3)
-typeof(n)
+n; typeof(n)
 
-o <- c(1, 2, T, T, F)
-typeof(o)
+o <- c(1.2, 2, T, T, F)
+o; typeof(o)
 
 p <- c(1L, 2L, T, F)
 typeof(p)
@@ -182,7 +182,7 @@ attributes(n)
 #####################
 ##   data.frame    ##
 #####################
-
+n
 df <- as.data.frame(n)
 is.data.frame(df)
 str(df)
@@ -205,14 +205,6 @@ colnames(df) # also works
 5 %/% 3
 5 %% 3
 
-## Non-length1 vectors with single number
-x <- 1:5
-x + 3
-(x + 3) / 2 - (2 * x + 1) + x^2
-
-y <- c(x, NA)
-y + 2
-
 ## vectors with the same length
 x1 <- c(1, 5)
 x2 <- c(7, 19)
@@ -230,6 +222,11 @@ x1; x2
 # The shorter one will be repeated first to get the same length,
 # then do calculation.
 x1 + x2
+
+## Special case: non-length1 vectors with single number
+x <- 1:5
+x + 3
+(x + 3) / 2 - (2 * x + 1) + x^2
 
 # It will give you a warning
 # if the length of one vector is not the multiple of another one.
@@ -253,7 +250,7 @@ c(1:4) > c(3:6)
 c(1:4) > c(3:5) # still will repeat the shorter one
 c(1, NA, 2) <= 4
 
-## is.xxx function
+## check NAs
 is.na(c(1, NA, 2))
 
 # %in% check if an item within a vector or not

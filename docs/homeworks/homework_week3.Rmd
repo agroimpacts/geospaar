@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ### Challenge
 
 ```{r load_data}
+# data source: https://www.kaggle.com/usda/a-year-of-pumpkin-prices?select=boston_9-24-2016_9-30-2017.csv
 file_address <- 'https://storage.googleapis.com/kagglesdsdata/datasets/2913/5511/boston_9-24-2016_9-30-2017.csv?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20210228%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20210228T220621Z&X-Goog-Expires=259199&X-Goog-SignedHeaders=host&X-Goog-Signature=931f9eb90034d8ec2dd4c9323b118120df5f3327f78cce616c088a6ba0a43b074e719c6108096f94ad942a5b541b19ba72f35a5caf58bdaaa7b5c34fb3368f0d102a033a28b66ec6093478a4a2674ba32fd316c64ee4eef503c760dc38a80dd03f1cc26513f07243dc6aa58c96bed465271a2aadb8ed840967415c7a85403dc57caa212f9e09a7ff0f4ed911f0f28fdcabf5eefb817e310401674d91b157940b2e5a27d1f06a54c39f8b013f637c7b55d322e1f02d02bc57d8b7810857c6fec751aba0506661fd896b0fd0917e197dd3f61083f5188620918f4f87625eb9d086ff45b40eb96e364392abf53f13b5513a7fb7e6789fd89278987db52019a47def'
 boston_pumpkins <- read.csv(file_address, stringsAsFactors = F)
 str(boston_pumpkins)

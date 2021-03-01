@@ -112,6 +112,22 @@ As we said before, data.frame is a list as well, but it is designed for tabular 
 
 ---
 
+### Factor
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_factor.png")
+```
+
+---
+
+### Vector calculation
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_operation.png")
+```
+
+---
+
 ## Control structure
 
 Commonly used control structure:
@@ -449,5 +465,5 @@ Let's go back to our demo to do some git stuff.
 ## Homework
 
 - Continue to practice Git/GitHub (Git/Github page on Course web).
-- Take challenge 1 under class 3 slides. 
+- Encourage to do class 3 homework. 
 - Find out what you feel confused on what we have learned.
