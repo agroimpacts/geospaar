@@ -62,184 +62,12 @@ Any questions?
 
 ## Today
 
+- Write Package.
+- More on Git/GitHub.
 - Scoping and environments.
 - Object-oriented programming in R.
 - Simulation in terms of reproducibility.
 - Debugging and getting help.
-- Write Package.
-- More on Git/GitHub.
-
----
-
-## Lexical scoping
-
-Let's guess some results:
-```{r, eval=F}
-# Name masking
-x <- 10
-f1 <- function() {
-  x <- 1
-  x <- x + 1
-  print(x)
-}
-f1()
-
-# Fresh start
-f1()
-```
-
----
-
-```{r, eval=F}
-# Search level up
-x <- 10
-f1 <- function() {
-  y <- 12
-  f2 <- function(){
-    z <- 14
-    print(x + y + z)
-  }
-  f2()
-}
-f1()
-
-# What about this?
-x <- 10
-f1 <- function(x) {
-  print(x)
-}
-f1()
-```
-
----
-
-## Environment and namespace
-
-```{r, out.width = "45%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class3_env_nsp.png")
-```
-
----
-
-## Strategies to deal with conflicts
-
-- Based on the above figure, the most efficient way is to load the package with the function you want to use later.
-
-- We also could specify the package by using `package_name::function_name()`.
-
-- Other recent packages to deal with conflicts if you are interested in, e.g. `import`, and `conflicted`.
-
----
-
-## Simulation and sampling
-
-- `runif`, generate random number from a uniform distribution.
-- `rnorm`, generate random number from a normal distribution.
-- `sample`, get samples from a vector.
-
----
-
-## Set seed
-
-In terms of reproducibility, it is a MUST to set seed (function `set.seed()`) every time before using any simulation and sampling functions. 
-
-```{r}
-# run one time
-runif(5, 0, 1)
-
-# run another time, get the different numbers
-runif(5, 0, 1)
-
-# set seed
-set.seed(10)
-runif(5, 0, 1)
-
-# run again, get the same numbers
-set.seed(10)
-runif(5, 0, 1)
-```
-
----
-
-## Set seed
-
-Different seed will control to generate different numbers.
-
-```{r}
-# use seed 10
-set.seed(10)
-sample(1:100, 5)
-
-# use seed 11
-set.seed(11)
-sample(1:100, 5)
-
-# use seed 567
-set.seed(567)
-sample(1:100, 5)
-```
-
----
-
-## Set seed
-
-`set.seed()` and any random function need to be used in pair. In other word, once `set.seed()` is used by a random function, it expires. So we have to set again.
-
-```{r}
-set.seed(11)
-sample(1:100, 10)
-
-sample(1:100, 10)
-
-sample(1:100, 10)
-
-set.seed(11)
-sample(1:100, 10)
-```
-
----
-
-## Knowing how to get help as a skillset
-
-- Slack posting guide
-- Getting help via the search engine
-- (Eventually) posting to listserves
-
----
-## Search Engine Science
-
- - Sometimes you just need the error message
-```{r, out.width = "90%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class3_4.jpeg")
-```
-
----
-
-## Search Engine Science
-
-- Sometimes you need to search
-  ```
-  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
-  error setting certificate verify locations:
-   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
-   certs/ca-bundle.crt
-   CApath: none
-  ```
-- How you search matters
-
----
-
-```{r, out.width = "90%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class3_5.png")
-```
-
----
-
-## Listserves
-
-```{r, out.width = "90%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class3_3.png")
-```
 
 ---
 
@@ -321,6 +149,178 @@ vignette: >
 ### Commands
 
 [Basic commands](git-github.html)
+
+---
+
+## Lexical scoping
+
+Let's guess some results:
+```{r, eval=F}
+# Name masking
+x <- 10
+f1 <- function() {
+  x <- 1
+  x <- x + 1
+  print(x)
+}
+f1()
+
+# Fresh start
+f1()
+```
+
+---
+
+```{r, eval=F}
+# Search level up
+x <- 10
+f1 <- function() {
+  y <- 12
+  f2 <- function(){
+    z <- 14
+    print(x + y + z)
+  }
+  f2()
+}
+f1()
+
+# What about this?
+x <- 10
+f1 <- function(x) {
+  print(x)
+}
+f1()
+```
+
+---
+
+## Environment and namespace
+
+```{r, out.width = "45%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_env_nsp.png")
+```
+
+---
+
+## Strategies to deal with conflicts
+
+- Based on the above figure, the most efficient way is to load the package with the function you want to use later.
+
+- We also could specify the package by using `package_name::function_name()`.
+
+- Other recent packages to deal with conflicts if you are interested in, e.g. `import`, and `conflicted`.
+
+---
+
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+## Search Engine Science
+
+ - Sometimes you just need the error message
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_4.jpeg")
+```
+
+---
+
+## Search Engine Science
+
+- Sometimes you need to search
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+- How you search matters
+
+---
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_5.png")
+```
+
+---
+
+## Listserves
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_3.png")
+```
+
+---
+
+## Simulation and sampling
+
+- `runif`, generate random number from a uniform distribution.
+- `rnorm`, generate random number from a normal distribution.
+- `sample`, get samples from a vector.
+
+---
+
+## Set seed
+
+In terms of reproducibility, it is a MUST to set seed (function `set.seed()`) every time before using any simulation and sampling functions. 
+
+```{r}
+# run one time
+runif(5, 0, 1)
+
+# run another time, get the different numbers
+runif(5, 0, 1)
+
+# set seed
+set.seed(10)
+runif(5, 0, 1)
+
+# run again, get the same numbers
+set.seed(10)
+runif(5, 0, 1)
+```
+
+---
+
+## Set seed
+
+Different seed will control to generate different numbers.
+
+```{r}
+# use seed 10
+set.seed(10)
+sample(1:100, 5)
+
+# use seed 11
+set.seed(11)
+sample(1:100, 5)
+
+# use seed 567
+set.seed(567)
+sample(1:100, 5)
+```
+
+---
+
+## Set seed
+
+`set.seed()` and any random function need to be used in pair. In other word, once `set.seed()` is used by a random function, it expires. So we have to set again.
+
+```{r}
+set.seed(11)
+sample(1:100, 10)
+
+sample(1:100, 10)
+
+sample(1:100, 10)
+
+set.seed(11)
+sample(1:100, 10)
+```
 
 ---
 
