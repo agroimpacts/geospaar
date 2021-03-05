@@ -1255,11 +1255,13 @@ Make sure you are working in the master branch of your project (you should not b
 There are no package functions to create for this assignment. All work is to be done in the vignette. 
 
 ## Vignette tasks
-1. Create three `tibble`s, `t1`, `t2`, `t3`. `t1` has 10 rows, with column `V1` containing values G1 through G10, and `V2` containing `runif` between 75 and 125.  `t2` has 15 rows with `v1` (G1 - G15) and `v3` containing a random selection of `LETTERS` A-F. `t3` has 20 rows (`v1` with G1-G20), and `v4` with numbers from the random normal distribution (`mean` = 100, `sd` = 20). Use a seed of 1 for random numbers. Join `t1`, `t2`, and `t3` within a single pipeline, using:
-  - `left_join`
-  - `right_join`
-  - `full_join`
-  - `inner_join`
+
+1. Create three `tibble`s, `t1`, `t2`, `t3`. `t1` has 10 rows, with column `V1` (*uppercase*) containing values G1 through G10, and `V2` (*uppercase*) containing `runif` between 75 and 125.  `t2` has 15 rows with `v1` (*lowercase*) (G1 - G15) and `v3` (*lowercase*) containing a random selection of `LETTERS` A-F. `t3` has 20 rows (`v1` (*lowercase*) with G1-G20), and `v4` (*lowercase*) with numbers from the random normal distribution (`mean` = 100, `sd` = 20). Use a seed of 1 for random numbers. Join `t1`, `t2`, and `t3` within a single pipeline, using the following methods separately:
+
+   - `left_join`
+   - `right_join`
+   - `full_join`
+   - `inner_join`
 
 2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 19, and 21 are your guides. 
 

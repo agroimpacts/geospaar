@@ -1,0 +1,43 @@
+---
+title: "COVID Statement"
+subtitle: Modified based on COVID-19 Statement of Fall 2020
+date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Health and safety guidelines
+
+Due to the health risks posed by the pandemic, our class this semester (Spring, 2021) will be conducted in close accordance with the Clark University’s [healthy and safety guidelines](https://www.clarku.edu/healthy-clark-covid-plan/). Lectures will be held in in-person mode and online synchronous mode for lab. Students are expected to abide by their [Clark Commitment](https://www.clarku.edu/healthy-clark-covid-plan/the-clark-commitment/), which includes proper mask-wearing and maintaining appropriate social distancing for our room capacity.
+
+## Dealing with challenges and uncertainty
+
+We realize that this present situation poses significant challenges to learning, that the nature and magnitude of these challenges will vary from person to person, and that the pandemic leads to constantly changing circumstances, which adds further uncertainty. We are committed to being maximally flexible and supportive to accommodate personal challenges and respond to altered circumstances as they arise. As an example, we could switch to a fully online mode if the pandemic worsens and the infection risk of in-person attendance increases. Another example, we will host a zoom for students who cannot attend the class in person. 
+
+## Essential elements
+
+Please note that while we will support maximum flexibility in this course, including hybrid, fully online and even asynchronous attendance (by arrangement), we expect that assignments (problem sets, labs, exams) will be completed by the indicated due date. We do of course consider and grant extensions where circumstances (particularly due to health) require.
+
+## Classroom policies
+
+While participating in class or lab, either in person or remotely (if necessary), please refrain from engaging with your phone, social media, or other non-statistical websites/app during lectures and lab sessions.
+
+### Entering the classroom
+
+The policies below are adapted from Professor Jim Murphy’s classroom policies for Jefferson 320.
+
+1. Please arrive at the classroom (GRACE Conference room) as close as possible to the start time for class such that we minimize any congregating outside the doors. If you are early and the room is still occupied by the previous class, please maintain social distancing in the foyer outside of this room.
+2. Sanitize your hands at the hand sanitizer station in the hallway.
+3. When you are able to enter, please do so in single file, maintaining social distancing.
+4. When you enter, you should go to the chair/table across the room where you will find disinfectant spray bottles and wipes that you should use to clean the desk and armrests on the seat you will be sitting in for that day. Return the spray bottle to the table when you are finished with it. Cleaning will take a few minutes but it is essential for maintaining as sanitary an environment as is possible. **<ins>It takes two minutes for the sanitizer to kill the virus completely, so please wait that time before sitting down</ins>**.
+5. Our classroom has a seating chart. Please sit only in designated seats, or keep your chair where a dot designates your chair should go.
+6. When class is over, please maintain social distancing and exit single file through the exit only door near the front of the classroom. And please exit as efficiently as possible so that the class that follows ours has sufficient time to settle in.
+7. If you have not kept up on your COVID-19 testing requirements, do not come to in-person class. Let me know ahead so I could host a zoom for you.
+7. If you have any symptoms, or feel ill in any manner, do not come to in-person class. Let me know ahead so I could host a zoom for you.
+Please wear your mask correctly (e.g. not below your nose or chin) or I will be forced to ask you to leave the room or adjust your mask accordingly.
+8. Food/eating are not allowed at any time in the classroom. You may drink liquids but please do so with quick, under the mask sips to minimize the length of time that your mask is down.
+9. To the fullest extent possible, please refrain from bathroom and other out-of-classroom breaks during class in order to minimize disruptions and the need to re-sanitize your hands.
+
