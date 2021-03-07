@@ -54,8 +54,6 @@ dev.off()
 - Getting help.
 - Git/GitHub
 
-Any questions?
-
 ---
 
 ## Today
@@ -217,4 +215,4 @@ iris_filtered <- filter(iris, Petal.Width > 0.5) %>%
 
 - Finish the practice if you didn't yet.
 - Read Unit1-Module4 "Data preparation" to learn `dplyr` syntax.
-- Finish class 5 challenge of Week 3 homework to practice `dplyr`. We will discuss the code next class.
+- Finish class 5 challenge in Week 3 homework to practice `dplyr` and push your markdown to your assignment repo (Please put it in a separate folder "homework", not "vignettes"). We will discuss the code next class.

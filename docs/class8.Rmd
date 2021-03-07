@@ -1,0 +1,165 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 8
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class9.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+# knitr::include_graphics("figures/cnh_figure.png")
+```
+
+```{r, eval = FALSE}
+# code adapted from example from 
+# https://www.r-graph-gallery.com/330-bubble-map-with-ggplot2
+library(tidyverse)
+library(sf)
+library(geospaar)
+districts <- read_sf(
+  system.file("extdata", "districts.shp", package = "geospaar")
+)
+farmers <- read_csv(
+  system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+) %>% group_by(uuid) %>% 
+  summarize(x = mean(x), y = mean(y), n = n()) %>%
+  filter(y > -18) #%>% st_as_sf(coords = c("x", "y"), crs = 4326)
+p <- ggplot() + 
+  geom_sf(data = districts, lwd = 0.1) + 
+  geom_point(data = farmers, 
+             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+  scale_color_viridis_c(guide = FALSE) + theme_void() + 
+  theme(legend.position = c(0.85, 0.2)) +
+  scale_size(range = c(0.1, 5), name = "N reports/week")
+ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "grey")
+```
+
+---
+
+## We have learned
+
+- Fundamentals of R.
+- Functions, packages, environment, and namespace.
+- Reproducibility.
+- Getting help.
+- Git/GitHub
+- Indexing, subsetting, and replacing
+- `*apply` family
+- `tidyverse`
+- Read, write data and paths
+- Tables
+
+---
+
+## Today
+
+- Figures!!
+
+---
+
+## Base plot
+
+```{r, fig.align='center', fig.width=10, fig.height=3, eval=F}
+x <- 1:20
+y <- sin(x)
+plot(x, y,
+     col = c('blue', 'orange'), # color, could be one or more.
+     type = 'o', # the type of this plot. Details in help documentation. 
+     pch = c(20, 5, 3), # shape of points, could be one or more.
+     cex = 1.5, # the size of points
+     lty = 3, lwd = 2, # line style and width
+     main = "This is a figure", # define title
+     sub = "Sin curve", # a sub title
+     col.main = 'red', # set color for title
+     xlab = "Time", # title of X axis
+     ylab = "Value") # title of Y axis
+# Add a line to an existing plot
+abline(h = 0.5, col = 'green', lwd = 2, lty = 10) 
+# Add a legend, have to set everything manually.
+# Details in help document.
+legend('bottomright', # position
+       inset = 0.05, # adjust position
+       c("Sin","A line"), 
+       lwd = 2,
+       lty = c(3, 10),
+       col = c("blue", "green"),
+       title="Graph type")
+```
+
+---
+
+## Base plot
+
+```{r, echo=F, fig.align='center', fig.width=10, fig.height=5, dpi=600}
+x <- 1:20
+y <- sin(x)
+plot(x, y,
+     col = c('blue', 'orange'), # color, could be one or more.
+     type = 'o', # the type of this plot. Details in help documentation. 
+     pch = c(20, 5, 3), # shape of points, could be one or more.
+     cex = 1.5, # the size of points
+     lty = 3, lwd = 2, # line style and width
+     main = "This is a figure", # define title
+     sub = "Sin curve", # a sub title
+     col.main = 'red', # set color for title
+     xlab = "Time", # title of X axis
+     ylab = "Value") # title of Y axis
+# Add a line to an existing plot
+abline(h = 0.5, col = 'green', lwd = 2, lty = 10) 
+# Add a legend, have to set everything manually.
+# Details in help document.
+legend('bottomright', # position
+       inset = 0.05, # adjust position
+       c("Sin","A line"), 
+       lwd = 2,
+       lty = c(3, 10),
+       col = c("blue", "green"),
+       title="Graph type")
+```
+
+---
+
+## Base plot
+
+More choices on style of points or lines:
+
+- `pch`: http://www.sthda.com/english/wiki/r-plot-pch-symbols-the-different-point-shapes-available-in-r
+- `lty`: http://www.sthda.com/english/wiki/line-types-in-r-lty
+
+---
+
+## `ggplot2`
+
+Details in [`ggplot2` package document](https://ggplot2.tidyverse.org/reference/index.html).
+
+---
+
+## `gganimate`
+
+Make GIFs with `ggplot2`
+
+---
+
+## Next class
+
+We are done for Unit 1!! From next week, we will get our hands dirty with geospatial data.
+
+- Class 9: review what we have learned so far with a case study.
+- Class 10: review some basic concepts of GIS.
+
+---
+
+## Homwork
+
+- Assignment 2 is due this Friday.
+- Review some concepts of geospatial data:
+  - Vector vs. raster. And their common file types.
+  - Coordinate System. Geographic coordinate system and Cartesian coordinate system.
+  - Projection and transformation.
+  - Geodatabase and attributes of vectors

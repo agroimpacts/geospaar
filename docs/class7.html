@@ -7,290 +7,188 @@
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
-    <link rel="stylesheet" href="themes/class6.css" type="text/css" />
+    <link rel="stylesheet" href="themes/class9.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
 # Geospatial Analysis with R
-## Class 6
+## Class 7
 
 ---
 
 
 
+
+
 ```r
-s3url &lt;- glue::glue("/vsis3/activemapper/",
-                    "planet/composite_sr_buf_fix/GS/",
-                    "tile486317_736815_736967.tif")  # not accessible
-b &lt;- raster::brick(s3url)[[4:2]]
-png(here::here("external/slides/figures/ghana_planet.png"), height = 4, 
-    width = 4, units  = "in", res = 300, bg = "transparent")
-raster::plotRGB(b, stretch = "lin")
-dev.off()
+# code adapted from example from 
+# https://www.r-graph-gallery.com/330-bubble-map-with-ggplot2
+library(tidyverse)
+library(sf)
+library(geospaar)
+districts &lt;- read_sf(
+  system.file("extdata", "districts.shp", package = "geospaar")
+)
+farmers &lt;- read_csv(
+  system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+) %&gt;% group_by(uuid) %&gt;% 
+  summarize(x = mean(x), y = mean(y), n = n()) %&gt;%
+  filter(y &gt; -18) #%&gt;% st_as_sf(coords = c("x", "y"), crs = 4326)
+p &lt;- ggplot() + 
+  geom_sf(data = districts, lwd = 0.1) + 
+  geom_point(data = farmers, 
+             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+  scale_color_viridis_c(guide = FALSE) + theme_void() + 
+  theme(legend.position = c(0.85, 0.2)) +
+  scale_size(range = c(0.1, 5), name = "N reports/week")
+ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "grey")
 ```
 
 ---
 
 ## We have learned
 
-- Overview and fundamentals of R.
+- Fundamentals of R.
 - Functions, packages, environment, and namespace.
 - Reproducibility.
 - Getting help.
 - Git/GitHub
 - Indexing, subsetting, and replacing
-- A bit `dplyr`
+- `*apply` family
+- `tidyverse`
 
 ---
 
 ## Today
 
-- Loop functions `*apply`
-- Introduction to `tidyverse`
+- Read, write data and paths
+- More on data manipulation
+- Tables
 
 ---
 
-## `*apply` family
+## Read and write data
 
-- `apply()`
-- `lapply()`
-- `sapply()`
-- `tapply()`
-- `mapply()`
+- Base R:
+  
+  - `read.csv` (argument `stringsAsFactors = F`) and `write.csv`
+  
+- `readr` package in `tidyverse` family (much faster):
 
-These functions allow you process the data in batches looply. The primary difference among these functions is the object type of the input and output.
-
----
-
-## `apply()`
-
-`apply(x, MARGIN, FUN, …)`
-
-- `x`: an array. other types (e.g. data.frame) will convert to matrix.
-- `MARGIN`: we could take it as the dimension to take batches, 1 indicates rows, 2 indicates columns, etc. etc. It can take more than one values, e.g. `c(1, 2)` means across both rows and columns.
-- `FUN`: the function applied to the batch.
-- returns a vector or *array*, sometimes a list.
+  - `read_csv` and `write_csv`
 
 ---
 
-## `apply()`
+## Paths
 
+- Interactive environment (e.g. console):
+  
+  - `getwd()` to get the working directory
+  - `setwd()` to set the new working directory
+  - relative paths are relative to this working directory.
+  
+- R markdown knit directory:
 
-```r
-m &lt;- matrix(c(1:5, 11:15, 21:25), nrow = 5, ncol = 3)
-apply(m, 1, sum)
-```
+  - Document directory
+  - Project directory
+  - Current working directory
+  
+- R script
 
-```
-## [1] 33 36 39 42 45
-```
-
-&lt;img src="figures/class6_apply.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-## `apply()`
-
-
-```r
-m &lt;- matrix(c(1:5, 11:15, 21:25), nrow = 5, ncol = 3)
-m
-```
-
-```
-##      [,1] [,2] [,3]
-## [1,]    1   11   21
-## [2,]    2   12   22
-## [3,]    3   13   23
-## [4,]    4   14   24
-## [5,]    5   15   25
-```
-
-```r
-apply(m, 2, function(x) x + 2)
-```
-
-```
-##      [,1] [,2] [,3]
-## [1,]    3   13   23
-## [2,]    4   14   24
-## [3,]    5   15   25
-## [4,]    6   16   26
-## [5,]    7   17   27
-```
-
-```r
-apply(m, 1, function(x) x + 2) ## what will happen?
-```
-
-```
-##      [,1] [,2] [,3] [,4] [,5]
-## [1,]    3    4    5    6    7
-## [2,]   13   14   15   16   17
-## [3,]   23   24   25   26   27
-```
+  - Current working directory
 
 ---
 
-## `lapply()`
+## Strategies to work with paths
+  
+- Check, create, or delete directory/file
 
-`lapply(x, FUN, …)`
+  - `dir.exists()` and `file.exists()` to check if a directory or file exists.
+  - `dir.create()` to create a directory.
+  - `unlink()` to delete a folder with arguments `recursive = T` based on needs.
+  - `file.remove()` or `file.rename()` to delete or rename a file.
+  
+- List files/folders within a directory:
 
-- `x`: a vector (atomic and list).
-- `FUN`: the function applied to each element of `x`.
-- returns a a list of the same length as `x`.
-
-`lapply()` is arguably the most widely used function in `apply` family, because it is super well organized. We can always convert the returned list to other types later (e.g. `unlist()`).
-
----
-
-## `lapply()`
-
-
-```r
-set.seed(123)
-l &lt;- list(A = c(1:9), B = rnorm(5), 
-          C = data.frame(x = sample(1:100, 3), y = runif(3)))
-l; lapply(l, sum)
-```
-
-```
-## $A
-## [1] 1 2 3 4 5 6 7 8 9
-## 
-## $B
-## [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774
-## 
-## $C
-##    x          y
-## 1 14 0.89982497
-## 2 25 0.24608773
-## 3 90 0.04205953
-```
-
-```
-## $A
-## [1] 45
-## 
-## $B
-## [1] 0.9678513
-## 
-## $C
-## [1] 130.188
-```
+  - `list.files()` to list files with arguments `pattern` or `full.names` based on needs.
+  - `list.dirs()` to list folders. Works similar to `list.files()`
 
 ---
 
-## `sapply()`
+## Strategies to work with paths
 
-Almost the same as `lapply()`, but tries to simplify the output to the possible simplest data structure by default. By setting `simplify = FALSE`, it will return a list as well.
+Package `here` will definitely what you should try.
 
-
-```r
-set.seed(123)
-l &lt;- list(A = c(1:9), B = rnorm(5), 
-          C = data.frame(x = sample(1:100, 3), y = runif(3)))
-sapply(l, sum)
-```
-
-```
-##           A           B           C 
-##  45.0000000   0.9678513 130.1879722
-```
-
----
-
-## `lapply()` vs  `sapply()`
-
-&lt;img src="figures/class6_lapply.png" width="70%" style="display: block; margin: auto;" /&gt;
-
+- Function `here` of package `here` will specify the right path of a file within a project:
+  
+  - `here::here()` will give you the project root path
+  - `here::here("/a/path/relative/to/your/project/root")` to specify the right path of a file within your package.
+  
 ---
 
 ## Others
 
-`tapply(X, INDEX, FUN)`
+- `download.file()` to download a file using url.
+- `unzip()` to extract files from a compressed file.
+
+---
+
+## Data manipulation
+### Reshaping
+
+- `pivot_longer()` in `tidyr` package.
+- `pivot_wider()` in `tidyr` package.
+
+---
+
+## Data manipulation
+### Renaming
+
+- `rename()` in `dplyr` package.
+
+---
+
+## Data manipulation
+### Combining
+
+- `*_join` function in `dplyr` package.
+- The magic of `do.call()`, `rbind` and `lapply`.
+
+---
+
+## Tables
+
+Package [`kableExtra`](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html)
+
+Basic syntax is:
 
 
 ```r
-df &lt;- data.frame(price = sample(18:65, 4), product = c('mouse', 'keyboard'))
-summary_df &lt;- tapply(df$price, df$product, mean)
-df; summary_df
+dt %&gt;%
+  kbl() %&gt;% # feed data in `kableExtra`
+  kable_paper() %&gt;% # set template
+  column_spec() %&gt;% # reformat selected columns if necessary
+  row_spec() # reformat selected rows if necessary
 ```
-
-```
-##   price  product
-## 1    44    mouse
-## 2    45 keyboard
-## 3    26    mouse
-## 4    46 keyboard
-```
-
-```
-## keyboard    mouse 
-##     45.5     35.0
-```
-
-`mapply(FUN, …, MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE)`
-
-
-```r
-mapply(function(x, y){
-  switch(y,
-         mouse = x + 10,
-         keyboard = x / 100
-         )
-}, df$price, df$product)
-```
-
-```
-## [1] 54.00  0.45 36.00  0.46
-```
-
----
-
-## Why `*apply` instead of `for` in R?
-
-Let's see [a test](https://chart-studio.plotly.com/~dkisler/1/?share_key=SkMmss3R0Ogjf3D17vf489#/).
-
----
-
-## Looping practice
-
-Create a matrix `m` and do evaluation:
-  - `m &lt;- cbind(a = 16:11, b = sample(1:100, 6))` with seed 10.
-  - Use `apply()` to find the row means of `m`.
-  - Use `apply()` to sort the columns of `m` (`sort()` for sort).
-  - Apply function `deri &lt;- function(x) log10(x) - 5` on the rows of `m` and observe the result.
-
-Create a list `l` and do evaluation:
-  - `l &lt;- list(a = matrix(sample(2:50, 6), nrow = 2), b = data.frame(m = runif(10, 0, 10), n = rnorm(10, mean = 3, sd = 1)))` with seed 12.
-  - Use `lapply()` to find the sums of each element in `l`.
-  - Do the same with function `sapply()`.
-  - Use `sapply()` to find the find which elements of `l` is `matrix`.
-  - Use `lapply()` to calculate the `colMeans` of each elements in `l`.  
-
----
-
-## Introduction to `tidyverse`
-
-Visit [tidyverse web](https://www.tidyverse.org/packages/) together.
 
 ---
 
 ## Next class
 
-- Read and write files
-- More on data manipulation
-- Table
+- Figures!!
+
+  - Base plot
+  - `ggplot2`: make sure you learn the syntax before next class. We will directly learn it with some tasks.
 
 ---
 
 ## Homework
 
-- Finish the practices if you didn't yet.
-- Finish class 6 `*apply` challenge in Week 3 homework. Also push your markdown to your assignment repo within folder homework. We will discuss about it next class.
+- Finish class 7 `table` challenge in Week 4 homework. Still push your markdown to your assignment repo within folder homework.
+- Read the visualization part of Unit1-Module4 and `ggplot2` cheatsheet listed in cheatsheets in our class homepage.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

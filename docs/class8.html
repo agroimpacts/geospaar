@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class9.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 8
+
+---
+
+
+
+
+
+```r
+# code adapted from example from 
+# https://www.r-graph-gallery.com/330-bubble-map-with-ggplot2
+library(tidyverse)
+library(sf)
+library(geospaar)
+districts &lt;- read_sf(
+  system.file("extdata", "districts.shp", package = "geospaar")
+)
+farmers &lt;- read_csv(
+  system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+) %&gt;% group_by(uuid) %&gt;% 
+  summarize(x = mean(x), y = mean(y), n = n()) %&gt;%
+  filter(y &gt; -18) #%&gt;% st_as_sf(coords = c("x", "y"), crs = 4326)
+p &lt;- ggplot() + 
+  geom_sf(data = districts, lwd = 0.1) + 
+  geom_point(data = farmers, 
+             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+  scale_color_viridis_c(guide = FALSE) + theme_void() + 
+  theme(legend.position = c(0.85, 0.2)) +
+  scale_size(range = c(0.1, 5), name = "N reports/week")
+ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "grey")
+```
+
+---
+
+## We have learned
+
+- Fundamentals of R.
+- Functions, packages, environment, and namespace.
+- Reproducibility.
+- Getting help.
+- Git/GitHub
+- Indexing, subsetting, and replacing
+- `*apply` family
+- `tidyverse`
+- Read, write data and paths
+- Tables
+
+---
+
+## Today
+
+- Figures!!
+
+---
+
+## Base plot
+
+
+```r
+x &lt;- 1:20
+y &lt;- sin(x)
+plot(x, y,
+     col = c('blue', 'orange'), # color, could be one or more.
+     type = 'o', # the type of this plot. Details in help documentation. 
+     pch = c(20, 5, 3), # shape of points, could be one or more.
+     cex = 1.5, # the size of points
+     lty = 3, lwd = 2, # line style and width
+     main = "This is a figure", # define title
+     sub = "Sin curve", # a sub title
+     col.main = 'red', # set color for title
+     xlab = "Time", # title of X axis
+     ylab = "Value") # title of Y axis
+# Add a line to an existing plot
+abline(h = 0.5, col = 'green', lwd = 2, lty = 10) 
+# Add a legend, have to set everything manually.
+# Details in help document.
+legend('bottomright', # position
+       inset = 0.05, # adjust position
+       c("Sin","A line"), 
+       lwd = 2,
+       lty = c(3, 10),
+       col = c("blue", "green"),
+       title="Graph type")
+```
+
+---
+
+## Base plot
+
+&lt;img src="class8_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Base plot
+
+More choices on style of points or lines:
+
+- `pch`: http://www.sthda.com/english/wiki/r-plot-pch-symbols-the-different-point-shapes-available-in-r
+- `lty`: http://www.sthda.com/english/wiki/line-types-in-r-lty
+
+---
+
+## `ggplot2`
+
+Details in [`ggplot2` package document](https://ggplot2.tidyverse.org/reference/index.html).
+
+---
+
+## `gganimate`
+
+Make GIFs with `ggplot2`
+
+---
+
+## Next class
+
+We are done for Unit 1!! From next week, we will get our hands dirty with geospatial data.
+
+- Class 9: review what we have learned so far with a case study.
+- Class 10: review some basic concepts of GIS.
+
+---
+
+## Homwork
+
+- Assignment 2 is due this Friday.
+- Review some concepts of geospatial data:
+  - Vector vs. raster. And their common file types.
+  - Coordinate System. Geographic coordinate system and Cartesian coordinate system.
+  - Projection and transformation.
+  - Geodatabase and attributes of vectors
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

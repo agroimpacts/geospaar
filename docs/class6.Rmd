@@ -34,8 +34,6 @@ dev.off()
 - Indexing, subsetting, and replacing
 - A bit `dplyr`
 
-Any questions?
-
 ---
 
 ## Today
@@ -200,5 +198,4 @@ Visit [tidyverse web](https://www.tidyverse.org/packages/) together.
 ## Homework
 
 - Finish the practices if you didn't yet.
-- finish class 6 `*apply` challenge in Week 3 homework.
-- Read the rest of Unit1-Module4.
+- Finish class 6 `*apply` challenge in Week 3 homework. Also push your markdown to your assignment repo within folder homework. We will discuss about it next class.

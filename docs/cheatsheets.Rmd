@@ -19,6 +19,7 @@ vignette: >
 - [Base R](https://rstudio.com/wp-content/uploads/2016/10/r-cheat-sheet-3.pdf)
 - [Git/GitHub](https://education.github.com/git-cheat-sheet-education.pdf)
 - [Git/GitHub2](https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet)
+- [`ggplot2`](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
 ***
 <center>

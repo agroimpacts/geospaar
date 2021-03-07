@@ -45,9 +45,12 @@ The class materials are mostly designed by Dr. Lyndon Estes.
     - [Class 3 control structure code in slides](class3_control_structure_code.R)
   - [Class 4 slides](class4.html)
 - Week 3
+  - [Week 3 Homework](https://leisong.shinyapps.io/homework_week3/)
   - [Class 5 slides](class5.html)
   - [Class 6 slides](class6.html)
 - Week 4
+  - [Class 7 slides](class7.html)
+  - [Class 8 slides](class8.html)
 - Week 5
 - Week 6
 - Week 7
