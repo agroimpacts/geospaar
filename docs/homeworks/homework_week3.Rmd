@@ -190,7 +190,7 @@ mapply(function(x, y){
 
 #### Task 3
 
-Loop over crop types to do calculate max of each type of observations. You are expected to get a matrix back and assign to object `crop_smr`. Hint: You might need function `unique`, and write anonymous function and use `dplyr` within this anonymous function.
+Loop over crop types to calculate max of each type of observations. You are expected to get a matrix back and assign to object `crop_smr`. Hint: You might need function `unique`, and write anonymous function and use `dplyr` within this anonymous function.
 
 *Expected result:*
 
@@ -201,6 +201,7 @@ crop_smr <- sapply(unique(crop_rmd$label), function(crop_type){
     dplyr::select(-label) %>% 
     colMeans()
 })
+crop_smr
 ```
 
 #### Task 4

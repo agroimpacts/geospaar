@@ -257,8 +257,40 @@ $(document).ready(function () {
 </div>
 <div id="section-task-3-1" class="section level4">
 <h4>Task 3</h4>
-<p>Loop over crop types to do calculate max of each type of observations. You are expected to get a matrix back and assign to object <code>crop_smr</code>. Hint: You might need function <code>unique</code>, and write anonymous function and use <code>dplyr</code> within this anonymous function.</p>
+<p>Loop over crop types to calculate max of each type of observations. You are expected to get a matrix back and assign to object <code>crop_smr</code>. Hint: You might need function <code>unique</code>, and write anonymous function and use <code>dplyr</code> within this anonymous function.</p>
 <p><em>Expected result:</em></p>
+<pre><code>##                   rice    maize  chickpea kidneybeans pigeonpeas mothbeans
+## N            79.890000 77.76000 40.090000   20.750000  20.730000 21.440000
+## P            47.580000 48.44000 67.790000   67.540000  67.730000 48.010000
+## K            39.870000 19.79000 79.920000   20.050000  20.290000 20.230000
+## temperature  23.689332 22.38920 18.872847   20.115085  27.741762 28.194920
+## humidity     82.272822 65.09225 16.860439   21.605357  48.061633 53.160418
+## ph            6.425471  6.24519  7.336957    5.749411   5.794175  6.831174
+## rainfall    236.181114 84.76699 80.058977  105.919778 149.457564 51.198487
+##              mungbean blackgram    lentil pomegranate     banana     mango
+## N           20.990000 40.020000 18.770000   18.870000 100.230000 20.070000
+## P           47.280000 67.470000 68.360000   18.750000  82.010000 27.180000
+## K           19.870000 19.240000 19.410000   40.210000  50.050000 29.920000
+## temperature 28.525775 29.973340 24.509052   21.837842  27.376798 31.208770
+## humidity    85.499975 65.118426 64.804785   90.125504  80.358123 50.156573
+## ph           6.723957  7.133952  6.927932    6.429172   5.983893  5.766373
+## rainfall    48.403601 67.884151 45.680454  107.528442 104.626980 94.704515
+##                 grapes watermelon  muskmelon      apple     orange     papaya
+## N            23.180000  99.420000 100.320000  20.800000  19.580000  49.880000
+## P           132.530000  17.000000  17.720000 134.220000  16.550000  59.050000
+## K           200.110000  50.220000  50.080000 199.890000  10.010000  50.040000
+## temperature  23.849575  25.591767  28.663066  22.630942  22.765725  33.723859
+## humidity     81.875228  85.160375  92.342802  92.333383  92.170209  92.403388
+## ph            6.025937   6.495778   6.358805   5.929663   7.016957   6.741442
+## rainfall     69.611829  50.786219  24.689952 112.654779 110.474969 142.627839
+##                coconut     cotton       jute     coffee
+## N            21.980000 117.770000  78.400000 101.200000
+## P            16.930000  46.240000  46.860000  28.740000
+## K            30.590000  19.560000  39.990000  29.940000
+## temperature  27.409892  23.988958  24.958376  25.540477
+## humidity     94.844272  79.843474  79.639864  58.869846
+## ph            5.976562   6.912675   6.732778   6.790308
+## rainfall    175.686646  80.398043 174.792798 158.066295</code></pre>
 </div>
 <div id="section-task-4-1" class="section level4">
 <h4>Task 4</h4>
