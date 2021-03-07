@@ -316,8 +316,6 @@ sample(1:100, 10)
 
 sample(1:100, 10)
 
-sample(1:100, 10)
-
 set.seed(11)
 sample(1:100, 10)
 ```

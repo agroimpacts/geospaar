@@ -1,0 +1,13 @@
+name: homework_week3
+title: homework_week3
+username:
+account: leisong
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3748281
+bundleId: 4310478
+url: https://leisong.shinyapps.io/homework_week3/
+when: 1615076339.14069
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: homework_week1.html|homework_week1.Rmd|homework_week2.html|homework_week2.Rmd

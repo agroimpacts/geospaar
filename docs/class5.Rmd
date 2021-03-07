@@ -65,6 +65,37 @@ Any questions?
 
 ---
 
+### Create your own data
+
+Create the following 1-d structures:
+- `a`: a random vector of integers with 10 elements drawn from 1-20:
+  - Use the `sample` function with `set.seed(10)`
+  - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
+      - Use the `paste0` function to create those names.
+      - Create the identical vector of names using the `paste` function.
+- `b`: Using `a` as an index to select from `letters`
+- `d`: a random vector of integers with 10 elements from a normal distribution with a mean = 100 and an sd of 20:
+  - Use `rnorm` function with `set.seed(12)`.
+- Create a list `l` from `a`, `b`, `d`. 
+    - Assign the name "a", "b", and "d" for the corresponding `l`'s element.
+
+---
+
+### Create your own data
+
+Create the following 2-d structures:
+- `m`: a matrix with three integer columns named "V1", "V2", "V3"
+  - Create each column first as its own vector, then combine
+  - `V1` is 1:10
+  - `V2` is a random sample between 1:100
+  - `V3` is drawn from a random uniform distribution between 0 and 50     
+  - Use the same `set.seed(50)` as before
+  - Inspect the `str` and `class` of `m`
+- `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
+  - `V4` is a random selection of the letters A-E, use the same seed as above
+    
+---
+
 ## Indexing
 
 - Vectors
@@ -124,23 +155,6 @@ Only works for numbers:
 
 ---
 
-### Create your own data
-
-Create the following:
-
-- `a`: a random vector of integers with 10 elements drawn from 1-20:
-  - Use the `sample` function with `set.seed(10)`
-  - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
-      - Use the `paste0` function to create those names.
-      - Create the identical vector of names using the `paste` function.
-- `b`: Using `a` as an index to select from `letters`
-- `d`: a random vector of integers with 10 elements from a normal distribution with a mean = 100 and an sd of 20:
-  - Use `rnorm` function with `set.seed(12)`.
-- Create a list `l` from `a`, `b`, `d`. 
-    - Assign the name "a", "b", and "d" for the corresponding `l`'s element.
-
----
-
 ### 1-d Indexing/subsetting/replacing
 
 - Select the 1st, 2nd, and 10th elements from `a`
@@ -155,21 +169,6 @@ Create the following:
 - Select from `d` all values between 95 and 105, and replace them with 100
 - Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l`
 
----
-
-### 2-d structures
-
-Create the following:
-- `m`: a matrix with three integer columns named "V1", "V2", "V3"
-  - Create each column first as its own vector, then combine
-  - `V1` is 1:10
-  - `V2` is a random sample between 1:100
-  - `V3` is drawn from a random uniform distribution between 0 and 50     
-  - Use the same `set.seed(50)` as before
-  - Inspect the `str` and `class` of `m`
-- `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
-  - `V4` is a random selection of the letters A-E, use the same seed as above
-    
 ---
 
 ### 2-d Indexing/subsetting/replacing
@@ -191,6 +190,20 @@ Create the following:
 - `mutate` function for adding or replacing
 - pipeline `%>%`
 
+```{r, eval=F}
+data(iris)
+# start with tabular data
+iris_filtered <- as_tibble(iris) %>% 
+  filter(Petal.Width > 0.5) %>% 
+  dplyr::select(Species, Sepal.Length) %>% 
+  mutate(id = 1:nrow(.))
+
+# Or start with the first function
+iris_filtered <- filter(iris, Petal.Width > 0.5) %>% 
+  dplyr::select(Species, Sepal.Length) %>% 
+  mutate(id = 1:nrow(.))
+```
+
 ---
 
 ## Next class
@@ -203,4 +216,4 @@ Create the following:
 ## Homework
 
 - Finish the practice if you didn't yet.
-- Encourage to finish homework. There is a `dplyr` challenge in class 5 of Week 3 homework.
+- Finish class 5 of Week 3 homework to practice `dplyr`. We will discuss the code next class.
