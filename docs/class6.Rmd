@@ -192,12 +192,13 @@ Visit [tidyverse web](https://www.tidyverse.org/packages/) together.
 ## Next class
 
 - Read and write files
-- Data manipulation
+- More on data manipulation
+- Table
 
 ---
 
 ## Homework
 
 - Finish the practices if you didn't yet.
-- There is a `apply` challenge in class 6 of Week 3 homework.
-- Read Unit1-Module4.
+- finish class 6 `*apply` challenge in Week 3 homework.
+- Read the rest of Unit1-Module4.

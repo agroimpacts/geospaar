@@ -22,12 +22,12 @@ We use this dataset to practice how to use `dplyr` to clean, modify, and summari
 - Package `readr` and its function `read_csv` to read data. Install the package if necessary.
 - `group_by` function in `dplyr` to group data and then `summarise` or more flexible `summarise_at` to do something to the groups.
 - `select` function in `dplyr`  to subset columns, and `filter` function to subset rows.
-- `arrange` function in `dplyr` to order the table based on column(s). `desc` function can be used to arrange decreasingly.
+- `arrange` function in `dplyr` to order the table based on column(s). `desc` function can be used inside of `arrange` to arrange decreasingly.
 - `mutate` function in `dplyr` to add a new column to a dataset. Use with `ifelse` might have some surprising effect.
 - `slice` function to index rows.
 - `pull` function in `dplyr` to read a column as a vector in pipeline.
 
-Read Unit1-Module3 and the help documentation of each function to learn how to use them.
+Read Unit1-Module4 "Data preparation" and the help documentation of each function to learn how to use them.
 
 ### Tasks
 Create an R markdown file for these tasks.

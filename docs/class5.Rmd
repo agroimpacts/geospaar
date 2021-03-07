@@ -216,4 +216,5 @@ iris_filtered <- filter(iris, Petal.Width > 0.5) %>%
 ## Homework
 
 - Finish the practice if you didn't yet.
-- Finish class 5 of Week 3 homework to practice `dplyr`. We will discuss the code next class.
+- Read Unit1-Module4 "Data preparation" to learn `dplyr` syntax.
+- Finish class 5 challenge of Week 3 homework to practice `dplyr`. We will discuss the code next class.
