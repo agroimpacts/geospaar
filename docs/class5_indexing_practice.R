@@ -14,6 +14,7 @@ a
 set.seed(10)
 b <- sample(letters, 10)
 b
+letters[a]
 
 ## d, 10 random number from normal distribution with mean 100 and sd 20
 set.seed(12)

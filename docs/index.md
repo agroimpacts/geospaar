@@ -47,6 +47,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
 - Week 3
   - [Week 3 Homework](https://leisong.shinyapps.io/homework_week3/)
   - [Class 5 slides](class5.html)
+    - [Class 5 indexing demo](class5_indexing_demo.R)
   - [Class 6 slides](class6.html)
 - Week 4
   - [Class 7 slides](class7.html)

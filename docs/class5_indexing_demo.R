@@ -1,4 +1,4 @@
-# indexing
+# Indexing
 ## vectors
 ### Use positive number
 # In R, index start from 1.
@@ -25,6 +25,7 @@ x[-c(1, 3)]
 
 #### logical, but be careful of the length
 x[c(T, F, T, F)] # will repeat the logical vector if shorter
+x[c(T, F, T, F, T, F, T, F, T, F)]
 x[x > 5] # more commonly used case with logical index
 
 #### Use name
@@ -78,11 +79,12 @@ n$id
 ## data.frame
 ### methods for list and matrix both works on data.frame
 df <- as.data.frame(n)
-df[1, 3]
+df[1, 3] # matrix syntax
 df[c(1, 3), c('name', 'grade')]
 # list syntax, because data.frame reorganize a list by column
-df['id'] # get first column, result is a data.frame
+test <- df['id'] # get first column, result is a data.frame
 df[c(1, 3)] # how about this one?
+df[1, 3] # matrix syntax
 
 # Get a column as vector
 df[1][[1]]
