@@ -91,13 +91,12 @@ Create the following 1-d structures:
 Create the following 2-d structures:
 - `m`: a matrix with three integer columns named "V1", "V2", "V3"
   - Create each column first as its own vector, then combine
-  - `V1` is 1:10
-  - `V2` is a random sample between 1:100
-  - `V3` is drawn from a random uniform distribution between 0 and 50     
-  - Use the same `set.seed(50)` as before
+     - `V1` is 1:10
+     - `V2` is a random sample between 1:100 using `set.seed(50)`
+     - `V3` is drawn from a random uniform distribution between 0 and 50. Use the same seed as before.
   - Inspect the `str` and `class` of `m`
 - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
-  - `V4` is a random selection of the letters A-E, use the same seed as above
+  - `V4` is a random selection of the letters A-E (Try `LETTERS`?), use the same seed as above
     
 ---
 
@@ -112,7 +111,7 @@ Create the following 2-d structures:
   * Nothing, e.g. `x[]`. Got a full vector
   * Zero, e.g. `x[0]`. Got a vector with length 0
 
-Be careful of the length of the index vector!!
+Be careful of index out of bound!!
 
 ---
 
@@ -149,17 +148,6 @@ All indexing methods to get the values out can also be used to change values by 
 
 ---
 
-## Useful summary functions
-
-Only works for numbers:
-
-- `rowsSums`
-- `colSums`
-- `rowMeans`
-- `colMeans`
-
----
-
 ### 1-d Indexing/subsetting/replacing
 
 - Select the 1st, 2nd, and 10th elements from `a`
@@ -186,6 +174,17 @@ Only works for numbers:
 - Subset the first two rows and columns of `dat` into a new data.frame `datss`.
 - Replace `dat` rows 1:2, column 1:2 with the values -1:-4
 - Reset the part of `dat` you just changed with the values in `datss`
+
+---
+
+## Useful summary functions
+
+Only works for numbers:
+
+- `rowsSums`
+- `colSums`
+- `rowMeans`
+- `colMeans`
 
 ---
 
