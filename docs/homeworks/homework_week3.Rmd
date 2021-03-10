@@ -84,7 +84,7 @@ Have a look at papaya this time:
 
    - "low", N <= 45, 
    - "median", N > 45 and N <= 55
-   - "high", N > 45
+   - "high", N > 55
   
     Hint: use nested `ifelse`.
   
