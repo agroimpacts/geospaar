@@ -49,6 +49,8 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Class 5 slides](class5.html)
     - [Class 5 indexing demo](class5_indexing_demo.R)
   - [Class 6 slides](class6.html)
+    - [Class 5 practice answer](class5_practice_answer.Rmd)
+    - [Class 5 challenge answer](class5_homeowork_answer.Rmd)
 - Week 4
   - [Class 7 slides](class7.html)
   - [Class 8 slides](class8.html)

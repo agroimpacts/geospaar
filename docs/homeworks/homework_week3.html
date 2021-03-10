@@ -203,8 +203,29 @@ $(document).ready(function () {
 </div>
 </div>
 </div>
-<div id="section-class-6-challenge" class="section level2">
-<h2>Class 6 challenge</h2>
+<div id="section-class-6" class="section level2">
+<h2>Class 6</h2>
+<div id="section-looping-practice" class="section level3">
+<h3>Looping practice</h3>
+<p>Create a matrix <code>m</code> and do evaluation:</p>
+<ul>
+<li><code>m &lt;- cbind(a = 16:11, b = sample(1:100, 6))</code> with seed 10.</li>
+<li>Use <code>apply()</code> to find the row means of <code>m</code>.</li>
+<li>Use <code>apply()</code> to sort the columns of <code>m</code> (<code>sort()</code> for sort).</li>
+<li>Apply function <code>deri &lt;- function(x) log10(x) - 5</code> on the rows of <code>m</code> and observe the result.</li>
+</ul>
+<p>Create a list <code>l</code> and do evaluation:</p>
+<ul>
+<li><code>l &lt;- list(a = matrix(sample(2:50, 6), nrow = 2), b = data.frame(m = runif(10, 0, 10), n = rnorm(10, mean = 3, sd = 1)))</code> with seed 12.</li>
+<li>Use <code>lapply()</code> to find the sums of each element in <code>l</code>.</li>
+<li>Do the same with function <code>sapply()</code>.</li>
+<li>Use <code>sapply()</code> to find the find which elements of <code>l</code> is <code>matrix</code>.</li>
+<li>Use <code>lapply()</code> to calculate the <code>colMeans</code> of each elements in <code>l</code>.</li>
+</ul>
+</div>
+<div id="section-class-6-challenge" class="section level3">
+<h3>Class 6 challenge</h3>
+</div>
 <div id="section-introduction-1" class="section level3">
 <h3>Introduction</h3>
 <p>We use the same dataset as class 5 challenge to practice how to use <code>*apply</code> family:</p>

@@ -5,9 +5,9 @@ account: leisong
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3748281
-bundleId: 4322385
+bundleId: 4327383
 url: https://leisong.shinyapps.io/homework_week3/
-when: 1615315702.7354
+when: 1615401905.88216
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: homework_week1.html|homework_week1.Rmd|homework_week2.html|homework_week2.Rmd
