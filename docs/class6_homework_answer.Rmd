@@ -1,0 +1,85 @@
+---
+title: "class 6 challenge"
+author: "Lei Song"
+date: "3/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+We use the same dataset as class 5 challenge to practice how to use `*apply` family:
+
+- `apply()`
+- `lapply()`
+- `sapply()`
+- `tapply()`
+- `mapply()`
+
+You have to use `*apply` functions to finish all tasks, except that you might need to use `dplyr` to subset the dataset. In order to let you practice how to use these functions, as well as how to pick up the right function, I won't mention which function you should use. 
+
+## Task
+
+Write an R markdown file for the tasks. Read the dataset (`crop_rmd`) the same as class 5 challenge.
+
+```{r, warning=F, message=F}
+# Task 1
+# install.packages('readr')
+library(readr)
+library(dplyr)
+library(here)
+
+# Load data
+crop_rmd <- read_csv(here('docs/homeworks/Crop_recommendation.csv'))
+```
+
+### Task 1
+
+1. Select watermelon
+2. Calculate the `mean` of all items (temperature, rainfall, etc.). Assign the result to `wml_mean` and print out.
+4. What if I want to add a random noise from `rnorm(mean = 0, sd = 2)` to these means? Assign the result to `wml_noisy` and print out. Use seed 10 to for the noises. Hint: use anonymous function within a `*apply` function.
+
+```{r}
+watermelon <- crop_rmd %>% 
+  filter(label == 'watermelon') %>% 
+  dplyr::select(-label)
+wml_mean <- apply(watermelon, 2, mean)
+wml_mean
+set.seed(10)
+wml_noisy <- apply(watermelon, 2, function(x) mean(x) + rnorm(1, 0, 2))
+```
+
+### Task 2
+
+Still for watermelon, I want to calculate $(temperature - 20) / (rainfall - 100)$, what is the easiest way to do that using `*apply`?
+
+```{r}
+mapply(function(x, y){
+  (x - 20) / (y - 100)
+}, watermelon$temperature, watermelon$rainfall)
+```
+
+#### Task 3
+
+Loop over crop types to calculate max of each type of observations. You are expected to get a matrix back and assign to object `crop_smr`. Hint: You might need function `unique`, and write anonymous function and use `dplyr` within this anonymous function.
+
+```{r}
+crop_smr <- sapply(unique(crop_rmd$label), function(crop_type){
+  crop_rmd %>% 
+    filter(label == crop_type) %>% 
+    dplyr::select(-label) %>% 
+    colMeans()
+})
+crop_smr
+```
+
+#### Task 4
+
+What is the most convenient way to calculate the max value of temperature for each crop types?
+
+```{r}
+tapply(crop_rmd$temperature, crop_rmd$label, max)
+```

@@ -117,21 +117,77 @@ More choices on style of points or lines:
 
 ---
 
+## Histogram
+
+```r
+set.seed(10)
+x &lt;- rnorm(1000)
+hist(x, col = c('red'), 
+     border = c('blue'),
+     main = 'Normal distribution',
+     breaks = 10,
+     xlab = 'Value')
+```
+
+&lt;img src="class8_files/figure-html/unnamed-chunk-5-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Others
+
+- `boxplot`
+- `par(mfrow = c(1, 3))` to organize multiple points.
+
+Very good examples of [base plotting system](https://rstudio-pubs-static.s3.amazonaws.com/84527_6b8334fd3d9348579681b24d156e7e9d.html).
+
+---
+
+## Practice
+
+Use the dataset `Crop_recommendation`, everyone makes a figure and share the code and the figure in slack.
+
+---
+
 ## `ggplot2`
 
 Details in [`ggplot2` package document](https://ggplot2.tidyverse.org/reference/index.html).
+
+- Basic syntax
+
+
+```r
+ggplot(dt, aes(x = ., y = ., fill = ., color = ., ...)) + # Data
+  geom_point(aes(...)) +# geom
+  ... +
+  # scale
+  scale_fill_manual(values=c("red", "blue", ...)) + # customize fill color
+  scale_color_manual(values=c("red", "green", ...)) + # customize color
+  ylab() + xlab() + ggtitle() + # titles
+  theme_bw() # ggplot2 theme
+```
+
+---
+
+## Some geom functions in `ggplot2`
+
+- `geom_point()`: scatterplot
+- `geom_line()`: line plot
+- `geom_histogram()`: histogram
+- `geom_bar()`: barplot with base on the x-axis
+- `geom_boxplot()`: standard boxplot with boxes and whiskers
+- `geom_smooth()`: smooth curve
 
 ---
 
 ## `gganimate`
 
-Make GIFs with `ggplot2`
+Make GIFs with `ggplot2`: https://gganimate.com.
 
 ---
 
 ## Next class
 
-We are done for Unit 1!! From next week, we will get our hands dirty with geospatial data.
+We are done for Unit 1!! From next unit, we will get our hands dirty with geospatial data.
 
 - Class 9: review what we have learned so far with a case study.
 - Class 10: review some basic concepts of GIS.

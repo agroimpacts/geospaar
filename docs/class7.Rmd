@@ -72,6 +72,22 @@ ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"),
 - `readr` package in `tidyverse` family (much faster):
 
   - `read_csv` and `write_csv`
+  
+```{r, eval=F}
+library(here)
+library(readr)
+library(geospaar)
+# Base R
+farmers <- read.csv(system.file('extdata/farmer_spatial.csv', 
+                              package = 'geospaar'),
+                  stringsAsFactors = F)
+write.csv(crops, here('inst/extdata/farmers.csv'), 
+          row.names = F)
+# readr
+farmers <- read_csv(system.file('extdata/farmer_spatial.csv', 
+                              package = 'geospaar'))
+write_csv(crops, here('inst/extdata/farmers.csv'))
+```
 
 ---
 
@@ -106,8 +122,8 @@ ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"),
   
 - List files/folders within a directory:
 
-  - `list.files()` to list files with arguments `pattern` or `full.names` based on needs.
-  - `list.dirs()` to list folders. Works similar to `list.files()`
+  - `list.files()` to list files with arguments `pattern` or `full.names` based on needs. E.g. `list.files('dir_path', pattern = 'csv$', full.names = T)`.
+  - `list.dirs()` to list folders. Works similar to `list.files()`.
 
 ---
 
@@ -129,6 +145,31 @@ Package `here` will definitely what you should try.
 
 ---
 
+## Practice
+
+- I split the whole table into sub-tables and pack them.
+```{r, eval=F}
+# Read table
+crops <- read_csv(here('docs/homeworks/Crop_recommendation.csv'))
+# Split the table
+dir.create('crops')
+files <- sapply(unique(crops$label), function (crop_type){
+  crops %>% filter(label == crop_type) %>% 
+    write_csv(file.path('crops', paste0(crop_type, '.csv')))
+  file.path('crops', paste0(crop_type, '.csv'))
+})
+# Zip files
+zip(here('docs/crops.zip'), files)
+unlink("crops", recursive = T)
+```
+
+- Now you download the zip file (url: ), read all sub-tables and merge them back to a whole table and save out. Then delete all related files except this whole table.
+
+  - Useful function: `download.file`, `unzip`, `list.files`, `read_csv`, `*apply`, `write_csv`, `file.remove`, and `unlink`.
+  - The magic of `do.call()`, `rbind` and `lapply`.
+
+---
+
 ## Data manipulation
 ### Reshaping
 
@@ -138,9 +179,22 @@ Package `here` will definitely what you should try.
 ---
 
 ## Data manipulation
+
+```{r, out.width = "75%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class7_pivot.png")
+```
+
+---
+
+## Data manipulation
 ### Renaming
 
 - `rename()` in `dplyr` package.
+
+```{r, eval=F}
+rename(data, new_name = old_name)
+rename_with(data, toupper)
+```
 
 ---
 
@@ -148,7 +202,26 @@ Package `here` will definitely what you should try.
 ### Combining
 
 - `*_join` function in `dplyr` package.
-- The magic of `do.call()`, `rbind` and `lapply`.
+
+```{r, eval=F}
+crop_rmd <- read_csv(here('docs/homeworks/Crop_recommendation.csv')) %>% 
+  group_by(label) %>% 
+  summarise_at(c('temperature', 'humidity', 'rainfall',
+                 'N', 'P', 'K', 'ph'), mean)
+crop_rmd_weather <- crop_rmd %>% 
+  select(label, temperature, humidity, rainfall)
+set.seed(10)
+crop_rmd_soil <- crop_rmd %>% 
+  select(label, N, P, K, ph) %>% 
+  sample_frac(0.8)
+```
+
+```{r, eval=F}
+left_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+right_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+inner_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+full_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+```
 
 ---
 
@@ -179,5 +252,5 @@ dt %>%
 
 ## Homework
 
-- Finish class 7 `table` challenge in Week 4 homework. Still push your markdown to your assignment repo within folder homework.
 - Read the visualization part of Unit1-Module4 and `ggplot2` cheatsheet listed in cheatsheets in our class homepage.
+- Assignment 2.
