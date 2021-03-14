@@ -163,7 +163,7 @@ zip(here('docs/crops.zip'), files)
 unlink("crops", recursive = T)
 ```
 
-- Now you download the zip file (url: ), read all sub-tables and merge them back to a whole table and save out. Then delete all related files except this whole table.
+- Now you download the zip file (url: https://agroimpacts.github.io/geospaar/crops.zip), read all sub-tables and merge them back to a whole table and save out. Then delete all related files except this whole table.
 
   - Useful function: `download.file`, `unzip`, `list.files`, `read_csv`, `*apply`, `write_csv`, `file.remove`, and `unlink`.
   - The magic of `do.call()`, `rbind` and `lapply`.
