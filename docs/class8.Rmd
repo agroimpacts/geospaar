@@ -158,7 +158,7 @@ Very good examples of [base plotting system](https://rstudio-pubs-static.s3.amaz
 
 ## Practice
 
-Use the dataset `airquality`, everyone makes a figure and share the code and the figure in slack.
+Use the dataset `airquality`, everyone makes a figure and shares the code and the figure in slack.
 
 ---
 
@@ -167,6 +167,8 @@ Use the dataset `airquality`, everyone makes a figure and share the code and the
 Details in [`ggplot2` package document](https://ggplot2.tidyverse.org/reference/index.html).
 
 - Basic syntax
+
+An aesthetic is a visual property of the objects in your plot. It includes things like the size, the shape, or the color of your points. So if you want `ggplot2` to take your settings of these things, you have to put them into aesthetic.
 
 ```{r, eval=F}
 my_plot <- ggplot(dt, aes(x = ., y = ., fill = ., color = ., ...)) + # Data
@@ -177,6 +179,7 @@ my_plot <- ggplot(dt, aes(x = ., y = ., fill = ., color = ., ...)) + # Data
   scale_fill_manual(values=c("red", "blue", ...)) + # customize fill color
   scale_color_manual(values=c("red", "green", ...)) + # customize color
   ylab() + xlab() + ggtitle() + # titles
+  coord_polar() + # sometimes you might want to change the coordinate system
   theme_bw() # ggplot2 theme
 ```
 
@@ -184,11 +187,11 @@ my_plot <- ggplot(dt, aes(x = ., y = ., fill = ., color = ., ...)) + # Data
 
 ## Some geom functions in `ggplot2`
 
-- `geom_point()`: scatterplot
+- `geom_point()`: scatter plot
 - `geom_line()`: line plot
 - `geom_histogram()`: histogram
-- `geom_bar()`: barplot with base on the x-axis
-- `geom_boxplot()`: standard boxplot with boxes and whiskers
+- `geom_bar()`: bar plot with base on the x-axis
+- `geom_boxplot()`: standard box plot with boxes and whiskers
 - `geom_smooth()`: smooth curve
 
 ---
