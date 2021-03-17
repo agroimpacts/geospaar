@@ -1,0 +1,261 @@
+---
+title: "Class8 demo"
+author: 
+- Lei Song^1^
+- ^1^ Clark Unversity
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: united
+    highlight: tango
+vignette: >
+  %\VignetteIndexEntry{Class8 demo}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+Within this vignette (or document), packages `here` is used to take care of the paths. `dplyr` is used to do data manipulation, and `readr` is used to read csv file. 
+
+In terms of data visualization, `kableExtra` is used to make tables, and `ggplot2` is used to make figures.
+
+```{r, message=FALSE, message=FALSE}
+# Load all packages in need
+library(here)
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(cowplot)
+library(kableExtra)
+```
+
+## Combining
+### Prepare dummy data
+
+In order to show how `*_join` works, I created dummy data by splitting the data recommendation dataset into weather part and soil part. Then randomly select 80% from soil part to make it shorter than weather part.
+
+```{r}
+# Calculate the mean of all observations for each crop type
+## Change to your own path
+crop_rmd <- read_csv(here('docs/homeworks/Crop_recommendation.csv')) %>% 
+  group_by(label) %>% 
+  summarise_at(c('temperature', 'humidity', 'rainfall',
+                 'N', 'P', 'K', 'ph'), mean)
+
+# Split the table into two parts: weather and soil
+crop_rmd_weather <- crop_rmd %>% 
+  select(label, temperature, humidity, rainfall)
+crop_rmd_weather
+
+set.seed(10)
+crop_rmd_soil <- crop_rmd %>% 
+  select(label, N, P, K, ph) %>% 
+  sample_frac(0.8) %>% 
+  # add a dummy row for soybean
+  rbind(data.frame(label = 'soybean', 
+                   N = 18.9, P = 78.4, 
+                   K = 45.3, ph = 6.45))
+crop_rmd_soil
+```
+
+### `*_join`
+
+Then I take the dummy data that I created above to test how these `*_join` functions work and what are the differences between them.
+
+```{r}
+# Left join, keep all rows of data on left side.
+crop_lj <- left_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+# Right join, keep all rows of data on right side.
+crop_rj <- right_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+# What I will get if I do this?
+crop_lj2 <- left_join(crop_rmd_soil, crop_rmd_weather, by = 'label')
+
+# Inner join, take the common part of data on left and right side.
+crop_ij <- inner_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+# Full join, keep all rows of data on both left and right side.
+crop_fj <- full_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+```
+
+## Make tables
+
+Then, using the data generated above, I create some tables using package `kableExtra`. You could find more details and examples [here](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html).
+
+```{r}
+crop_ij %>%
+  kbl(caption = 'Mean of observations') %>%
+  kable_paper(lightable_options = 'basic', # could be basic, striped, or hover
+              html_font = 'helvetica', # could be any font installed on your machine.
+              font_size = 12, # font size
+              full_width = F, # full width or not
+              position = "left", # center, left, right, or float-left and float-right
+              fixed_thead = T) %>% # for a very long cross-pages table.
+  column_spec(1, bold = T, background = 'pink') %>% # customize a column
+  row_spec(which(crop_ij$temperature == max(crop_ij$temperature)),
+           italic = T, color = 'red') # customize a row
+```
+
+## Make figures
+
+In this section, I will use the data generated above to make some figures using both base R and `ggplot2`.
+
+### Base plot
+#### Scatterplot
+
+I make scatterplots to show the relationship between ph value, rainfall and humidity. Then fit a linear model to show their quantitative correlation. The figure below show a highly customized figure.
+
+```{r, fig.align='center', fig.width=6, fig.height=4}
+# set the margin, c(bottom, left, top, right)
+par(mar = c(3, 4, 3, 4)) 
+# Make the main plot
+plot(crop_ij$ph, crop_ij$rainfall, # set x and y
+     pch = 20, col = 'blue', # set points style
+     main = 'Relationship between ph, rainfall and humidity', # add main
+     col.main = 'brown', # set main color
+     xlab = 'ph', ylab = 'Rainfall') # set x and y axis
+
+# Add a fit line
+abline(lm(crop_ij$rainfall ~ crop_ij$ph),
+       lty = 3, lwd = 3, col = 'blue')
+
+# Add another scatterplot using points
+## Reset plot window
+plot.window(xlim = range(crop_ij$ph), 
+            ylim = range(crop_ij$humidity))
+
+## Another syntax to use plot: with(dataset, plot(x, y))
+with(crop_ij, points(ph, humidity,
+                     pch = 18, col = 'red'))
+# Add fit line
+with(crop_ij, abline(lm(humidity ~ ph),
+                     lty = 4, lwd = 2, 
+                     col = 'red'))
+
+# Add another axis
+axis(4, col.axis = "red")
+## Add lab for this axis
+mtext(side = 4, line = 2, "Humidity", col = 'red')
+
+# Add legend
+legend("topright", pch = c(20, 18), 
+       col = c("blue", "red"), 
+       legend = c("Rainfall", "Humidity"))
+```
+
+#### Histogram and boxplot
+
+I make histogram and boxplot of temperature.
+
+```{r, fig.align='center', fig.width=10, fig.height=5}
+# Re-read the full dataset
+crop_rmd <- read_csv(here('docs/homeworks/Crop_recommendation.csv'))
+# set the layer, c(row, col)
+par(mfrow = c(1, 2), mar = c(6, 2, 2, 2)) 
+hist(crop_rmd$temperature,
+     col = 'lightblue', border = 'purple',
+     main = 'The distribution of temperature',
+     xlab = 'Temperature')
+boxplot(temperature ~ label, crop_rmd, 
+        xlab = '', 
+        ylab = 'Temperature',
+        las = 2)
+```
+
+### `ggplot2`
+
+Using `ggplot2` to make figure deserve another full credit course. Here I just list some examples corresponding to the figures made by base plot above.
+
+#### Scatterplot
+
+```{r, fig.align='center', fig.width=6, fig.height=4}
+ggplot(crop_ij) +
+  geom_point(aes(x = ph, y = rainfall), 
+             color = 'blue') +
+  geom_smooth(aes(x = ph, y = rainfall),
+              method = "lm", se = FALSE, 
+              color = 'blue', linetype = 2) + 
+  geom_point(aes(x = ph, y = humidity*1.5), 
+             color = 'red') +
+  geom_smooth(aes(x = ph, y = humidity*1.5),
+              method = "lm", se = FALSE, 
+              color = 'red', linetype = 3) +
+  # Add a second axis and specify its features
+  scale_y_continuous(
+    sec.axis = sec_axis(~.*(1 / 1.5), name = "Humidity")) + 
+  labs(x = "ph",
+       title = 'Relationship between ph, rainfall and humidity') +
+  theme_bw() +
+  theme(axis.text.y.right = element_text(color = "red"),
+        axis.title.y.right = element_text(color = "red"),
+        plot.title = element_text(color = "brown",
+                                  hjust = 0.5))
+```
+
+#### Histogram and boxplot
+
+```{r, fig.align='center', fig.width=10, fig.height=5}
+# Re-read the full dataset
+crop_rmd <- read_csv(here('docs/homeworks/Crop_recommendation.csv'))
+
+p1 <- ggplot(crop_rmd) +
+  geom_histogram(aes(x = temperature), 
+                 fill = 'lightblue', color = 'purple') +
+  labs(x = 'Temperature', title = 'The distribution of temperature') +
+  theme_classic()
+p2 <- ggplot(crop_rmd) +
+  geom_boxplot(aes(x = label, y = temperature)) +
+  labs(y = 'Temperature', x = '') +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+plot_grid(p1, p2, labels = "AUTO")
+```
+
+#### Groups and facets in `ggplot2`
+
+Now let's try to use groups and facets in `ggplot2`.
+
+##### Groups
+```{r, fig.align='center', fig.width=6, fig.height=4}
+# Subset the dataset
+set.seed(12)
+crop_rmd <- crop_rmd %>% 
+  filter(label %in% sample(unique(crop_rmd$label), 4))
+
+## Groups for shape
+ggplot(crop_rmd) +
+  geom_point(aes(x = ph, y = rainfall,
+                 shape = label)) +
+  labs(x = 'ph', 
+       y = 'Rainfall',
+       title = 'Relationship between ph and rainfall') +
+  theme_light()
+
+## Groups for color
+ggplot(crop_rmd) +
+  geom_point(aes(x = ph, y = rainfall,
+                 color = label)) +
+  scale_color_brewer(palette = "Dark2") + 
+  labs(x = 'ph', 
+       y = 'Rainfall',
+       title = 'Relationship between ph and rainfall') +
+  theme_dark()
+```
+
+##### Facets
+
+```{r, fig.align='center', fig.width=6, fig.height=6}
+ggplot(crop_rmd) +
+  geom_point(aes(x = ph, y = rainfall), color = 'red') +
+  facet_wrap(~ label) +
+  labs(x = 'ph', 
+       y = 'Rainfall',
+       title = 'Relationship between ph and rainfall') +
+  theme_light() +
+  theme(plot.title = element_text(color = "brown",
+                                  hjust = 0.5))
+```

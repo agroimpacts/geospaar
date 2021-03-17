@@ -57,6 +57,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Class 7 slides](class7.html)
     - [Class 7 class zip file](crops.zip)
   - [Class 8 slides](class8.html)
+    - [Class 8 demo](class8_demo.Rmd)
 - Week 5
 - Week 6
 - Week 7

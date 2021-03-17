@@ -165,9 +165,10 @@ my_plot &lt;- ggplot(dt, aes(x = ., y = ., fill = ., color = ., ...)) + # Data
   # scale
   scale_fill_manual(values=c("red", "blue", ...)) + # customize fill color
   scale_color_manual(values=c("red", "green", ...)) + # customize color
-  ylab() + xlab() + ggtitle() + # titles
+  labs(x = 'x axis', y = 'y axis', title = 'main title') + # titles
   coord_polar() + # sometimes you might want to change the coordinate system
-  theme_bw() # ggplot2 theme
+  theme_bw()  + # ggplot2 theme
+  theme() # Customize other settings
 ```
 
 ---
