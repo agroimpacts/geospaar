@@ -12,7 +12,7 @@
 <meta name="author" content="Lei Song1" />
 <meta name="author" content="1 Clark Unversity" />
 
-<meta name="date" content="2021-03-16" />
+<meta name="date" content="2021-03-17" />
 
 <title>Class8 demo</title>
 
@@ -253,7 +253,7 @@ pre code {
 <h1 class="title toc-ignore">Class8 demo</h1>
 <h4 class="author">Lei Song<sup>1</sup></h4>
 <h4 class="author"><sup>1</sup> Clark Unversity</h4>
-<h4 class="date">2021-03-16</h4>
+<h4 class="date">2021-03-17</h4>
 
 </div>
 
@@ -277,10 +277,12 @@ pre code {
 <p>In order to show how <code>*_join</code> works, I created dummy data by splitting the data recommendation dataset into weather part and soil part. Then randomly select 80% from soil part to make it shorter than weather part.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the mean of all observations for each crop type</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Change to your own path</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>crop_rmd <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">&#39;docs/homeworks/Crop_recommendation.csv&#39;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(label) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_at</span>(<span class="fu">c</span>(<span class="st">&#39;temperature&#39;</span>, <span class="st">&#39;humidity&#39;</span>, <span class="st">&#39;rainfall&#39;</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;N&#39;</span>, <span class="st">&#39;P&#39;</span>, <span class="st">&#39;K&#39;</span>, <span class="st">&#39;ph&#39;</span>), mean)</span></code></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>crop_rmd <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(<span class="st">&#39;docs/homeworks&#39;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&#39;Crop_recommendation.csv&#39;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(label) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_at</span>(<span class="fu">c</span>(<span class="st">&#39;temperature&#39;</span>, <span class="st">&#39;humidity&#39;</span>, <span class="st">&#39;rainfall&#39;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;N&#39;</span>, <span class="st">&#39;P&#39;</span>, <span class="st">&#39;K&#39;</span>, <span class="st">&#39;ph&#39;</span>), mean)</span></code></pre></div>
 <pre><code>## 
 ## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
@@ -347,16 +349,21 @@ pre code {
 <h3><code>*_join</code></h3>
 <p>Then I take the dummy data that I created above to test how these <code>*_join</code> functions work and what are the differences between them.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Left join, keep all rows of data on left side.</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>crop_lj <span class="ot">&lt;-</span> <span class="fu">left_join</span>(crop_rmd_weather, crop_rmd_soil, <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Right join, keep all rows of data on right side.</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>crop_rj <span class="ot">&lt;-</span> <span class="fu">right_join</span>(crop_rmd_weather, crop_rmd_soil, <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># What I will get if I do this?</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>crop_lj2 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(crop_rmd_soil, crop_rmd_weather, <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Inner join, take the common part of data on left and right side.</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>crop_ij <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(crop_rmd_weather, crop_rmd_soil, <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Full join, keep all rows of data on both left and right side.</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>crop_fj <span class="ot">&lt;-</span> <span class="fu">full_join</span>(crop_rmd_weather, crop_rmd_soil, <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span></code></pre></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>crop_lj <span class="ot">&lt;-</span> <span class="fu">left_join</span>(crop_rmd_weather, crop_rmd_soil, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Right join, keep all rows of data on right side.</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>crop_rj <span class="ot">&lt;-</span> <span class="fu">right_join</span>(crop_rmd_weather, crop_rmd_soil, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># What I will get if I do this?</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>crop_lj2 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(crop_rmd_soil, crop_rmd_weather, </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Inner join, take the common part of data on left and right side.</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>crop_ij <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(crop_rmd_weather, crop_rmd_soil, </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                      <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Full join, keep all rows of data on both left and right side.</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>crop_fj <span class="ot">&lt;-</span> <span class="fu">full_join</span>(crop_rmd_weather, crop_rmd_soil, </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                     <span class="at">by =</span> <span class="st">&#39;label&#39;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="make-tables" class="section level2">

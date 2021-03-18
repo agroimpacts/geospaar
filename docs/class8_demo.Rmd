@@ -24,7 +24,7 @@ Within this vignette (or document), packages `here` is used to take care of the 
 
 In terms of data visualization, `kableExtra` is used to make tables, and `ggplot2` is used to make figures.
 
-```{r, message=FALSE, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 # Load all packages in need
 library(here)
 library(dplyr)
@@ -42,7 +42,9 @@ In order to show how `*_join` works, I created dummy data by splitting the data 
 ```{r}
 # Calculate the mean of all observations for each crop type
 ## Change to your own path
-crop_rmd <- read_csv(here('docs/homeworks/Crop_recommendation.csv')) %>% 
+crop_rmd <- read_csv(here(
+  file.path('docs/homeworks',
+            'Crop_recommendation.csv'))) %>% 
   group_by(label) %>% 
   summarise_at(c('temperature', 'humidity', 'rainfall',
                  'N', 'P', 'K', 'ph'), mean)
@@ -69,16 +71,21 @@ Then I take the dummy data that I created above to test how these `*_join` funct
 
 ```{r}
 # Left join, keep all rows of data on left side.
-crop_lj <- left_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+crop_lj <- left_join(crop_rmd_weather, crop_rmd_soil, 
+                     by = 'label')
 # Right join, keep all rows of data on right side.
-crop_rj <- right_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+crop_rj <- right_join(crop_rmd_weather, crop_rmd_soil, 
+                      by = 'label')
 # What I will get if I do this?
-crop_lj2 <- left_join(crop_rmd_soil, crop_rmd_weather, by = 'label')
+crop_lj2 <- left_join(crop_rmd_soil, crop_rmd_weather, 
+                      by = 'label')
 
 # Inner join, take the common part of data on left and right side.
-crop_ij <- inner_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+crop_ij <- inner_join(crop_rmd_weather, crop_rmd_soil, 
+                      by = 'label')
 # Full join, keep all rows of data on both left and right side.
-crop_fj <- full_join(crop_rmd_weather, crop_rmd_soil, by = 'label')
+crop_fj <- full_join(crop_rmd_weather, crop_rmd_soil, 
+                     by = 'label')
 ```
 
 ## Make tables
