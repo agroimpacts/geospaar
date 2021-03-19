@@ -1411,7 +1411,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
 5. Demonstrate the use of `*apply`:
     - Combine `v1`, `m1`, and `m2` into a list `l`
     - Write an `lapply` that applies `sum` to `l`. This one does not need an anonymous function 
-    - Now write an `lapply` that iterates over the elements of `l`, and uses your `myfunc` to multiply each element of `l` by `v2`
+    - Now write an `lapply` that iterates over the elements of `l`, and uses your `mycalc` to multiply each element of `l` by `v2`
     - Hints:
         - You will need to use an anonymous function (`function(x)`)
         - The interior of your function (i.e. the part between `({})` will look like this: `l[[x]] * v2`

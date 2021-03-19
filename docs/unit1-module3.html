@@ -265,7 +265,7 @@
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2021-02-17 <a href="https://agroimpacts.github.io/geospaar/">Back to home</a></p>
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2021-03-19 <a href="https://agroimpacts.github.io/geospaar/">Back to home</a></p>
           </div>
    </div>
      
@@ -369,7 +369,7 @@ An (approximate) lineage of R packages/objects involved in data handling and gra
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>d_tb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(a) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="fu">mean</span>(b))</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 x 2</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   a     `mean(b)`</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; * &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;dbl&gt;</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a         10.0 </span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 b          9.72</span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 c          8.48</span></span>
@@ -2100,7 +2100,7 @@ An (approximate) lineage of R packages/objects involved in data handling and gra
 <ul>
 <li>Combine <code>v1</code>, <code>m1</code>, and <code>m2</code> into a list <code>l</code></li>
 <li>Write an <code>lapply</code> that applies <code>sum</code> to <code>l</code>. This one does not need an anonymous function</li>
-<li>Now write an <code>lapply</code> that iterates over the elements of <code>l</code>, and uses your <code>myfunc</code> to multiply each element of <code>l</code> by <code>v2</code></li>
+<li>Now write an <code>lapply</code> that iterates over the elements of <code>l</code>, and uses your <code>mycalc</code> to multiply each element of <code>l</code> by <code>v2</code></li>
 <li>Hints:
 <ul>
 <li>You will need to use an anonymous function (<code>function(x)</code>)</li>
