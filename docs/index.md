@@ -59,6 +59,9 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Class 8 slides](class8.html)
     - [Class 8 demo](class8_demo.Rmd)
 - Week 5
+  - [Class 9 case study](class9_case_study_tasks.html)
+    - [Occurrence dataset](hyenas_occurrence.csv)
+    - [Variables dataset](hyenas_variables.csv)
 - Week 6
 - Week 7
 - Week 8

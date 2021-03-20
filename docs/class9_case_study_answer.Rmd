@@ -1,0 +1,362 @@
+---
+title: "Environmental suitability of Spotted Hyenas"
+subtitle: "Part 1 - non-spatial"
+author: "Lei Song"
+date: "3/18/2021"
+output: html_document
+---
+
+<style>
+.html-widget {
+    margin: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/spotted-hyenas.jpg")
+```
+Source: https://www.expertafrica.com/wildlife/spotted-hyena/africa
+
+Today, we will look at the distribution and environmental suitability of Spotted Hyenas. The occurrence is downloaded from [GBIF](https://www.gbif.org). The environmental variables are [bioclimatic variables](https://www.worldclim.org/data/bioclim.html):
+
+```{r, echo=F}
+library(kableExtra)
+bios <- data.frame(code = paste0('BIO', 1:19),
+                   name = c('Annual Mean Temperature', 
+                            'Mean Diurnal Range (Mean of monthly (max temp - min temp))',
+                            'Isothermality (BIO2/BIO7) (×100)',
+                            'Temperature Seasonality (standard deviation ×100)',
+                            'Max Temperature of Warmest Month',
+                            'Min Temperature of Coldest Month',
+                            'Temperature Annual Range (BIO5-BIO6)',
+                            'Mean Temperature of Wettest Quarter',
+                            'Mean Temperature of Driest Quarter',
+                            'Mean Temperature of Warmest Quarter',
+                            'Mean Temperature of Coldest Quarter',
+                            'Annual Precipitation',
+                            'Precipitation of Wettest Month',
+                            'Precipitation of Driest Month',
+                            'Precipitation Seasonality (Coefficient of Variation)',
+                            'Precipitation of Wettest Quarter',
+                            'Precipitation of Driest Quarter',
+                            'Precipitation of Warmest Quarter',
+                            'Precipitation of Coldest Quarter'))
+bios %>% 
+  kbl(row.names = F, caption = 'Bioclimatic variables') %>% 
+  kable_paper("striped", 
+              html_font = 'helvetica',
+              font_size = 12,
+              full_width = F)
+```
+
+The habitat of Spotted Hyenas is mainly sub-Saharan Africa.
+
+```{r, echo=F, warning=F, message=F, fig.align='center'}
+library(here)
+library(sf)
+library(dplyr)
+library(leaflet)
+occurrence <- read.csv('/Users/leisong/Downloads/0224898-200613084148143.csv', 
+                        sep = '\t', stringsAsFactors = F) %>% 
+  dplyr::select(gbifID, species, countryCode, 
+         decimalLatitude, decimalLongitude, 
+         day, month, year) %>% 
+  distinct() %>% 
+  st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'),
+           crs = 4326)
+
+hyenaIcons <- makeIcon(iconUrl = here("docs/figures/hyena.png"), 
+                       iconWidth = 15, iconHeight = 15)
+
+leaflet(occurrence) %>% 
+  addProviderTiles(providers$Esri.WorldImagery) %>%
+  setView(lng = 25, lat = -3.8, zoom = 03) %>% 
+  addMarkers(icon = hyenaIcons)
+```
+
+
+Because we didn't learn spatial analysis yet, we will focus on non-spatial analysis today:
+
+- Clean the dataset a bit for the analysis.
+- Analyze the bias of observations.
+- Analyze the distribution of observations.
+- Analyze the ecological niche.
+
+```{r prep, eval=F, echo=F}
+library(sf)
+library(raster)
+library(dplyr)
+library(passport)
+library(eifsdm)
+library(readr)
+options(timeout = 500)
+occurrence <- read.csv('/Users/leisong/Downloads/0224898-200613084148143.csv', 
+                        sep = '\t', stringsAsFactors = F) %>% 
+  dplyr::select(gbifID, species, countryCode, 
+         decimalLatitude, decimalLongitude, 
+         day, month, year) %>% 
+  distinct() %>% 
+  st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'),
+           crs = 4326)
+bry <- st_bbox(occurrence) %>% 
+  st_as_sfc() %>% 
+  st_sf(crs = 4326)
+
+bios <- worldclim2(var = 'bio', res = 2.5, bry = bry, path = tempdir())
+bios <- raster::extract(bios, occurrence, sp = T) %>%
+  st_as_sf() %>%
+  cbind(st_coordinates(.)) 
+
+variables <- bios %>%
+  dplyr::select(gbifID,
+    contains('bio')) %>% 
+  st_drop_geometry() %>% 
+  dplyr::select(c('gbifID', 
+                  paste0('wc2.1_2.5m_bio_', 1:19)))
+write_csv(variables, 'docs/hyenas_variables.csv')
+
+occurrence <- read.csv('/Users/leisong/Downloads/0224898-200613084148143.csv', 
+                        sep = '\t', stringsAsFactors = F)
+write_csv(occurrence, 'docs/hyenas_occurrence.csv')
+```
+
+## Data manipulation
+
+**Tasks:**
+
+- Use `read.csv` to read occurrence table and assign to object `occurrence`. 
+- Select out columns gbifID, species, countryCode, decimalLatitude, decimalLongitude, month, and year.
+- Add an extra column `country`, use function `as_country_name` in package `passport` to get country names based on countryCode.
+- Use `read_csv` to read variables table and assign to object `variables`.
+- Select out columns gbifID, wc2.1_2.5m_bio_1, wc2.1_2.5m_bio_4, wc2.1_2.5m_bio_5, wc2.1_2.5m_bio_6, wc2.1_2.5m_bio_12, wc2.1_2.5m_bio_13, wc2.1_2.5m_bio_14, wc2.1_2.5m_bio_15, and rename bio columns to format `bio**`.
+- Inner join two tables occurrence and variables into one table `occ_var`.
+
+```{r, message=F, warning=F}
+library(here)
+library(readr)
+library(dplyr)
+library(passport)
+
+# Read occurrence
+occurrence <- read.csv(here('docs/hyenas_occurrence.csv'), 
+                       stringsAsFactors = F) %>% 
+  select(gbifID, species, countryCode, decimalLatitude, 
+         decimalLongitude, month, year) %>% 
+  mutate(country = as_country_name(countryCode))
+
+# Read variables
+variables <- read_csv(here('docs/hyenas_variables.csv')) %>% 
+  select(gbifID,
+         wc2.1_2.5m_bio_1, wc2.1_2.5m_bio_4,
+         wc2.1_2.5m_bio_5, wc2.1_2.5m_bio_6,
+         wc2.1_2.5m_bio_12, wc2.1_2.5m_bio_13,
+         wc2.1_2.5m_bio_14, wc2.1_2.5m_bio_15) 
+names(variables) <- c('gbifID', 
+                      paste0('bio', c(1, 4:6, 12:15)))
+
+# Join two tables, remove NAs and duplicates
+occ_var <- inner_join(occurrence, variables) %>% 
+  na.omit() %>% distinct()
+head(occ_var)
+```
+
+## Exploratory analysis
+### Bias of observations
+
+First, let's have a look at the potential bias of observations. One hypothesis:
+
+- People have higher chance to observe Hyenas with more out-door activities.
+
+#### Month
+
+**Tasks:**
+
+- Make a histogram of occurrence count for each `month` by filling the `___`.
+
+```{r, fig.align='center', fig.width=5, fig.height=3, warning=F}
+library(ggplot2)
+ggplot(occ_var) + 
+  geom_histogram(aes(x = as.factor(month)), 
+           stat = 'count', 
+           color = 'transparent',
+           fill = 'blue') +
+  labs(x = 'Month', y = 'Count') +
+  theme_bw()
+```
+
+As we could see from the figure that there are more observations during July to November. This might because the weather is nicer for people to come out to meet Hyenas. Or it might because Hyenas have more activities during these months. So if we want to fit a model or so, it might be good to resample the observations to make sure they distribute evenly across each month.
+
+There might be some similar bias of observation spatially, e.g. distance to roads. We will look at in unit2.
+
+#### Year
+
+**Tasks:**
+
+- Make a histogram of occurrence count for each `year` from scratch.
+
+```{r, fig.align='center', fig.width=5, fig.height=3, warning=F}
+occ_var %>% filter(year >= 2000) %>% 
+  ggplot() + 
+  geom_histogram(aes(x = as.factor(year)),
+                 stat = 'count',
+                 color = 'transparent',
+                 fill = 'red') +
+  labs(x = 'Year', y = 'Count') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+2020 is very interesting that might relate to the outbreak of COVID.
+
+### Spatial distribution
+
+**Distribution by countries**
+
+**Tasks:**
+
+- Make a barplot for each country, and fill the bar of each country by month.
+- Fill the `___` to make the code work.
+
+```{r, fig.align='center', fig.width=6, fig.height=5, warning=F}
+occ_var %>%
+  ggplot(aes(forcats::fct_infreq(country))) + 
+  geom_bar(aes(fill = as.factor(month)), 
+           color = 'transparent') +
+  labs(x = 'Country', y = 'Count') +
+  scale_fill_brewer(palette = "Paired", name = 'Month') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+**Randomly select 5 years to plot**
+
+Since we don't learn spatial analysis yet. So now we just plot coordinates in Cartesian coordinate system like a regular plot.
+
+**Task:**
+
+- Subset the `occ_var` with `year >= 2000`.
+- Randomly select 6 years out with seed 10. Hint: use `sample` function and `%in%` operator.
+- Make a scatterplot with decimalLongitude as x and decimalLatitude as y. And let the scatterplot has different color for each year.
+- Customize the color of years.
+- Reset x and y axis text.
+- Set a theme for your figure.
+
+```{r, fig.align='center', fig.width=6, fig.height=5, warning=F}
+set.seed(10)
+occ_var %>% 
+  filter(year >= 2000) %>% 
+  filter(year %in% sample(unique(year), 6)) %>% 
+  ggplot() +
+  geom_point(aes(x = decimalLongitude, 
+                 y = decimalLatitude, 
+                 col = as.factor(year)),
+             size = 2) +
+  scale_color_brewer(palette = "Dark2", name = 'Year') +
+  labs(x = 'Longitude', y = 'Latitude') +
+  theme_bw()
+```
+
+**Make animations by year**
+
+Now let's learn how to make an animated figure.
+
+```{r, fig.align='center', warning=F, message=F}
+library(magick)
+library(gganimate)
+p1 <- occ_var %>% 
+  filter(year >= 2000) %>% 
+  mutate(year = as.integer(year)) %>% 
+  ggplot() +
+  geom_point(aes(x = decimalLongitude, 
+                 y = decimalLatitude),
+             size = 2, color = 'red') +
+  scale_color_brewer(palette = "Dark2", name = 'Year') +
+  labs(x = 'Longitude', y = 'Latitude', title = 'Year: {frame_time}') +
+  transition_time(year) +
+  theme_bw()
+
+animate(p1, renderer = magick_renderer(), 
+        fps = 5, height = 3.5, width = 3.5, 
+        units = "in", res = 150)
+```
+
+### Environmental suitability
+
+**Tasks:**
+
+- Just select out `bio` columns.
+- Calculate the mean of these variables.
+- Do whatever necessary to put the results into a table with one column `Variable` of variable names and another column `Mean` of mean values.
+- Use `kableExtra` to show the table.
+
+```{r, warning=F, message=F}
+library(kableExtra)
+occ_var %>% 
+  dplyr::select(contains('bio')) %>% 
+  apply(2, mean) %>% data.frame(Mean = .) %>% 
+  mutate(Variable = rownames(.)) %>% 
+  dplyr::select(Variable, Mean) %>% 
+  kbl(row.names = F, caption = 'Variable mean') %>% 
+  kable_paper("striped", 
+              html_font = 'helvetica',
+              font_size = 12,
+              full_width = F)
+```
+
+**Tasks:**
+
+- Just select out `bio` columns.
+- Expand the table using `pivot_longer` to put the names of variables to column `var`, and values of variables to column `value`.
+- Then add a column `group`: if bio1, bio4, bio5, has value "Temperature", if not, has value "Rainfall". Hint: use `ifelse`.
+- Make boxplot of `var` and `value`, and make facets based on `group`.
+- Set necessary axis text and theme.
+
+```{r, warning=F, message=F, fig.align='center', fig.width=7, fig.height=4}
+library(ggpubr)
+library(tidyr)
+occ_var %>% 
+  dplyr::select(contains('bio')) %>% 
+  pivot_longer(cols = contains('bio'),
+               names_to = 'var', values_to = 'value') %>% 
+  mutate(group = ifelse(var %in% paste0('bio', 1:6), 
+                        'Temperature', 'Rainfall')) %>% 
+  ggplot() +
+  facet_wrap(~ group, scale = 'free') +
+  labs(x = 'Environmental variable', y = 'Value') +
+  geom_boxplot(aes(x = var, y = value)) +
+  theme_cleveland()
+```
+
+**Ecological niche**
+
+**Tasks:**
+
+- Make a scatterplot of bio1 (x) and bio12 (y).
+- Set x and y axis text based on Bioclimatic variables code table.
+- Add two horizontal lines of linetype 2 and color red with intercept corresponding to the min and max value of bio12. Hint: use `geom_hline`.
+- Add two vertical lines of linetype 2 and color with intercept corresponding to the min and max value of bio1. Hint: use `geom_vline`.
+- Set a theme for your figure.
+
+```{r, warning=F, message=F, fig.align='center', fig.width=5, fig.height=5}
+occ_var %>% 
+  ggplot(aes(x = bio1, y = bio12)) +
+  geom_point(col = 'blue', size = 2) +
+  labs(x = 'Annual mean temperature', 
+       y = 'Annual mean rainfall') +
+  geom_vline(xintercept = min(occ_var$bio1), 
+             col = 'red', linetype = 2) +
+  geom_vline(xintercept = max(occ_var$bio1), 
+             col = 'red', linetype = 2) +
+  geom_hline(yintercept = min(occ_var$bio12), 
+             col = 'red', linetype = 2) +
+  geom_hline(yintercept = max(occ_var$bio12), 
+             col = 'red', linetype = 2) +
+  theme_light()
+```
+
