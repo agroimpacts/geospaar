@@ -1,0 +1,207 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 10
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+Review some concepts of geospatial data:
+  - Vector vs. raster. And their common file types.
+  - Geodatabase and attributes of vectors.
+  - Basic spatial analysis.
+  - Coordinate System. Geographic coordinate system and Cartesian coordinate system.
+  - Projection and transformation.
+
+---
+
+## A few packages and tools
+
+- GDAL
+- `sf` package
+- `raster` package
+- `geospaar` package
+- Others: `rgdal`, `rgeos` and `sp`.
+
+---
+
+## Vector
+
+---
+
+## Vector
+
+Within this class, we will mainly use `sf` package to deal with vectors. For some cases, we need to use `sp` a bit.
+
+**Common feature types**
+
+- `POINT` and `MULTIPOINT`
+- `LINESTRING` and `MULTILINESTRING`
+- `POLYGON` and `MULTIPOLYGON`
+- `GEOMETRYCOLLECTION`
+
+**Common file types**
+
+- ESRI Shapefile
+- GeoJSON
+- Idrisi
+- `st_drivers(what = "vector")` to check all supported types
+
+---
+
+## Geodatabase and attributes of vectors
+
+```{r, warning=F, message=F}
+library(sf)
+districts <- st_read(system.file('extdata/districts.shp', 
+                             package = 'geospaar'),
+                 quiet = T)
+head(districts)
+```
+
+---
+
+## Basic spatial operation/analysis
+
+- Selection and classification
+  
+  - Non-spatial algebra of attributes
+  - Spatial algebra, e.g. contain, adjacent
+- Dissolve
+- Buffer
+- Overlay
+  
+  - Overlay
+  - Clip, intersect, and union
+
+---
+
+## Basic spatial operation/analysis
+
+```{r, warning=F, message=F, fig.align='center', fig.asp = 1, fig.width = 10, out.width = "40%"}
+library(dplyr)
+chama <- districts %>% filter(distName == 'Chama')
+chama_touches <- districts %>% 
+  slice(st_touches(chama, .) %>% unlist() %>% unique())
+chama_touches_dsv <- chama_touches %>% 
+  st_union() %>% st_buffer(0.1)
+plot(districts$geometry)
+plot(chama_touches_dsv, add = T, col = 'grey')
+plot(chama$geometry, add = T, col = 'red')
+plot(chama_touches$geometry, add = T, col = 'orange')
+```
+
+---
+
+## Raster
+
+We mainly use `raster` package to deal with raster data in this class.
+
+```{r, warning=F, message=F, fig.align='center', fig.asp = 1, fig.width = 10, out.width = "40%"}
+library(raster)
+library(geospaar)
+dem <- raster(system.file('extdata/demalb.tif',
+                          package = 'geospaar'))
+dem <- aggregate(dem, 20)
+plot_noaxes(dem, legend = F)
+```
+
+---
+
+## Raster drivers
+
+- GeoTIFF (.tif)
+- `st_driver(what = 'raster')`
+
+---
+
+## Basic spatial analysis
+
+- Local functions
+- Neighborhood, zonal and global functions
+- Terrain analysis
+- Spatial interpolation and prediction
+
+---
+
+## Basic spatial analysis
+
+```{r, warning=F, message=F, fig.align='center', fig.asp = 0.5, fig.width = 10, out.width = "50%"}
+districts <- districts %>% st_transform(crs = crs(dem))
+districts_rst <- rasterize(as(districts, 'Spatial'), dem)
+dem_mean_dst <- zonal(dem, districts_rst)
+par(mfrow = c(1, 2))
+plot_noaxes(dem, legend = FALSE)
+plot_noaxes(districts_rst, legend = FALSE)
+head(dem_mean_dst, 3)
+```
+
+---
+
+## Coordinate Systems
+
+- Geographic coordinate systems, e.g. WGS84
+
+```{r, warning=F, message=F, echo=F, fig.align='center', fig.asp = 1, fig.width = 10, out.width = "50%"}
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(mapproj)
+library(rnaturalearth)
+
+crs <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +datum=WGS84 +units=m +no_defs"
+districts_sphere <- st_transform(districts, crs = crs)
+sphere <- st_graticule(ndiscr = 10000, margin = 10e-6) %>%
+  st_transform(crs = crs) %>%
+  st_convex_hull() %>%
+  summarise(geometry = st_union(geometry))
+spdf_world <- ne_countries() %>% st_as_sf()
+spdf_world %>% ggplot() +
+  geom_sf(data = sphere, color = NA, fill = NA, size = 1.1) +
+  geom_sf(fill = 'aliceblue', size = 1.1) +
+  geom_sf(data = districts_sphere, col = NA, fill = 'red') +
+  coord_sf(crs = crs) +
+  theme_minimal()
+```
+
+---
+
+## Coordinate Systems
+
+- Projected coordinate reference system, e.g. UTM
+
+```{r, warning=F, message=F, echo=F, fig.align='center', fig.asp = 0.6, fig.width = 14, out.width = "70%"}
+spdf_world %>% ggplot() +
+  geom_sf(fill = 'aliceblue', size = 1.1) +
+  geom_sf(data = districts_sphere, col = NA, fill = 'red') +
+  theme_minimal()
+```
+
+---
+
+## Projection and transformation
+
+- `st_crs` and `st_transform`
+- `projectRaster`
+
+---
+
+## Next class
+
+- Read and write vector data.
+- Create geometries from scratch: points, linestrings, and polygons.
+- Convert geometry types.
+- Transform CRS.
+
+---
+
+## Homework
+
+- Read Unit2 - Module 1

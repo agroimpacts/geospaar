@@ -137,22 +137,23 @@ write_csv(occurrence, 'docs/hyenas_occurrence.csv')
 - Select out columns gbifID, wc2.1_2.5m_bio_1, wc2.1_2.5m_bio_4, wc2.1_2.5m_bio_5, wc2.1_2.5m_bio_6, wc2.1_2.5m_bio_12, wc2.1_2.5m_bio_13, wc2.1_2.5m_bio_14, wc2.1_2.5m_bio_15, and rename bio columns to format `bio**`.
 - Inner join two tables occurrence and variables into one table `occ_var`.
 
+Hint: we could directly use URL as the path to read tables.
+
 ```{r, message=F, warning=F}
-library(here)
 library(readr)
 library(dplyr)
 library(passport)
 
 # Read occurrence
-occurrence <- read.csv(here('docs/hyenas_occurrence.csv'), 
+occurrence <- read.csv('https://agroimpacts.github.io/geospaar/hyenas_occurrence.csv', 
                        stringsAsFactors = F) %>% 
-  select(gbifID, species, countryCode, decimalLatitude, 
+  dplyr::select(gbifID, species, countryCode, decimalLatitude, 
          decimalLongitude, month, year) %>% 
   mutate(country = as_country_name(countryCode))
 
 # Read variables
-variables <- read_csv(here('docs/hyenas_variables.csv')) %>% 
-  select(gbifID,
+variables <- read_csv('https://agroimpacts.github.io/geospaar/hyenas_variables.csv') %>% 
+  dplyr::select(gbifID,
          wc2.1_2.5m_bio_1, wc2.1_2.5m_bio_4,
          wc2.1_2.5m_bio_5, wc2.1_2.5m_bio_6,
          wc2.1_2.5m_bio_12, wc2.1_2.5m_bio_13,
