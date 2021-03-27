@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 11
+
+---
+
+
+## Today
+
+- Read and write vector data.
+- Create geometries from scratch: points, linestrings, and polygons.
+- Convert geometry types.
+- Set and transform CRS.
+
+---
+
+## Read vector data
+
+
+```r
+library(sf)
+library(here)
+districts_path &lt;- system.file('extdata/districts.shp', package = 'geospaar')
+districts &lt;- st_read(dsn = districts_path)
+```
+
+```
+## Reading layer `districts' from data source `/Library/Frameworks/R.framework/Versions/4.0/Resources/library/geospaar/extdata/districts.shp' using driver `ESRI Shapefile'
+## Simple feature collection with 72 features and 1 field
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## geographic CRS: WGS 84
+```
+
+Or `read_sf`, the same as `st_read` just with different default values
+
+
+```r
+districts &lt;- read_sf(dsn = districts_path)
+```
+
+`dsn` could be a file path, a database connection, or even a geojson text.
+
+
+```r
+geojson_txt &lt;- paste("{\"type\":\"MultiPoint\",\"coordinates\":",
+                     "[[3.2,4],[3,4.6],[3.8,4.4],[3.5,3.8],",
+                     "[3.4,3.6],[3.9,4.5]]}")
+sf_emp &lt;- read_sf(dsn = geojson_txt)
+```
+
+---
+
+## Write vector data
+
+
+```r
+st_write(districts, dsn = here('inst/extdata/districts.shp'),
+         driver = "ESRI Shapefile")
+```
+
+Or `write_sf`.  Similarly, `dsn` could be a path or database connection.
+
+---
+
+## CRS
+
+- EPSG code, e.g. 4326 for WGS84
+- WKT text, e.g. result of `st_crs(clark_campus_ply)`
+
+[List of ESPG codes on spatialreference.org](https://spatialreference.org/ref/epsg/)
+
+---
+
+## Creation - point
+
+
+```r
+grace_sfg &lt;- st_point(c(-71.82291048471912, 42.250181963699134))
+grace_sfg; class(grace_sfg) # sfg, simple feature geometry
+grace_sfc &lt;- st_sfc(grace_sfg)
+grace_sfc; class(grace_sfc) # sfc, simple feature column, geospatial already
+st_crs(grace_sfc) &lt;- 4326 # set CRS for geopsatial, EPSG code
+grace_sfc
+grace_pt &lt;- st_sf(grace_sfc) # sf, simple feature collection
+grace_pt; class(grace_pt)
+attr(grace_pt, "sf_column") # check sfc
+grace_geom &lt;- st_geometry(grace_pt) # get sfc
+
+identical(grace_sfc, grace_geom) # st_geometry gets sfc from a sf data.frame
+```
+
+---
+
+## Creation - multipoint
+
+`multipoint` is only one geometry for multiple points.
+
+
+```r
+coords &lt;- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_mpt &lt;- st_multipoint(coords) %&gt;% # create sfg
+  st_sfc() %&gt;% st_set_crs(4326) %&gt;% # create sfc
+  st_sf() # build up sf
+clark_campus_mpt
+plot(clark_campus_mpt %&gt;% st_geometry()) # plot
+```
+
+---
+
+## Creation - points
+
+
+```r
+coords &lt;- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_pts &lt;- do.call(st_sfc, 
+                        lapply(1:nrow(coords), 
+                               function(n){
+  st_point(coords[n, ]) # create sfg for each point
+})) %&gt;% st_set_crs(4326) %&gt;% # create sfc
+  st_sf() # build up sf
+clark_campus_pts
+plot(clark_campus_pts %&gt;% st_geometry()) # plot
+```
+
+---
+
+## `st_as_sf` function
+
+
+```r
+dt_url &lt;- 'https://agroimpacts.github.io/geospaar/hyenas_occurrence.csv'
+occurrence &lt;- read.csv(dt_url, stringsAsFactors = F) %&gt;% 
+  dplyr::select(gbifID, decimalLatitude, decimalLongitude) %&gt;% 
+  st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'),
+           crs = 4326)
+```
+
+---
+
+## Creation - linestring
+
+
+```r
+coords &lt;- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_l &lt;- st_linestring(coords) %&gt;% # create sfg
+  st_sfc() %&gt;% st_set_crs(4326) %&gt;% # create sfc
+  st_sf() # build sf
+clark_campus_l # Just one geometry
+plot(clark_campus_l %&gt;% st_geometry())
+```
+
+---
+
+## Creation - linestrings
+
+
+```r
+coords &lt;- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_ls &lt;- do.call(st_sfc, 
+                        lapply(1:(nrow(coords) - 1), 
+                               function(n){
+  # create sfg for each straight line
+  st_linestring(coords[n:(n + 1), ])
+})) %&gt;% st_set_crs(4326) %&gt;% # create sfc
+  st_sf() # build up sf
+clark_campus_ls
+plot(clark_campus_ls %&gt;% st_geometry()) # plot
+```
+
+---
+
+## Creation - multilinestring
+
+`multilinestring` is only one geometry for multiple linestrings.
+
+
+```r
+coords &lt;- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_ml &lt;- st_multilinestring(list(coords)) %&gt;% 
+  st_sfc() %&gt;% st_set_crs(4326) %&gt;% # create sfc
+  st_sf() # build up sf
+clark_campus_ml
+plot(clark_campus_ml %&gt;% st_geometry()) # plot
+```
+
+---
+
+## Creation - polygon
+
+
+```r
+coords &lt;- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396),
+                c(-71.82117553759312, 42.25084734394512)) # repeat the first point
+clark_campus_ply &lt;- st_polygon(list(coords)) %&gt;% # create sfc
+  st_sfc() %&gt;% st_set_crs(4326) %&gt;%  # create sfc
+  st_sf()
+clark_campus_ply
+plot(clark_campus_ply$geometry)
+```
+
+---
+
+## Convert types: `st_cast` function
+
+Geometry types: `POINT, MULTIPOINT, LINESTRING, MULTILISTRING, POLYGON, MULTIPOLYGON`. 
+
+Literally we could convert from any type to any type. But be careful of the order. E.g. `POINT` -&gt; `MULTIPOINT` (good) and the opposite (bad).
+
+
+```r
+st_cast(clark_campus_ply, 'POINT')
+```
+
+---
+
+## Set and convert CRS
+
+
+```r
+st_crs(clark_campus_ply) # check
+```
+
+If NA, it means there is not CRS set, so we need to set one.
+
+
+```r
+st_set_crs(clark_campus_ply, 4326) # set 
+st_crs(clark_campus_ply) &lt;- 4326
+st_crs(clark_campus_ply) &lt;- st_crs(clark_campus_ls) # or a crs object
+```
+
+If a geospatial data already have CRS, you might want to convert to other system. It is WRONG to just set another CRS. The right way is to use st_transform to convert.
+
+
+```r
+st_transform(clark_campus_ply, 2202)
+```
+
+---
+
+## Next class
+
+- Geospatial statistics
+- Buffer
+- Union
+- Logical relationships
+- Others
+
+---
+
+## Homework
+
+Each student creates a geospatial polygon for a building at Clark.
+
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; student &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; building &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Ashna &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Little Center &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Danielle &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Kneller Athletic Center &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Lia &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Dana Commons &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Lara &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Robert Hutchings Goddard Library &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Morgan &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Higgins + Sackler Science Center &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Rachel &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Jonas Clark Hall &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Ruhua &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Estabrook Hall &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Sarah &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Carlson Hall &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Sophie &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Math and Physics &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Tom &lt;/td&gt;
+   &lt;td style="text-align:left;color: black !important;background-color: white !important;"&gt; Atwood Hall + Geography &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

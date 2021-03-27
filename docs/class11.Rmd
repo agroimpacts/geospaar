@@ -1,0 +1,292 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 11
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Read and write vector data.
+- Create geometries from scratch: points, linestrings, and polygons.
+- Convert geometry types.
+- Set and transform CRS.
+
+---
+
+## Read vector data
+
+```{r, warning=F, message=F}
+library(sf)
+library(here)
+districts_path <- system.file('extdata/districts.shp', package = 'geospaar')
+districts <- st_read(dsn = districts_path)
+```
+
+Or `read_sf`, the same as `st_read` just with different default values
+
+```{r}
+districts <- read_sf(dsn = districts_path)
+```
+
+`dsn` could be a file path, a database connection, or even a geojson text.
+
+```{r}
+geojson_txt <- paste("{\"type\":\"MultiPoint\",\"coordinates\":",
+                     "[[3.2,4],[3,4.6],[3.8,4.4],[3.5,3.8],",
+                     "[3.4,3.6],[3.9,4.5]]}")
+sf_emp <- read_sf(dsn = geojson_txt)
+```
+
+---
+
+## Write vector data
+
+```{r, eval=F}
+st_write(districts, dsn = here('inst/extdata/districts.shp'),
+         driver = "ESRI Shapefile")
+```
+
+Or `write_sf`.  Similarly, `dsn` could be a path or database connection.
+
+---
+
+## CRS
+
+- EPSG code, e.g. 4326 for WGS84
+- WKT text, e.g. result of `st_crs(clark_campus_ply)`
+
+[List of ESPG codes on spatialreference.org](https://spatialreference.org/ref/epsg/)
+
+---
+
+## Creation - point
+
+```{r, eval=F}
+grace_sfg <- st_point(c(-71.82291048471912, 42.250181963699134))
+grace_sfg; class(grace_sfg) # sfg, simple feature geometry
+grace_sfc <- st_sfc(grace_sfg)
+grace_sfc; class(grace_sfc) # sfc, simple feature column, geospatial already
+st_crs(grace_sfc) <- 4326 # set CRS for geopsatial, EPSG code
+grace_sfc
+grace_pt <- st_sf(grace_sfc) # sf, simple feature collection
+grace_pt; class(grace_pt)
+attr(grace_pt, "sf_column") # check sfc
+grace_geom <- st_geometry(grace_pt) # get sfc
+
+identical(grace_sfc, grace_geom) # st_geometry gets sfc from a sf data.frame
+```
+
+---
+
+## Creation - multipoint
+
+`multipoint` is only one geometry for multiple points.
+
+```{r, eval=F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_mpt <- st_multipoint(coords) %>% # create sfg
+  st_sfc() %>% st_set_crs(4326) %>% # create sfc
+  st_sf() # build up sf
+clark_campus_mpt
+plot(clark_campus_mpt %>% st_geometry()) # plot
+```
+
+---
+
+## Creation - points
+
+```{r, eval=F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_pts <- do.call(st_sfc, 
+                        lapply(1:nrow(coords), 
+                               function(n){
+  st_point(coords[n, ]) # create sfg for each point
+})) %>% st_set_crs(4326) %>% # create sfc
+  st_sf() # build up sf
+clark_campus_pts
+plot(clark_campus_pts %>% st_geometry()) # plot
+```
+
+---
+
+## `st_as_sf` function
+
+```{r, eval=F}
+dt_url <- 'https://agroimpacts.github.io/geospaar/hyenas_occurrence.csv'
+occurrence <- read.csv(dt_url, stringsAsFactors = F) %>% 
+  dplyr::select(gbifID, decimalLatitude, decimalLongitude) %>% 
+  st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'),
+           crs = 4326)
+```
+
+---
+
+## Creation - linestring
+
+```{r, eval=F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_l <- st_linestring(coords) %>% # create sfg
+  st_sfc() %>% st_set_crs(4326) %>% # create sfc
+  st_sf() # build sf
+clark_campus_l # Just one geometry
+plot(clark_campus_l %>% st_geometry())
+```
+
+---
+
+## Creation - linestrings
+
+```{r, eval=F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_ls <- do.call(st_sfc, 
+                        lapply(1:(nrow(coords) - 1), 
+                               function(n){
+  # create sfg for each straight line
+  st_linestring(coords[n:(n + 1), ])
+})) %>% st_set_crs(4326) %>% # create sfc
+  st_sf() # build up sf
+clark_campus_ls
+plot(clark_campus_ls %>% st_geometry()) # plot
+```
+
+---
+
+## Creation - multilinestring
+
+`multilinestring` is only one geometry for multiple linestrings.
+
+```{r, eval=F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396))
+clark_campus_ml <- st_multilinestring(list(coords)) %>% 
+  st_sfc() %>% st_set_crs(4326) %>% # create sfc
+  st_sf() # build up sf
+clark_campus_ml
+plot(clark_campus_ml %>% st_geometry()) # plot
+```
+
+---
+
+## Creation - polygon
+
+```{r, eval = F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396),
+                c(-71.82117553759312, 42.25084734394512)) # repeat the first point
+clark_campus_ply <- st_polygon(list(coords)) %>% # create sfc
+  st_sfc() %>% st_set_crs(4326) %>%  # create sfc
+  st_sf()
+clark_campus_ply
+plot(clark_campus_ply$geometry)
+```
+
+---
+
+## Convert types: `st_cast` function
+
+Geometry types: `POINT, MULTIPOINT, LINESTRING, MULTILISTRING, POLYGON, MULTIPOLYGON`. 
+
+Literally we could convert from any type to any type. But be careful of the order. E.g. `POINT` -> `MULTIPOINT` (good) and the opposite (bad).
+
+```{r, eval = F}
+st_cast(clark_campus_ply, 'POINT')
+```
+
+---
+
+## Set and convert CRS
+
+```{r, eval=F}
+st_crs(clark_campus_ply) # check
+```
+
+If NA, it means there is not CRS set, so we need to set one.
+
+```{r, eval=F}
+st_set_crs(clark_campus_ply, 4326) # set 
+st_crs(clark_campus_ply) <- 4326
+st_crs(clark_campus_ply) <- st_crs(clark_campus_ls) # or a crs object
+```
+
+If a geospatial data already have CRS, you might want to convert to other system. It is WRONG to just set another CRS. The right way is to use st_transform to convert.
+
+```{r, eval=F}
+st_transform(clark_campus_ply, 2202)
+```
+
+---
+
+## Next class
+
+- Geospatial statistics
+- Buffer
+- Union
+- Logical relationships
+- Others
+
+---
+
+## Homework
+
+Each student creates a geospatial polygon for a building at Clark.
+
+```{r, warning=F, message=F, echo=F}
+library(kableExtra)
+set.seed(10)
+assignments <- data.frame(student = c('Ashna', 'Danielle', 'Lia', 'Lara', 
+                                       'Morgan', 'Rachel', 'Ruhua', 'Sarah', 
+                                       'Sophie', 'Tom'),
+                          building = c('Atwood Hall + Geography', 'Jonas Clark Hall',
+                                       'Higgins + Sackler Science Center', 
+                                       'Math and Physics', 'Carlson Hall', 
+                                       'Robert Hutchings Goddard Library', 
+                                       'Kneller Athletic Center',
+                                       'Dana Commons', 'Little Center',
+                                       'Estabrook Hall') %>% sample(10))
+assignments %>% 
+  kbl() %>% 
+  kable_paper(full_width = F) %>% 
+  row_spec(1:10, color = "black", background = "white")
+```
+
