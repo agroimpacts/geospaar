@@ -1,0 +1,276 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 12
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Attribute operations
+- Spatial operations
+- Geometry operations
+
+---
+
+## Use `osmdata` to query some vectors
+
+```{r, eval=F}
+library(dplyr)
+library(osmdata)
+q <- opq(bbox = st_bbox(clark_campus_ply))
+
+# Building
+buildings <- q %>% 
+  add_osm_feature(key = 'building') %>%
+  osmdata_sf() %>% `[[`('osm_polygons') %>% 
+  filter(!is.na(name))
+
+# Streets
+streets <- q %>% 
+  add_osm_feature(key = 'highway') %>%
+  osmdata_sf() %>% `[[`('osm_lines') %>% 
+  filter(!is.na(name))
+
+# footways
+footways <- q %>% 
+  add_osm_feature(key = c('foot')) %>%
+  osmdata_sf() %>% `[[`('osm_lines')
+
+# Trees
+trees <- q %>% 
+  add_osm_feature(key = c('natural')) %>%
+  osmdata_sf() %>% `[[`('osm_points')
+```
+
+---
+
+## Attribute operations
+
+- `sf` is a special data.frame, so all base R and `dplyr` syntax works on it. E.g.
+
+  - subsetting
+  - aggregation
+  - joining
+
+- `st_drop_geometry()` to drop geometry column
+
+---
+
+## Attribute operations
+
+Tasks:
+
+- Select out `streets` that have good or fair condition
+- Calculate the mean width of `streets` by conditions.
+- Drop the geometry from `streets`, and join the table with `buildings`, then select out the buildings that belong to intolerable streets.
+
+---
+
+- Select out `streets` that have good or fair condition
+- Calculate the mean width of `streets` by conditions.
+- Drop the geometry from `streets`, and join the table with `buildings`, then select out the buildings that belong to intolerable streets.
+
+```{r, eval=F}
+# 1
+streets %>% filter(condition %in% c('good', 'fair'))
+
+# 2
+streets %>% mutate(width = as.numeric(width)) %>% 
+  group_by(condition) %>% 
+  summarize(width = mean(width, na.rm = T))
+
+# 3
+left_join(buildings, 
+          streets %>% st_drop_geometry(), 
+          by = c(addr.street = 'name')) %>% 
+  filter(condition == 'intolerable')
+```
+
+---
+
+## Spatial operations
+
+- Topological relations (returns are index):
+
+  - `st_intersects`
+  - `st_disjoint`
+  - `st_within`
+  - `st_touches`
+  - `st_is_within_distance` = `st_buffer` + `st_intersects`
+
+- Spatial joining:
+
+  - `st_join`
+
+- `st_distance`
+
+---
+
+Tasks:
+
+- Manipulate `cnts_africa` and `occurrence` to get countries that have more than 100 occurrences. Hint: `st_join`, `group_by`.
+- Get the countries that touch with Tanzania. Hint: `st_touch`.
+- Get the occurrence inside of Tanzania.
+- Get the occurrence outside of Tanzania.
+- Calculate the distance between the first point and all other points of occurrence.
+
+```{r, eval=F}
+# Prepare data
+library(rnaturalearth)
+cnts_africa <- ne_countries(continent = 'africa', 
+                            returnclass = 'sf') %>% 
+  dplyr::select(name)
+dt_url <- 'https://agroimpacts.github.io/geospaar/hyenas_occurrence.csv'
+occurrence <- read.csv(dt_url, stringsAsFactors = F) %>% 
+  dplyr::select(gbifID, decimalLatitude, decimalLongitude) %>% 
+  st_as_sf(coords = c('decimalLongitude', 'decimalLatitude'),
+           crs = 4326)
+plot(cnts_africa %>% st_geometry())
+plot(occurrence$geometry, add = T, pch = 20, col = 'red')
+```
+
+
+---
+
+- Manipulate `cnts_africa` and `occurrence` to get countries that have more than 100 occurrences. Hint: `st_join`, `group_by`.
+- Get the countries that touch with Tanzania. Hint: `st_touch`.
+
+```{r, eval=F}
+# 1
+cnts_selected <- occurrence %>% 
+  st_join(cnts_africa) %>% 
+  filter(!is.na(name)) %>% 
+  group_by(name) %>% 
+  summarise(n = n()) %>% 
+  st_drop_geometry() %>% 
+  filter(n > 100) %>% 
+  pull(name)
+cnts_selected 
+
+# 2
+tz <- cnts_africa %>% 
+  filter(name == 'Tanzania')
+tz_touches <- cnts_africa %>% 
+  slice(st_touches(tz, cnts_africa) %>% unlist())
+```
+
+---
+
+- Get the occurrence inside of Tanzania.
+- Get the occurrence outside of Tanzania.
+- Calculate the distance between the first point and all other points of occurrence.
+
+```{r, eval=F}
+# 3
+occ_tz <- occurrence %>% 
+  slice(st_intersects(tz, occurrence) %>% unlist())
+
+# 4
+occ_out_tz <- occurrence %>% 
+  slice(st_disjoint(tz, occurrence) %>% unlist())
+
+# 5
+pts_distance <- st_distance(occurrence %>% slice(1), 
+                            occurrence)
+pts_distance[1]
+pts_distance[2]
+```
+
+---
+
+## Geometry operations
+
+- Statistics
+
+  - `st_area`
+  - `st_length`
+
+- Clipping/overlapping
+
+  - `st_intersection`
+  - `st_difference` & `st_sym_difference`
+  - `st_union`: return `sfc`
+
+- Others
+
+  - `st_centroid`
+  - `st_buffer`
+  - `st_coordinates`
+  - `st_bbox`
+  - `st_simplify`
+
+---
+
+```{r, eval=F}
+# 1
+africa <- st_union(
+  cnts_africa %>% st_buffer(0.0001)) %>% 
+  st_sf()
+tz_bbox <- st_bbox(tz) %>% st_as_sfc() %>% 
+  st_buffer(1, endCapStyle = 'SQUARE', 
+            joinStyle = "BEVEL") %>% 
+  st_sf()
+
+# 2
+st_difference(africa, tz_bbox) %>% 
+  st_geometry() %>% plot(col = 'red')
+st_intersection(tz_bbox, africa) %>% 
+  st_geometry() %>% plot(add = T, col = 'blue')
+st_difference(tz_bbox, africa) %>% 
+  st_geometry() %>% plot(col = 'green', add = T)
+
+# 3
+st_sym_difference(tz_bbox, africa) %>% st_geometry() %>% 
+  plot(col = 'yellow', add = T)
+
+# 4
+cnts_ctd <- cnts_africa %>% st_centroid()
+plot(cnts_africa$geometry)
+plot(cnts_ctd$geometry, pch = 20, col = 'red', add = T)
+cnts_ctd %>% st_coordinates()
+```
+
+---
+
+## Units
+
+`units::set_units()`
+
+```{r, eval=F}
+# Examples of usage
+10 %>% units::set_units('km2')
+st_area(africa) %>% units::set_units('ha')
+st_buffer(africa, 10 %>% 
+            units::set_units('miles') %>% 
+            units::set_units('m'))
+
+# Remove units
+set_units(x, NULL)
+```
+
+---
+
+## Next class
+
+- Visualization
+
+---
+
+## Homework
+
+Reference to help document and [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf), learn these functions by yourself and prepare examples:
+- `st_sample`
+- `st_contains`
+- `st_nearest_feature`
+- `st_nearest_points`
+- `st_convex_hull`
+- `st_crop`
+
+Will ask you to share your examples in next class.

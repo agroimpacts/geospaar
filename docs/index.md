@@ -65,6 +65,8 @@ The class materials are mostly designed by Dr. Lyndon Estes.
     - [Class 9 case study answer](class9_case_study_answer.html)
   - [Class 10 slides](class10.html)
 - Week 6
+  - [Class 11 slides](class11.html)
+  - [Class 12 slides](class12.html)
 - Week 7
 - Week 8
 - Week 9
