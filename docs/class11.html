@@ -83,7 +83,7 @@ Or `write_sf`.  Similarly, `dsn` could be a path or database connection.
 ## CRS
 
 - EPSG code, e.g. 4326 for WGS84
-- WKT text, e.g. result of `st_crs(clark_campus_ply)`
+- WKT text, e.g. result of `st_crs(districts)`
 
 [List of ESPG codes on spatialreference.org](https://spatialreference.org/ref/epsg/)
 
@@ -106,6 +106,8 @@ grace_geom &lt;- st_geometry(grace_pt) # get sfc
 
 identical(grace_sfc, grace_geom) # st_geometry gets sfc from a sf data.frame
 ```
+
+It is your turn to put them together within one pipeline.
 
 ---
 
@@ -254,6 +256,16 @@ plot(clark_campus_ply$geometry)
 
 ---
 
+## `st_as_sfc` function
+
+
+```r
+bbox_ply &lt;- st_bbox(clark_campus_ply) %&gt;% 
+  st_as_sfc() %&gt;% st_sf()
+```
+
+---
+
 ## Convert types: `st_cast` function
 
 Geometry types: `POINT, MULTIPOINT, LINESTRING, MULTILISTRING, POLYGON, MULTIPOLYGON`. 
@@ -283,7 +295,7 @@ st_crs(clark_campus_ply) &lt;- 4326
 st_crs(clark_campus_ply) &lt;- st_crs(clark_campus_ls) # or a crs object
 ```
 
-If a geospatial data already have CRS, you might want to convert to other system. It is WRONG to just set another CRS. The right way is to use st_transform to convert.
+If a geospatial data already have CRS, you might want to convert to other system. It is WRONG to just set another CRS. The right way is to use `st_transform` to convert.
 
 
 ```r
