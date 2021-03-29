@@ -20,6 +20,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Module 1](unit1-module1.html) - R and R fundamentals
   - [Module 2](unit1-module2.html) - Reproducibility and related R skills
   - [Module 3](unit1-module3.html) - Data preparation and operation
+    - [Module 3 assignment solution](unit1-module3_assignment.html)
   - [Module 4](unit1-module4.html) - Data manipulation and visualization
   - [Unit1 practice answers](unit1-practice-answers.html) - Answers and code for Unit1 practice
 
