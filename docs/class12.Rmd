@@ -109,7 +109,7 @@ left_join(buildings,
 
   - `st_join`
 
-- `st_distance`
+- `st_distance`: works for all geometries, but only points.
 
 ---
 
