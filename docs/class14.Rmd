@@ -1,0 +1,221 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 14
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- `sp` and convert between `sp` and `sf`.
+- Read and write raster data.
+- Raster and its attributes.
+
+---
+
+## `sp`
+
+Package `sp` and `rgdal`.
+
+- `readOGR()` and `writeOGR()` to read and write `sp` vectors.
+
+```{r, eval=F}
+library(rgdal)
+# Read
+dsn <- system.file('extdata/districts.shp', package = 'geospaar')
+ogrInfo(dsn) # A list, can check info without opening the file, which is great.
+districts <- readOGR(dsn)
+# Check
+districts
+class(districts)
+plot(districts)
+# Base R syntax to do operation
+## An example: subset
+zambezi <- districts[districts$distName == 'Zambezi', ]
+plot(zambezi, add = T, col = 'red')
+# Write, must set driver, 
+# use ogrDrivers() to get the list of supported drivers.
+# Also, must set layer.
+writeOGR(districts, '/Users/leisong/downloads/districts.geojson',
+         layer = 'districts', driver = 'GeoJSON')
+```
+
+---
+
+## Convert between `sf` and `sp`
+
+```{r, eval=F}
+library(sf)
+# Convert from `sp` to `sf`
+districts_sf <- districts %>% 
+  st_as_sf()
+
+# Convert from `sf` to `sp`
+districts <- as_Spatial(districts_sf)
+# Or
+districts <- as(districts_sf, 'Spatial')
+```
+
+---
+
+## Practice
+
+- Read `roads.shp` from package `geospaar` as a `sf`.
+- Convert it to `sp`.
+- Save it out to a path out of your package in shapefile format with name `roads_sp.shp`.
+- Read `roads_sp.shp` back in R as a `sp`.
+- Convert it to `sf`.
+- Plot it out using `ggplot2`.
+
+```{r, eval=F, echo=F}
+# Part 1
+library(sf)
+library(ggplot2)
+roads <- read_sf(system.file('extdata/roads.shp', package = 'geospaar'))
+roads_sp <- as_Spatial(roads)
+writeOGR(roads_sp, '/Users/leisong/downloads/roads_sp.shp',
+         layer = 'roads', driver = 'ESRI Shapefile')
+
+# Part 2
+roads_sp <- readOGR('/Users/leisong/downloads/roads_sp.shp')
+st_as_sf(roads_sp) %>% ggplot() +
+  geom_sf() +
+  theme_bw()
+```
+
+---
+
+## Read and write raster (`raster`)
+
+`raster`, `stack`, or `brick` to read raster.
+
+- `raster` just reads one band.
+- `stack` or `brick` could read multiple bands.
+
+```{r, eval=F}
+# be careful of function select in raster
+# it conflicts with select function in dplyr
+library(raster)
+dsn <- system.file('extdata/terrvars.tif', package = 'geospaar')
+# read one band
+terrvars <- raster(dsn, band = 2)
+terrvars
+# Read raster stack
+terrvars <- stack(dsn)
+# Or read raster brick
+terrvars <- brick(dsn)
+terrvars
+```
+
+- `writeRaster` to save out a raster. Check help document for arguments.
+
+```{r, eval=F}
+writeRaster(terrvars, '/Users/leisong/downloads/terrvars.tif',
+            overwrite = TRUE)
+```
+
+---
+
+## Raster attributes
+
+```{r, eval=F}
+# Check info
+res(terrvars)
+crs(terrvars)
+extent(terrvars)
+nlayers(terrvars)
+names(terrvars)
+
+# Get pixel values
+vals <- getValues(terrvars)
+# or 
+values(terrvars)
+
+# Get one layer using $
+terrvars$terrvars.1
+```
+
+---
+
+## Create a raster
+
+- Function `raster`
+
+```{r, eval=F}
+# From extent
+e <- extent(terrvars)
+rst <- raster(e, nrows = 10, ncols = 10, 
+              crs = crs(terrvars), # important
+              vals = 1:100)
+plot(rst)
+
+# From scratch
+rst <- raster(nrows = 10, ncols = 10, 
+              xmn = -314760.4, xmx = 903239.6,
+              ymn = -2122500, ymx = -970500.1)
+crs(rst) <- crs(terrvars)
+values(rst) <- 1:100
+
+# From another raster
+rst <- raster(terrvars) # Just a blank raster, no values
+# Choose layer
+rst <- raster(terrvars, 4) # Then have the same values with the layer
+```
+
+---
+
+## Reproject
+
+```{r, eval=F}
+# Use a defined CRS object
+rst_lonlat <- projectRaster(rst, crs = CRS("+init=epsg:4326"))
+
+# Or get crs from an existing object
+rst <- projectRaster(rst_lonlat, crs = crs(terrvars))
+
+# Or directly use an existing object
+rst <- projectRaster(rst, rst_lonlat)
+```
+
+---
+
+## Get data (`getData`)
+
+`getData` is a function in `raster` to query supported raster datasets.
+
+```{r, eval=F}
+srtm <- getData('alt', country = 'TZA', path = tempdir())
+plot(srtm)
+```
+
+*NOTE:* their server seems down at this moment.
+
+---
+
+## Practice
+
+- Get boundary vector of a country that you are interested in.
+- Download alt using `getData` for this country.
+- Project boundary vector and alt to albert.
+- Plot them out together.
+
+---
+
+## Next class
+
+- Raster calculation
+- Reclassification
+- Manipulation between raster and vector
+
+---
+
+## Homework
+
+- Finish assignment 4. 
+- Read Unit2 - Module 2.

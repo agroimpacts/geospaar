@@ -14,116 +14,12 @@
 class: center, middle, inverse, title-slide
 
 # Geospatial Analysis with R
-## Class 13
+## Class 14
 
 ---
 
 
 ## Today
-
-- Units
-- Some operation practice
-- Visualization
-
----
-
-## Units
-
-`units::set_units()`
-
-
-```r
-# Examples of usage
-10 %&gt;% units::set_units('km2')
-st_area(africa) %&gt;% units::set_units('ha')
-st_buffer(africa, 10 %&gt;% 
-            units::set_units('miles') %&gt;% 
-            units::set_units('m'))
-
-# Remove units
-set_units(x, NULL)
-```
-
----
-
-## Operation practice 1
-
-Recreate your building, and select out the same building from `osmdata` (name it `building_osm`). Then:
-- Get the intersection (`bld_itst`) of your building and `building_osm`.
-- Get the difference (`dif_bld_osm`) between your building and `building_osm`.
-- Get the difference (`dif_osm_bld`) between `building_osm` and your building.
-- Get the union (`bld_union`) of your building and `building_osm`.
-- Get the bounding box (`bld_bbox`) of the union and convert it to `sf`.
-- Plot `bld_bbox`, `dif_bld_osm`, `dif_osm_bld`, and `bld_itst` one by one using different colors. Hint: use `add = T` to plot one layer on top of another.
-- Calculate the area of `bld_union` in ha, and print it out.
-- Calculate the perimeter of the building that you drawn in km and print it out.
-
----
-
-![](class13_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
-
-The area of the union is 0.220130928133975 ha. The perimeter of the building is 0.200436532039233 km.
-
----
-
-- `st_sample`
-- `st_contains`
-- `st_nearest_feature`
-- `st_nearest_points`
-- `st_convex_hull`
-- `st_crop`
-
-Who wants to explain how to use them with an example?
-
----
-
-## Operation practice 2
-
-- Prepare the buildings and Clark campus polygon based on shared code.
-- Use Clark campus polygon to get buildings that are inside of the campus polygon (`blds_inside`).
-- Get the nearest building (`bld_nst_jch`) to Jonas Clark Hall in `blds_inside`.
-- Get 10 samples (`bld_samples`) from each polygon of `blds_inside`.
-
-
-
----
-
-## Plot them using `ggplot2`
-
-The main function in `ggplot2` to plot `sf` is `geom_sf`. All `ggplot2` syntax that we learned before still work.
-
-
-```r
-library(ggplot2)
-ggplot(clark_campus_ply) +
-  geom_sf(fill = 'pink') +
-  geom_sf(data = blds_inside, aes(fill = name)) + 
-  scale_fill_manual(values = rainbow(nrow(blds_inside))) +
-  geom_sf(data = blds_inside %&gt;% 
-      filter(name == 'Jonas Clark Hall'),
-      fill = 'red') +
-  # Show label in figure
-  geom_sf_label(data = blds_inside %&gt;% 
-      filter(name == 'Jonas Clark Hall'), 
-      aes(label = name)) +
-  geom_sf(data = bld_nst_jch, fill = 'blue') +
-  geom_sf(data = bld_samples, pch = 20, color = 'grey') +
-  theme_bw() + ggtitle('Clark campus') + 
-  theme(legend.position = 'none')
-```
-
----
-
-## Interactive maps
-
-- `leaflet`
-- `mapview`
-
-Go to class homepage and download `class13_clark_blds_teamwork.R`.
-
----
-
-## Next class
 
 - `sp` and convert between `sp` and `sf`.
 - Read and write raster data.
@@ -131,12 +27,200 @@ Go to class homepage and download `class13_clark_blds_teamwork.R`.
 
 ---
 
+## `sp`
+
+Package `sp` and `rgdal`.
+
+- `readOGR()` and `writeOGR()` to read and write `sp` vectors.
+
+
+```r
+library(rgdal)
+# Read
+dsn &lt;- system.file('extdata/districts.shp', package = 'geospaar')
+ogrInfo(dsn) # A list, can check info without opening the file, which is great.
+districts &lt;- readOGR(dsn)
+# Check
+districts
+class(districts)
+plot(districts)
+# Base R syntax to do operation
+## An example: subset
+zambezi &lt;- districts[districts$distName == 'Zambezi', ]
+plot(zambezi, add = T, col = 'red')
+# Write, must set driver, 
+# use ogrDrivers() to get the list of supported drivers.
+# Also, must set layer.
+writeOGR(districts, '/Users/leisong/downloads/districts.geojson',
+         layer = 'districts', driver = 'GeoJSON')
+```
+
+---
+
+## Convert between `sf` and `sp`
+
+
+```r
+library(sf)
+# Convert from `sp` to `sf`
+districts_sf &lt;- districts %&gt;% 
+  st_as_sf()
+
+# Convert from `sf` to `sp`
+districts &lt;- as_Spatial(districts_sf)
+# Or
+districts &lt;- as(districts_sf, 'Spatial')
+```
+
+---
+
+## Practice
+
+- Read `roads.shp` from package `geospaar` as a `sf`.
+- Convert it to `sp`.
+- Save it out to a path out of your package in shapefile format with name `roads_sp.shp`.
+- Read `roads_sp.shp` back in R as a `sp`.
+- Convert it to `sf`.
+- Plot it out using `ggplot2`.
+
+
+
+---
+
+## Read and write raster (`raster`)
+
+`raster`, `stack`, or `brick` to read raster.
+
+- `raster` just reads one band.
+- `stack` or `brick` could read multiple bands.
+
+
+```r
+# be careful of function select in raster
+# it conflicts with select function in dplyr
+library(raster)
+dsn &lt;- system.file('extdata/terrvars.tif', package = 'geospaar')
+# read one band
+terrvars &lt;- raster(dsn, band = 2)
+terrvars
+# Read raster stack
+terrvars &lt;- stack(dsn)
+# Or read raster brick
+terrvars &lt;- brick(dsn)
+terrvars
+```
+
+- `writeRaster` to save out a raster. Check help document for arguments.
+
+
+```r
+writeRaster(terrvars, '/Users/leisong/downloads/terrvars.tif',
+            overwrite = TRUE)
+```
+
+---
+
+## Raster attributes
+
+
+```r
+# Check info
+res(terrvars)
+crs(terrvars)
+extent(terrvars)
+nlayers(terrvars)
+names(terrvars)
+
+# Get pixel values
+vals &lt;- getValues(terrvars)
+# or 
+values(terrvars)
+
+# Get one layer using $
+terrvars$terrvars.1
+```
+
+---
+
+## Create a raster
+
+- Function `raster`
+
+
+```r
+# From extent
+e &lt;- extent(terrvars)
+rst &lt;- raster(e, nrows = 10, ncols = 10, 
+              crs = crs(terrvars), # important
+              vals = 1:100)
+plot(rst)
+
+# From scratch
+rst &lt;- raster(nrows = 10, ncols = 10, 
+              xmn = -314760.4, xmx = 903239.6,
+              ymn = -2122500, ymx = -970500.1)
+crs(rst) &lt;- crs(terrvars)
+values(rst) &lt;- 1:100
+
+# From another raster
+rst &lt;- raster(terrvars) # Just a blank raster, no values
+# Choose layer
+rst &lt;- raster(terrvars, 4) # Then have the same values with the layer
+```
+
+---
+
+## Reproject
+
+
+```r
+# Use a defined CRS object
+rst_lonlat &lt;- projectRaster(rst, crs = CRS("+init=epsg:4326"))
+
+# Or get crs from an existing object
+rst &lt;- projectRaster(rst_lonlat, crs = crs(terrvars))
+
+# Or directly use an existing object
+rst &lt;- projectRaster(rst, rst_lonlat)
+```
+
+---
+
+## Get data (`getData`)
+
+`getData` is a function in `raster` to query supported raster datasets.
+
+
+```r
+srtm &lt;- getData('alt', country = 'TZA', path = tempdir())
+plot(srtm)
+```
+
+*NOTE:* their server seems down at this moment.
+
+---
+
+## Practice
+
+- Get boundary vector of a country that you are interested in.
+- Download alt using `getData` for this country.
+- Project boundary vector and alt to albert.
+- Plot them out together.
+
+---
+
+## Next class
+
+- Raster calculation
+- Reclassification
+- Manipulation between raster and vector
+
+---
+
 ## Homework
 
-- Assignment 4 due this week. 
-- Make an interactive map of whatever that you are interested in. You will introduce your map to us in next class. Here is an example:
-
-  [MA map](https://agroimpacts.github.io/geospaar/class13_ma_map.html)
+- Finish assignment 4. 
+- Read Unit2 - Module 2.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

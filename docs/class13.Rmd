@@ -209,6 +209,7 @@ Go to class homepage and download `class13_clark_blds_teamwork.R`.
 
 - `sp` and convert between `sp` and `sf`.
 - Read and write raster data.
+- Raster and its attributes.
 
 ---
 
