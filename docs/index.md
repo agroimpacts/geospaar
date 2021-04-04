@@ -71,7 +71,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Class 12 slides](class12.html)
 - Week 7
   - [Class 13 slides](class13.html)
-    - [Class13_clark_blds_teamwork](Class13_clark_blds_teamwork.R)
+    - [Class13_clark_blds_teamwork](class13_clark_blds_teamwork.R)
 - Week 8
 - Week 9
 
