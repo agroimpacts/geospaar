@@ -748,12 +748,13 @@ crop_country_lms
 
 This arrangement is similar to what we were doing in Chunk 25b, using nested `lapply` to split on crop and country (using `dplyr:filter` instead of base `R` syntax to do the split), but applying `lm` inside the bodies of the `lapply`. We extract only the coefficient table from `summary` of each `lm`, to condense the output.
 
-There is a pure tidyverse way of doing this, which is the last thing to look at here.  It is more involved than previous examples, because the non-tabular (list) output from `lm` prevents use of `lm` within `dplyr::summarise`:
+There is a pure tidyverse way of doing this, which is the last thing to look at here.  It is more involved than previous examples, because the non-tabular (list) output from `lm` prevents use of `lm` within `dplyr::summarise` directly:
 ```{r, eval = FALSE}
 # Chunk 39
-crop_ylds %>% group_by(crop, country) %>% 
-  do(prod_ha_lm = lm(prod ~ harv_area, data = .)) %>% 
-  broom::tidy(., prod_ha_lm)
+crop_ylds %>% nest_by(crop, country) %>% 
+  # Must set data = data here
+  mutate(prod_ha_lm = list(lm(prod ~ harv_area, data = data))) %>% 
+  summarise(tidy(prod_ha_lm))
 #> # A tibble: 12 x 7
 #> # Groups:   crop, country [6]
 #>    crop    country term             estimate    std.error statistic  p.value
@@ -772,9 +773,9 @@ crop_ylds %>% group_by(crop, country) %>%
 #> 12 wheat   ZMB     harv_area           6.60        0.142     46.4   8.41e-46
 ```
 
-This produces a nice output table that lists the coefficients (estimate), standard errors, t-statistic, and p-value for each crop-country model. Each model occupies two lines: one for the model intercept results, one for independent variable results. There are a couple of extra functions, including `do`, which is described by `?do` as:
+This produces a nice output table that lists the coefficients (estimate), standard errors, t-statistic, and p-value for each crop-country model. Each model occupies two lines: one for the model intercept results, one for independent variable results. There are a couple of extra functions, including `nest_by`, which is described by `?nest_by` as:
 
-> ...a general purpose complement to the specialised manipulation functions filter(), select(), mutate(), summarise() and arrange(). You can use do() to perform arbitrary computation, returning either a data frame or arbitrary objects which will be stored in a list. This is particularly useful when working with models: you can fit models per group with do() and then flexibly extract components with either another do() or summarise().
+> ...is closely related to group_by(). However, instead of storing the group structure in the metadata, it is made explicit in the data, giving each group key a single row along with a list-column of data frames that contain all the other data.
 
 And then there is `broom::tidy`, which is a function from the `broom`, a non-core tidyverse package. The purpose of this function is to take an input and convert it to an output `data.frame`, which is what allows us to produce the messy `lm` output into a nice table at the end of the pipeline above. 
 

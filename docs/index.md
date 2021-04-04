@@ -67,6 +67,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Class 10 slides](class10.html)
 - Week 6
   - [Class 11 slides](class11.html)
+    - [Class 11 create polygons](class11_create_complex_plys.R)
   - [Class 12 slides](class12.html)
 - Week 7
 - Week 8
