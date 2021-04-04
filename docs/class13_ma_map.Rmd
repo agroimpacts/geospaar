@@ -1,0 +1,74 @@
+---
+title: "MA interactive map"
+author: "Lei Song"
+date: "4/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo=F, results='hide', warning=F, message=F}
+# install.packages('tigris')
+# install.packages("USAboundaries")
+# devtools::install_github("ropensci/USAboundariesData")
+library(sf)
+library(dplyr)
+library(tigris)
+library(USAboundaries)
+library(stringr)
+library(leaflet)
+
+invisible(
+worcester_bry <- county_subdivisions(
+  state = 'MA', county = 'Worcester') %>% 
+  filter(NAME == 'Worcester')
+)
+invisible(
+wct_tracts <- tracts(state = 'MA', county = 'Worcester') %>% 
+  mutate(NAME_GROUP = str_extract(NAME, "[0-9]{4}"))
+)
+invisible(
+ma_counties <- counties(state = 'MA')
+)
+invisible(
+ma_cities <- us_cities(states = 'MA')
+)
+
+ctr <- st_coordinates(st_centroid(worcester_bry))
+p <- leaflet() %>%
+  # Set default view
+  setView(ctr[1], ctr[2], zoom = 10) %>%
+  # Base layer groups
+  addTiles() %>% 
+  # Overlay layer groups
+  addPolygons(data = ma_counties, 
+              fillColor = 'pink',
+              color = 'red', weight = 2,
+              fillOpacity = 0.4,
+              group = "MA counties") %>%
+  addPolygons(data = wct_tracts, 
+              fillColor = ~colorFactor("Set3", NAME_GROUP)(NAME_GROUP),
+              color = 'black', weight = 2,
+              opacity = 1, fillOpacity = 1,
+              group = "Worcester tracts") %>% 
+  addCircles(data = ma_cities, weight = 1,
+    radius = ~sqrt(population) * 15, popup = ~city,
+    group = "Population") %>% 
+  addPolygons(data = worcester_bry,
+              color = 'darkgreen', weight = 3,
+              opacity = 1, fillOpacity = 0,
+              group = "Worcester") %>% 
+  addLayersControl(
+    baseGroups = c("OpenStreetMap"),
+    overlayGroups = c("MA counties", "Worcester tracts", 
+                      "Population", "Worcester"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+```
+
+```{r, echo=F, fig.align='center', fig.height=6, fig.width=10}
+p
+```

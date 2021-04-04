@@ -1,0 +1,220 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 13
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Units
+- Some operation practice
+- Visualization
+
+---
+
+## Units
+
+`units::set_units()`
+
+```{r, eval=F}
+# Examples of usage
+10 %>% units::set_units('km2')
+st_area(africa) %>% units::set_units('ha')
+st_buffer(africa, 10 %>% 
+            units::set_units('miles') %>% 
+            units::set_units('m'))
+
+# Remove units
+set_units(x, NULL)
+```
+
+---
+
+## Operation practice 1
+
+Recreate your building, and select out the same building from `osmdata` (name it `building_osm`). Then:
+- Get the intersection (`bld_itst`) of your building and `building_osm`.
+- Get the difference (`dif_bld_osm`) between your building and `building_osm`.
+- Get the difference (`dif_osm_bld`) between `building_osm` and your building.
+- Get the union (`bld_union`) of your building and `building_osm`.
+- Get the bounding box (`bld_bbox`) of the union and convert it to `sf`.
+- Plot `bld_bbox`, `dif_bld_osm`, `dif_osm_bld`, and `bld_itst` one by one using different colors. Hint: use `add = T` to plot one layer on top of another.
+- Calculate the area of `bld_union` in ha, and print it out.
+- Calculate the perimeter of the building that you drawn in km and print it out.
+
+---
+
+```{r, echo=F, warning=F, message=F}
+# Get buildings from `osmdata`
+library(dplyr)
+library(sf)
+library(osmdata)
+q <- opq(bbox = c(-71.82587, 42.24956,
+                  -71.82118, 42.25368))
+buildings <- q %>% 
+  add_osm_feature(key = 'building') %>%
+  osmdata_sf() %>% `[[`('osm_polygons') %>% 
+  filter(!is.na(name))
+
+building_osm <- buildings %>% filter(name == 'Jonas Clark Hall')
+
+jonas <- rbind(c(42.25073971066906, -71.82325961386029),
+                c(42.2507777725669, -71.82318350005451),
+                c(42.25078223970596, -71.82318551171117),
+                c(42.25084875040589, -71.82305810678872),
+                c(42.25083237091165, -71.8230406724309),
+                c(42.25091029755825, -71.8228891276284),
+                c(42.25099269123274, -71.82278452148155),
+                c(42.250988720455716, -71.82277915706375),
+                c(42.251034384379025, -71.82269466747479),
+                c(42.25113415000695, -71.8227925681005),
+                c(42.25115301115209, -71.82275904048932),
+                c(42.25120463109945, -71.82281000245831),
+                c(42.25118676266091, -71.82284621227836),
+                c(42.251274119423435, -71.82293539572409),
+                c(42.251233101414996, -71.82301271143761),
+                c(42.251168576503304, -71.82312268200226),
+                c(42.251181481490924, -71.82313743415118),
+                c(42.251096606328346, -71.8232997078066),
+                c(42.25108370132338, -71.82329099062768),
+                c(42.250977483105125, -71.82349819126475),
+                c(42.25087821357723, -71.82340431395349),
+                c(42.250858856001734, -71.8234391826691),
+                c(42.25081666639184, -71.8233969378754),
+                c(42.25083503128357, -71.82335938695088)) %>%
+  `[`(, ncol(.):1) %>% st_linestring() %>% # create sfg
+  st_cast('POLYGON') %>%
+  st_sfc() %>% st_set_crs(4326) %>% # create sfc
+  st_sf() %>% # build sf
+  mutate(name = "Jonas Clark Hall")
+
+# operation
+bld_itst <- st_intersection(jonas, building_osm)
+dif_bld_osm <- st_difference(jonas, building_osm)
+dif_osm_bld <- st_difference(building_osm, jonas)
+bld_union <- st_union(jonas, building_osm)
+bld_bbox <- st_bbox(bld_union) %>% 
+  st_as_sfc() %>% st_sf()
+
+# plot
+plot(bld_bbox$geometry, col = 'lightblue')
+plot(dif_osm_bld$geometry, col = 'red', add = T)
+plot(dif_bld_osm$geometry, col = 'blue', add = T)
+plot(bld_itst$geometry, col = 'yellow', add = T)
+```
+
+The area of the union is `r st_area(bld_union) %>% units::set_units('ha')` ha. The perimeter of the building is `r st_length(jonas) %>% units::set_units('km')` km.
+
+---
+
+- `st_sample`
+- `st_contains`
+- `st_nearest_feature`
+- `st_nearest_points`
+- `st_convex_hull`
+- `st_crop`
+
+Who wants to explain how to use them with an example?
+
+---
+
+## Operation practice 2
+
+- Prepare the buildings and Clark campus polygon based on shared code.
+- Use Clark campus polygon to get buildings that are inside of the campus polygon (`blds_inside`).
+- Get the nearest building (`bld_nst_jch`) to Jonas Clark Hall in `blds_inside`.
+- Get 10 samples (`bld_samples`) from each polygon of `blds_inside`.
+
+```{r, eval=F, echo=F}
+coords <- rbind(c(-71.82117553759312, 42.25084734394512),
+                c(-71.82212771135572, 42.25194565868353),
+                c(-71.82156280512835, 42.252417357356265),
+                c(-71.82316986959349, 42.25367904720517),
+                c(-71.82545037620447, 42.2518579577067),
+                c(-71.82587265873052, 42.25131095436722),
+                c(-71.8236126925188, 42.249563032541396),
+                # repeat the first point
+                c(-71.82117553759312, 42.25084734394512))
+clark_campus_ply <- st_polygon(list(coords)) %>% # create sfc
+  st_sfc() %>% st_set_crs(4326) %>%  # create sfc
+  st_sf() %>% mutate(name = 'Clark main campus')
+
+buildings <- opq(bbox = st_bbox(clark_campus_ply)) %>% 
+  add_osm_feature(key = 'building') %>%
+  osmdata_sf() %>% `[[`('osm_polygons') %>% 
+  filter(!is.na(name))
+
+# Operations
+blds_inside <- buildings %>% 
+  slice(st_contains(clark_campus_ply, buildings) %>% 
+          unlist())
+
+bld_nst_jch <- blds_inside %>% 
+  filter(name != 'Jonas Clark Hall') %>% 
+  slice(st_nearest_feature(
+    blds_inside %>% 
+      filter(name == 'Jonas Clark Hall'), .))
+
+bld_samples <- blds_inside %>% 
+  st_sample(seed = 10,
+            size = rep(10, nrow(.)),
+            exact = T) %>% 
+  st_sf()
+```
+
+---
+
+## Plot them using `ggplot2`
+
+The main function in `ggplot2` to plot `sf` is `geom_sf`. All `ggplot2` syntax that we learned before still work.
+
+```{r, eval = F}
+library(ggplot2)
+ggplot(clark_campus_ply) +
+  geom_sf(fill = 'pink') +
+  geom_sf(data = blds_inside, aes(fill = name)) + 
+  scale_fill_manual(values = rainbow(nrow(blds_inside))) +
+  geom_sf(data = blds_inside %>% 
+      filter(name == 'Jonas Clark Hall'),
+      fill = 'red') +
+  # Show label in figure
+  geom_sf_label(data = blds_inside %>% 
+      filter(name == 'Jonas Clark Hall'), 
+      aes(label = name)) +
+  geom_sf(data = bld_nst_jch, fill = 'blue') +
+  geom_sf(data = bld_samples, pch = 20, color = 'grey') +
+  theme_bw() + ggtitle('Clark campus') + 
+  theme(legend.position = 'none')
+```
+
+---
+
+## Interactive maps
+
+- `leaflet`
+- `mapview`
+
+Go to class homepage and download `class13_clark_blds_teamwork.R`.
+
+---
+
+## Next class
+
+- `sp` and convert between `sp` and `sf`.
+- Read and write raster data.
+
+---
+
+## Homework
+
+- Assignment 4 due this week. 
+- Make an interactive map of whatever that you are interested in. You will introduce your map to us in next class. Here is an example:
+
+  [MA map](https://agroimpacts.github.io/geospaar/class13_ma_map.html)

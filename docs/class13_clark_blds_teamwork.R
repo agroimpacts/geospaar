@@ -297,8 +297,12 @@ buildings_clark <- rbind(atwood_esri, carlson_hall,
 
 # Plot -- Base plot ==================================
 cols <- rainbow(10)
-plot(clark_campus_ply$geometry, col = 'lightblue')
-plot(clark_math_phys$geometry, add = T, col = cols[1])
+# sf way to define colors
+# cols <- sf.colors(10)
+plot(clark_campus_ply %>% st_geometry(),
+     col = 'lightblue', axes = TRUE,
+     main = 'Clark Campus')
+plot(st_geometry(clark_math_phys), add = T, col = cols[1])
 plot(atwood_esri$geometry, add = T, col = cols[2])
 plot(kneller_athl$geometry, add = T, col = cols[3])
 plot(higgins_sackler$geometry, add = T, col = cols[4])
@@ -313,7 +317,8 @@ plot(jonas$geometry, add = T, col = cols[10])
 ## Plot geometry, default is no axes.
 plot(buildings_clark %>% st_geometry(),
      col = 'lightblue', border = 'orange',
-     lty = 4, lwd = 2)
+     lty = 4, lwd = 2, axes = TRUE,
+     graticule = st_crs(buildings_clark))
 
 ## plot attribute,
 ## could plot multiple attributes together
@@ -332,6 +337,7 @@ ggplot(clark_campus_ply) +
   # Must set data = ... to add more layers.
   geom_sf(data = buildings_clark, aes(fill = name)) +
   scale_fill_brewer(palette = 'Paired') +
+  ggtitle("Clark Campus") +
   theme_bw()
 
 # Plot - Leaflet========================================
@@ -365,8 +371,11 @@ leaflet() %>%
   )
 
 # Plot - mapview======================================
-mapview(clark_campus_ply, legend = F) +
+mapview(clark_campus_ply, legend = F,
+        layer.name = 'Clark Campus') +
   mapview(buildings_clark, zcol = 'name',
-          col.regions = sf.colors(10), fgb = T) +
+          col.regions = sf.colors(10), fgb = F,
+          layer.name = 'Buildings') +
   mapview(st_centroid(buildings_clark),
-          col.regions = 'red', legend = F)
+          col.regions = 'red', legend = F,
+          layer.name = 'Centroids')
