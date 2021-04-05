@@ -5,6 +5,7 @@
 
 # Load packages=====
 library(dplyr)
+library(stringr)
 library(sf)
 library(leaflet)
 library(RColorBrewer)
