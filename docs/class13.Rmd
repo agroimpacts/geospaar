@@ -48,6 +48,7 @@ Recreate your building, and select out the same building from `osmdata` (name it
 - Plot `bld_bbox`, `dif_bld_osm`, `dif_osm_bld`, and `bld_itst` one by one using different colors. Hint: use `add = T` to plot one layer on top of another.
 - Calculate the area of `bld_union` in ha, and print it out.
 - Calculate the perimeter of the building that you drawn in km and print it out.
+- Get the centroid of your building and `building_osm`, then calculate the distance between these two centroids in m and print it out.
 
 ---
 
@@ -110,7 +111,9 @@ plot(dif_bld_osm$geometry, col = 'blue', add = T)
 plot(bld_itst$geometry, col = 'yellow', add = T)
 ```
 
-The area of the union is `r st_area(bld_union) %>% units::set_units('ha')` ha. The perimeter of the building is `r st_length(jonas) %>% units::set_units('km')` km.
+The area of the union is `r st_area(bld_union) %>% units::set_units('ha')` ha. 
+The perimeter of the building is `r st_length(jonas) %>% units::set_units('km')` km. 
+The distance between two centroids are `r st_distance(st_centroid(jonas), st_centroid(building_osm))` m.
 
 ---
 
