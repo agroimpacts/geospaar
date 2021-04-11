@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 15
+
+---
+
+
+## Today
+
+- Manipulation between raster and vector
+- Raster calculation
+  - Local calculation
+  - Aggregate, focal, and zonal calculation (Neighborhood)
+  - Global calculation
+
+---
+
+## Reproject
+
+
+```r
+# Use a defined CRS object
+rst_lonlat &lt;- projectRaster(rst, crs = CRS("+init=epsg:4326"))
+
+# Or get crs from an existing object
+rst &lt;- projectRaster(rst_lonlat, crs = crs(terrvars))
+
+# Or directly use an existing object
+rst &lt;- projectRaster(rst, rst_lonlat)
+```
+
+---
+
+## Get data (`getData`)
+
+`getData` is a function in `raster` to query supported raster datasets.
+
+
+```r
+# Another powerful package to visualize geospatial data.
+# Use ggplot2 syntax style
+library(tmap)
+srtm &lt;- getData('alt', country = 'TZA', path = tempdir())
+
+# tmap_mode("view") # convert to interactive viewing
+# tmap_mode("plot") # convert to static plotting
+tm_shape(srtm, raster.downsample = F) + 
+  tm_raster(midpoint = NA, 
+            n = 10, style = 'pretty') +
+  tm_legend(legend.position = c('left', 'bottom'))
+```
+
+---
+
+## Practice
+
+- Get boundary vector of countries of Africa as a `sf` using function `ne_countries` in package `rnaturalearth`, name it `cnts`.
+- Get the centroid of these countries, and name it `cnts_ctds`.
+- Use `getData` to download precipitation from worldclim with resolution 10 second, name it `rainfall`. Should have 12 layers for each month.
+- Plot them out together.
+
+---
+
+
+```r
+# Practice
+rainfall &lt;- getData('worldclim', var = 'prec', 
+                res = 10, path = tempdir())
+cnts &lt;- ne_countries(continent = 'africa', 
+                     returnclass = 'sf')
+cnts_ctds &lt;- st_centroid(cnts)
+```
+
+---
+
+## Raster and vector
+
+- `rasterize`: vector to raster
+- `rasterToPolygons`, `rasterToPoints`, etc.: raster to vector
+- Overlay
+- `extract`
+
+
+```r
+# Overlay: crop and mask
+rainfall_africa &lt;- mask(rainfall, cnts)
+rainfall_africa &lt;- mask(crop(rainfall, cnts), cnts)
+
+# Raster to vector
+cnts_rst &lt;- rasterize(cnts, rainfall_africa$prec1)
+
+# vector to raster, sp object
+cnts_vct &lt;- rasterToPolygons(cnts_rst, dissolve = T)
+
+# Extract
+vals_ctds &lt;- extract(rainfall_africa, cnts_ctds)
+vals_ctds &lt;- extract(rainfall_africa, cnts_ctds, cellnumbers = TRUE)
+vals_ctds &lt;- extract(rainfall_africa, cnts_ctds, sp = TRUE)
+```
+
+---
+
+## Raster calculation
+
+- Local
+
+  Local operations do operations **cell-by-cell** in one or several layers.
+  
+  Let's do a practice:
+  - Download sentinel-2 bands in 20m (R-G-B-NIR) from [here](https://www.dropbox.com/s/xv37lzch4sgsfnm/S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif?dl=0). 
+  - Read the raster stack into R.
+  - Make a simple water mask using NDVI. (What value of NDVI indicate water?)
+
+---
+
+
+```r
+fname &lt;- 'S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif'
+s2 &lt;- stack(
+  file.path('/Users/leisong/Downloads', 
+            fname))
+names(s2) &lt;- paste0('B', c(2:4, 8))
+ndvi &lt;- (s2$B8 - s2$B4) / (s2$B8 + s2$B4)
+water_mask &lt;- ndvi &lt; 0
+```
+
+---
+
+## Raster calculation
+
+- Local
+  - `reclassify` takes a matrix of values to reclassify a raster.
+  
+
+```r
+# A clear way to define the reclassify matrix
+rcl &lt;- matrix(
+  c(-1, 0, 1, # class 1
+    0, 0.2, 2, # class 2
+    0.2, 0.5, 3, # class 3
+    0.5, 1, 4), # class 4
+  ncol = 3, byrow = T)
+
+lc &lt;- reclassify(ndvi, rcl, include.lowest = T)
+lc &lt;- ratify(lc)
+levels(lc)[[1]]$landcover &lt;- c(
+  "water", "Urban",
+  "sparse vegetation",
+  "dense vegetation"
+)
+tm_shape(lc) + tm_raster()
+```
+
+---
+
+## Raster calculation
+
+- "Neighborhood"
+  
+  - Function `aggregate`: `aggregate(x, fact, fun)`
+  - Function `zonal`: `zonal(x, z, fun)`
+  - Function `focal` - image filters: `focal(x, w, fun)`
+  
+
+```r
+# Aggregate, result is a raster with coarse resolution
+rainfall_af_mean &lt;- mean(rainfall_africa)
+rainfall_agg &lt;- aggregate(rainfall_af_mean, fact = 8, fun = mean)
+
+# Zonal, result is a matrix
+rainfall_zonal &lt;- zonal(rainfall_af_mean, cnts_rst, fun = max)
+```
+
+---
+
+
+```r
+# Focal, result is a raster as well.
+## Use s2 NIR band as an example
+fname &lt;- 'S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif'
+nir_band &lt;- raster(
+  file.path('/Users/leisong/Downloads', 
+            fname), 4)
+# weight matrix could not the square, 
+# but ncol and nrow must be uneven numbers
+## Reproduce Sobel edge detection
+wx &lt;- matrix(c(-1, -2, -1, 0, 0, 0, 1, 2, 1), nrow = 3)
+wy &lt;- matrix(c(1, 0, -1, 2, 0, -2, 1, 0, -1), nrow = 3)
+nir_x &lt;- focal(nir_band, w = wx)
+nir_y &lt;- focal(nir_band, w = wy)
+nir_edge &lt;- sqrt(nir_x^2 + nir_y^2)
+writeRaster(nir_edge, '/Users/leisong/downloads/edge.tif')
+```
+
+---
+
+## Raster calculation
+
+- Global
+  - Statistics: e.g. `cellStats(rainfall_af_mean, sd)`, `hist(rainfall_af_mean)`
+  - distance
+
+
+```r
+# Calculate the distance to the farmers
+library(sf)
+rst_template &lt;- raster(system.file('extdata/demalb.tif', package = 'geospaar'))
+farmers &lt;- read.csv(system.file('extdata/farmer_spatial.csv', package = 'geospaar'),
+                    stringsAsFactors = F) %&gt;% 
+  st_as_sf(coords = c('x', 'y'), crs = 4326) %&gt;%
+  st_transform(crs(rst_template)) %&gt;% 
+  as_Spatial()
+farmers_rst &lt;- rasterize(farmers, field = 1, rst_template)
+dis_farmers &lt;- raster::distance(farmers_rst)
+```
+
+---
+
+## Next class
+
+- More on raster extraction
+- Terrain analysis
+- Interpolation and prediction
+- Fit a model (a case study)
+
+---
+
+## Homework
+
+Use operations we learned so far to make a mini case analysis on raster that can get by `getData` or the provided sentinel-2 bands or whatever images that you get. Then tell us the story in next class.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

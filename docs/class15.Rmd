@@ -1,0 +1,226 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 15
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Manipulation between raster and vector
+- Raster calculation
+  - Local calculation
+  - Aggregate, focal, and zonal calculation (Neighborhood)
+  - Global calculation
+
+---
+
+## Reproject
+
+```{r, eval=F}
+# Use a defined CRS object
+rst_lonlat <- projectRaster(rst, crs = CRS("+init=epsg:4326"))
+
+# Or get crs from an existing object
+rst <- projectRaster(rst_lonlat, crs = crs(terrvars))
+
+# Or directly use an existing object
+rst <- projectRaster(rst, rst_lonlat)
+```
+
+---
+
+## Get data (`getData`)
+
+`getData` is a function in `raster` to query supported raster datasets.
+
+```{r, eval=F}
+# Another powerful package to visualize geospatial data.
+# Use ggplot2 syntax style
+library(tmap)
+srtm <- getData('alt', country = 'TZA', path = tempdir())
+
+# tmap_mode("view") # convert to interactive viewing
+# tmap_mode("plot") # convert to static plotting
+tm_shape(srtm, raster.downsample = F) + 
+  tm_raster(midpoint = NA, 
+            n = 10, style = 'pretty') +
+  tm_legend(legend.position = c('left', 'bottom'))
+```
+
+---
+
+## Practice
+
+- Get boundary vector of countries of Africa as a `sf` using function `ne_countries` in package `rnaturalearth`, name it `cnts`.
+- Get the centroid of these countries, and name it `cnts_ctds`.
+- Use `getData` to download precipitation from worldclim with resolution 10 second, name it `rainfall`. Should have 12 layers for each month.
+- Plot them out together.
+
+---
+
+```{r, eval=F}
+# Practice
+rainfall <- getData('worldclim', var = 'prec', 
+                res = 10, path = tempdir())
+cnts <- ne_countries(continent = 'africa', 
+                     returnclass = 'sf')
+cnts_ctds <- st_centroid(cnts)
+```
+
+---
+
+## Raster and vector
+
+- `rasterize`: vector to raster
+- `rasterToPolygons`, `rasterToPoints`, etc.: raster to vector
+- Overlay
+- `extract`
+
+```{r, eval=F}
+# Overlay: crop and mask
+rainfall_africa <- mask(rainfall, cnts)
+rainfall_africa <- mask(crop(rainfall, cnts), cnts)
+
+# Raster to vector
+cnts_rst <- rasterize(cnts, rainfall_africa$prec1)
+
+# vector to raster, sp object
+cnts_vct <- rasterToPolygons(cnts_rst, dissolve = T)
+
+# Extract
+vals_ctds <- extract(rainfall_africa, cnts_ctds)
+vals_ctds <- extract(rainfall_africa, cnts_ctds, cellnumbers = TRUE)
+vals_ctds <- extract(rainfall_africa, cnts_ctds, sp = TRUE)
+```
+
+---
+
+## Raster calculation
+
+- Local
+
+  Local operations do operations **cell-by-cell** in one or several layers.
+  
+  Let's do a practice:
+  - Download sentinel-2 bands in 20m (R-G-B-NIR) from [here](https://www.dropbox.com/s/xv37lzch4sgsfnm/S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif?dl=0). 
+  - Read the raster stack into R.
+  - Make a simple water mask using NDVI. (What value of NDVI indicate water?)
+
+---
+
+```{r, eval=F}
+fname <- 'S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif'
+s2 <- stack(
+  file.path('/Users/leisong/Downloads', 
+            fname))
+names(s2) <- paste0('B', c(2:4, 8))
+ndvi <- (s2$B8 - s2$B4) / (s2$B8 + s2$B4)
+water_mask <- ndvi < 0
+```
+
+---
+
+## Raster calculation
+
+- Local
+  - `reclassify` takes a matrix of values to reclassify a raster.
+  
+```{r, eval=F}
+# A clear way to define the reclassify matrix
+rcl <- matrix(
+  c(-1, 0, 1, # class 1
+    0, 0.2, 2, # class 2
+    0.2, 0.5, 3, # class 3
+    0.5, 1, 4), # class 4
+  ncol = 3, byrow = T)
+
+lc <- reclassify(ndvi, rcl, include.lowest = T)
+lc <- ratify(lc)
+levels(lc)[[1]]$landcover <- c(
+  "water", "Urban",
+  "sparse vegetation",
+  "dense vegetation"
+)
+tm_shape(lc) + tm_raster()
+```
+
+---
+
+## Raster calculation
+
+- "Neighborhood"
+  
+  - Function `aggregate`: `aggregate(x, fact, fun)`
+  - Function `zonal`: `zonal(x, z, fun)`
+  - Function `focal` - image filters: `focal(x, w, fun)`
+  
+```{r, eval=F}
+# Aggregate, result is a raster with coarse resolution
+rainfall_af_mean <- mean(rainfall_africa)
+rainfall_agg <- aggregate(rainfall_af_mean, fact = 8, fun = mean)
+
+# Zonal, result is a matrix 
+rainfall_zonal <- zonal(rainfall_af_mean, cnts_rst, fun = max)
+```
+
+---
+
+```{r, eval=F}
+# Focal, result is a raster as well.
+## Use s2 NIR band as an example
+fname <- 'S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif'
+nir_band <- raster(
+  file.path('/Users/leisong/Downloads', 
+            fname), 4)
+# weight matrix could not the square, 
+# but ncol and nrow must be uneven numbers
+## Reproduce Sobel edge detection
+wx <- matrix(c(-1, -2, -1, 0, 0, 0, 1, 2, 1), nrow = 3)
+wy <- matrix(c(1, 0, -1, 2, 0, -2, 1, 0, -1), nrow = 3)
+nir_x <- focal(nir_band, w = wx)
+nir_y <- focal(nir_band, w = wy)
+nir_edge <- sqrt(nir_x^2 + nir_y^2)
+writeRaster(nir_edge, '/Users/leisong/downloads/edge.tif')
+```
+
+---
+
+## Raster calculation
+
+- Global
+  - Statistics: e.g. `cellStats(rainfall_af_mean, sd)`, `hist(rainfall_af_mean)`
+  - distance
+
+```{r, eval=F}
+# Calculate the distance to the farmers
+library(sf)
+rst_template <- raster(system.file('extdata/demalb.tif', package = 'geospaar'))
+farmers <- read.csv(system.file('extdata/farmer_spatial.csv', package = 'geospaar'),
+                    stringsAsFactors = F) %>% 
+  st_as_sf(coords = c('x', 'y'), crs = 4326) %>%
+  st_transform(crs(rst_template)) %>% 
+  as_Spatial()
+farmers_rst <- rasterize(farmers, field = 1, rst_template)
+dis_farmers <- raster::distance(farmers_rst)
+```
+
+---
+
+## Next class
+
+- Terrain analysis
+- Interpolation and prediction
+- Fit a model (a case study)
+
+---
+
+## Homework
+
+Use operations we learned so far to make a mini case analysis on raster that can get by `getData` or the provided sentinel-2 bands or whatever images that you can get. Then tell us the story in next class.
