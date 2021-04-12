@@ -23,7 +23,7 @@ maxValue(terrs)
 freq(terrs$terrvars.1) %>% head()
 
 # Load values from disk
-getValues(terrs)
+vals <- getValues(terrs)
 
 # create a new raster based on a template
 rst <- raster(terrs)

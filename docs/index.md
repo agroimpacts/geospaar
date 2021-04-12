@@ -75,6 +75,9 @@ The class materials are mostly designed by Dr. Lyndon Estes.
     - [Class 13 homework example](class13_ma_map.html)
   - [Class 14 slides](class14.html)
 - Week 8
+  - [Class 15 slides](class15.html)
+    - [Class 15 inclass code](class15_inclass_code.R)
+    - [Class 15 sentinel-2 example image](https://www.dropbox.com/s/xv37lzch4sgsfnm/S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif?dl=0)
 - Week 9
 
 ## Appendix

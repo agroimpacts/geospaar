@@ -223,4 +223,5 @@ dis_farmers <- raster::distance(farmers_rst)
 
 ## Homework
 
-Use operations we learned so far to make a mini case analysis on raster that can get by `getData` or the provided sentinel-2 bands or whatever images that you can get. Then tell us the story in next class.
+- Learn function `calc` and `overlay` by yourself.
+- Use operations we learned so far to make a mini case analysis on raster that can get by `getData` or the provided sentinel-2 bands or whatever images that you can get. Then tell us the story in next class.

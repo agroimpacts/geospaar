@@ -181,7 +181,7 @@ tm_shape(lc) + tm_raster()
 rainfall_af_mean &lt;- mean(rainfall_africa)
 rainfall_agg &lt;- aggregate(rainfall_af_mean, fact = 8, fun = mean)
 
-# Zonal, result is a matrix
+# Zonal, result is a matrix 
 rainfall_zonal &lt;- zonal(rainfall_af_mean, cnts_rst, fun = max)
 ```
 
@@ -232,7 +232,6 @@ dis_farmers &lt;- raster::distance(farmers_rst)
 
 ## Next class
 
-- More on raster extraction
 - Terrain analysis
 - Interpolation and prediction
 - Fit a model (a case study)
@@ -241,7 +240,8 @@ dis_farmers &lt;- raster::distance(farmers_rst)
 
 ## Homework
 
-Use operations we learned so far to make a mini case analysis on raster that can get by `getData` or the provided sentinel-2 bands or whatever images that you get. Then tell us the story in next class.
+- Learn function `calc` and `overlay` by yourself.
+- Use operations we learned so far to make a mini case analysis on raster that can get by `getData` or the provided sentinel-2 bands or whatever images that you can get. Then tell us the story in next class.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
