@@ -45,6 +45,8 @@ hillshade <- hillShade(slope, aspect, 40, 270)
 
 **What is spatial interpolation?**
 
+*NOTE: we could do interpolation for any numeric variables, but it does not mean the interpolation makes sense.*
+
 - Nearest neighbor interpolation
 - Inverse distance weighted interpolation (IDW)
 - Kriging (Ordinary Kriging, Universal Kriging, etc.)

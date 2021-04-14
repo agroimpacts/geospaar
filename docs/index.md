@@ -78,7 +78,7 @@ The class materials are mostly designed by Dr. Lyndon Estes.
   - [Class 15 slides](class15.html)
     - [Class 15 inclass code](class15_inclass_code.R)
     - [Class 15 sentinel-2 example image](https://www.dropbox.com/s/1hy1yai1bn8hhsg/S2A_MSIL2A_20201014T154231_N0214_R011_T19TBG_20201014T200156_20m.tif?dl=0)
-  - [Class 16 slides](Class16.html)
+  - [Class 16 slides](class16.html)
 - Week 9
 
 ## Appendix
