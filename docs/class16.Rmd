@@ -1,0 +1,243 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 16
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Terrain analysis
+- Interpolation and prediction
+- Fit a model (a case study)
+
+---
+
+## Terrain analysis
+
+- Function `terrain`
+- Function `hillshade`
+
+These functions are based on focal operation fundamentally.
+
+```{r, eval=F}
+library(raster)
+# terrain
+dem <- getData(name = 'alt', country = 'TZA', path = tempdir())
+slope <- terrain(dem, opt = "slope", unit = "radians", neighbors = 8)
+aspect <- terrain(dem, opt = "aspect", neighbors = 4)
+flowdir <- terrain(dem, opt = "flowdir", neighbors = 4)
+
+# hillshade
+# have to define an angle and direction
+hillshade <- hillShade(slope, aspect, 40, 270)
+```
+
+---
+
+## Interpolation and prediction
+
+**What is spatial interpolation?**
+
+- Nearest neighbor interpolation
+- Inverse distance weighted interpolation (IDW)
+- Kriging (Ordinary Kriging, Universal Kriging, etc.)
+
+---
+
+```{r, eval=F}
+library(raster)
+library(dplyr)
+library(rnaturalearth)
+gha <- ne_countries(continent = 'africa', returnclass = 'sf') %>%
+  filter(name == 'Ghana')
+rainfall <- getData(name = 'worldclim', var = 'prec', res = 2.5) %>% 
+  calc(., mean)
+rainfall <- mask(crop(rainfall, gha), gha)
+
+# Get some pseudo samples
+# sampleRandom, sampleStratified
+set.seed(10)
+pts_rainfall <- sampleRandom(rainfall, size = 200,
+                             sp = T) %>% st_as_sf() %>% 
+  rename(rainfall = layer) %>% 
+  mutate(id = row_number())
+plot(rainfall, breaks = seq(60, 180, 10),
+     col = terrain.colors(length(seq(60, 180, 10))))
+plot(pts_rainfall$geometry, add = T, 
+     pch = 20, col = 'grey', size = 1)
+
+# Split points to train and test (a MUST for any model)
+set.seed(11)
+pts_train <- pts_rainfall %>% 
+  sample_frac(0.75)
+pts_test <- pts_rainfall %>% 
+  filter(!id %in% pts_train$id)
+```
+
+---
+
+## Neareast neighbour interpolation
+
+```{r, eval=F}
+library(gstat)
+library(dplyr)
+library(magrittr)
+
+# step 1 - Define a raster template for the result
+rst_template <- raster(rainfall)
+
+# Step 2 - Define gstat object that hold all necessary info for interpolation
+nn_gs <- gstat(formula = rainfall ~ 1, 
+               locations = pts_train, 
+               nmax = 5, set = list(idp = 0))
+
+# Step 3 - Do the prediction
+rainfall_nn <- interpolate(rst_template, nn_gs) %>% 
+  mask(., gha)
+
+# Step 4 - Evaluation
+# Also could use function predict(nn_gs, pts_test) to
+# get the evaluation table
+pred_test <- raster::extract(rainfall_nn, 
+                     pts_test, sp = T) %>% 
+  st_as_sf() %>% st_drop_geometry() %>% 
+  dplyr::select(-id) %>% 
+  magrittr::set_names(c('observation', 'prediction'))
+```
+
+---
+
+```{r, eval=F}
+# visualization
+library(plotly)
+
+# Evaluation
+f <- list(family = "Courier New, monospace",
+          size = 18, color = "#7f7f7f")
+plot_ly(data = pred_test, x = ~observation, y = ~prediction,
+        color = 'red') %>% 
+  layout(xaxis = list(title = 'Real max temperature',
+                      titlefont = f),
+         yaxis = list(title = 'Nearest neighbor interpolation',
+                      titlefont = f))
+plot_ly(data = pred_test, y = ~observation,
+        color = 'red', type = 'box', name = 'Real max temperature') %>% 
+  add_boxplot(data = pred_test, y = ~observation,
+        color = 'blue', name = 'NN interpolation')
+
+# Maps
+par(mfrow = c(1, 2))
+plot(rainfall, breaks = seq(60, 180, 10),
+     col = terrain.colors(length(seq(60, 180, 10))),
+     main = 'Real max temperature')
+plot(rainfall_nn, breaks = seq(60, 180, 10),
+     col = terrain.colors(length(seq(60, 180, 10))),
+     main = 'Nearest neighbor interpolation')
+```
+
+---
+
+## Inverse distance weighted interpolation (IDW)
+
+Nearest neighbor interpolation is a special case of IDW, which not use weights at all. In function `gstat`, we set `set = list(idp = 0)`.
+
+Now, it is your turn to create a map using IDW. And compare it with the real max temperature and nearest neighbor interpolation.
+
+- Use function `gstat`
+- Or use function `idw`, use `raster` to convert result to a raster.
+
+---
+
+```{r, eval=F}
+# Step 2 - Define gstat
+idw_gs <- gstat(formula = rainfall ~ 1, 
+               locations = pts_train, 
+               nmax = 5)
+
+# Step 3 - Do the prediction
+rainfall_idw <- interpolate(rst_template, idw_gs) %>% 
+  mask(., gha)
+
+imgs <- stack(rainfall,
+              rainfall_nn,
+              rainfall_idw)
+names(imgs) <- c('Real max temperature',
+                 'NN interpolation',
+                 'IDW interpolation')
+tm_shape(imgs) + 
+  tm_raster(title = 'Rainfall',
+            breaks = seq(60, 180, 10),
+            palette = "-RdYlGn", 
+            n = length(seq(60, 180, 10))) 
+```
+
+---
+
+## Kriging
+
+NN and IDW don't use variogram. But Kriging methods use variogram. So besides the formula, we need to fit a variogram as well.
+
+```{r, eval=F}
+# Ordinary kriging
+# Step 1 - define raster template (done before)
+# Step 2 - initially define gstat object
+ok_gs <- gstat(formula = rainfall ~ 1, 
+               locations = pts_train)
+# Step 3 - fit variogram
+v <- variogram(krg_gs, width = 20)
+## Option 1: manually fit variogram
+# v_mod <- fit.variogram(v, vgm(85, "Exp", 75, 20))
+# Option 2: auto fit
+library(automap)
+v_mod <- autofitVariogram(rainfall ~ 1, as(pts_train, "Spatial"))
+plot(v_mod)
+# Step 4 - update gstat object with fitted variogram model
+ok_gs <- gstat(formula = rainfall ~ 1, model = v_mod$var_model, 
+               data = pts_train)
+# Step 5 - interpolate
+rainfall_ok <- predict(ok_gs, as(rst_template, 'SpatialGrid'))
+rainfall_ok <- raster(rainfall_ok['var1.pred']) %>% 
+  mask(., gha)
+# Step 6 - Evaluation (omitted here)
+```
+
+---
+
+```{r, eval=F}
+imgs <- stack(rainfall,
+              rainfall_nn,
+              rainfall_idw,
+              rainfall_ok)
+names(imgs) <- c('Real max temperature',
+                 'NN interpolation',
+                 'IDW interpolation',
+                 'Ordinary Kirging')
+tm_shape(imgs) + 
+  tm_raster(title = 'Rainfall',
+            breaks = seq(60, 180, 10),
+            palette = "-RdYlGn", 
+            n = length(seq(60, 180, 10)))
+```
+
+---
+
+## Next class
+
+- Review reproducible research
+- Review Git commands
+- Practice collaborating via GitHub
+
+---
+
+## Homework
+
+- Assignment 5
+- Gather the code of your leaflet map and the mini analysis, we will use them in next class
+- Decide your final project

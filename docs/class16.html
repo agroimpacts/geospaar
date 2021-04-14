@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 16
+
+---
+
+
+## Today
+
+- Terrain analysis
+- Interpolation and prediction
+- Fit a model (a case study)
+
+---
+
+## Terrain analysis
+
+- Function `terrain`
+- Function `hillshade`
+
+These functions are based on focal operation fundamentally.
+
+
+```r
+library(raster)
+# terrain
+dem &lt;- getData(name = 'alt', country = 'TZA', path = tempdir())
+slope &lt;- terrain(dem, opt = "slope", unit = "radians", neighbors = 8)
+aspect &lt;- terrain(dem, opt = "aspect", neighbors = 4)
+flowdir &lt;- terrain(dem, opt = "flowdir", neighbors = 4)
+
+# hillshade
+# have to define an angle and direction
+hillshade &lt;- hillShade(slope, aspect, 40, 270)
+```
+
+---
+
+## Interpolation and prediction
+
+**What is spatial interpolation?**
+
+- Nearest neighbor interpolation
+- Inverse distance weighted interpolation (IDW)
+- Kriging (Ordinary Kriging, Universal Kriging, etc.)
+
+---
+
+
+```r
+library(raster)
+library(dplyr)
+library(rnaturalearth)
+gha &lt;- ne_countries(continent = 'africa', returnclass = 'sf') %&gt;%
+  filter(name == 'Ghana')
+rainfall &lt;- getData(name = 'worldclim', var = 'prec', res = 2.5) %&gt;% 
+  calc(., mean)
+rainfall &lt;- mask(crop(rainfall, gha), gha)
+
+# Get some pseudo samples
+# sampleRandom, sampleStratified
+set.seed(10)
+pts_rainfall &lt;- sampleRandom(rainfall, size = 200,
+                             sp = T) %&gt;% st_as_sf() %&gt;% 
+  rename(rainfall = layer) %&gt;% 
+  mutate(id = row_number())
+plot(rainfall, breaks = seq(60, 180, 10),
+     col = terrain.colors(length(seq(60, 180, 10))))
+plot(pts_rainfall$geometry, add = T, 
+     pch = 20, col = 'grey', size = 1)
+
+# Split points to train and test (a MUST for any model)
+set.seed(11)
+pts_train &lt;- pts_rainfall %&gt;% 
+  sample_frac(0.75)
+pts_test &lt;- pts_rainfall %&gt;% 
+  filter(!id %in% pts_train$id)
+```
+
+---
+
+## Neareast neighbour interpolation
+
+
+```r
+library(gstat)
+library(dplyr)
+library(magrittr)
+
+# step 1 - Define a raster template for the result
+rst_template &lt;- raster(rainfall)
+
+# Step 2 - Define gstat object that hold all necessary info for interpolation
+nn_gs &lt;- gstat(formula = rainfall ~ 1, 
+               locations = pts_train, 
+               nmax = 5, set = list(idp = 0))
+
+# Step 3 - Do the prediction
+rainfall_nn &lt;- interpolate(rst_template, nn_gs) %&gt;% 
+  mask(., gha)
+
+# Step 4 - Evaluation
+# Also could use function predict(nn_gs, pts_test) to
+# get the evaluation table
+pred_test &lt;- raster::extract(rainfall_nn, 
+                     pts_test, sp = T) %&gt;% 
+  st_as_sf() %&gt;% st_drop_geometry() %&gt;% 
+  dplyr::select(-id) %&gt;% 
+  magrittr::set_names(c('observation', 'prediction'))
+```
+
+---
+
+
+```r
+# visualization
+library(plotly)
+
+# Evaluation
+f &lt;- list(family = "Courier New, monospace",
+          size = 18, color = "#7f7f7f")
+plot_ly(data = pred_test, x = ~observation, y = ~prediction,
+        color = 'red') %&gt;% 
+  layout(xaxis = list(title = 'Real max temperature',
+                      titlefont = f),
+         yaxis = list(title = 'Nearest neighbor interpolation',
+                      titlefont = f))
+plot_ly(data = pred_test, y = ~observation,
+        color = 'red', type = 'box', name = 'Real max temperature') %&gt;% 
+  add_boxplot(data = pred_test, y = ~observation,
+        color = 'blue', name = 'NN interpolation')
+
+# Maps
+par(mfrow = c(1, 2))
+plot(rainfall, breaks = seq(60, 180, 10),
+     col = terrain.colors(length(seq(60, 180, 10))),
+     main = 'Real max temperature')
+plot(rainfall_nn, breaks = seq(60, 180, 10),
+     col = terrain.colors(length(seq(60, 180, 10))),
+     main = 'Nearest neighbor interpolation')
+```
+
+---
+
+## Inverse distance weighted interpolation (IDW)
+
+Nearest neighbor interpolation is a special case of IDW, which not use weights at all. In function `gstat`, we set `set = list(idp = 0)`.
+
+Now, it is your turn to create a map using IDW. And compare it with the real max temperature and nearest neighbor interpolation.
+
+- Use function `gstat`
+- Or use function `idw`, use `raster` to convert result to a raster.
+
+---
+
+
+```r
+# Step 2 - Define gstat
+idw_gs &lt;- gstat(formula = rainfall ~ 1, 
+               locations = pts_train, 
+               nmax = 5)
+
+# Step 3 - Do the prediction
+rainfall_idw &lt;- interpolate(rst_template, idw_gs) %&gt;% 
+  mask(., gha)
+
+imgs &lt;- stack(rainfall,
+              rainfall_nn,
+              rainfall_idw)
+names(imgs) &lt;- c('Real max temperature',
+                 'NN interpolation',
+                 'IDW interpolation')
+tm_shape(imgs) + 
+  tm_raster(title = 'Rainfall',
+            breaks = seq(60, 180, 10),
+            palette = "-RdYlGn", 
+            n = length(seq(60, 180, 10))) 
+```
+
+---
+
+## Kriging
+
+NN and IDW don't use variogram. But Kriging methods use variogram. So besides the formula, we need to fit a variogram as well.
+
+
+```r
+# Ordinary kriging
+# Step 1 - define raster template (done before)
+# Step 2 - initially define gstat object
+ok_gs &lt;- gstat(formula = rainfall ~ 1, 
+               locations = pts_train)
+# Step 3 - fit variogram
+v &lt;- variogram(krg_gs, width = 20)
+## Option 1: manually fit variogram
+# v_mod &lt;- fit.variogram(v, vgm(85, "Exp", 75, 20))
+# Option 2: auto fit
+library(automap)
+v_mod &lt;- autofitVariogram(rainfall ~ 1, as(pts_train, "Spatial"))
+plot(v_mod)
+# Step 4 - update gstat object with fitted variogram model
+ok_gs &lt;- gstat(formula = rainfall ~ 1, model = v_mod$var_model, 
+               data = pts_train)
+# Step 5 - interpolate
+rainfall_ok &lt;- predict(ok_gs, as(rst_template, 'SpatialGrid'))
+rainfall_ok &lt;- raster(rainfall_ok['var1.pred']) %&gt;% 
+  mask(., gha)
+# Step 6 - Evaluation (omitted here)
+```
+
+---
+
+
+```r
+imgs &lt;- stack(rainfall,
+              rainfall_nn,
+              rainfall_idw,
+              rainfall_ok)
+names(imgs) &lt;- c('Real max temperature',
+                 'NN interpolation',
+                 'IDW interpolation',
+                 'Ordinary Kirging')
+tm_shape(imgs) + 
+  tm_raster(title = 'Rainfall',
+            breaks = seq(60, 180, 10),
+            palette = "-RdYlGn", 
+            n = length(seq(60, 180, 10)))
+```
+
+---
+
+## Next class
+
+- Review reproducible research
+- Review Git commands
+- Practice collaborating via GitHub
+
+---
+
+## Homework
+
+- Assignment 5
+- Gather the code of your leaflet map and the mini analysis, we will use them in next class
+- Decide your final project
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1498,7 +1498,9 @@ There are no package functions to create for this assignment. All work is to be 
 Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assignment-output) for submission instructions. The only differences are as follows:
 
 1. Your submission should be on a new side branch "a5";
+
 2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.2 to 0.0.3) in the DESCRIPTION;
+
 3. Do not worry about #3 in those instructions
 
 ***
