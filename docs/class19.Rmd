@@ -29,6 +29,41 @@ Milestones:
 
 ---
 
+## Project
+
+Name:
+
+- Keep the name short and meaningful (e.g. use `agroclim` for Analyzing agro-climatological data)
+- Camel Style (`agroClim`) and special character (`agro_clim`) is also commonly used. But personally I don't recommend to use these. Because R is case sensitive, it will increase the risk for the user to misspell it.
+
+---
+
+## Project
+
+Data
+
+- Raw data: it is inevitable to use some messy data for your project. If this is the case, you could first clean the raw data and then save out as prepared data for your project.
+
+  - `usethis::use_data_raw(name = 'ghana')`, it will generate a folder and an R file, then you update code here.
+  - Run the code will create data folder and generate `rda` file into it.
+  - Then you could use these data by using `data(ghana)` in your code. Remember to document your dataset.
+  
+- External data: Store data into `inst` folder (could have sub folders inside).
+
+---
+
+## Project
+
+Scripts
+
+- Functions: don't do duplicated work. If a chunk of code is used more than one time, consider to pack it into a function. I recommend to use functions.
+
+- Vignettes: use `usethis::use_vignette('Overview')` to create. It is better to customize the format of your vignette.
+
+- If there are other documents that you want to include, you could create a folder notebooks to store these documents.
+
+---
+
 ## Strategies
 
 Huge files
@@ -97,6 +132,18 @@ More functions to save out figures. E.g.
 
 - `tmap_save` for `tmap`
 - `ggsave` for `ggplot2`
+
+---
+
+## Strategies
+
+Keep the `main` branch updated. Merge new changes to main branch and test the installation of your package periodically.
+
+Rule of thumb:
+- It doesn't make sense to keep work on different branch separately. Create a branch based on the objective, e.g. `prepare_data`. 
+- After finishing all work, merge the updates to `main` branch.
+- Delete branch `prepare_data`.
+- Of course, team members could work on different branch simultaneously.
 
 ---
 
