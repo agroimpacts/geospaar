@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class1.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 17
+
+---
+
+
+
+
+## Reproducibility
+
+&lt;img src="figures/class1_reproducibility.png" width="1791" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Reproducible research
+
+- Use version control.
+- Don't do things manually and teach the machine to do everything. 
+  - Let machine figure out number of row, col, or length programmatically. 
+  - Don't edit raw file manually.
+- Use functions, scripts, markdowns and packages.
+  - Do not save outputs usually, but use data + code.
+  - Here is an exception for us: if your data is huge, you could save out some necessary outputs to save time for the package to build.
+- Comment your code properly.
+- Set seed for random functions
+- Avoid using full path. Easiest way is to use package `here` to deal with paths.
+- Keep track of software environment. `sessionInfo()`
+
+---
+
+## Git commands
+
+- Initialize an empty Git repo
+
+  `git init`
+
+- Download a repository from GitHub to local freshly
+  
+  `git clone repo_url`
+  
+- Pull changes from remote to local on the same branch
+
+  `git pull`
+
+- Upload changes to remote
+
+  `git push` or `git push origin branch_name`
+
+---
+
+## Git commands
+
+- Check current branch
+
+  `git branch`
+  
+- Create new branch
+
+  `git branch new_branch_name`
+  
+- Switch branch
+
+  `git checkout branch_name`
+
+---
+
+## Git commands
+
+- Check the current state of the repo since last commit
+
+  ```
+  git status
+  ```
+
+- Stage and commit changes
+
+  ```
+  git add . # stage all changes
+  git add file_path # stage a specific file
+  git commit -m 'Commit message' # commit the staged changes
+  ```
+- Shortcut of doing both together
+  ```
+  git commit -am "Commit message"
+  ```
+  
+- Unstage a staged file
+
+  ```
+  git checkout file_name
+  ```
+  
+---
+
+## Git commands
+
+- Merge changes from other branch
+
+  `git merge origin branch_name`
+  
+- Pick up one file from another branch
+
+  `git checkout branch_name file_name`
+
+---
+
+## Git commands
+
+- Rename a branch locally and remotely
+
+  ```
+  git branch -m new_name
+  git push origin -u new_name
+  git push origin --delete old_name
+  ```
+
+- Delete a branch
+
+  ```
+  git branch -d branch_name
+  git push origin --delete branch_name
+  ```
+
+`M` and `D` can be used to force the process.
+
+---
+
+## Practice on GitHub
+
+Let's work on the same repo together now.
+
+- Clone the repo to your local machine.
+- Create a new branch based on the objective
+- Open the file `teamwork.Rmd` to add your code.
+- Stage and commit your work on this branch.
+- Switch branch to main branch and pull the possible new changes.
+- Merge changes from your created branch to main branch.
+- Push the updated main branch to remote.
+
+---
+
+## Homework
+
+- Assignment 5 is due this Friday
+- Final project!! ([Form](https://clarkuedu-my.sharepoint.com/:x:/g/personal/pdelpinomarimon_clarku_edu/Eb0n9lzp98JMqiqG9M_EZL4B-5wIHoGM1fV4HnjJtrVxlQ?e=iwZV2D))
+
+---
+
+## Next class
+
+- Look at a project template together to learn what you are expected to have in your repo.
+- Some strategies, e.g. deal with huge files, or use raw dataset.
+- Timeline and arrangement of the rest classes.
+- Introduction of some projects.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
