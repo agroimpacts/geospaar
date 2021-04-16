@@ -53,6 +53,24 @@ Here are a few dataset that we could use: https://www.cdc.gov/gis/index.htm
 
 More details will be added.
 
+## Auto-segment agricultural field
+
+This is part of my current work. It might be a bit experimental and challenging. The general idea is:
+
+1. To under-segment the satellite image to get the edges;
+
+2. Overlay the existing LC/cropland map to select out the edges of farms;
+
+3. Run an abnormal detection method to calculate the probability of being edges;
+
+4. Use this probability map back to the satellite image to run segmentation again.
+
+## Species distribution modeling (SDM) and/or habitat connectivity
+
+If you are interested in SDM, we could design a workflow based on your interests. Because we could get public dataset for many species over the world.
+
+If this is a group project, we could also apply method like circuit theory to generate habitat connectivity based on environmental suitability.
+
 # Potential project list (old ones)
 ## Add on to our COVID-19 tracker
 Have a look at our existing [repo/package](https://github.com/agroimpacts/covid19clark), and some of the initial dashboards our previous class made. Potential projects include converting the current code to an operational shiny dashboard (as opposed to a local one) and integrating more measures. For example, write a scraper to ingest the [Mass DPH's weekly town-level](https://www.mass.gov/info-details/covid-19-response-reporting#covid-19-daily-dashboard-) case rates and map these. 
