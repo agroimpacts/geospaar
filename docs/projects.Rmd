@@ -25,7 +25,35 @@ Each student will undertake an R-based final project for this class. This projec
 
 This list is currently in thumbnail form, and will fill out during the next few weeks. 
 
-# Potential project list
+# Potential project list (new ones)
+
+## Urbanization and gentrification
+
+More details are under preparation.
+
+Here is a cool example on gentrification in the UK: https://carto.com/blog/spatial-analysis-gentrification/
+
+## Electric vehicles and social justice
+
+A group of students did this work before. Here is their repo: https://github.com/agroimpacts/electric.
+
+The background information took from their repo:
+
+This project examines the accessibility of electric vehicle (EV) usage in the United States through the lens of justice and equity. Accessibility is measured through monetary value, distance, and access to charging stations. Social justice and equity is quantified using:
+(1) socioeconomic data and its correspondence to the spatial distribution of EV ownership through car registrations;
+(2) and identifying gaps in service provision. 
+
+## Public health inequalities across counties
+
+More details will be added. 
+
+Here are a few dataset that we could use: https://www.cdc.gov/gis/index.htm
+
+## Network analysis or a transportation related analysis
+
+More details will be added.
+
+# Potential project list (old ones)
 ## Add on to our COVID-19 tracker
 Have a look at our existing [repo/package](https://github.com/agroimpacts/covid19clark), and some of the initial dashboards our previous class made. Potential projects include converting the current code to an operational shiny dashboard (as opposed to a local one) and integrating more measures. For example, write a scraper to ingest the [Mass DPH's weekly town-level](https://www.mass.gov/info-details/covid-19-response-reporting#covid-19-daily-dashboard-) case rates and map these. 
 
@@ -110,7 +138,7 @@ For this assignment, you should write a single vignette called "overview.Rmd", w
 
 2. Approach and Method: An outline of the analytical methods and code you plan to use, including the names of key packages that you will draw on. This section should be composed of the following sub-sections: 
 
-3. Data: A brief (~250 words) description **and** visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset.  
+3. Data: A brief (~250 words) description **and** visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more important variables in the dataset.  
 
 4. Code: A bullet point summary of the analysis and coding approach that you propose to follow. For teams, this section should include a description of which member will be responsible for each bullet point. 
 
