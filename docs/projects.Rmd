@@ -99,6 +99,16 @@ This is a expand of my current work. It might be a bit experimental and challeng
 
 4. Use this probability map back to the satellite image to run segmentation again.
 
+## Temporal profile of crop types
+
+With the availability of time-dense Earth observation, we could monitor and analyze more detailed landscape characteristics. For instance, the time-series of cloud-resistant Sentinel-1 images can help us to distinguish different crop types. You could do a project to:
+
+1. Extract temporal profile of each crop types.
+
+2. Use profile matching method to predict crop types over an area.
+
+Here are public crop type datasets that you can use: https://www.mlhub.earth.
+
 ## Species distribution modeling (SDM) and/or habitat connectivity
 
 If you are interested in SDM, we could design a workflow based on your interests. Because we could get public dataset for many species over the world.
