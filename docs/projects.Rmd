@@ -28,10 +28,27 @@ This list is currently in thumbnail form, and will fill out during the next few 
 # Potential project list (new ones)
 
 ## Urbanization and gentrification
+**Provided by Pilar Delpino Marimón**
 
-More details are under preparation.
+What is the next urban frontier? Gentrification is a process
+of socio-economic change at the neighborhood level. Through historical analysis
+of real estate investment and income of residents, one could map how the economic
+composition of a city changes. This often leads to the displacement of low-income
+classes. Some argue gentrification produces spatial inequalities.
+If you are interested in gentrification and urbanization,
+your team can approach this question through a spatial justice lens. Where are resources
+distributed? Which neighborhoods are favored over others in terms of
+investment? Example of playground distribution and child population: http://spatialjustice.org/toolbox/analyzing-access-to-resources
 
-Here is a cool example on gentrification in the UK: https://carto.com/blog/spatial-analysis-gentrification/
+A different way to engage with gentrification can be by
+doing a historical spatial analysis of economic changes in the population of
+the city and identifying hot spots of change. The analysis could be done at a
+census tract and do a spatial comparison based on income, poverty, and property
+changes throughout time. Can you map areas in Worcester that have been
+gentrified in the last 30 years? (UK
+example: https://carto.com/blog/spatial-analysis-gentrification/).
+
+Consider exploring this page: https://www.brown.edu/academics/spatial-structures-in-social-sciences/ltdb-following-neighborhoods-over-time
 
 ## Electric vehicles and social justice
 
@@ -40,22 +57,39 @@ A group of students did this work before. Here is their repo: https://github.com
 The background information took from their repo:
 
 This project examines the accessibility of electric vehicle (EV) usage in the United States through the lens of justice and equity. Accessibility is measured through monetary value, distance, and access to charging stations. Social justice and equity is quantified using:
-(1) socioeconomic data and its correspondence to the spatial distribution of EV ownership through car registrations;
-(2) and identifying gaps in service provision. 
+
+(1) Socioeconomic data and its correspondence to the spatial distribution of EV ownership through car registrations;
+
+(2) And identifying gaps in service provision. 
 
 ## Public health inequalities across counties
+**Provided by Pilar Delpino Marimón**
 
-More details will be added. 
+You could map service areas in relation to population
+density. Or add more complexity by identifying a particular disease and calculating
+clusters. You could do an air quality analysis and compare that existing
+conditions, policies for clean air, etc. 
 
-Here are a few dataset that we could use: https://www.cdc.gov/gis/index.htm
+This paper is a great example, you could
+use it as inspiration: https://ij-healthgeographics.biomedcentral.com/articles/10.1186/s12942-020-00242-0
+
+Information on GIS and public health: https://www.cdc.gov/gis/index.htm
 
 ## Network analysis or a transportation related analysis
+**Provided by Pilar Delpino Marimón**
 
-More details will be added.
+The Bureau of Transportation Statistics has a comprehensive
+database that could be used to do network analysis and other transportation
+related spatial analysis: https://www.bts.gov/maps.
+
+You could do a project on spatial inequality based on access to public transportation,
+areas that are underserved, etc. 
+
+For more ideas visit: http://spatialjustice.org/issues/transportation-issues/
 
 ## Auto-segment agricultural field
 
-This is part of my current work. It might be a bit experimental and challenging. The general idea is:
+This is a expand of my current work. It might be a bit experimental and challenging. The general idea is:
 
 1. To under-segment the satellite image to get the edges;
 
