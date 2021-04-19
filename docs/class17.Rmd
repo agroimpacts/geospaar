@@ -15,6 +15,14 @@ output:
 # knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## Today
+
+- Review reproducible research
+- Review Git commands
+- Practice collaborating via GitHub
+
+---
+
 ## Reproducibility
 
 ```{r, echo=FALSE, fig.align='center'}
@@ -141,7 +149,7 @@ knitr::include_graphics("figures/class1_reproducibility.png")
 Let's work on the same repo together now.
 
 - Clone the repo to your local machine.
-- Create a new branch based on the objective
+- Create a new branch based on the objective (not use names).
 - Open the file `teamwork.Rmd` to add your code.
 - Stage and commit your work on this branch.
 - Switch branch to main branch and pull the possible new changes.
