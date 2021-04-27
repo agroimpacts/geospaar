@@ -69,9 +69,17 @@ Scripts
 Huge files
 
 - Avoid store the files as much as possible. E.g. use code to download directly.
-- Let git ignore big files: list file path into `.gitignore` file. If you accidentally add file into Git already, do the following to remove it from git track first and then add to `.gitignore`.
+- Let git ignore big files: list file path into `.gitignore` file. If you accidentally add file into Git  with your most recent commit, do the following to remove it from git track first and then add to `.gitignore`.
 
   `git rm --cache file_path`
+  
+  If the file was added in an earlier commit, you need to remove it from the repository's history:
+  
+    ```
+    git filter-branch --force --index-filter \
+  'git rm --cached --ignore-unmatch path/to/giant_file' \
+  --prune-empty --tag-name-filter cat -- --all
+    ```
   
 - If there are a lot of such files, removing one by one is tedious. For this case, we could reset back to an older commit where you didn't stage the huge files yet. Then delete or ignore these files, stage and commit updates.
 
