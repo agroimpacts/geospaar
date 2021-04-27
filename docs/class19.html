@@ -78,6 +78,10 @@ Huge files
 - Let git ignore big files: list file path into `.gitignore` file. If you accidentally add file into Git already, do the following to remove it from git track first and then add to `.gitignore`.
 
   `git rm --cache file_path`
+  
+- If there are a lot of such files, removing one by one is tedious. For this case, we could reset back to an older commit where you didn't stage the huge files yet. Then delete or ignore these files, stage and commit updates.
+
+  `git reset --soft HEAD~n` (n is the relative number of commit that you want to convert back)
 
 ---
 
