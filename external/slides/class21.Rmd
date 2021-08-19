@@ -52,7 +52,7 @@ mapview(kili_data[[1:3]])
 ```{r, eval = FALSE}
 library(tmap)
 data(World)
-tmaptools::palette_explorer()
+# tmaptools::palette_explorer()
 tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
   tm_shape(districts) + tm_borders() + 
   tm_layout(bg.color = "grey", inner.margins = 0.1) # +
@@ -119,6 +119,7 @@ m
 library(RStoolbox)
 data(lsat)
 ggRGB(lsat, stretch = "lin")
+ggRGB(lsat[[2:4]], stretch = "lin")
 ggR(lsat[[1]])
 ggR(lsat[[1]], stretch = "hist")
 ggR(lsat[[1]], stretch = "lin")
