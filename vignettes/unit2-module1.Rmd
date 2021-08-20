@@ -180,11 +180,11 @@ That was a very quick dip into spatial waters, using a points example. We are go
 ```{r}
 # Chunk 6
 st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.shp"), 
-         delete_layer = TRUE)
+         delete_dsn = TRUE)
 dir(tempdir(), pattern = "farmers")
 ```
 
-The code above uses `st_write` to create that old standby, the ESRI shapefile, that clunky, annoying format that has many files for one thing. Note that I have the option `delete_layer = TRUE` set, which is needed if the file already exists in that location, and you want to recreate it (which I did in this case, because I was re-running this code many times as I wrote this). For `st_write`, the "obj" argument asks for the `sf` object to write, "dsn" is the name and path for the output file. By adding the ".shp" at the end of the filename, `st_write` knows to use the "ESRI Shapefile" driver. For this example, I used again the `tempdir()` function to write this object to a temporary directory, but, as you follow along, ___you should change the file path to correctly lead to your own `xyz246/notebooks/data` path___. 
+The code above uses `st_write` to create that old standby, the ESRI shapefile, that clunky, annoying format that has many files for one thing. Note that I have the option `delete_dsn = TRUE` set, which is needed if the file already exists in that location, and you want to recreate it (which I did in this case, because I was re-running this code many times as I wrote this). For `st_write`, the "obj" argument asks for the `sf` object to write, "dsn" is the name and path for the output file. By adding the ".shp" at the end of the filename, `st_write` knows to use the "ESRI Shapefile" driver. For this example, I used again the `tempdir()` function to write this object to a temporary directory, but, as you follow along, ___you should change the file path to correctly lead to your own `xyz246/notebooks/data` path___. 
 
 Looking in the output directory here, we see that there are only three files now (.dbf, .shp, and .shx). We are missing a .prj because of the following reason: 
 
@@ -195,18 +195,18 @@ farmers %>% st_crs()
 
 `farmers` does not have a coordinate reference system (CRS) associated with it yet, even though we can tell it is in geographic coordinates.  Remember this, because we will come back to it. 
 
-Because .shp is an annoying format, we can try other types. Let's do the much more convenient "SQLite" format, which produces a single file.  
+Because .shp is an annoying format, we can try other types. Let's do the much more convenient "geojson" format, which produces a single file.  
 ```{r}
 # Chunk 8
-st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.sqlite"), 
-         delete_layer = TRUE)
+st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.geojson"), 
+         delete_dsn = TRUE)
 dir(tempdir(), pattern = "farmers")
 ```
 
-We see that we have just a single file to hold the .sqlite, which is much nicer. Now let's read that back in, but just pulling from the shapefile itself. I am going the first delete the .sqlite version, for the sake of directory cleanliness (having shown you a nicer format, I am not going to work with because so much is still done with ESRI shapefiles, so we must as well remain used to them) 
+We see that we have just a single file to hold the .geojson, which is much nicer, and is an increasingly widely used file format, so you should use it whenever possible in place of .shp. However, we will stick with ESRI shapefiles for this class, since they are so widely used still. So let's read back in from the shapefile itself. I am going the first delete the .geojson version, for the sake of directory cleanliness (having shown you a nicer format, I am not going to work with because so much is still done with 
 ```{r}
 # Chunk 9
-file.remove(dir(tempdir(), pattern = "farmers.sqlite", full.names = TRUE))
+file.remove(dir(tempdir(), pattern = "farmers.geojson", full.names = TRUE))
 rm(farmers) 
 farmers <- st_read(dir(tempdir(), pattern = "farmers.shp", full.names = TRUE))
 ```
@@ -411,6 +411,14 @@ farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
 This looks a bit different than what we did before. In this construction, we make use of `dplyr` pipes to do everything in one go for all three datasets. We pipe the file path to `roads.shp` straight to `sf::st_read()`, and that reads in it as a one-liner. Same goes for `districts` (despite the line break). `farmers` gets the file path piped to `read_csv`, and then the coercion to `sf` happens right downstream. We add the `crs = 4326` argument to `st_as_sf` to provide the missing projection information (4326 is the EPSG identifier for GCS WGS84)
 
 ## Spatial properties{#spatial-properties}
+
+First, due to recent changes in `sf`, and how it handles spherical geometries, we have to set the following:
+```{r}
+sf_use_s2(FALSE)
+```
+
+Otherwise if we try to calculate lengths or create buffers no vectors that are in geographic coordinates systems, we get odd results. 
+
 ### Area
 Using polygons to calculate area is a fairly basic but important spatial vector operation. To calculate meaningful areas, generally you need your data to be  projected into a coordinate system in which area is one of the true properties. However, the function we are going to use, `sf::st_area`, will estimate area even for data in geographic coordinates. 
 

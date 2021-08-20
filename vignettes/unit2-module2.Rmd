@@ -370,7 +370,8 @@ distsr <- system.file("extdata/districts.shp", package = "geospaar") %>%
   rasterize(x = ., y = zamr, field = "ID")
 
 zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
-farmersr <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%   read_csv() %>% distinct(uuid, .keep_all = TRUE) %>% 
+farmersr <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%   
+  read_csv() %>% distinct(uuid, .keep_all = TRUE) %>% 
   dplyr::select(x, y) %>% mutate(count = 1) %>% 
   st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
   rasterize(x = ., y = zamr2, field = "count", fun = sum)
@@ -970,7 +971,23 @@ Method 1:
 raintot <- rain_stack[[5]]
 ```
 
-```{r cut, out.width="50%"}
+```{r cutfig, echo=FALSE, eval=FALSE}
+# Chunk 38
+qtiles <- quantile(raintot, probs = seq(0, 1, 1 / 3))
+raintotcut <- cut(x = raintot, breaks = qtiles, include.lowest = TRUE)
+
+cols <- c("tan", "yellow3", "green4")
+png(here::here("vignettes/fig/u2m2_categorize.png"), height = 400, 
+    width = 600)
+plot_noaxes(raintotcut, legend = FALSE, main = "Total Rainfall", col = cols, 
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("High", "Intermediate", "Low"), 
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+dev.off()
+```
+
+
+```{r cut, eval=FALSE}
 # Chunk 38
 qtiles <- quantile(raintot, probs = seq(0, 1, 1 / 3))
 raintotcut <- cut(x = raintot, breaks = qtiles, include.lowest = TRUE)
@@ -981,11 +998,15 @@ plot_noaxes(raintotcut, legend = FALSE, main = "Total Rainfall", col = cols,
 legend(x = "bottomright", legend = c("High", "Intermediate", "Low"), 
        pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_categorize.png")
+```
+
 
 Using the `cut`-based approach is perhaps the easiest way of categorizing a continuous raster. `cut` is a raster-based implementation of base `R` function designed for converting numeric vectors to factors. We first define the tercile values (i.e 33.3rd, 66.6th, and 100th percentiles) for `raintot`, and pass those into the "breaks" argument of `cut`. We pass the argument `include.lowest = TRUE` because we want to include all values that are greater than or equal to the lowest value in each category. Our plot of the results has a customized legend, which we chose because we have a categorical raster and thus wanted a categorical, rather than continuous (the default for `raster::plot`, and thus `plot_noaxes`), legend.
 
 Method 2 is somewhat more involved:
-```{r reclassify, out.width = "50%"}
+```{r reclassify, eval=FALSE}
 # Chunk 39
 rclmat <- cbind(qtiles[1:3], qtiles[2:4], 1:3)
 rclmat
@@ -996,7 +1017,9 @@ plot_noaxes(raintotrcl, legend = FALSE, main = "Total Rainfall", col = cols,
 legend(x = "bottomright", legend = c("High", "Intermediate", "Low"), 
        pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
-
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_categorize.png")
+```
 In the first step, we reuse the previously calculated terciles to create a reclassification matrix (`rclmat`). This matrix contains the lower bound of the range of the category in column 1, the upper bound in column 2, and then the new class value that will be assigned in column 3. There are three rows, one per category. This matrix is passed to the `rcl` argument of `reclassify`, in which we also specify the same `include.lowest = TRUE` argument. 
 
 This approach requires slightly more work, but there are cases where you might need to use it, e.g. to reclassify another categorical raster using non-sequential categories. 
@@ -1155,6 +1178,11 @@ farmersr <- farmers_env %>% mutate(count = 1) %>%
   rasterize(x = ., y = zamr2, field = "count", fun = sum) %>% print()
 
 raintot <- calc(chirpsz, sum)
+usethis::use_data(raintot, overwrite = TRUE)
+
+# save for later
+raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
+usethis::use_data(raintotalb, overwrite = TRUE)
 ```
 
 ## Terrain analysis
@@ -1322,8 +1350,8 @@ library(gstat)
 # #1
 raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
 names(raintotalb) <- "rain"
-r <- raster(extent(raintotalb), res = res(raintotalb), crs = crs(raintotalb), 
-            vals = 1)
+r <- raster(extent(raintotalb), res = res(raintotalb), 
+            crs = crs(raintotalb), vals = 1)
 
 # #2
 set.seed(1)
@@ -1405,12 +1433,6 @@ In #4, we provide the initial steps for implementing ordinary kriging. In line a
 
 Block #5 takes the fitted variogram model (`m`) and uses that to create the rainfall surface. The steps in this block are basically the same as in #3, except that we use the kriging model. 
 
-```{r, echo=FALSE}
-# rebuild raintotalb
-raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
-names(raintotalb) <- "rain"
-```
-
 ***
 <center>
 [Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
@@ -1420,7 +1442,31 @@ names(raintotalb) <- "rain"
 ## Distance
 If you want to calculate how far any point on a grid is from a particular point or points, `raster` offers a few functions for finding euclidean distances:
 
-```{r distance, fig.width=6.5, fig.height=4}
+```{r distancefig, echo=FALSE, eval=FALSE}
+set.seed(1)
+randsamp <- sampleRandom(raintotalb, size = 10, xy = TRUE) %>% as_tibble %>%   st_as_sf(coords = c("x", "y"))
+
+# #2
+ptdistr <- distanceFromPoints(object = raintotalb, xy = as_Spatial(randsamp))
+ptdistrmsk <- mask(ptdistr, raintotalb)
+
+# #3
+randsampr <- rasterize(randsamp, y = raintotalb)[[2]]
+ptdistr2 <- distance(randsampr)
+ptdistrmsk2 <- mask(ptdistr2, raintotalb)
+
+s <- stack(ptdistrmsk, ptdistrmsk2) / 1000
+names(s) <- c("distanceFromPoints", "distance")
+png("vignettes/fig/u2m2-distance.png", height = 400, width = 850)
+par(mfrow = c(1, 2), oma = c(0, 0, 0, 1))
+for(i in 1:nlayers(s)) {
+  plot_noaxes(s[[i]], main = names(s)[i])
+  plot(randsamp %>% st_geometry, pch = 20, cex = 0.5, add = TRUE)
+}
+dev.off()
+```
+
+```{r distance, eval=FALSE}
 # Chunk 47
 # #1
 set.seed(1)
@@ -1437,12 +1483,17 @@ ptdistrmsk2 <- mask(ptdistr2, raintotalb)
 
 s <- stack(ptdistrmsk, ptdistrmsk2) / 1000
 names(s) <- c("distanceFromPoints", "distance")
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 2), oma = c(0, 0, 0, 1))
 for(i in 1:nlayers(s)) {
   plot_noaxes(s[[i]], main = names(s)[i])
   plot(randsamp %>% st_geometry, pch = 20, cex = 0.5, add = TRUE)
 }
 ```
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2-distance.png")
+```
+
+
 
 In #1, we draw 10 randomly selected points from `raintotalb` and create a `SpatialPointsDataFrame` called `randsamp`. Here we are interested just in the spatial locations, not the values.  
 
@@ -1470,15 +1521,78 @@ First, we will use `getData` to download the Worldclim global precipitation laye
 wcprec <- getData("worldclim", var = "prec", res = 2.5, path = p_data)
 zamprec <- crop(wcprec, y = districts)
 zamprec <- mask(calc(zamprec, sum), districts)
+
 save(zamprec, file = "data/zamprec.rda")
 ```
 
 After doing that (and rebuilding `geospaar`), we can do our analysis, loading in the `zamprec` data as we need it.
-```{r, echo=FALSE}
+
+```{r predictfig, eval=FALSE, echo=FALSE}
 demalb <- raster(system.file("extdata", "demalb.tif", package = "geospaar"))
+
+# Chunk 49
+# #1
+data(zamprec)
+zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
+names(zamprecalb) <- "rain"
+elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
+
+# #2
+set.seed(1)
+pts <- sampleRandom(x = zamprecalb, size = 500, sp = TRUE) %>% st_as_sf
+pts <- pts %>% mutate(elev = raster::extract(x = elev, y = .)) 
+pts_dat <- bind_cols(
+  pts %>% data.frame %>% dplyr::select(-geometry) %>% as_tibble, 
+  st_coordinates(pts) %>% as_tibble
+) %>% drop_na
+  
+# #3
+p1 <- ggplot(pts_dat) + geom_point(aes(X, rain), col = "steelblue") +
+  ylab("Rainfall (mm)")
+p2 <- ggplot(pts_dat) + geom_point(aes(Y, rain), col = "blue2") + ylab("")
+p3 <- ggplot(pts_dat) + geom_point(aes(elev, rain), col = "darkblue") + ylab("")
+p <- cowplot::plot_grid(p1, p2, p3, nrow = 1)
+ggsave(p, filename = "vignettes/fig/u2m2_rfpredict.png", 
+       height = 3, width = 7, units = "in")
+
+# #4
+rain_lm <- lm(rain ~ X + Y + elev, data = pts_dat)
+summary(rain_lm)
+
+# #5
+xs <- xFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+ys <- yFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+X <- Y <- raintotalb
+values(X) <- xs
+values(Y) <- ys
+
+# #6
+predst <- stack(X, Y, elev)
+names(predst) <- c("X", "Y", "elev")
+predrainr <- predict(object = predst, model = rain_lm)
+
+# #7
+s <- stack(zamprecalb, predrainr, (predrainr - zamprecalb) / zamprecalb * 100)
+mae <- round(cellStats(abs(zamprecalb - predrainr), mean), 1)  
+
+pnames <- c("'Observed' Rainfall", "Predicted Rainfall", "% Difference")
+png("vignettes/fig/u2m2-rfpredicted_maps.png", height = 3, width = 7, 
+    units = "in", res = 300)
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 4))
+for(i in 1:3) {
+  plot_noaxes(s[[i]], main = pnames[i])
+  if(i %in% 1:2) {
+    pts %>% st_geometry %>% 
+      plot(pch = 20, cex = 0.2, col = "grey70", add = TRUE)
+  } else {
+    mtext(side = 1, line = -3, cex = 0.8, 
+          text = paste("Mean abs err =", mae, "mm"))
+  }
+}
+dev.off()
 ```
 
-```{r predict, fig.width=7, fig.height = 3}
+```{r predict, eval=FALSE}
 # Chunk 49
 # #1
 data(zamprec)
@@ -1501,7 +1615,13 @@ p1 <- ggplot(pts_dat) + geom_point(aes(X, rain), col = "steelblue") +
 p2 <- ggplot(pts_dat) + geom_point(aes(Y, rain), col = "blue2") + ylab("")
 p3 <- ggplot(pts_dat) + geom_point(aes(elev, rain), col = "darkblue") + ylab("")
 cowplot::plot_grid(p1, p2, p3, nrow = 1)
+```
 
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2_rfpredict.png")
+```
+
+```{r, eval=FALSE}
 # #4
 rain_lm <- lm(rain ~ X + Y + elev, data = pts_dat)
 summary(rain_lm)
@@ -1534,6 +1654,9 @@ for(i in 1:3) {
           text = paste("Mean abs err =", mae, "mm"))
   }
 }
+```
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2-rfpredicted_maps.png")
 ```
 
 This example demonstrates a very crude model that uses elevation, latitude, and longitude to predict the mean annual rainfall for Zambia. This is not really how you would want to go about predicting rainfall, but the point here is to show how you can combine statistical models with spatial data to make prediction maps. Despite the crudeness, the model more or less captures the spatial pattern of rainfall.
