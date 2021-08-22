@@ -1,0 +1,908 @@
+---
+title: "Unit 2 Module 2a"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 4
+    toc: yes
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Unit 2 Module 2a}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+options(width = 100)
+```
+
+***
+<center>
+[Back to **vignette index**](toc.html)
+</center>
+***
+
+# Working with raster data{#working-with-raster-data}
+
+We are now going to start working with the `raster` package. `raster` is a highly developed but older package than `sf`, so it was not written with the tidyverse or `sf` in mind. The upshot of this is that operations involving raster-vector interactions will often require coercion of `sf` to `sp` objects. That is not a major obstacle, however. 
+
+The material in this section assumes that the reader is familiar with standard raster GIS operations and concepts, ranging from projections and transformations to moving windows, raster algebra, terrain analysis, and the like. 
+
+We'll use the following datasets in this section:
+```{r datasets, message=FALSE, warning=FALSE}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%    read_csv(show_col_types = FALSE) 
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
+  st_read
+```
+
+
+# raster basics{#raster-basics}
+## Raster* classes
+We'll start off by learning about the basic `raster` classes, which we will do by building our own objects from scratch, starting with a `RasterLayer`
+
+### RasterLayer
+```{r rasterlayer}
+# Chunk 1
+# #1
+e <- extent(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  
+#
+# #2
+r <- raster(x = e, res = 0.25, crs = crs(districts))
+#
+# #3            
+set.seed(1)  
+values(r) <- sample(1:100, size = ncell(r), replace = TRUE)  # 3
+# r[] <- sample(1:100, size = ncell(r), replace = TRUE) 
+# r <- setValues(x = r, values = sample(1:100, size = ncell(r), replace = TRUE))
+```
+```{r, eval=FALSE}
+par(mar = c(0, 0, 0, 4))
+plot(st_geometry(districts), col = "grey", reset = FALSE)
+plot(r, add = TRUE)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_rasterlayer.png")
+```
+
+We just used several functions from the `raster` package to create a random `raster` named `r` that has a 1/4 degree resolution and covers an area of 2 X 2 degrees in southern Zambia. This particular raster is a temporary one that lives in memory. 
+
+Let's walk through the labelled code. In # 1, we use `raster`'s `extent` function to define the boundaries of the raster, and then in # 2 use the `raster` function to create a raster from the resulting `r class(e)` object `e`, assigning a CRS using the "crs" argument, which in turn uses `raster`'s `crs` to extract the crs from `districts` (#3). `crs` is similar to `sf::st_crs`, but outputs a different class of object that can't be used by `raster`. The `raster` function can create a raster from many different types of input objects (passed to argument "x"), per `?raster`:
+
+> filename (character), Extent, Raster*, SpatialPixels*, SpatialGrid*, object, 'image', matrix, im, or missing. Supported file types are the 'native' raster package format and those that can be read via rgdal
+
+Line # 2 creates an empty raster `r` with no cell values, so in # 3 we assign some randomly selected values into `r`. Note the method of assignment, using the `values` function; there are two other lines commented out below # 3 that show different ways of doing the same job. 
+
+The plot of `r` over `districts` uses the `plot` method defined for `raster*` objects. Note that it automatically creates a continuous legend, and also note that `raster::plot` can work with `sf::plot`. 
+
+Let's look now at the structure of the object `r`.
+
+```{r rasterstructure}
+# Chunk 2
+r
+class(r)
+typeof(r)
+slotNames(r)
+values(r)
+# slot(slot(r, "data"), "values")  # identical to values(r)
+res(r)
+```
+
+`r` is an S4 object that has fairly different slots compared to `sf` objects. We are not going to go into all of them, but it is useful to know the @file, @data, @extent, and @crs slots. @file itself holds a number of slots, but you should know the @file@name slot, which contains the file name and path for grids that that are read in from disk (it is empty in the case of `r`, since it is held in memory). @data contains many slots also, but the main one of interest is the @data@values slot, which can be accessed with the `values` function directly, or less directly using `slot` (both approaches are shown above). Interestingly, the resolution information is not stored in any of the slots of `r`, but rather calculated from the @extent and @ncols and @nrows slots by the `res` function.  
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### RasterStack and RasterBrick
+
+We have just seen how to create a `RasterLayer` and learned a bit about the structure of this kind of object, which is two-dimensional. We are now going to learn about three-dimensional rasters, which come in two flavors: `RasterStack` and `RasterBrick`. Before we proceed, we first need to create some new data. 
+
+```{r stacksandbricks}
+# Chunk 3
+r2 <- r > 50
+r3 <- r
+set.seed(1)
+values(r3) <- rnorm(n = ncell(r3), mean = 10, sd = 2)
+l <- list(r, r2, r3)
+```
+
+We used r to create two new rasters, `r2` and `r3`. `r2` was made by using a logical operator (`>`) to find the locations where `r`'s values exceed 50, creating a binary `raster` where 1 indicates the matching pixels, and 0 those that don't.  `r3` was made by using `r` as a template, then overwriting the values with numbers generated randomly from a normal distribution (`rnorm`).  These were then combined into list `l`. 
+
+```{r dummybrick, fig.width=7, fig.height=2.5}
+# Chunk 4
+s <- stack(l)
+# s <- stack(r, r2, r3)  # also works
+names(s) <- c("r", "r2", "r3")
+s
+
+b <- brick(s)
+b
+
+plot(b, nr = 1)
+```
+
+In the preceding code blocks, we use `l` to create a `RasterStack` and `RasterBrick`. These are very similar things, but have a few key differences. A `RasterStack` is a series of rasters that have the same extent and resolution, which are "stacked" on top of one another in the order that they are given in the input list. The stacked layers can from any number of files stored in different areas on disk. A `RasterBrick` does the same thing (stacks `RasterLayers` on top of one another), but is more restrictive because the layers, if read off disk, must be contained within a single file. This makes the `RasterBrick` less flexible than the `RasterStack`, but it has the advantage of faster processing times (according to `?brick`). 
+
+Applying `plot` to a stack or brick results in the automatic plotting of each layer into its own sub-window, with coordinates along the plot axes. You can specify numbers of rows and columns in your plotting device using the "nc" and "nr" arguments to `raster::plot`. 
+
+Here's a more informative (by putting it over a map of Zambia) way of plotting the layers in `s` (works for `b` also):
+
+```{r distplot, eval=FALSE}
+# Chunk 5
+par(mfrow = c(1, 3), mar = c(0, 0, 0, 4))
+for(i in 1:nlayers(s)) {
+  districts %>% st_geometry %>% plot(col = "grey")
+  plot(s[[i]], add = TRUE)
+}
+```
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("fig/u2m2_distplots.png")
+```
+
+## Reading and writing rasters
+
+So far we have used `Raster*` data that are held in memory. Let's write these out onto disk and then read them back in. Write these to your `notebooks/data` folder (per instructions in [Unit 2 module 1 vignette](unit2-module1.html#set-up). 
+
+```{r rastreadwrite, eval = FALSE}
+# Chunk 6
+# #1 - write to disk
+writeRaster(r, filename = file.path(tempdir(), "r.tif"))
+writeRaster(r2, filename = file.path(tempdir(), "r2.tif"))
+writeRaster(r3, filename = file.path(tempdir(), "r3.tif"))
+writeRaster(b, filename = file.path(tempdir(), "b.tif"))
+
+# #2 - read back in each individual raster and recreate stack
+r <- raster(file.path(tempdir(), "r.tif"))
+r2 <- raster(file.path(tempdir(), "r2.tif"))
+r3 <- raster(file.path(tempdir(), "r3.tif"))
+s <- stack(list(r, r2, r3))  # recreate stack
+
+# #3 - programmatic creation of stack
+fs <- dir(tempdir(), pattern = "r.*.tif", full.names = TRUE)
+l <- lapply(fs, raster)
+s <- stack(l)
+# s <- fs %>% lapply(raster) %>% stack  # pipeline approach works, too
+
+# #4 - read in brick
+b <- raster(file.path(tempdir(), "b.tif"))  # incorrect, reads in just 1st layer
+b <- brick(file.path(tempdir(), "b.tif"))  # correct, reads in whole brick
+```
+
+In #1 above, we use `writeRaster` to write out each of the three individual rasters to a geotiff, and write `b` to a three-band geotiff. In #2 we use the `raster` function to read back in the individual rasters, and then recreate stack `s` from those. #3 is a more programmatic way of doing #2, using the `dir` function to read the directory, looking for filenames matching a pattern, and returning the full paths to the matching files. These paths are then used in an `lapply` to read the files in with `raster`, recreating list `l`, which is then stacked. The pipeline approach that wraps up these commands in one line is shown commented out below that. 
+
+Blocks #2 and #3 illustrate how `stack` can be used to create a three-dimensional grid from different files, which differ from what you see next in #4, where the "b.tif" is read back into a brick. You will see the comment there that says that the first line in #4 is incorrect, because using `raster` only results in the first `raster` being read in. 
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+## From vector to raster and back again
+
+Now that you know the major `Raster*` classes, and how to read and write them to disk, let's figure out how to change between raster and vector types. 
+
+### Vector to raster
+We have several vector datasets that come with `geospaar` which we can rasterize, starting with the district boundaries.   
+```{r rasterize, eval=FALSE}
+# Chunk 7
+# #1
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
+#
+# #2
+districts <- districts %>% mutate(ID = 1:nrow(.))
+distsr <- districts %>% rasterize(x = ., y = zamr, field = "ID") %>% print()
+#> class      : RasterLayer
+#> dimensions : 98, 117, 11466  (nrow, ncol, ncell)
+#> resolution : 0.1, 0.1  (x, y)
+#> extent     : 21.99978, 33.69978, -18.02621, -8.226213  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+#> source     : memory
+#> names      : layer
+#> values     : 1, 72  (min, max)
+
+par(mar = c(0, 0, 0, 4))
+plot(distsr, axes = FALSE, box = FALSE)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_rasterize.png")
+```
+
+In #1, we took an initial step to define a raster (`zamr`) that has the  properties of resolution (0.1 decimal degrees), CRS, and extent that we want our rasterized vector to have. We set the extent of this raster to that of `districts`, using `extent` to get the bounding box coordinates (`extent` retrieves the same parameters as `sf::st_bbox`, but the output is in a different format). 
+
+In #2, we use `rasterize` to (as the name says) rasterize `districts`. The "y" argument is where we feed in `zamr`, the raster object that is the "target" for rasterizing `districts`. The "field" argument supplies the column names of the values that we want rasterized. In this case, we have to first create an "ID" variable for `districts`, in order to give an integer for each district name, as the district names (a character variable) cannot be written to the raster. Notice that we have constructed this as a pipeline (with `print` as the last step, to show the `raster` metadata). The commented out code below it shows how it can be done with more conventional syntax. 
+
+Our plot removes the coordinate-labelled axes and box that otherwise drawn around raster plots by default. 
+
+Next we rasterize the `farmers` dataset, which requires a little more prep to be meaningful: 
+
+```{r rasterize2, eval=FALSE}
+# Chunk 8
+# #1
+zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+values(zamr2) <- 1:ncell(zamr2)
+
+# #2
+farmersr <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
+  dplyr::select(x, y) %>% mutate(count = 1) %>% 
+  st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
+  rasterize(x = ., y = zamr2, field = "count", fun = sum) %>% print()
+#> class      : RasterLayer 
+#> dimensions : 39, 47, 1833  (nrow, ncol, ncell)
+#> resolution : 0.25, 0.25  (x, y)
+#> extent     : 21.99978, 33.74978, -17.97621, -8.226213  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+#> source     : memory
+#> names      : layer 
+#> values     : 1, 152  (min, max)
+
+# #3
+par(mar = c(0, 0, 1, 4))
+districts %>% st_union %>% 
+  plot(col = "grey", border = "grey", 
+       main = expression(paste("N farmers per 0.25", degree, " cell")))
+plot(farmersr, add = TRUE)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_rasterize2.png")
+```
+
+In #1, we create a coarser scale (0.25 degree) version of `zamr` (`zamr2`), because we want our final raster to count how many farmers responding to our survey are found in each grid cell. The resolution of 0.1 degrees used for `zamr` is a bit too fine to convey the information nicely in a plot.  
+
+In #2, we do the rasterization as part of a pipeline.  The first two lines prepare the `farmers` dataset. Recall that `farmers` consists of weekly reporting data sent to us by a large number of farmers, which means that we have multiple reports sent by the same farmer (and thus repeated coordinates for each farmer). So we need to reduce `farmers` down to just one row for each individual farmer, so that we have just a single set of coordinates for each. We do that by using `distinct` on the *uuid* variable, using `.keep_all = TRUE` so that we retain the coordinates, and add a new `count` variable (which assigns a value of 1 to each farmer) before converting farmers to `sf` in the third line. We then `rasterize` the *count* variable, using the `sum` function to aggregate the number of farmers per 0.25$\circ$ grid cell.  
+
+The resulting plot (#3) shows that most cells have less than 20 farmers. We add an extra plot decoration step, using `expression` with `paste` to add a superscript degree symbol to our plot title. 
+
+You can also rasterize line features, much as we did for points and polygons, but `rasterize` is exceedingly slow for lines, so we are not doing that here. However, there is code below that shows how one could so that with the `roads` dataset (subset to roads greater than 100 km long):
+```{r rasterizeroads, eval = FALSE}
+# Chunk 9
+roadsr <- roads %>% filter(as.numeric(st_length(.)) > 1000000) %>% 
+  mutate(ID = 1:nrow(.)) %>% st_transform(crs = 4326) %>% 
+  rasterize(., zamr, field = "ID")
+```
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Raster to vector
+
+`raster` gives us functions that allow us to transform rasters to vectors. 
+
+```{r polygonize, eval=FALSE}
+# Chunk 10
+# #1
+dists_fromr <- rasterToPolygons(x = distsr, dissolve = TRUE) %>% st_as_sf
+
+# #2
+farmers_fromr <- rasterToPoints(x = farmersr, spatial = TRUE) %>% st_as_sf
+
+par(mar = c(0, 0, 0, 0))
+dists_fromr %>% st_geometry %>% plot(col = topo.colors(n = nrow(districts)))
+farmers_fromr %>% plot(pch = 20, col = "red", add = TRUE)
+```
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_polygonize.png")
+```
+
+Vectorizing rasters and vectorizing back again means that you end up with lower  resolution vectors if the raster is fairly coarse. You will note that this has occurred here, both in converting the rasterized districts back to polygons (#1) and the rasterized farmer counts back to points (#2). There are several things to note here. First, we used different functions for vectorizing polygons and points. Second, we piped each vectorization output to `st_as_sf`, because the endresult of the `rasterTo*` functions is an `sp` object, so the extra coerces those to `sf`.
+
+## Projections
+
+Up until now, our `Raster*` data have been in geographic coordinates systems. Let's transform these to projected coordinates, using the rasterized districts as an example. 
+
+```{r projections1, eval=FALSE}
+# Chunk 11
+# #1
+zamr_alb <- projectRaster(from = zamr, res = 11000, crs = crs(roads), 
+                          method = "ngb")
+
+# #2
+distsr_alb <- projectRaster(from = distsr, to = zamr_alb, method = "ngb")
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 4))
+plot(distsr, main = "GCS rasterized districts", axes = FALSE, box = FALSE)
+plot(distsr_alb, main = "Albers rasterized districts", axes = FALSE, 
+     box = FALSE)
+```
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2_projections1.png")
+```
+
+In our first step (#1), we apply `projectRaster` to our `zamr` object, transforming it to the Albers projection used by `roads` (the "crs" argument). We define an output "res" of 11,000 m, or 11 km, which is reasonably close to the 1/10th of a degree resolution of `zamr`. We also choose a "method" for calculating the transformed values in the new raster. In this case, since `zamr` has values that are basically an integer index of grid cells, we use the "ngb" (nearest neighbor) option, to avoid the bilinear interpolation that would occur by default (see `?projectRaster`). 
+
+The result, `zamr_alb`, then becomes a reference raster (i.e. the raster defining the parameters) for other rasters that need to be reprojected, which is how we use it when reprojecting `distsr_alb` (# 2). In this case, we pass `zamr_alb` to the "to" argument, and don't need the "res" or "crs" arguments (because the function reads those values from "zamr_alb"). Here we again use the "ngb" method so that we do not change the values of the categorical identifier of each district. You can see how the interpolation choice matters in the plot below, which compares the bilinear to ngb method--see how the bilinear approach changes values along district boundaries?
+
+```{r bilinear_vs_nn, eval=FALSE}
+# Chunk 12
+distsr_alb2 <- projectRaster(from = distsr, to = zamr_alb, method = "bilinear")
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 4))
+plot(distsr_alb2, main = "Bilinear reprojection", axes = FALSE, box = FALSE)
+plot(distsr_alb, main = "Nearest neighbor", axes = FALSE, box = FALSE)
+```
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2_bilinear_vs_nn.png")
+```
+
+A bilinear interpolation is more appropriate for a raster of continuous values, or one where it makes sense to have values averaged during the reprojection process, such as the `farmersr` dataset. 
+
+## Practice
+### Questions
+1. What is a primary difference between `sf` and `s4` object classes? 
+
+2. What function should you use to read and write a multi-layer raster? 
+
+3. What are the difference between `stack` and `brick`? 
+
+4. What class of object do `raster`'s vectorization functions produce? 
+
+### Code
+1. Create a new raster `r4`, using `r3` (above) as a template. Update the values of `r4` using numbers randomly selected from a uniform distribution ranging between 0 and 1. Create another raster `r5` by finding the values greater than 0.5 in r4. Recreate the list `l` with `r`, `r2`, `r3`, `r4`, and `r5`, and then create and plot stack `s2`.
+
+2. Create a new brick `b2` by applying the `brick` function to `s2` and writing it out to disk as `b2.tif`, specifying the path to your `notebooks/data` folder.
+
+3. Following the steps in Chunk 8, recreate `farmersr` by re-rasterizing `farmers` at a 0.2 degree resolution. Plot the result. 
+
+4. Project the new 0.2 degree resolution `farmersr` to an Albers projection with a target resolution of 20 km (20,000 m), calling it `farmersr_alb`. Chunk 11 is your guide, but reproject using a bilinear rather than nearest neighbor interpolation (see `?projectRaster`). Make a two panel plot comparing `farmersr` on the left, plotted over the unioned districts of Zambia in grey, with `farmersr_alb` on the right, plotted over the unioned districts of Zambia in grey (and transformed to Albers). Code in Chunks 8 and 11 can help.   
+
+5. Convert `distsr` to an `sf` polygons object, using `rasterToPolygons` with `dissolve = TRUE`. Plot the result without coercing to `st_geometry`. 
+
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+# Pre-processing and local to global statistics 
+This unit starts to focus on some of the analyses you can do with raster data, focusing specifically on calculating statistics from rasters. We will start in on that after doing a bit more raster processing and preparation.  
+
+## Pre-processing
+
+We will keep working with the data from the previous sections, adding in a new dataset that loads with `geospaar`, `chirps`. 
+
+```{r chirpsload}
+# Chunk 13
+data("chirps")
+```
+
+Since we are recycling some of the objects from the previous section but you might have cleared your workspace, here is code that will allow you to quickly rebuild the datasets we will use in this next section, without having to hunt back through the previous section to find it.
+```{r datareload, eval = FALSE, message=FALSE, warning=FALSE}
+zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+values(zamr) <- 1:ncell(zamr)
+
+distsr <- system.file("extdata/districts.shp", package = "geospaar") %>% 
+  st_read %>% mutate(ID = 1:nrow(.)) %>% 
+  rasterize(x = ., y = zamr, field = "ID")
+
+zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+farmersr <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%    read_csv() %>% distinct(uuid, .keep_all = TRUE) %>% 
+  dplyr::select(x, y) %>% mutate(count = 1) %>% 
+  st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
+  rasterize(x = ., y = zamr2, field = "count", fun = sum)
+```
+
+There a few important things we missed doing in the first section. But first let's talk about the new data we just loaded, `chirps`. We have a help file in `geospaar` describing the dataset, which provides daily rainfall values at ~5 km resolution, estimated from satellite observations (of cloud top temperature, I believe) and corrected by weather station observations. CHIRPS is a near global product that extends back to the 1970s (read more about it [here](http://chg.geog.ucsb.edu/data/chirps/)), but we have just subset 28 days of data over Zambia. 
+
+```{r chirpsstruct}
+# Chunk 14
+chirps
+# names(chirps) <- paste0("Y", 16299:16326)
+names(chirps)
+```
+
+That tells us a bit more about the `chirps` subset that we have, including the names we have given to each of the layers, which correspond to the particular day in the rainfall time series, beginning with Y16299 (Y16 = 2016, 299 = julian day 299, or October 25th) and ending with Y16326 (11/22/2016). Note that `chirps` is actually a `RasterBrick` that we have saved as an .rda file that installs with `geospaar` for convenience. 
+
+Let's have a look at a few of the days in `chirps`: 
+
+```{r chirpsplot, eval=FALSE}
+# Chunk 15
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 4))
+for(i in 1:3) {
+  leg <- ifelse(i == 3, yes = TRUE, no = FALSE)  # 1
+  plot(chirps[[i]], main = names(chirps)[[i]], axes = FALSE, box = FALSE,
+       zlim = c(0, max(chirps[1:3])), legend = leg)  # 2
+  districts %>% st_union %>% plot(add = TRUE)
+}
+```
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("fig/u2m2_chirpsplot.png")
+```
+
+The above plots the first three dates in `chirps` and drapes Zambia's outline over it. These data are obviously not just confined to Zambia, so that sets up our next set of processing steps we need to do.  But let's first examine the plotting code a bit more, which shows us two new things. First, there is the use of `ifelse`, which we use to set up a conditional placement of a legend for iteration 3. When `i == 3`, we tell `plot` to add the legend to the figure panel being plotted by making the variable `leg == TRUE` (otherwise it is `FALSE`). `leg` is passed to the "legend" argument of `plot`. We did this because we wanted just one legend that reflects the range set by the "zlim" argument within `plot`. "zlim" sets a limit on the range of data values that are plotted, which in this case falls between 0 and the maximum rainfall value observed across all three of the plotted dates (`max(chirps[1:3])`). That gives all three plots a common scale, so, given that, why clutter up the plots with three legends showing the same thing?  
+
+The second thing: we haven't discussed this yet, but you will see in the example above that indexing into a `RasterStackBrick` to select a particular layer or layers is achieved through `[[]]`. This applies to both single (`[[x]]`) and multiple/recursive (`[[x:y]]`) indexing, which differs from indexing into a `list`, where you use `[x:y]` for multiple selection. Selection by layer names also works (`chirps[[c("Y16299", "Y16300")]]`; `chirps[["Y16299"]]`)
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Masking
+
+We are interested in the rainfall data within Zambia's borders, so we need to mask out the values of `chirps` that fall outside of Zambia: 
+
+```{r mask1, eval=FALSE}
+# Chunk 16
+test_m <- mask(x = chirps[[1]], mask = districts)
+par(mar = c(0, 0, 0, 4))
+plot(test_m, axes = FALSE, box = FALSE)  
+```
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_chirpsmsk1.png")
+```
+
+In the code above, we use the `districts` data to `mask` out the portions of `chirps` (the first day in the time series only) falling outside of Zambia. Let's apply that to the entire `chirps` dataset:
+
+```{r mask3, eval=FALSE}
+# Chunk 17
+chirpsz <- mask(x = chirps, mask = districts)
+
+set.seed(1)
+ind <- sample(1:nlayers(chirpsz), size = 3)
+plot(chirpsz[[ind]], axes = FALSE, box = FALSE, nr = 1)
+```
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("fig/u2m2_mask3.png")
+```
+
+The new `chirpsz` dataset contains all rainfall days with the values outside of Zambia converted to NA. The three plots are randomly selected from the layers of `chirpsz`, as a check to confirm that the masking was applied to all layers. 
+
+### Cropping
+
+If we need to chop a raster down to a smaller region, we can `crop` it. `crop` uses the extent of another object to achieve this. 
+
+```{r crop, eval=FALSE}
+# Chunk 18
+chirps1_dist72 <- crop(x = chirpsz[[1]], y = districts %>% slice(72))
+
+par(mar = c(0, 0, 0, 2))
+chirps1_dist72 %>% plot(axes = FALSE, box = FALSE)
+districts %>% st_geometry %>% plot(add = TRUE)
+districts %>% st_centroid %>% st_coordinates %>% 
+  text(x = ., labels = row.names(.))
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_crop.png")
+```
+
+The above uses the extent of district 72 (`dist72`) to crop the first layer of `chirpsz`. Note that in the plotting step we can pipe the cropped raster to `plot`, and also that we can label the district numbers on the plot by extracting their centroid coordinates and passing these into the "x" argument of `text`, and then using the `row.names` of the piped-in data.frame of centroid coordinates as the labels. 
+
+Cropping is important if we want to confine further analyses to a particular sub-region.  However, if we just want to focus our plot to a particular region, then we can simply zoom the plot to that region (without cropping) using an extent object. 
+
+```{r zoom, eval=FALSE}
+# Chunk 19
+par(mar = c(0, 0, 0, 2))
+plot(chirpsz[[1]], axes = FALSE, box = FALSE, ext = extent(districts[72, ]))
+districts %>% st_geometry %>% plot(add = TRUE)
+districts %>% st_centroid %>% st_coordinates %>% 
+  text(x = ., labels = row.names(.))
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_zoom.png")
+```
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+#### A function-writing detour
+As we write this, we find ourselves growing weary of repeatedly writing "axes = FALSE, box = FALSE" into the `plot` function, even with RStudio's handy tab completion. This repeated use of the exact same code is the sort of situation that calls for writing your own function.  
+
+```{r plot_noaxes, eval = FALSE}
+# Chunk 20
+plot_noaxes <- function(x, axes = FALSE, box = FALSE, mar = c(0, 0, 1, 4), 
+                        ...) {
+  if(!class(x) %in% c("RasterLayer", "RasterStack", "RasterBrick", "Extent")) {
+    stop("This function is intended for rasters only", call. = FALSE)
+  }
+  par(mar = mar)
+  plot(x, axes = axes, box = axes, ...)
+}
+```
+
+The function above (not run in the block above, because it is written into `geospaar`) takes care of the axes and box problem by setting their default arguments to FALSE. It also sets the default plot margins to the ones we have mostly been using so far (leaving room on the right for the legend and at the top for a title), and it checks whether the object being passed to it belongs to one of the raster classes (failing if it doesn't). Otherwise, it retains all of the other functionality of `raster::plot`, and has the "..." argument, meaning you can pass other eligible arguments to it. 
+
+Let's see how it works:
+```{r plot_noaxes_plot, eval=FALSE}
+# Chunk 21
+plot_noaxes(chirpsz[[1]])
+# chirpsz[[1]] %>% plot_noaxes  # also works in a pipeline
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_plot_noaxes_plot.png")
+```
+
+That will make plotting easier moving forward.  
+
+### Aggregating/disaggregating
+
+To change to resolution of a raster object, you can use `aggregate` to make a coarser resolution, or disaggregate to decrease the resolution. To make `chirpsz` match the 0.1 resolution of `distsr` (the rasterized districts), we do this:
+
+```{r aggregate}
+# Chunk 21
+chirpsz1agg <- aggregate(x = chirpsz[[1]], fact = 2, fun = mean)
+chirpsz1agg
+```
+We aggregate the first layer of `chirpsz` by a factor of 2 (`fact = 2`), taking the average of the aggregated pixels (`fun = mean`). Since the starting resolution was 0.05, doubling the pixel size takes it to 0.1. We could have chosen to aggregate all layers, and we could have chosen a different aggregation function (e.g. `sum`, `max`).
+
+To disaggregate, there are two options:
+```{r disaggregate}
+# Chunk 22
+chirpsz1km <- disaggregate(x = chirpsz[[1]], fact = 5)
+# chirpsz1km <- disaggregate(x = chirpsz[[1]], fact = 5, method = "bilinear") 
+chirpsz1km
+```
+
+The first option is the default one, which just breaks apart each pixel into the number of smaller new pixels specified by the factor, assigning each new pixel the same value as its larger parent. Here we specified a factor of 5, leading to an output resolution of 0.01 (~1 km), and thus 25 times the number of pixels as in the original `chirpsz[[1]]` (run `ncell(chirpsz1km) / ncell(chirpsz[[1]])` to see).
+
+The second way (commented out), is to set `method = bilinear`, which interpolates during disaggregation. In this case, `disaggregate` does the job using the `resample` function, which we will see next.  
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Resampling
+
+Resampling is done for many reasons, but one particularly common case is as a final step following aggregation or disaggregation, when it is needed to co-register the resulting grid to another grid. 
+
+```{r agg_extenterror, error=TRUE, eval=FALSE}
+# Chunk 23
+chirps125 <- aggregate(x = chirpsz[[1]], fact = 5)  # no fun b/c default is mean
+s <- stack(chirps125, farmersr)  # fails 
+
+par(mar = c(1, 1, 1, 1))
+plot(extent(chirps125), axes = FALSE, col = "blue")
+plot(extent(farmersr), add = TRUE, col = "red")
+```
+```{r, echo = FALSE, out.width="40%"}
+knitr::include_graphics("fig/u2m2_agg_extenterror.png")
+```
+
+After aggregating `chirpsz` layer 1, we try and fail to stack the result with `farmersr`, because (as the plot of extents show, and the warning tells) the two objects have different extents. So, another approach is needed: 
+
+```{r resample, eval=FALSE}
+# Chunk 24
+farmersr_rs <- resample(x = farmersr, y = chirps125) 
+s <- stack(chirps125, farmersr_rs)  
+names(s) <- c("rain", "farmer_count")
+plot_noaxes(s)
+```
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2_resample.png")
+```
+
+We resample `farmersr` to `chirps125rs`, since `chirps125rs` has the larger extent. However, there is one more thing we should do before using these data, and that is an adjustment to `farmersr`. Have a look at this:
+
+```{r farmersrnas, eval=FALSE}
+plot_noaxes(s$farmer_count >= 0)
+plot(st_geometry(st_union(districts)), add = TRUE)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_farmersrnas.png")
+```
+
+This shows that there are no places where there are 0 farmers--because the original data contributing to `farmersr` (the second layer in `s`) was derived from point locations representing the approximate locations of where farmers were interviewed. The data thus have no points where there were 0 farmers interviewed (it would be silly to conduct an interview with no subject), thus everywhere outside of interview locations is assigned a no data value. These are not analyzed in raster operations. So we have to fix this if we want to have the full area of Zambia in the second layer of our stack.
+
+```{r fixnas, eval=FALSE}
+s$farmer_count[is.na(s$farmer_count)] <- 0
+s$farmer_count <- mask(s$farmer_count, s$rain)
+plot_noaxes(s$farmer_count)
+plot(st_geometry(st_union(districts)), add = TRUE)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_fixnas.png")
+```
+Now all the areas in `s$farmer_counts` where no interviews were conducted area set to 0. 
+
+We can then stack and perform subsequent analyses that draw on both layers, e.g. finding areas where rainfall exceeded 1 mm and where there was more than 1 farmer:
+
+```{r rasterlogic, eval=FALSE}
+# Chunk 25
+plot_noaxes(s$farmer_count > 1 & s$rain > 1)
+# (s$rain > 1 & s$farmer_count > 1) %>% plot_noaxes  # also works
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_rasterlogic.png")
+```
+
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+## Analyses
+
+Let's move on now to some analyses with raster data. 
+
+### Global statistics
+
+The most basic analyses to perform on rasters is to calculate global summary statistics, i.e. statistics calculated across all cell values:
+
+```{r cellstats}
+# Chunk 26
+cellStats(x = chirpsz[[1]], stat = "mean")  # for a single date
+cellStats(x = chirpsz[[c(5, 7, 14)]], stat = "mean")
+summary(chirpsz[[1:3]])
+```
+
+`cellStats` lets you calculate specific statistics from the cell values of a lone `RasterLayer`, or for a single, multiple, or all layers in a `RasterStackBrick`. `summary` (a generic) returns the quintile values and counts the number of `NA` or no data cells. Both functions by default remove NA values (which are in many if not most rasters), which is something that usually has to be specified when trying to apply these statistical functions to an ordinary vector, e.g. 
+
+```{r rastervalues}
+# Chunk 27
+v <- values(chirpsz[[1]])
+mean(v) 
+mean(v, na.rm = TRUE)
+```
+
+`v` is a vector of all of the values from the first layer in the rainfall brick, including its NA values. `mean` returns an `NA` if you don't tell the function to remove `NA` values first. This is important to remember, because both spatial and non-spatial data often have missing values, so you will have to deal with them explicitly in many cases. 
+
+Here's a more programmatic way of using `cellStats`:
+
+```{r cellstats2, eval=FALSE}
+# Chunk 28
+# #1
+rain_stats <- lapply(list(mean, sum, sd, cv), function(x) {
+  cellStats(x = chirpsz, stat = x)
+})
+names(rain_stats) <- c("mean", "sum", "sd", "cv")
+
+# #2
+rain_statsf <- do.call(cbind, rain_stats) %>% data.frame %>% 
+  mutate(date = as.Date(gsub("Y", "", row.names(.)), "%y%j"))
+# do.call(cbind, rain_stats) %>% data.frame
+# do.call(cbind, rain_stats) %>% row.names %>% gsub("Y", "", .)
+# do.call(cbind, rain_stats) %>% row.names %>% gsub("Y", "", .) %>%
+#   as.Date(., "%y%j")
+
+# #3
+ps <- lapply(c("mean", "sum", "sd", "cv"), function(x) { # x <- "mean"
+  ggplot(rain_statsf %>% dplyr::select(date, all_of(x))) + 
+    geom_line(aes_string("date", x)) + xlab("")
+})
+cowplot::plot_grid(plotlist = ps)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_cellstats2.png")
+```
+
+In #1 we use `lapply` to calculate 4 different statistics over all dates in `chirpsz`, meaning that we get a time series for each statistic as calculated over all of Zambia. 
+
+In #2, we use a pipeline to bind the summary time series vectors into a `data.frame` (one statistic per column), and then do some gymnastics to convert the row names of the `data.frame`, which are constructed from the layer names of `chirpsz` (which are stored as "Y16XXX", where XXX is the julian day) to a vector of dates. Work through the commented out code below this line, which breaks down the steps used to create the *date* variable.   `gsub` first replaces the "Y" in each name, and then `as.Date` parses the remaining numbers into an actual date. The "%y%j" construction tells `as.Date` which parts of the character string relate to which part of a date: %y = two digit year; %j = julian day; placed next to one another %y%j means these two elements are immediately adjacent to one another in the string. 
+
+We use `lapply` to set up four `ggplot` objects in #3 (note the use of `aes_string` rather than `aes`, which allows the variable names to be passed as string, rather than unquoted), and then use `cowplot::plot_grid` to put those plots in a grid, using the "plotlist" argument to receive the input list of `ggplot`s. 
+
+The results in the plot above are actually quite interesting. The top two panels show when the rainy season gets underway in earnest (just after Nov 8). The bottom two panels show two measures of variability, the standard deviation (SD) and coefficient of variation (CV, i.e. SD / mean). These two measures summarize the spatial variability of rainfall falling across Zambia on each day--SD increases as the amount of rain increases (which is expected--SD is usually positively correlated with the mean), whereas CV declines as rainfall increases, indicating that a progressively larger area of the country receives rainfall as the month progresses, so there is less spatial variability. There is a big spike in CV on November 8, which corresponds to a drop in mean and total rainfall. However, that drop masks the fact that there are a few small patches that received a decent amount of rainfall, thus leading to a high CV (see next plot below).  
+
+```{r cvplot, eval=FALSE}
+# Chunk 29
+plot_noaxes(chirpsz[[15]], main = paste("CV =", round(rain_stats$cv[15])))
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_cvplot.png")
+```
+
+Another way to summarize raster data is visually, using a histogram (raster has a generic `hist` function)
+```{r histogram, eval=FALSE}
+# Chunk 30
+par(mfrow = c(1, 3))
+hist(chirpsz[[15:17]], col = "blue", xlab = "mm")
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_histogram.png")
+```
+
+This variant plots a histogram per layer in the `Raster*` object (but we told it to plot 1 row, 3 columns, instead of the default (2 rows, 2 columns)).  
+
+`freq` is another way to summarize raster values that is similar to `hist` but without the automatic plot.
+```{r freq}
+# Chunk 31
+f <- freq(chirpsz[[1]]) %>% print()
+```
+
+Here we apply `freq` to a dataset with continuous values, although this function is probably best reserved for categorical rasters. However, it produces reasonable results here.
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Local statistics
+
+The previous section showed us how to produce statistics calculated across the entire raster. Now we will learn to calculate local, or neighborhood, statistics.
+
+#### Zonal
+
+One way local statistics can be calculated is by defining zones and then calculating statistics within those zones. 
+
+```{r zonal, error=TRUE, eval=FALSE}
+# Chunk 32
+# #1
+# zonemu <- zonal(x = chirpsz, z = distsr, fun = "mean")  # fails b/c extent
+
+# #2
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
+zonemu <- zonal(x = chirpsz, z = distsr_rs, fun = "mean")
+head(zonemu)[, 1:5]
+```
+```{r, echo=FALSE}
+head(zonemu)[, 1:5]
+```
+
+That creates a matrix (truncated here to show the first 6 rows and 5 columns) of mean rainfall within each zone ( district), by date. The first attempt to run `zonal` (#1) would have failed because of mismatched extents (and therefore was commented out so it wouldn't run), so we used `resample` in #2 to align extents before re-running `zonal`. 
+
+To map zonal statistics back onto their zones, we need to use another function, `subs`.
+
+```{r subs, eval=FALSE}
+# Chunk 33
+distr_rfmu <- zonemu %>% data.frame %>% dplyr::select(1:2) %>% 
+  subs(x = distsr_rs, y = ., by = "zone")
+plot_noaxes(distr_rfmu)
+```
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics("fig/u2m2_subs.png")
+```
+
+`subs` replaces the values in a raster by other values contained within a `data.frame` (we converted `zonemu` from `matrix` and selected the first two columns, with column containing the zone number) that correspond to a variable that has the same values as those in the raster (in this case the district IDs). `subs` can be slow-ish on big rasters. 
+
+#### Focal
+Another way of calculating image statistics is to use a moving window/neighborhood approach. This is done with the `focal` function, which can be used to calculate a large number of different statistics. Here's we'll just show you the mean (also known as a low pass filter), with a few permutations to illustrate the concept. **Disclaimer:** This section assumes that you have applied moving window functions/low pass/high pass filters in your GIS/remote sensing classes so far, and thus are familiar with the calculations. If not, please be sure to ask about this in class.  
+
+```{r focal, eval=FALSE}
+# Chunk 34
+# #1
+wmat <- matrix(1 / 9, nrow = 3, ncol = 3) 
+chirps1_focmu1 <- focal(x = chirpsz[[1]], w = wmat) 
+
+# #2
+wmat <- matrix(1, nrow = 3, ncol = 3) 
+chirps1_focmu2 <- focal(x = chirpsz[[1]], w = wmat, fun = mean) 
+
+# #3
+wmat <- matrix(1, nrow = 5, ncol = 5) 
+chirps1_focmu3 <- focal(x = chirpsz[[1]], w = wmat, fun = mean) 
+
+# #4 
+wmat <- matrix(1, nrow = 5, ncol = 5) 
+chirps1_focmu4 <- focal(x = chirpsz[[1]], w = wmat, fun = mean, na.rm = TRUE) 
+
+# #5
+wmat <- matrix(1 / 9, nrow = 5, ncol = 5) 
+chirps1_focmu5 <- focal(x = chirpsz[[1]], w = wmat, na.rm = TRUE) 
+
+# plots
+l <- list(chirps1_focmu1, chirps1_focmu3, chirps1_focmu4, chirps1_focmu5)
+titles <- c("3X3 NAs not removed", "5X5 NAs not removed", 
+            "5X5 NAs removed properly", "5X5 NAs removed improperly")
+par(mfrow = c(2, 2))
+for(i in 1:length(l)) {
+  plot_noaxes(l[[i]], main = titles[i])
+}
+```
+```{r, echo = FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2_focal.png")
+```
+
+We have 5 variants above. In #1, we calculate the focal mean the recommended way, which is to: 
+
+- Define a matrix (`wmat`) that contains the weights that `focal` applies to each pixel when making neighborhood calculations.  In this case, the matrix is 3X3, which is the size of our moving window, and the weights are distributed equally across all pixels and sum to 1 (each gets a weight of 1/9)
+- `focal` then passes over each image pixel, and multiplies those weights by each pixel value in the neighborhood, and then sums those to get the mean 
+- It sums the values because `sum` is the default value of the argument "fun" in the function `focal`, which is why we have not even specified the argument "fun" in Block 1
+
+Note that the way `focal` is coded here does not remove NA pixels, thus any neighborhood having even a single NA pixel is itself turned into NA, i.e. all 9 pixels in the neighborhood. Thus the entire boundary of Zambia is trimmed down accordingly (by 2 pixels). This result is illustrated in the upper left panel of the plot above. 
+
+The code in #2 is a slower way of doing the same thing. It passes the `mean` function to `focal`'s "fun" argument. The weights matrix in this case has 1s throughout; since we are not using the default "fun=sum" in `focal` and `mean` is doing the work, we can't modify (by weighting) the pixel values if we want the correct mean. We also do not remove NA values from the calculation, so the results are identical (and thus not plotted). 
+
+In #3, we use the same approach as in #2, but expand the neighborhood to 5X5. You will see in the upper right plot that Zambia shrank even more (by 4 pixels). 
+
+In #4, we again pass `mean` to `focal`, and have a 5X5 neighborhood, but here we specify `na.rm = TRUE`, which means that focal passes `TRUE` to the "na.rm" argument of `mean`. This results in NAs being removed from each neighborhood before calculating the mean, thus boundary pixels are not lost (note the larger area in the lower left plot above). This is the correct way to remove NAs when calculating focal means.  
+
+The improper way of removing NAs from focal calculations is shown in #5, this time using the faster approach demonstrated in Block 1. The lower right plot shows how pixels near Zambia's border have artificially low values. This result is because the approach relies on a weighted mean, and because NAs are removed, the weights do not sum to 1 and thus the mean is underestimated. 
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+### Analyzing the Z dimension
+
+If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we want to analyze the values in the Z dimension (which may represent time, spectral bands, or unrelated spatial predictors in a model) without altering the x and y dimensions. 
+
+The workhorse for doing this sort of analysis is `calc`, which allows you to apply pretty much any function to the Z-dimension of a `RasterStackBrick`. 
+
+```{r calc, eval=FALSE}
+# Chunk 35
+# #1
+rain_zmu <- calc(x = chirpsz, fun = mean)
+rain_zsd <- calc(x = chirpsz, fun = sd)
+rain_zrng <- calc(x = chirpsz, fun = range)
+
+# #2
+rain_zstack <- stack(rain_zmu, rain_zsd, rain_zrng)
+names(rain_zstack) <- c("Mean", "StDev", "Min", "Max")
+
+plot_noaxes(rain_zstack)
+```
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("fig/u2m2_calc.png")
+```
+
+```
+
+In #1 we pass `mean`, `sd`, and `range` to "fun" in `calc`. Note that `range` always returns two values, so `calc` conveniently returns a two-layer brick that contains the minimum in the first layer and the maximum in the second. 
+
+In #2 we then stack the three outputs, and rename the layers something meaningful so that `plot_noaxes` can plot them all at once. 
+
+You will see from the resulting plot that "Min" has only one value, 0, which makes sense for a rainfall time series (every pixel is likely to have at least one day of no rainfall over the course of a month).
+
+***
+<center>
+[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+</center>
+***
+
+
+## Practice
+### Questions
+1. How do `cellStats`, `focal`, and `zonal` differ from one another? 
+
+2. How do you `disaggregate` a raster with interpolation? 
+
+3. How do you run `calc` on images with different resolutions or extents? 
+
+### Code
+1. Run `as.Date("10-11-2017", "%m-%d-%Y")`, `as.Date("10-11-17", "%m-%d-%y")`,
+`as.Date("101117", "%m%d%y")`, and `as.Date("10112017", "%m%d%Y")`
+ to get a better sense of date vectors work. Also try out `lubridate::mdy("10-11-2017")` and `lubridate::as_date("20171011")`.
+
+2. Convert `farmers` to a 0.1 degree raster (`farmersr2`) that contains the count of farmers per grid cell.  Use `distsr` as the target raster so that the extents align. 
+
+3. Use `zonal` on `farmersr2` to calculate the total number of farmers per district (use `distsr` to provide the zones), and then map them back onto the districts/zones using `subs`. Plot the result. 
+
+4. Use `focal` to calculate for `chirpsz[[20]]` the i) standard deviation within a 3X3 and 5X5 window, and ii) the maximum value in each 3X3 and 5X5 neighborhood. Do not remove NAs. Combine the results in a `stack`, as above, and then plot them  using `plot_noaxes`. 
+
+5. Crop `chirpsz[[1]]` using the extent of `districts[57, ]`, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using `plot_noaxes`.
+
+6. Use `calc` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot with meaningful titles using `plot_noaxes` (hint: name the layers of the `stack`), outputting plots on 1 row with 3 columns. 
+
+***
+<center>
+[To Unit2 Module 2b](unit2-module2b.html) || [Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html) 
+</center>
+***
+
+</center>
+***
+
