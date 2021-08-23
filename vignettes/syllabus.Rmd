@@ -40,7 +40,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 Instructor | Office | Office hours
 ---------|------------------|------------------
 Lyndon Estes   | Jefferson 201C (**Virtual appointments only**) | Tuesday 1300-1500 
-Pilar Delpino Marimon | TBD  | TBD
+Pilar Delpino Marimon | **Virtual**  | Tuesday 1600-1800
 
 
 ## Philosophy
@@ -184,7 +184,7 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 ### Week 10 - Project selection
 - Assignment #6 due
 
-### Weeks 11-13 - Project work
+### Weeks 11-14 - Project work
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
 
 ### Weeks 14 - Course completion week

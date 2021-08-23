@@ -397,7 +397,7 @@ Okay, there are a few things to dive into in that explanation. First, you will n
 
 
 ```{r, fig.width=5, fig.height=3.5}
-rst <- raster::raster(nrow = 10, ncol = 10, vals = 1:100)
+rst <- raster::raster(nrows = 10, ncols = 10, vals = 1:100)
 raster::plot(rst)
 ```
 
@@ -406,7 +406,7 @@ This is the first way we tried to do it, with the exception that we now use the 
 The second way uses the function `library` to load and attach an installed package, here `raster`, which makes the `raster` function available in the *search* path, so it can be called without using the `packagename::function_name` format. 
 ```{r, fig.width=5, fig.height=3.5}
 library(raster)
-rst <- raster(nrow = 10, ncol = 10, vals = 1:100)
+rst <- raster(nrows = 10, ncols = 10, vals = 1:100)
 plot(rst)
 ```
 
