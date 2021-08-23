@@ -33,14 +33,14 @@ Originally developed for statistics, free and open source R is now one of the mo
 <a href="#top">Back to top</a>
 
 ## Meeting Time/Place
-- ASEC 304, MW 1615-1730
-- Online, F 1700-1850
+- Class: ASEC 304, MW 1615-1730
+- Drop-in lab/enhanced office hours (Virtual), F 1615-1805
 
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
-Lyndon   | Jefferson 105 (**Virtual appointments only**) | Tuesday 1000-1200 
-Lei Song | Jefferson 102  | Tuesday 1600-1800
+Lyndon Estes   | Jefferson 201C (**Virtual appointments only**) | Tuesday 1300-1500 
+Pilar Delpino Marimon | TBD  | TBD
 
 
 ## Philosophy

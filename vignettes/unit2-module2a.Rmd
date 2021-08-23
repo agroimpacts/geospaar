@@ -40,7 +40,7 @@ We are now going to start working with the `raster` package. `raster` is a highl
 The material in this section assumes that the reader is familiar with standard raster GIS operations and concepts, ranging from projections and transformations to moving windows, raster algebra, terrain analysis, and the like. 
 
 We'll use the following datasets in this section:
-```{r datasets, message=FALSE, warning=FALSE}
+```{r datasets, message=FALSE, warning=FALSE, eval=FALSE}
 library(geospaar)
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%    read_csv(show_col_types = FALSE) 
 roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
@@ -54,7 +54,7 @@ districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
 We'll start off by learning about the basic `raster` classes, which we will do by building our own objects from scratch, starting with a `RasterLayer`
 
 ### RasterLayer
-```{r rasterlayer}
+```{r rasterlayer, eval=FALSE}
 # Chunk 1
 # #1
 e <- extent(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  
@@ -79,7 +79,7 @@ knitr::include_graphics("fig/u2m2_rasterlayer.png")
 
 We just used several functions from the `raster` package to create a random `raster` named `r` that has a 1/4 degree resolution and covers an area of 2 X 2 degrees in southern Zambia. This particular raster is a temporary one that lives in memory. 
 
-Let's walk through the labelled code. In # 1, we use `raster`'s `extent` function to define the boundaries of the raster, and then in # 2 use the `raster` function to create a raster from the resulting `r class(e)` object `e`, assigning a CRS using the "crs" argument, which in turn uses `raster`'s `crs` to extract the crs from `districts` (#3). `crs` is similar to `sf::st_crs`, but outputs a different class of object that can't be used by `raster`. The `raster` function can create a raster from many different types of input objects (passed to argument "x"), per `?raster`:
+Let's walk through the labelled code. In # 1, we use `raster`'s `extent` function to define the boundaries of the raster, and then in # 2 use the `raster` function to create a raster from the resulting `Extent` object `e`, assigning a CRS using the "crs" argument, which in turn uses `raster`'s `crs` to extract the crs from `districts` (#3). `crs` is similar to `sf::st_crs`, but outputs a different class of object that can't be used by `raster`. The `raster` function can create a raster from many different types of input objects (passed to argument "x"), per `?raster`:
 
 > filename (character), Extent, Raster*, SpatialPixels*, SpatialGrid*, object, 'image', matrix, im, or missing. Supported file types are the 'native' raster package format and those that can be read via rgdal
 
@@ -89,15 +89,33 @@ The plot of `r` over `districts` uses the `plot` method defined for `raster*` ob
 
 Let's look now at the structure of the object `r`.
 
-```{r rasterstructure}
+```{r rasterstructure, eval=FALSE}
 # Chunk 2
 r
+#> class      : RasterLayer 
+#> dimensions : 8, 8, 64  (nrow, ncol, ncell)
+#> resolution : 0.25, 0.25  (x, y)
+#> extent     : 27, 29, -16, -14  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs
+#> source     : memory
+#> names      : layer 
+#> values     : 1, 100  (min, max)
 class(r)
+#> [1] "RasterLayer"
+#> attr(,"package")
+#> [1] "raster"
 typeof(r)
+#> [1] "S4"
 slotNames(r)
+#>  [1] "file"     "data"     "legend"   "title"    "extent"   "rotated"  "rotation" "ncols"   
+#>  [9] "nrows"    "crs"      "history"  "z"
 values(r)
+#>  [1]  68  39   1  34  87  43  14  82  59  51  97  85  21  54  74   7  73  79  85  37  89  37  34  89
+#> [25]  44  79  33  84  35  70  74  42  38  20  28  20  44  87  70  40  44  25  70  39  51  42   6  24
+#> [49]  32  14   2  45  18  22  78  65  70  87  70  75  81 100  13  40
 # slot(slot(r, "data"), "values")  # identical to values(r)
 res(r)
+#> [1] 0.25 0.25
 ```
 
 `r` is an S4 object that has fairly different slots compared to `sf` objects. We are not going to go into all of them, but it is useful to know the @file, @data, @extent, and @crs slots. @file itself holds a number of slots, but you should know the @file@name slot, which contains the file name and path for grids that that are read in from disk (it is empty in the case of `r`, since it is held in memory). @data contains many slots also, but the main one of interest is the @data@values slot, which can be accessed with the `values` function directly, or less directly using `slot` (both approaches are shown above). Interestingly, the resolution information is not stored in any of the slots of `r`, but rather calculated from the @extent and @ncols and @nrows slots by the `res` function.  
@@ -112,7 +130,7 @@ res(r)
 
 We have just seen how to create a `RasterLayer` and learned a bit about the structure of this kind of object, which is two-dimensional. We are now going to learn about three-dimensional rasters, which come in two flavors: `RasterStack` and `RasterBrick`. Before we proceed, we first need to create some new data. 
 
-```{r stacksandbricks}
+```{r stacksandbricks, eval=FALSE}
 # Chunk 3
 r2 <- r > 50
 r3 <- r
@@ -123,18 +141,39 @@ l <- list(r, r2, r3)
 
 We used r to create two new rasters, `r2` and `r3`. `r2` was made by using a logical operator (`>`) to find the locations where `r`'s values exceed 50, creating a binary `raster` where 1 indicates the matching pixels, and 0 those that don't.  `r3` was made by using `r` as a template, then overwriting the values with numbers generated randomly from a normal distribution (`rnorm`).  These were then combined into list `l`. 
 
-```{r dummybrick, fig.width=7, fig.height=2.5}
+```{r dummybrick, fig.width=7, fig.height=2.5, eval=FALSE}
 # Chunk 4
 s <- stack(l)
 # s <- stack(r, r2, r3)  # also works
 names(s) <- c("r", "r2", "r3")
 s
+#> class      : RasterStack 
+#> dimensions : 8, 8, 64, 3  (nrow, ncol, ncell, nlayers)
+#> resolution : 0.25, 0.25  (x, y)
+#> extent     : 27, 29, -16, -14  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs 
+#> names      :         r,        r2,        r3 
+#> min values :    1.0000,    0.0000,    5.5706 
+#> max values : 100.00000,   1.00000,  14.80324
 
 b <- brick(s)
 b
+#> class      : RasterBrick 
+#> dimensions : 8, 8, 64, 3  (nrow, ncol, ncell, nlayers)
+#> resolution : 0.25, 0.25  (x, y)
+#> extent     : 27, 29, -16, -14  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs 
+#> source     : memory
+#> names      :         r,        r2,        r3 
+#> min values :    1.0000,    0.0000,    5.5706 
+#> max values : 100.00000,   1.00000,  14.80324
 
 plot(b, nr = 1)
 ```
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("fig/u2m2_dummybrick.png")
+```
+
 
 In the preceding code blocks, we use `l` to create a `RasterStack` and `RasterBrick`. These are very similar things, but have a few key differences. A `RasterStack` is a series of rasters that have the same extent and resolution, which are "stacked" on top of one another in the order that they are given in the input list. The stacked layers can from any number of files stored in different areas on disk. A `RasterBrick` does the same thing (stacks `RasterLayers` on top of one another), but is more restrictive because the layers, if read off disk, must be contained within a single file. This makes the `RasterBrick` less flexible than the `RasterStack`, but it has the advantage of faster processing times (according to `?brick`). 
 
@@ -405,11 +444,23 @@ farmersr <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
 
 There a few important things we missed doing in the first section. But first let's talk about the new data we just loaded, `chirps`. We have a help file in `geospaar` describing the dataset, which provides daily rainfall values at ~5 km resolution, estimated from satellite observations (of cloud top temperature, I believe) and corrected by weather station observations. CHIRPS is a near global product that extends back to the 1970s (read more about it [here](http://chg.geog.ucsb.edu/data/chirps/)), but we have just subset 28 days of data over Zambia. 
 
-```{r chirpsstruct}
+```{r chirpsstruct, eval=FALSE}
 # Chunk 14
 chirps
+#> class      : RasterBrick 
+#> dimensions : 197, 234, 46098, 28  (nrow, ncol, ncell, nlayers)
+#> resolution : 0.05, 0.05  (x, y)
+#> extent     : 21.95, 33.65, -18.05, -8.200001  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+#> source     : memory
+#> names      :   Y16299,   Y16300,   Y16301,   Y16302,   Y16303,   Y16304,   Y16305,   Y16306,   Y16307,   Y16308,   Y16309,   Y16310,   Y16311,   Y16312,   Y16313, ... 
+#> min values :        0,        0,        0,        0,        0,        0,        0,        0,        0,        0,        0,        0,        0,        0,        0, ... 
+#> max values : 21.33322, 17.76521, 22.12555, 32.39063, 19.46936, 28.53870, 19.03967, 26.27214, 22.93114, 18.90109, 22.52590, 20.18479, 22.41066, 21.03057, 22.64041, ...
 # names(chirps) <- paste0("Y", 16299:16326)
 names(chirps)
+#>  [1] "Y16299" "Y16300" "Y16301" "Y16302" "Y16303" "Y16304" "Y16305" "Y16306" "Y16307" "Y16308"
+#> [11] "Y16309" "Y16310" "Y16311" "Y16312" "Y16313" "Y16314" "Y16315" "Y16316" "Y16317" "Y16318"
+#> [21] "Y16319" "Y16320" "Y16321" "Y16322" "Y16323" "Y16324" "Y16325" "Y16326"
 ```
 
 That tells us a bit more about the `chirps` subset that we have, including the names we have given to each of the layers, which correspond to the particular day in the rainfall time series, beginning with Y16299 (Y16 = 2016, 299 = julian day 299, or October 25th) and ending with Y16326 (11/22/2016). Note that `chirps` is actually a `RasterBrick` that we have saved as an .rda file that installs with `geospaar` for convenience. 
@@ -544,19 +595,35 @@ That will make plotting easier moving forward.
 
 To change to resolution of a raster object, you can use `aggregate` to make a coarser resolution, or disaggregate to decrease the resolution. To make `chirpsz` match the 0.1 resolution of `distsr` (the rasterized districts), we do this:
 
-```{r aggregate}
+```{r aggregate, eval=FALSE}
 # Chunk 21
 chirpsz1agg <- aggregate(x = chirpsz[[1]], fact = 2, fun = mean)
 chirpsz1agg
+#> class      : RasterLayer 
+#> dimensions : 99, 117, 11583  (nrow, ncol, ncell)
+#> resolution : 0.1, 0.1  (x, y)
+#> extent     : 21.95, 33.65, -18.1, -8.200001  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+#> source     : memory
+#> names      : Y16299 
+#> values     : 0, 12.18843  (min, max)
 ```
 We aggregate the first layer of `chirpsz` by a factor of 2 (`fact = 2`), taking the average of the aggregated pixels (`fun = mean`). Since the starting resolution was 0.05, doubling the pixel size takes it to 0.1. We could have chosen to aggregate all layers, and we could have chosen a different aggregation function (e.g. `sum`, `max`).
 
 To disaggregate, there are two options:
-```{r disaggregate}
+```{r disaggregate, eval=FALSE}
 # Chunk 22
 chirpsz1km <- disaggregate(x = chirpsz[[1]], fact = 5)
 # chirpsz1km <- disaggregate(x = chirpsz[[1]], fact = 5, method = "bilinear") 
 chirpsz1km
+#> class      : RasterLayer 
+#> dimensions : 985, 1170, 1152450  (nrow, ncol, ncell)
+#> resolution : 0.01, 0.01  (x, y)
+#> extent     : 21.95, 33.65, -18.05, -8.200001  (xmin, xmax, ymin, ymax)
+#> crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+#> source     : memory
+#> names      : Y16299 
+#> values     : 0, 18.00534  (min, max)
 ```
 
 The first option is the default one, which just breaks apart each pixel into the number of smaller new pixels specified by the factor, assigning each new pixel the same value as its larger parent. Here we specified a factor of 5, leading to an output resolution of 0.01 (~1 km), and thus 25 times the number of pixels as in the original `chirpsz[[1]]` (run `ncell(chirpsz1km) / ncell(chirpsz[[1]])` to see).
@@ -648,20 +715,29 @@ Let's move on now to some analyses with raster data.
 
 The most basic analyses to perform on rasters is to calculate global summary statistics, i.e. statistics calculated across all cell values:
 
-```{r cellstats}
+```{r cellstats, eval=FALSE}
 # Chunk 26
 cellStats(x = chirpsz[[1]], stat = "mean")  # for a single date
 cellStats(x = chirpsz[[c(5, 7, 14)]], stat = "mean")
 summary(chirpsz[[1:3]])
+#>              Y16299      Y16300       Y16301
+#> Min.        0.00000     0.00000     0.000000
+#> 1st Qu.     0.00000     0.00000     0.000000
+#> Median      0.00000     0.00000     0.000000
+#> 3rd Qu.     0.00000     0.00000     0.000000
+#> Max.       18.00534    17.76521     8.853778
+#> NA's    20995.00000 20995.00000 20995.000000
 ```
 
 `cellStats` lets you calculate specific statistics from the cell values of a lone `RasterLayer`, or for a single, multiple, or all layers in a `RasterStackBrick`. `summary` (a generic) returns the quintile values and counts the number of `NA` or no data cells. Both functions by default remove NA values (which are in many if not most rasters), which is something that usually has to be specified when trying to apply these statistical functions to an ordinary vector, e.g. 
 
-```{r rastervalues}
+```{r rastervalues, eval=FALSE}
 # Chunk 27
 v <- values(chirpsz[[1]])
 mean(v) 
+#> [1] NA
 mean(v, na.rm = TRUE)
+#> [1] 0.6971701
 ```
 
 `v` is a vector of all of the values from the first layer in the rainfall brick, including its NA values. `mean` returns an `NA` if you don't tell the function to remove `NA` values first. This is important to remember, because both spatial and non-spatial data often have missing values, so you will have to deal with them explicitly in many cases. 
@@ -724,9 +800,29 @@ knitr::include_graphics("fig/u2m2_histogram.png")
 This variant plots a histogram per layer in the `Raster*` object (but we told it to plot 1 row, 3 columns, instead of the default (2 rows, 2 columns)).  
 
 `freq` is another way to summarize raster values that is similar to `hist` but without the automatic plot.
-```{r freq}
+```{r freq, eval=FALSE}
 # Chunk 31
 f <- freq(chirpsz[[1]]) %>% print()
+#>       value count
+#>  [1,]     0 21053
+#>  [2,]     1   234
+#>  [3,]     2   698
+#>  [4,]     3   817
+#>  [5,]     4   660
+#>  [6,]     5   544
+#>  [7,]     6   432
+#>  [8,]     7   306
+#>  [9,]     8   175
+#> [10,]     9    59
+#> [11,]    10    42
+#> [12,]    11    41
+#> [13,]    12    27
+#> [14,]    13     7
+#> [15,]    14     3
+#> [16,]    15     2
+#> [17,]    16     2
+#> [18,]    18     1
+#> [19,]    NA 20995
 ```
 
 Here we apply `freq` to a dataset with continuous values, although this function is probably best reserved for categorical rasters. However, it produces reasonable results here.
@@ -754,9 +850,13 @@ One way local statistics can be calculated is by defining zones and then calcula
 distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
 zonemu <- zonal(x = chirpsz, z = distsr_rs, fun = "mean")
 head(zonemu)[, 1:5]
-```
-```{r, echo=FALSE}
-head(zonemu)[, 1:5]
+#>      zone     Y16299    Y16300    Y16301    Y16302
+#> [1,]    1 0.00000000 0.0000000 0.0000000 1.8976312
+#> [2,]    2 0.01322501 0.0000000 0.0000000 0.0000000
+#> [3,]    3 6.04584049 1.8021238 0.0000000 4.4494707
+#> [4,]    4 0.00000000 0.3011147 0.0201552 0.0000000
+#> [5,]    5 6.25742351 3.6532615 1.0868976 0.4739815
+#> [6,]    6 0.00000000 0.0000000 0.0000000 0.0000000
 ```
 
 That creates a matrix (truncated here to show the first 6 rows and 5 columns) of mean rainfall within each zone ( district), by date. The first attempt to run `zonal` (#1) would have failed because of mismatched extents (and therefore was commented out so it wouldn't run), so we used `resample` in #2 to align extents before re-running `zonal`. 
@@ -857,8 +957,6 @@ plot_noaxes(rain_zstack)
 
 ```{r, echo=FALSE, out.width="80%"}
 knitr::include_graphics("fig/u2m2_calc.png")
-```
-
 ```
 
 In #1 we pass `mean`, `sd`, and `range` to "fun" in `calc`. Note that `range` always returns two values, so `calc` conveniently returns a two-layer brick that contains the minimum in the first layer and the maximum in the second. 
