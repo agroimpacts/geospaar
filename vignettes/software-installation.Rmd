@@ -1,0 +1,55 @@
+---
+title: "Software installation"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()` [Back to home](index.html)"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    fig_caption: yes
+    number_sections: no
+    toc_depth: 3
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{Software installation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(knitr)
+```
+
+# Overview
+If you have previously installed any of the software below, we recommend you  upgrade to the most current stable version.
+
+# Installation
+## Step 1: Install Git
+Go to [Installing git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and follow the instruction to install Git for your operating system (Linux x86, Mac, Windows, etc).
+
+## Step 2: Install R
+Go to [R page](https://www.r-project.org) and download the current stable release, R 4.0.3, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
+
+## Step 3: Install RStudio Desktop
+Go to [RStudio page](https://rstudio.com/products/rstudio/download/#download) and download the current stable release, RStudio-1.4.1103, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
+
+## Step 4: Install RTools (Windows only)
+Windows machine needs RTools to build some packages from source. It is better to install it beforehand. Go to [RTools page](https://cran.r-project.org/bin/windows/Rtools/) to read the instruction, then download and install.
+
+## Step 5: Install GDAL
+GDAL is a widely used library for geospatial data. A lot of R geospatial packages rely on it. The way to install is very different for different operating systems:
+
+- Windows: go to this [page](https://gdal.org/download.html) to download and install the current stable version.
+
+- Mac: a bit trickier, but probably best is to install  [frameworks](https://www.kyngchaos.com/software/frameworks/). If you use homebrew often, you also could use homebrew formula to install: `brew install gdal`.
+
+- Linux: If you use a Linux machine, try to search the tutorial online for your operating systems to install. For example, GDAL is available for Ubuntu from the [UbuntuGIS-Stable PPA](https://launchpad.net/~ubuntugis/+archive/ubuntu/ppa?field.series_filter=xenial). Let's solve together if you got any issues.
+    
+***
+<center>
+[Back to home](index.html)
+</center>
+***

@@ -17,6 +17,7 @@ vignette: >
 - [Syllabus](syllabus.html)
 - [Assessment Criteria](assessment.html)
 - [List of Potential Projects](projects.html)
+- [Installing Software](software-installation.html)
 - [Help](help.html)
 
 ## Materials
