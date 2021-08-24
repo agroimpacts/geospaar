@@ -3,13 +3,10 @@ title: "Assessment"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
     toc_depth: 3
-    toc: yes
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Assessment}
