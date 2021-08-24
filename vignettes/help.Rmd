@@ -3,13 +3,11 @@ title: "Help Files"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+  rmdformats::readthedown:
+    highlight: pygments
     fig_caption: yes
     number_sections: yes
     toc_depth: 3
-    toc: yes
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Help}

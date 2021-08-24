@@ -3,9 +3,11 @@ title: "Guide to Vignettes"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()`"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+  rmdformats::readthedown:
+    highlight: pygments
+    fig_caption: yes
+    number_sections: yes
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Guide to Vignettes}
