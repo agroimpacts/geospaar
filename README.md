@@ -1,10 +1,10 @@
 # Geospatial Analysis with R
 
-This is the repository for Clark University's Geospatial Analysis with R course (GEOG 246/346). The course materials are provided as an `R` package (`geospaar`), with the course material provided in the package vignettes. 
+This is the repository for Clark University's Geospatial Analysis with R course (GEOG 246/346). The course materials are provided as an `R` package (`geospaar`), with the course material provided in the package vignettes, and, thanks to @LLeiSong, through the [course website](https://agroimpacts.github.io/geospaar/).
 
 Although these materials were designed for a course taught at Clark University, the two modules it provides may be useful to anyone interested in learning `R` programming and basic geospatial analysis.
 
-This course draws from a number of other `R` courses and materials that are online (e.g. blogs, tweets, etc). We have tried to give credit to those materials wherever we draw on those. If you find that we have missed giving credit where it is due, please let us know by submitting an issue (ideally with blame assigned to the specific location) and we will remedy it forthwith.
+This course draws from a number of other `R` courses and materials that are online (e.g. blogs, tweets, etc). We have tried to give credit to those materials wherever we draw on those. If you find that we have missed giving credit where it is due, please let us know by submitting an issue (ideally with blame assigned to the specific location) and we will remedy it.
 
 ## Installation
 
@@ -19,7 +19,7 @@ library(devtools)
 
 Add these ones as well, while you are at it:
 ```R  
-install.packages(c("knitr", "kableExtra", "prettydoc"))
+install.packages(c("knitr", "kableExtra", "readthedown"))
 ```
 
 #### 3. install the `geospaar` package
@@ -27,16 +27,18 @@ install.packages(c("knitr", "kableExtra", "prettydoc"))
 Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
 ```R
 library(devtools)
-install_github("agroimpacts/geospaar@fall2020", build_vignettes = TRUE)
+install_github("agroimpacts/geospaar@fall2021", build_vignettes = TRUE)
 ```
 
 #### 4. Browse the course materials
 
+As package vignettes:
 ```R
 browseVignettes("geospaar")
 ```
 
-These materials are updated periodically, so check for updates. 
+On the web:
+Thanks to @LLeiSong, the materials are also available through the [course website](https://agroimpacts.github.io/geospaar/).
 
 ## For Clark students
 
