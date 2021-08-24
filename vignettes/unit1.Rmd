@@ -1,14 +1,12 @@
 ---
 title: "Unit 1 - Overview of R and Reproducibility"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
+  rmdformats::readthedown:
+    highlight: pygments
     fig_caption: yes
     number_sections: yes
     toc_depth: 3
-    toc: yes
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 1}
@@ -20,13 +18,6 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
-
 
 # Overview {#unit1overview}
 
@@ -57,7 +48,5 @@ This section is broken into four modules (the materials can be accessed by follo
 [**Appendix**](unit1-appendix.html): Unit appendix
 
 ***
-<center>
-[Back to top](#unit1overview) || [Back to **vignette index**](toc.html)
-</center>
+[Back to home](index.html)
 ***
