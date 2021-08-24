@@ -1,15 +1,12 @@
 ---
 title: "Unit 1 Module 4"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 4
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 1 Module 4}
@@ -26,13 +23,6 @@ knitr::opts_chunk$set(
 library(knitr)
 options(width = 100)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
-
 
 # Data analysis and visualization{#data-analysis-and-visualization}
 
@@ -128,12 +118,6 @@ readr::read_csv(file.path(td, "dummy.csv"))
 
 In #1 we do the usual creation of dummy data, but we replace `data.frame` with `tibble`, the enhanced `data.frame`--note we could have used `data.frame`. #2 creates a temporary directory, which allows me to do something to code this demonstration in a way that will run on your computer (i.e. you won't have to create a directory with a name and path that matches one on my computer for this code to execute at install time). #3 uses `readr::write_csv` to write it onto disk, and we read it back in in #4. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 
 ## Getting your data clean and in shape
 As we have already seen, our three crop datasets are messy. There are columns we don't need, and we are not sure if we want the row structure as it is. So we have to prepare our data. 
@@ -182,12 +166,6 @@ This exercise tells us something. We have one violation of the tidy principles. 
 
 Which is one of the [definitions](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) of messy data. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Reshaping
 So we need to reshape the dataset. How? Well, the values "Area harvested" and "Production" in *Element* are both stored in the neighboring *Value* column. We need to make two new columns out of values in *Value*, pulling out the ones corresponding to *Element* "Production" into one new column, and *Element* "Area harvested" into another. This is called **spreading**, or going from long (or tall) to wide:
 ```{r, message=FALSE, results='hold'}
@@ -207,11 +185,6 @@ maize %>% pivot_longer(cols = c("Area harvested", "Production"),
 
 Here we use `tidyr::pivot_longer` (which is busy replacing `tidyr::gather`) to reshape `maize` back to its original form. We have three arguments, "cols", which designates the columns you want to convert to combine into long form, "names_to", which specifies the name of the column that will hold the key variable, and "values_to", which specifies the name of the column that will hold the values. The commented out line shows how to do the same thing with the older `gather` function. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Renaming
 We still need to clean it some more though. Note in the `pivot_longer` operation above how *Area harvested* has backticks around it. That's because it has a space in the variable name, which is bad practice. We also should remove capitals. 
@@ -252,11 +225,6 @@ lapply(crops, function(x) {
 
 The tidying is now done, although we haven't saved the results to a new object yet. We'll do that next. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Combining datasets (and operations)
 Oftentimes when one is working with data, there is a need to combine several datasets into one. These three datasets are one such example--we don't really need to keep our three `tibble`s as separate elements in a list, as it might be easier to perform any further manipulations of the data if we combine them all into one big `tibble`. We'll look at two ways of joining tables. 
@@ -293,12 +261,6 @@ crops_df %>% sample_n(., size = 20)
 The above shows the `lapply` and the `do.call(rbind` steps separately. Note the commented out line, which shows an alternate, less programmatic way of binding the three tables. The final line uses `dplyr::sample_n` to select 20 rows at random, which reveals that the new large `tibble` contains observations of all three crop types. 
 
 Another note: there is actually a pure tidyverse way of doing the full set of steps, using `purrr`'s set of `map*` functions to replace the `lapply`, but we will leave that aside for now.  
-
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 
 #### Merging/joining
@@ -429,13 +391,6 @@ First, we make a new `tibble` that calculates crop yield from production and har
 
 We then use a `left_join` to merge `yields` onto `crops_df`. We specify three columns in this case, because there is no one variable that provides a unique key, nor is there two variables that do. However, the values in *crop*, *country*, and *year* do provide a unique combination for each row, so we join on those. #2 makes that explicit, but we see in #3 that `left_join` handles this for us automatically if we don't. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
-
 ### Arranging
 That last line on Chunk #12 (`crops_df %>% sample_n(., size = 20)`) gives an opportunity to introduce another aspect of data organizing, which is sorting. Note that the years are out of order in that final random draw. We can rearrange that so that they are sequential:
 ```{r}
@@ -469,12 +424,6 @@ crops_df %>% arrange(-year, country, -crop)
 ```
 
 In #1 we sort first by *year*, in descending order (`desc()` does the same as `-`, meaning it arranges in descending order), then *country* alphabetically, and then by *crop* in reverse alphabetical order. Note that in #2 we can't use the `-` to do the reverse sort on *crop*, but the first `-` on year is valid. The commented out variant would work if run.    
-
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Mutating
 The last thing we will look at in this section is *mutation*, which uses the `mutate` function. That is, we use it to change the `data.frame` tibble by either altering existing variables or adding new ones. This brings us back to our `crops_df`. In Chunk 16 we created a new `yields` `tibble` so that we could demonstrate a merge with our `crops_df`.  That was an entirely unnecessary operation, because if I wanted to create a separate *yield* column for `crops_df`, I could have just done this:
@@ -546,12 +495,6 @@ There are many other ways to `mutate` data, using more advanced pattern matching
 7. Do all of this in a single pipeline: 1) create a `tibble` with variables *v1* (values 1:10) and *v2* (values 11:20); 2) `rbind` that with another `tibble` with the same variables but with values 11:20 and 20:30 (hint: you will need to wrap the second `tibble` in an `rbind`, e.g. `rbind(., tibble())`); 3) add a new column *v3* to the result of that, which is the square of *v2*; 4) arrange it in descending order of *v3*; 5) capture the result of all that into `my_tb`
 
 8. End by selecting rows 1, 10, and 17 and *v2* and *v3* from `my_tb`, using `slice` and `select`
-
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Analyzing your data
 Now that we have gotten an introduction to data preparation steps, we will learn about how to analyze it. We have already seen some very basic analyses, in the form of basic algebra and data summaries.  Now we will move onto more advanced data manipulation and analyses. 
@@ -683,12 +626,6 @@ crop_ylds %>% filter(crop == "maize") %>%
 
 We leave it to you in the practice questions below to answer how Chunk 30 differs from Chunk 29. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Data summaries
 Now that we have a sense of how to do split-apply-combine, let's dig a bit more into the analyses that we can do as part of that process. Since `R` was originally designed for statistics, there are many possible analyses we can do with `R`. We'll look at just a few common ones, starting with the calculation of summary statistics, outside of SAC. The easiest way to do that in `R` is to use the base `summary` function. 
 
@@ -728,12 +665,6 @@ crop_ylds %>% select(crop, country, harv_area, prod) %>%
 ```
 
 The above is somewhat more complex. We want to calculate `summary` stats for *prod* and *harv_area* by *crop* and *country*, but `dplyr` can't easily produce the tabular output for each groups. Therefore, we separately calculate each statistic in `summary`, and use `summarise_all()` (which applies the summarizing functions to each selected variable), using `funs` to pass each function in to `summarise_all()`. In the first two lines, we specify two custom functions, the first calculates the first quartile (25th percentile), the next calculates the third quartile (75th percentile).  In the pipeline, we also do some renaming gymnastics, changing *harv_area* to *ha* and *prod* to *p*, and then we specify in `funs` some shorter names for the output from `median` and `mean`. These renamings are in service of narrowing the width of output columns.  
-
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Associations
 Evaluating associations between data variables (e.g. correlations) is one of the most frequent uses for `R`. Lets start with correlations:
@@ -879,12 +810,6 @@ This coding practice assumes you have created the `crop_ylds` dataset to match i
 
 7. *Challenge:* Adapt the code in Chunk 39 to create regressions between *yield* and *year* by country and crop, but just for maize and wheat
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 # Visualization
 Until now we have been looking numerical outputs from our `R` code. Graphical representation often conveys more information, and is typically done alongside numerical analysis. Our last section on regressions leads us naturally to the subject of visualization, as the most obvious way to assess a linear relationship between two variables is to examine their scatterplots. So let's look at that to start, but first a quick introduction to two different plotting approaches.
 
@@ -1001,12 +926,6 @@ A little bit, it seems. We can subset the dataset using `filter`, and then pipe 
 
 That's not in ideal pipeline example, however, because `dplyr` pipes are really more designed to work with the tidyverse's plotting tools, i.e. `ggplot2`. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 #### Introducing ggplot2
 Now's a good time to introduce `ggplot2`. Let's recreate the first graph as a start:
 
@@ -1100,13 +1019,6 @@ crop_ylds %>% filter(crop == "maize" & country == "ZAF") %>%
 ```
 
 Pretty much the same set-up as Chunk 44, using the `type = "l"` argument in `plot` to plot lines instead of points for the Zambian maize yields, and then the `lines` function (instead of `points`) to add the South African yield time series. 
-
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 
 ### Points and lines
 Those line comparisons still only give us a visual comparison. Fitting a trend line to the points would make things clearer. We can do that quite easily with `ggplot`:
@@ -1309,12 +1221,6 @@ crop_ylds %>%
 
 So that's it for our visualization section. There are many other graphics we could make, and we will learn some of these as we continue into the spatial unit of the course. 
 
-***
-<center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Practice
 ### Questions
 1. What are some of the primary differences between plots made using the `graphics` package and those made with `ggplot2`? 
@@ -1393,7 +1299,7 @@ Refer to [Unit 1 Module 3's Assignment output section](unit1-module3.html#assign
 
 ***
 <center>
-[Back to top](#data-analysis-and-visualization) || [Back to **vignette index**](toc.html)
+[Back to home](index.html)
 </center>
 ***
 

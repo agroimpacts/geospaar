@@ -1,15 +1,12 @@
 ---
 title: "Unit 2 Module 2a"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 4
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 2 Module 2a}
@@ -26,12 +23,6 @@ knitr::opts_chunk$set(
 library(knitr)
 options(width = 100)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Working with raster data{#working-with-raster-data}
 
@@ -119,12 +110,6 @@ res(r)
 ```
 
 `r` is an S4 object that has fairly different slots compared to `sf` objects. We are not going to go into all of them, but it is useful to know the @file, @data, @extent, and @crs slots. @file itself holds a number of slots, but you should know the @file@name slot, which contains the file name and path for grids that that are read in from disk (it is empty in the case of `r`, since it is held in memory). @data contains many slots also, but the main one of interest is the @data@values slot, which can be accessed with the `values` function directly, or less directly using `slot` (both approaches are shown above). Interestingly, the resolution information is not stored in any of the slots of `r`, but rather calculated from the @extent and @ncols and @nrows slots by the `res` function.  
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### RasterStack and RasterBrick
 
@@ -226,13 +211,6 @@ In #1 above, we use `writeRaster` to write out each of the three individual rast
 
 Blocks #2 and #3 illustrate how `stack` can be used to create a three-dimensional grid from different files, which differ from what you see next in #4, where the "b.tif" is read back into a brick. You will see the comment there that says that the first line in #4 is incorrect, because using `raster` only results in the first `raster` being read in. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
-
 ## From vector to raster and back again
 
 Now that you know the major `Raster*` classes, and how to read and write them to disk, let's figure out how to change between raster and vector types. 
@@ -316,12 +294,6 @@ roadsr <- roads %>% filter(as.numeric(st_length(.)) > 1000000) %>%
   mutate(ID = 1:nrow(.)) %>% st_transform(crs = 4326) %>% 
   rasterize(., zamr, field = "ID")
 ```
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Raster to vector
 
@@ -407,13 +379,6 @@ A bilinear interpolation is more appropriate for a raster of continuous values, 
 
 5. Convert `distsr` to an `sf` polygons object, using `rasterToPolygons` with `dissolve = TRUE`. Plot the result without coercing to `st_geometry`. 
 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 # Pre-processing and local to global statistics 
 This unit starts to focus on some of the analyses you can do with raster data, focusing specifically on calculating statistics from rasters. We will start in on that after doing a bit more raster processing and preparation.  
 
@@ -485,12 +450,6 @@ The above plots the first three dates in `chirps` and drapes Zambia's outline ov
 
 The second thing: we haven't discussed this yet, but you will see in the example above that indexing into a `RasterStackBrick` to select a particular layer or layers is achieved through `[[]]`. This applies to both single (`[[x]]`) and multiple/recursive (`[[x:y]]`) indexing, which differs from indexing into a `list`, where you use `[x:y]` for multiple selection. Selection by layer names also works (`chirps[[c("Y16299", "Y16300")]]`; `chirps[["Y16299"]]`)
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Masking
 
 We are interested in the rainfall data within Zambia's borders, so we need to mask out the values of `chirps` that fall outside of Zambia: 
@@ -555,12 +514,6 @@ districts %>% st_centroid %>% st_coordinates %>%
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_zoom.png")
 ```
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 #### A function-writing detour
 As we write this, we find ourselves growing weary of repeatedly writing "axes = FALSE, box = FALSE" into the `plot` function, even with RStudio's handy tab completion. This repeated use of the exact same code is the sort of situation that calls for writing your own function.  
@@ -629,13 +582,6 @@ chirpsz1km
 The first option is the default one, which just breaks apart each pixel into the number of smaller new pixels specified by the factor, assigning each new pixel the same value as its larger parent. Here we specified a factor of 5, leading to an output resolution of 0.01 (~1 km), and thus 25 times the number of pixels as in the original `chirpsz[[1]]` (run `ncell(chirpsz1km) / ncell(chirpsz[[1]])` to see).
 
 The second way (commented out), is to set `method = bilinear`, which interpolates during disaggregation. In this case, `disaggregate` does the job using the `resample` function, which we will see next.  
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Resampling
 
 Resampling is done for many reasons, but one particularly common case is as a final step following aggregation or disaggregation, when it is needed to co-register the resulting grid to another grid. 
@@ -699,13 +645,6 @@ plot_noaxes(s$farmer_count > 1 & s$rain > 1)
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_rasterlogic.png")
 ```
-
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Analyses
 
@@ -827,12 +766,6 @@ f <- freq(chirpsz[[1]]) %>% print()
 
 Here we apply `freq` to a dataset with continuous values, although this function is probably best reserved for categorical rasters. However, it produces reasonable results here.
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Local statistics
 
 The previous section showed us how to produce statistics calculated across the entire raster. Now we will learn to calculate local, or neighborhood, statistics.
@@ -929,12 +862,6 @@ In #4, we again pass `mean` to `focal`, and have a 5X5 neighborhood, but here we
 
 The improper way of removing NAs from focal calculations is shown in #5, this time using the faster approach demonstrated in Block 1. The lower right plot shows how pixels near Zambia's border have artificially low values. This result is because the approach relies on a weighted mean, and because NAs are removed, the weights do not sum to 1 and thus the mean is underestimated. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Analyzing the Z dimension
 
 If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we want to analyze the values in the Z dimension (which may represent time, spectral bands, or unrelated spatial predictors in a model) without altering the x and y dimensions. 
@@ -965,13 +892,6 @@ In #2 we then stack the three outputs, and rename the layers something meaningfu
 
 You will see from the resulting plot that "Min" has only one value, 0, which makes sense for a rainfall time series (every pixel is likely to have at least one day of no rainfall over the course of a month).
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
-
 ## Practice
 ### Questions
 1. How do `cellStats`, `focal`, and `zonal` differ from one another? 
@@ -995,12 +915,9 @@ You will see from the resulting plot that "Min" has only one value, 0, which mak
 
 6. Use `calc` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot with meaningful titles using `plot_noaxes` (hint: name the layers of the `stack`), outputting plots on 1 row with 3 columns. 
 
+
 ***
 <center>
-[To Unit2 Module 2b](unit2-module2b.html) || [Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html) 
+[Back to home](index.html)
 </center>
 ***
-
-</center>
-***
-

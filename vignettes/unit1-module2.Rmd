@@ -1,15 +1,12 @@
 ---
 title: "Unit 1 Module 2"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 5
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 1 Module 2}
@@ -25,12 +22,6 @@ knitr::opts_chunk$set(
 )
 library(knitr)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Introduction{#unit1mod2intro}
 
@@ -79,12 +70,6 @@ What is `raw`? According to `?raw`:
 
 > The raw type is intended to hold raw bytes
 
-
-***
-<center>
-[Back to top](#unit1mod2intro) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Genus (data structures and functions)
 One level up from data types are structures and functions. I liken these to the genus level because both are designed to do something with data--either hold the data or do something to, with, or on the data, and each of these can have many forms. For example, a vector is a type of data structure, which can be either an atomic vector or a list, and any of these can hold multiple data types. So let's look at structures first. 
@@ -147,13 +132,6 @@ str(l2)
 ```
 
 We can put all the matrices, `data.frame`s, and `array` we just made into a `list`, as well as some of the functions we were using to make those objects (`c`, `list`). 
-
-
-***
-<center>
-[Back to top](#unit1mod2intro) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 #### Functions
 That brings us now to functions. I know it is perhaps strained to think of a function as a genus, but functions are a kind of structure and functions can be organized into different groups, so it is not entirely crazy to think of functions as being analogous(ish) to Genus. So what are the functional genera?
@@ -246,12 +224,6 @@ methods(summary)
 ```
 Quite a list (and much longer for `print`)! The notation above is `<generic_function>.<class>`. Generics can also be understood within the context of *object-oriented programming*, which is an important aspect of `R` and `python`. We get into this more below. 
 
-
-***
-<center>
-[Back to top](#unit1mod2intro) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ### Family (classes)
 Finally we arrive at classes, which in our (hopefully still useful) analogy is akin to a taxonomic family. To better understand classes (and why they are likened to a taxonomic family, a higher level of organization than genus and species), we need to learn about object-oriented programming (OOP), in which classes are a central concept. 
@@ -535,10 +507,9 @@ Okay, so that's it for environments, and actually for this whole module. There i
 
 ***
 <center>
-[Back to top](#unit1mod2intro) || [Back to **vignette index**](toc.html)
+[Back to home](index.html)
 </center>
 ***
-
 
 
 

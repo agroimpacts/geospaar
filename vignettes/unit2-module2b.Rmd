@@ -1,15 +1,12 @@
 ---
 title: "Unit 2 Module 2b"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 4
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 2 Module 2b}
@@ -27,12 +24,6 @@ library(knitr)
 library(geospaar)
 options(width = 100)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Algebra, categorizing, and sampling
 
@@ -127,12 +118,6 @@ In #3, we examine total rainfall within district 54. This is done in several ste
 
 Having made `distrain` safe for calculating statistics, in #4 we then identify the areas in district 54 that received more rainfall than the district mean rainfall during the 28 days. In #5, we do the same thing, but for all of Zambia.  
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Categorizing
 Sometimes you will want to create a categorical raster from a continous one. We will look at two different ways of doing that. 
 
@@ -177,12 +162,6 @@ knitr::include_graphics("fig/u2m2_reclassify.png")
 In the first step, we reuse the previously calculated terciles to create a reclassification matrix (`rclmat`). This matrix contains the lower bound of the range of the category in column 1, the upper bound in column 2, and then the new class value that will be assigned in column 3. There are three rows, one per category. This matrix is passed to the `rcl` argument of `reclassify`, in which we also specify the same `include.lowest = TRUE` argument. 
 
 This approach requires slightly more work, but there are cases where you might need to use it, e.g. to reclassify another categorical raster using non-sequential categories. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Sampling
 
@@ -273,12 +252,6 @@ In #2, we first pull out of `farmer_env` a vector of the distinct district IDs. 
 
 In #3, we do some gymnastics in preparation for setting up `ggplot` boxplots (#4) that compare the distributions of rainfall values. That is, we set up a tibble that binds by row the extracted district and farmer rainfall values, which allows `ggplot` to automatically create side-by-side boxplots using `fill = dat`. We create some theme options for `ggplot` ahead of that `bp_theme`, so that we can recycle these in the next example. The plot shows that the rainfall data selected at farmer locations provide a biased estimate of district mean rainfall.  
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Random sampling
 Alternatively, you might want to draw a random sample directly from a raster, without all the trials and tribulations of field work (field logistics often make it hard to capture truly randomized, and thus representative, samples). `raster` has functions for this, and we will build off the previous example to demonstrate them. 
 
@@ -338,12 +311,6 @@ In #4, we redo the boxplots, showing the results from the two approaches to rand
 4. Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts randomly selected using `dplyr::sample_n` (use a seed of 11) from `districts`. Use `raintot` as the rasterization target. Mask `raintot` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. 
 
 5. Use `sampleRandom` with a size of 300 to get a random sample of rainfall values from `newrandrain` (use a seed of 1), saving the result as `randsamp`. Use `sampleStratified` with `cell = TRUE` to get a sample of 300 / 15 samples from `randdistsr`. Use the cell IDs to extract the rainfall values from `newrandrain`, saving the output vector as `stratsamp`. Create a tibble that binds these two vectors by row (as in Chunk 41 #4), and then plot the two results as side-by-side boxplots with `ggplot`. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Terrain analysis, interpolation, and modeling
 
@@ -425,12 +392,6 @@ ggplot(tibble(mu, sdev)) + geom_point(aes(mu, sdev)) +
 
 The example above shows how more advanced plot annotations can be done. It also shows that the code can get somewhat complicated; it always takes a ton of time and a number of internet searches to figure out how to do this. We won't explain this in detail here, but the code provides a template that you can hack at if you want to get fancy with labelling your plots. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Basic terrain variables
 
 `raster::terrain` allows us to calculate five different terrain variables, four of which we show below: 
@@ -467,12 +428,6 @@ We need the DEM in a projected coordinate system for `terrain` to work, per the 
 So we create (#1) a 1 km projected version of the DEM, allowing the default bilinear interpolation to do its work during reprojection. 
 
 In #2 we calculate slope, aspect, flow direction, and the topographic ruggedness index. The commented out code illustrates how each of these variables can be calculated separately, although we prefer to do the job using `lapply`. Note that in the `lapply` we pass the "unit" argument into the calculation of all four variables, even though it only is used for slope and aspect; this is fine, because `terrain` simply ignores the argument value in calculating flow direction or TRI. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Interpolation
 
@@ -544,12 +499,6 @@ In #4, we provide the initial steps for implementing ordinary kriging. In line a
 
 Block #5 takes the fitted variogram model (`m`) and uses that to create the rainfall surface. The steps in this block are basically the same as in #3, except that we use the kriging model. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Distance
 If you want to calculate how far any point on a grid is from a particular point or points, `raster` offers a few functions for finding euclidean distances:
 
@@ -589,12 +538,6 @@ Block #3 does pretty much the same thing, but in this case we use the `distance`
 The plot shows that the two approaches produce identical results. 
 
 Beyond this, there are more sophisticated distance analyses that can be done, such as cost distance analysis, which are provided by the package `gdistance`. 
-
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Model prediction
 
@@ -699,12 +642,6 @@ We plot three maps in #7 for comparison: the "actual" rainfall (the scare quotes
 
 So that's about it for this module. 
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Practice
 ### Questions
 1. How do we estimate the pixel area of rasters when they are in non-projected coordinate systems? 
@@ -722,11 +659,6 @@ So that's about it for this module.
 
 4. Redo the code in Chunk 49, but use a new random draw of just 25 points to collect the predictors (ref. #2). How much more poorly does this model do than the one with denser observations?
 
-***
-<center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Unit assignment
 ## Set-up
@@ -789,8 +721,7 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 
 ***
 <center>
-[Back to top](#working-with-raster-data) || [Back to **vignette index**](toc.html)
+[Back to home](index.html)
 </center>
 ***
-
 

@@ -48,5 +48,7 @@ This section is broken into four modules (the materials can be accessed by follo
 [**Appendix**](unit1-appendix.html): Unit appendix
 
 ***
+<center>
 [Back to home](index.html)
+</center>
 ***

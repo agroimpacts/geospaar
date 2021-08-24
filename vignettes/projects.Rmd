@@ -1,15 +1,12 @@
 ---
 title: "Semester Projects"
 author: "Lyndon Estes"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
     toc_depth: 3
-    toc: yes
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Projects}
@@ -20,12 +17,6 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Overview{#overview}
 
@@ -57,12 +48,6 @@ Use the SMS data to analyze the start and end of the maize planting season and h
 #### Predicting farmers' reported yields
 The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
 
-***
-<center>
-[Back to top](#overview) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
 
 Put another way, do farming communities in areas with higher rainfall variability show higher variability between farmers in terms of when crops are planted?  We hypothesize that this might be the case, as it might be a community-level adaptive response for dealing with climatic uncertainty.  
@@ -92,12 +77,6 @@ With many vector data come many data processing challenges. Can you code up meth
 ### Map visualization
 Come up with `shiny` solution for presenting and analyzing map data. 
 
-***
-<center>
-[Back to top](#overview) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Politics
 ### Gerrymandering
 #### Implement a Shiny interface
@@ -113,11 +92,6 @@ The goal is to demonstrate how redistricters gerrymander congressional districts
 3. Create the package so that it installs and demos with data from North Carolina (all available years), and, depending on data availability, possibly one or two other states (e.g. Pennsylvania).
 4. Additionally, if the same package can also create maps that, together with the population density information, show which party won the district, [as in this visualization](https://static01.nyt.com/images/2017/09/03/magazine/03gerrymandering_map/03gerrymandering_map-superJumbo.gif), that would be even better.  
 
-***
-<center>
-[Back to top](#overview) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Assignment
 
@@ -176,6 +150,7 @@ For this final assignment, assessment will be out of 50 points using simplified 
 
 ***
 <center>
-[Back to top](#overview) || [Back to **vignette index**](toc.html)
+[Back to home](index.html)
 </center>
 ***
+

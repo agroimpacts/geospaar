@@ -1,27 +1,18 @@
 ---
 title: "Appendix"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 4
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 2 Module Appendix}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Module 1 practice answers{#module-1-practice-answers}
 ## Practice 1
@@ -75,13 +66,6 @@ pts <- st_multipoint(x = cbind(x = c(27, 28, 29), y = c(-13, -14, -15)))
 plot(districts %>% st_geometry(), col = "grey")
 plot(pts, add = TRUE, col = "orange", pch = 16)
 ```
-
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 
 ## Practice 2
 ### Questions
@@ -138,13 +122,6 @@ legend(x = "bottomright", pch = 15, col = cols, bty = "n",
        legend = paste0(1:10, c("st", "nd", "rd", rep("th", 7))))
 
 ```
-
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 
 ### Practice 3
 #### Questions
@@ -218,11 +195,6 @@ roads_gt400 %>% st_buffer(25000) %>%
   plot(col = "red", pch = 20, add = TRUE)
 
 ```
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Module 2 practice answers
 ## Practice 1
@@ -301,12 +273,6 @@ farmersr %>% rasterToPolygons(dissolve = TRUE) %>% st_as_sf %>%
   plot(main = NULL)
 ```
 
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Practice 2
 ### Questions
 1. `cellStats` provides summary statistics over an entire layer; `zonal` calculates statistics within pre-defined zones; `focal` calculates statistics within a moving window. 
@@ -368,12 +334,6 @@ s <- lapply(list(mean, cv, median), function(x) {
 names(s) <- c("Mean", "CV", "Median")
 plot_noaxes(s, nr = 1)
 ```
-
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Practice 3
 ### Questions
@@ -548,4 +508,11 @@ for(i in 1:3) {
   }
 }
 ```
+
+
+***
+<center>
+[Back to home](index.html)
+</center>
+***
 

@@ -1,29 +1,18 @@
 ---
 title: "Appendix"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 4
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 1 Module Appendix}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
-
 
 # Module 1 practice answers
 N/A
@@ -77,14 +66,6 @@ l$a[l$a < 25]
 l[["a"]][l[["a"]] == 25]
 l[[2]][l[[2]] %in% c("d", "e", "f")]
 ```
-
-
-
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Practice 2
 ### Questions
@@ -358,12 +339,6 @@ my_tb <- tibble(v1 = 1:10, v2 = 11:20) %>%
 my_tb %>% slice(1, 10, 17) %>% dplyr::select(v2, v3)
 ```
 
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Practice 2: Analysis
 ### Questions
 1. `dplyr::filter`
@@ -425,13 +400,6 @@ crop_ylds %>% filter(crop != "sorghum") %>% group_by(crop, country) %>%
   do(prod_ha_lm = lm(yield ~ year, data = .)) %>% 
   broom::tidy(., prod_ha_lm)
 ```
-
-***
-<center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 
 ## Practice 3: Visualization
 ### Questions
@@ -534,6 +502,6 @@ crop_ylds %>% filter(country == "ZAF") %>%
 
 ***
 <center>
-[Back to top](#module-1-practice-answers) || [Back to **vignette index**](toc.html)
+[Back to home](index.html)
 </center>
 ***

@@ -1,15 +1,12 @@
 ---
 title: "Unit 2 Module 1"
 subtitle: "GEOG246-346"
-date: "`r Sys.Date()`"
+date: "`r Sys.Date()` [Back to home](index.html)"
 output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-    fig_caption: yes
-    number_sections: yes
-    toc_depth: 4
-    toc: yes
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: no
+    toc_depth: 3
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Unit 2 Module 1}
@@ -26,12 +23,6 @@ knitr::opts_chunk$set(
 library(knitr)
 options(width = 100)
 ```
-
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
 # Working with spatial vector data{#working-with-spatial-vector-data}
 
@@ -64,13 +55,6 @@ The same holds as for Windows (just install `rgdal`), but you might also have to
 
 ## Set-up{#set-up}
 You should already have your class Rstudio project setup, with a `notebooks/` folder within it. If you don't already have it, create a `data/` folder within `notebooks/`, which is where you will practice writing spatial data files.  
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 
 # Reading, writing, and making vector data{#reading-writing-and-making-vector-data}
 
@@ -167,12 +151,6 @@ bind_cols(farmers %>% as_tibble %>% select(-geometry),
 
 We use `dplyr` syntax to coerce `farmers` back to a `tibble`, dropping the `geometry` via negative selection, and then we use `dplyr::bind_cols` (equivalent to `cbind`) to bind the coordinates back to the `tibble`. The coordinates are obtained using `st_coordinates`, an `sf` function used to "retrieve coordinates in matrix form" (`?st_coordinate`), and we have to coerce that to a `tibble` for `bind_cols` to work. We can use `select` to reorder the columns in their original form, and rename the coordinate columns back to their original lower case (`st_coordinates` returns *X* and *Y* columns). 
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Read and write spatial data 
 
 That was a very quick dip into spatial waters, using a points example. We are going to learn to read and write (in reverse order) spatial data. We still have `farmers` back as an `r class(farmers)[1]` object. We are now going to write it out to a spatial file. 
@@ -236,12 +214,6 @@ Okay, so what have we done? First, we use the `par` function with the `mar` (mar
 That's great, you say, but I see no `roads` in the map. Where are they? And why are there two farmers outside of Zambia?  
 
 We'll look at that in our next section, but a hint of why can be seen in the outputs from Chunk 10. You will note that in Chunks 9 and 10 that `st_read` (the opposite of `st_write`) gives a brief summary of the spatial data being read into `R`. 
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Coordinate Reference Systems and Projections
 
@@ -387,12 +359,6 @@ We'll go bit further in making new features in the section on [spatial operation
 
 6. Create an `st_multipoint` object using x coordinates of `c(27, 28, 29)` and y coordinates of `c(-13, -14, -15)`, and plot that over `districts` as orange points.  
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 # Spatial properties and attribute fields{#spatial-properties-and-atrribute-fields}
 
 We now begin to learn how to perform analyses with spatial vectors, starting with calculating basic spatial properties and manipulating the attribute tables associated with spatial vectors. 
@@ -516,12 +482,6 @@ cowplot::plot_grid(p1, p2)
 
 We use `st_length` to calculate the length of the line segments in `roads` (#1) and the perimeter length of the polygons in `district` (#2), converting both to 
 numeric vectors. We then plot each set of lengths as histograms (#3), converting units to kilometers (by dividing by 1000, within `geom_histogram`), and then use `cowplot::plot_grid` to arrange the two histograms side-by-side. 
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Manipulating attributes
 
@@ -674,12 +634,6 @@ That was a quick introduction to SAC for `sf`. There are others we could do (you
 
 5. Hack the code in Chunk 31 to create a map of districts merged by their deciles of area. Do the summary by total area. To do this, the `quantile` function will have to be altered (pass `seq(0, 1, 0.1)` to "probs"), and make sure your color vector has enough values. 
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 # Spatial Operations{#spatial-operations}
 
 In this section we will focus on some of the more common polygon-based spatial operations. To enable this, we are first going to create some additional spatial data. 
@@ -722,12 +676,6 @@ plot(st_geometry(pol), border = "purple", add = TRUE)
 
 In #1 we use `st_intersects` to identify the indices of the `districts` that  intersect `pol`. So that doesn't give us back the actual intersecting district polygons. To get those, we have to do a bit more. The output from `st_intersects` is a list object, which contains the index of the polygon in x (the "1:" in the output) followed by the polygons in the object passed to y that it intersects (15, 22, 26, 53, 54). We can simplify that results to a vector by specifying the list index we want (1): `st_intersects(x = pol, y = districts)[[1]]`. We plug that into `slice` in #2 to pull out the polygons from `districts` into a new object `dists_int`, and then #3 illustrates the intersected districts in blue.  
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Intersecting
 
 We have just seen how `st_intersects` can be used to identify and extract intersecting polygons. Now let's look at what `st_intersection` does. 
@@ -743,12 +691,6 @@ plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)),
 ```
 
 Seems pretty clear what `st_intersection` does, and how it differs from `gIntersects`: it crops the intersected districts to the boundaries of `pol`, and returns the intersected district polygons. It also spits out a warning about the attribute variable being spatially constant, as well as the usual warning about the data not being in planar coordinates. We also introduced another color function (`rainbow`) to distinguish the different intersected districts. 
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Aggregating/Dissolving
 
@@ -845,12 +787,6 @@ So that's `st_cast`. Not really a spatial operation *per se*, but can be importa
 
 To learn more `st_cast` and its behavior, please read that vignette. 
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Differencing
 Now we are going to move on to look at another bread and butter operation, differencing (or erasing).
 
@@ -865,13 +801,6 @@ d2 %>% st_geometry %>% plot(col = "grey")
 ```
 
 `d1` erases `pol`, leaving a hole, whereas `d2`, by reversing the order of objects into the "x" and "y" arguments, does the same thing as an intersection, by erasing all the districts surrounding `pol`.  
-
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Unioning
 
@@ -894,12 +823,6 @@ plot(uni2[2], reset = FALSE, main = "Union of districts with pol")
 ```
 
 Two different order to unioning `pol` and `districts` (#1 and #2). The ordering simply results in the ordering of the attribute fields in the resulting unioned datasets (the fields from the object in the "x" argument appear first) after the overlapping polygons are merged. You can see the difference in the ordering in the resulting plots (#3), in which for the first time we use index notation to specify the field of each object that we want the plot to render. In this case, we select the second field, which is different in each unioned object, hence the different fill patterns. This index-based referencing is a good way to avoid having to use `st_geometry`, while letting `sf::plot` do the work of selecting a color scheme.  
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 ## Buffering
 
@@ -950,13 +873,6 @@ A fair bit of code up there, so let's walk through it. In #1 we convert `farmers
 
 In #3 we draw the plots, setting up an outline of Zambia by dissolving district boundaries, then plotting the buffered shapes in a `for` loop (note the reversed index ordering, to plot from largest to smallest buffers). 
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
-
 ## Sampling
 We have seen a little bit of sampling already, but the previous examples just sample from the features in an existing object. Sometimes you might be interested in confining the sample to a particular feature or features, for example:  
 
@@ -999,12 +915,6 @@ In #1 we start by randomly selecting 7 districts from `districts` (using `sample
 
 So that's it for this unit, which has given a brief and by no means exhaustive introduction to do some common vector operations and ways in which vector data are manipulated. 
 
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
-
 ## Practice
 ### Questions
 1. Why it is the purpose of `st_cast`, and why might we need to cast features? 
@@ -1031,12 +941,6 @@ knitr::include_graphics("fig/u2m1-2.png")
 6. Select from `roads` the roads that are greater than 400 km long, and save the result in `roads_gt400`. Place a 25 km buffer around those roads. Plot the result over the Albers-projected districts (in grey) in green. 
 
 7. Select a random sample of exactly 20 points within each of the 25 km buffers around `roads_gt400`. Plot the resulting points as red circles over the tan buffered roads and grey districts. 
-
-***
-<center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
-</center>
-***
 
 # Unit assignment
 ## Set-up
@@ -1075,6 +979,6 @@ Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assign
 
 ***
 <center>
-[Back to top](#working-with-spatial-vector-data) || [Back to **vignette index**](toc.html)
+[Back to home](index.html)
 </center>
 ***
