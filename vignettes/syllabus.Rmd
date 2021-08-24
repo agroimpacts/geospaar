@@ -114,54 +114,54 @@ For assignments in the first two units, students can work together to figure out
 We will follow the University's policies on plagiarism and cheating. Please familiarize yourself with the University's [policy](http://www2.clarku.edu/offices/aac/integrity.cfm) on academic integrity, particularly section I. 
 
 ### Communications
-We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #fall2020 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
+We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #fall2021 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
 
 # Course Structure{#structure}
-The following is an overview of the course structure. Note that this structure will evolve during the semester, given that this is its first run, and we will adjust material to match the pace of learning. 
+The following is an overview of the course structure, broken down by Unit, with a listing of the material to be covered each week, including the week in which unit assignments are due (assignments are due by midnight on Friday during the indicated week).
 
 ## Unit 1. An introduction to R and related reproducibility skills
 
 In this first part of the course, we will learn the basics of working with `R`, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
 
-This syllabus provides the general subject for each week and class. The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
+The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
 
-### Week 1. Overview of R and Reproducibility
+### Week 1. Introduction/Overview of R and Reproducibility
 
-### Week 2. Reproducibility Continued / R fundamentals and Skills
+### Week 2. Reproducibility Continued 
 - Module 1 assignment (#1) due
 
-### Week 3. R fundamentals and Skills / Data preparation and visualization
+### Week 3. R fundamentals and Skills
 
-### Week 4. Data preparation and visualization / Basic analytics
+### Week 4. R fundamentals and Skills 
 - Module 2/3 assignment (#2) due
 
-## Unit 2. Handling and analyzing spatial data with R
+### Week 5. Data preparation and visualization / Basic analytics
 
-In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
-
-### Week 5. Introduction
+### Week 6. Data preparation and visualization / Basic analytics
 - Unit 1 Module 4 assignment (#3) due
 
-### Week 6. - Working with vector data
+## Unit 2. Handling and analyzing spatial data with R
+In this part of the course we will start to learn to use R as a GIS.  The detailed syllabus can be found in the [Unit 2 vignette](unit2.html).
 
-### Week 7. - Vectors continued
+### Week 7. Introduction, working with vector data
+
+### Week 8. Vectors continued
+
 - Unit 2 Module 1 assignment (#4) due
 
-### Week 8. - Working with raster data
+### Week 9. - Working with raster data
 
-### Week 9 - Raster data continued
+### Week 10. - Raster data continued
 - Unit 2 Module 2 assignment (#5) due
 
 ## Unit 3. Projects
-### Week 10 - Project selection
+### Week 11 - Project selection
 - Assignment #6 due
 
-### Weeks 11-14 - Project work
-Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. During this period, each student/student-team will give a lightning (1-2 minute) informal presentation of progress that day (or perhaps *that week*, depending on how much time this ends up taking away from actual work).  
+### Weeks 12-15 - Project work
+Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. 
 
-### Weeks 14 - Course completion week
 The class periods in this week can be used for continued project work. **The final presentation and project will be submitted at the end of this week.** The presentation should be submitted as a pre-recorded video. 
-
 
 # Resources {#Resources}
 The following are some helpful resources that you may wish to follow-up on as you learn `R`. 
