@@ -1,0 +1,123 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 2
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class2.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, eval = FALSE}
+library(ggmap)
+load("external/data/gkey.rda")
+m <- get_googlemap(center = c(-71.8229, 42.2511), zoom = 17, maptype = "hybrid",
+                   key = gkey)
+mp <- ggmap(m, extent = "device")
+ggsave(filename = "external/slides/figures/clark.png", plot = mp, 
+       bg = "transparent", width = 4, height = 4, units = "in", dpi = 300)
+```
+
+---
+# Today
+
+- Brief overview of the ecosystem
+- `R` packages
+- `git` / GitHub
+- Tips and tricks for productivity
+- Installation progress/trouble-shoot
+
+---
+# Overview 
+## Reproducibility
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class2_reproducibility.png")
+```
+---
+# Overview
+## The R ecosystem
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class2_r_system.png")
+```
+---
+# Overview
+## Markdown
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class2_markdown.png")
+```
+
+---
+# Overview
+## `git`/GitHub
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "kevintshoemaker.github.io/StatsChats/GIT_tutorial"}
+knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT1.png")
+```
+---
+# R packages
+
+- File structure
+- Where packages live
+- library versus package
+- Loading packages
+
+---
+## Packages
+
+Common parts of a package.
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class2_pkg_structure.png")
+```
+
+---
+
+## Packages
+
+```{r, out.width = "55%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class2_pkg_other.png")
+```
+
+---
+## Types of packages
+
+```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="http://r-pkgs.had.co.nz/package.html"}
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
+```
+
+---
+## Installing packages
+
+```{r out.width = "90%", fig.align='center', echo=FALSE, fig.cap="http://r-pkgs.had.co.nz/package.html"}
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/installation.png") 
+```
+---
+## Loading packages
+
+- Exported functions
+- Package data
+- Vignettes
+
+---
+
+# git / GitHub
+
+- Commits, pushes, pulls
+- Branching
+- Merging
+
+---
+# Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+
