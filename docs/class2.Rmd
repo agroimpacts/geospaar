@@ -32,7 +32,7 @@ ggsave(filename = "external/slides/figures/clark.png", plot = mp,
 - `R` packages
 - `git` / GitHub
 - Tips and tricks for productivity
-- Installation progress/trouble-shoot
+- Installation progress/trouble-shooting
 
 ---
 # Overview 
