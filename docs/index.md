@@ -21,6 +21,7 @@ Updated on: 2021-08-30
 -   [Software installation](software-installation.html)
 -   [Git/GitHub](git-github.html)
 -   [Cheatsheets](cheatsheets.html)
+-   [Known bugs and fixes](bugs-fixes.html)
 
 ## Course materials
 
@@ -49,6 +50,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 1 slides](class1.html)
     -   [Class 2 slides](class2.html)
 -   Week 2
+    -   [Class 3 slides](class3.html)
 -   Week 3
 -   Week 4
 -   Week 5
