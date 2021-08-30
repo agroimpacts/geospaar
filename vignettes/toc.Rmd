@@ -15,14 +15,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Organizational
+# Organizational
 - [Syllabus](syllabus.html)
 - [Assessment Criteria](assessment.html)
 - [List of Potential Projects](projects.html)
 - [Installing Software](software-installation.html)
-- [Help](help.html)
+- [git/GitHub](git-github.html)
+- [Known bugs and fixes](bugs-fixes.html)
 
-## Materials
+# Materials
 - [Unit 1](unit1.html) - Overview
   - [Module 1](unit1-module1.html) - A general overview of R and an introduction to reproducibility tools
   - [Module 2](unit1-module2.html) - Basic `R` programming concepts and skills

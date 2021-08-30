@@ -5,7 +5,7 @@ date: "`r Sys.Date()` [Back to home](index.html)"
 output:
   rmdformats::readthedown:
     highlight: pygments
-    number_sections: no
+    number_sections: yes
     toc_depth: 3
     css: unit.css
 vignette: >
@@ -399,7 +399,7 @@ There is a lot written on this, but for now please read the ones provided [here]
 
 # Building an R package
 
-We have already created the basics for setting up a package, using RStudio's built-in tools, in section [3.2.1 above](#your-first-rstudio-project). We are now going to actually start the process of converting your project into a very simple R package. 
+We have already created the basics for setting up a package, using RStudio's built-in tools, in section [3.3.2  above](#your-first-rstudio-project). We are now going to actually start the process of converting your project into a very simple R package. 
 
 We'll start by learning a bit more about `R` packages.  First, I will direct you to [a section](http://r-pkgs.had.co.nz/package.html#package) in the `R` packages book to read. When you are done with that, please direct your attention to the structure of the project you created (in my case, lde346). It contains several folder and files (already discussed a bit above): 
 

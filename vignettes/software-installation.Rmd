@@ -6,7 +6,7 @@ output:
   rmdformats::readthedown:
     highlight: pygments
     fig_caption: yes
-    number_sections: no
+    number_sections: yes
     toc_depth: 3
     css: unit.css
 vignette: >

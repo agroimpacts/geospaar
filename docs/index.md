@@ -3,7 +3,7 @@
 
 ## Fall 2021
 
-Updated on: 2021-08-25
+Updated on: 2021-08-30
 
 <center>
 

@@ -29,6 +29,7 @@ Teaching assistant Pilar Delpino Marimón (PDelpinoMarimon@clarku.edu)
 - [Software installation](software-installation.html)
 - [Git/GitHub](git-github.html)
 - [Cheatsheets](cheatsheets.html)
+- [Known bugs and fixes](bugs-fixes.html)
 
 ## Course materials
 
