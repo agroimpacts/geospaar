@@ -21,6 +21,7 @@ knitr::include_graphics("figures/weekly-rf.png")
 data("chirps")
 library(rasterVis)
 library(lubridate)
+library(RColorBrewer)
 zam <- getData("GADM", country = "ZMB", level = 1)
 
 dates <- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
