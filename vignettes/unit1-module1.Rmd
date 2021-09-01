@@ -717,7 +717,7 @@ For the first assignment of this class, you are going to do the following:
     
 - Change the function so that it is now the `squirrel_function`. Change the main argument (the param) to "admire", update the documentation to reflect changes from cats to squirrels, in all places that it seems relevant, and edit the first `print` statement to read "I strongly admire squirrels!", and the second to read "I do not belong to the squirrel fan club." 
 - Save the file in the R/ folder so that it has the same name as the function (with .R extenstion).
-- Update your vignette so that it demonstrates how the `squirrel_function` is used. 
+- Update your vignette so that it demonstrates how the `squirrel_function` is used, in addition to the demonstration of  `my_number_checker` that you have already added. 
 - Commit and push your changes. Test installing your packages so that it builds with a browsable vignette. Use `devtools::install`, and also `devtools::install_github` to make sure that it does. 
 - Once complete, create a new branch called "a1" in your local repo. Push that branch to GitHub as well.  Then switch back into (i.e. checkout) your master branch. 
 - You are done. 
