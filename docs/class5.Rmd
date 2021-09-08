@@ -35,7 +35,7 @@ farmer_count <- count(as_tibble(farmers_in_dists), distName)
 dists_w_farmers <- left_join(dists, farmer_count) %>% 
   mutate(n = ifelse(is.na(n), 0, n))
 
-png("external/slides/figures/sms-farmers.png", height = 4, width = 5, res = 300,
+png("figures/sms-farmers.png", height = 4, width = 5, res = 300,
     units = "in")
 plot(dists_w_farmers["n"], breaks = c(0, 5, 10, 15, 20, 50, 500), 
      reset = FALSE, main = "Number of SMS Farmers by District")
