@@ -1,0 +1,227 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 5
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class3plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/sms-farmers.png")
+```
+
+---
+
+```{r, eval = FALSE}
+library(sf)
+library(dplyr)
+f <- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+farmers <- readr::read_csv(f)
+farmers <- farmers %>% select(uuid, x, y) %>% distinct() %>% 
+  st_as_sf(., coords = c("x", "y"))
+f <- system.file("extdata", "districts.shp", package = "geospaar")
+dists <- read_sf(f)
+st_crs(farmers) <- st_crs(dists)
+
+# join farmers with districts (h/t https://mattherman.info/blog/point-in-poly/)
+farmers_in_dists <- st_join(farmers, dists, join = st_within) %>%
+  tidyr::drop_na()
+farmer_count <- count(as_tibble(farmers_in_dists), distName)
+dists_w_farmers <- left_join(dists, farmer_count) %>% 
+  mutate(n = ifelse(is.na(n), 0, n))
+
+png("external/slides/figures/sms-farmers.png", height = 4, width = 5, res = 300,
+    units = "in")
+plot(dists_w_farmers["n"], breaks = c(0, 5, 10, 15, 20, 50, 500), 
+     reset = FALSE, main = "Number of SMS Farmers by District")
+plot(farmers %>% filter(uuid %in% unique(farmers_in_dists$uuid)) %>%
+       st_geometry(), add = TRUE, pch = "+", col = "cyan", cex = 0.5)
+dev.off()
+```
+
+---
+# Today
+
+- The `R` ecosystem
+
+---
+# The R Ecosystem
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class5_u1m2.png")
+```
+
+---
+## The R Ecosystem
+### Common objects
+
+```{r, echo=FALSE, fig.align='center', fig.cap='Credit: L. Song'}
+knitr::include_graphics("figures/class2_objects.png")
+```
+
+---
+## The R Ecosystem
+### Data types
+There are 6 atomic data types:
+- character
+  e.g. `'hello world'`, `'abc'`
+- double (real or decimal)
+  e.g. `10`, `3.14`, `1e10`
+- integer
+  e.g. `1L`
+- logical
+  e.g. `TRUE`, `FALSE`, `T`, `F`
+- complex
+  e.g. `1 + 3i` (not commonly used by us)
+- *raw* (rarely used by us)
+
+---
+## The R Ecosystem
+### Special data types
+
+- `NULL`: Does not exist
+- Missing data: `NA`. A special logical type that converts into the type it is associated with.
+- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
+- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+
+---
+## The R Ecosystem
+### Special data types
+
+- Date: `as.Date('1970-1-5')`
+- Time: `as.POSIXct('1970-1-5')`
+- Factor: factors are integers with associated labels. 
+
+---
+## The R Ecosystem
+### Checking data type
+
+- `typeof(x)`
+- `is.xxx(x)`: 
+
+  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
+  
+  * `is.numeric(x)` 
+  
+  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
+
+---
+## The R Ecosystem
+### Converting data type
+
+- `as.xxx(x)`:
+
+  * e.g. `as.numeric(x)`, `as.double(x)`, `as.character(x)`, `as.integer(x)`, `as.logical(x)`, `as.complex(x)`, `as.raw(x)`, `as.factor(x)`, `as.Date(x)`, `as.POSIXct(x)`.
+  
+- logical < integer < double < character
+
+---
+## The R Ecosystem
+### Data structures
+- Atomic vectors (most commonly thought of kind):
+
+  * A sequence of objects of the **same class**.
+  * Arrays and matrices are vectors with more than one dimension.
+  
+      - Matrices have 2 dimensions.
+      - Arrays could have higher dimensions.
+
+- Lists
+
+  * Lists can contain objects of **different classes**.
+  * Lists can be converted list-matrix or list-array by defining dimensions.
+  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
+
+---
+
+## The R Ecosystem
+### Vectors
+
+```{r, echo=FALSE, fig.align='center', fig.cap='Credit: L. Song'}
+knitr::include_graphics("figures/class2_vector.png")
+```
+
+---
+## Let's create some data
+
+
+---
+## Functions
+- Primitives
+- Operators
+- Control structures
+- Package functions
+- Generic functions
+---
+
+## Functions
+### Components
+
+```{r, eval=F}
+function_name <- function(arg1, 
+                          arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)){
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. 
+
+---
+## OO
+
+- Procedural versus object-oriented (OO) programming
+- OO bundles together data and functions into an object
+- Class defines type/structure of object and what methods (functions) are used with it
+- 3+ types of OO in R
+
+---
+## OO
+
+### Base system? 
+
+```{r}
+# names(methods:::.BasicFunsList) # list of base functions
+x <- 1:10
+!is.object(x)  # if TRUE, base object. 
+```
+
+### S3 system?
+```{r}
+x <- lm(x ~ rev(x))
+!is.object(x)  # if TRUE, base object. 
+!isS4(x)  # it’s S3
+```
+
+---
+## OO
+
+### S4 system? 
+```{r}
+x <- raster::raster(nrow = 10, ncol = 10)
+!is.object(x)  # if TRUE, base object. 
+!isS4(x)  # it’s S3
+!is(x, "refClass") # it’s S4; otherwise it’s RC.
+```
+
+---
+
+## Environments
+```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap="http://adv-r.had.co.nz/Environments.html"}
+knitr::include_graphics("figures/class5_envs.png")
+```
+
+
+
+
+

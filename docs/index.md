@@ -3,7 +3,7 @@
 
 ## Fall 2021
 
-Updated on: 2021-09-01
+Updated on: 2021-09-08
 
 <center>
 
@@ -28,9 +28,9 @@ Updated on: 2021-09-01
 The class materials were designed by Lyndon Estes and Lei Song.
 
 -   [Unit 1](unit1.html) - Overview
-    -   [Module 1](unit1-module1.html) - R and R fundamentals
-    -   [Module 2](unit1-module2.html) - Reproducibility and related R
+    -   [Module 1](unit1-module1.html) - Reproducibility and related R
         skills
+    -   [Module 2](unit1-module2.html) - R and R fundamentals
     -   [Module 3](unit1-module3.html) - Data preparation and operation
     -   [Module 4](unit1-module4.html) - Data manipulation and
         visualization
@@ -54,6 +54,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 4 slides](class4.html)
         -   [rmarkdown demo](rmarkdown_demo.html)
 -   Week 3
+    -   [Class 5 slides](class5.html)
 -   Week 4
 -   Week 5
 -   Week 6

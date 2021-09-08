@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class3plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 5
+
+---
+
+
+&lt;img src="figures/sms-farmers.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+library(sf)
+library(dplyr)
+f &lt;- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+farmers &lt;- readr::read_csv(f)
+farmers &lt;- farmers %&gt;% select(uuid, x, y) %&gt;% distinct() %&gt;% 
+  st_as_sf(., coords = c("x", "y"))
+f &lt;- system.file("extdata", "districts.shp", package = "geospaar")
+dists &lt;- read_sf(f)
+st_crs(farmers) &lt;- st_crs(dists)
+
+# join farmers with districts (h/t https://mattherman.info/blog/point-in-poly/)
+farmers_in_dists &lt;- st_join(farmers, dists, join = st_within) %&gt;%
+  tidyr::drop_na()
+farmer_count &lt;- count(as_tibble(farmers_in_dists), distName)
+dists_w_farmers &lt;- left_join(dists, farmer_count) %&gt;% 
+  mutate(n = ifelse(is.na(n), 0, n))
+
+png("external/slides/figures/sms-farmers.png", height = 4, width = 5, res = 300,
+    units = "in")
+plot(dists_w_farmers["n"], breaks = c(0, 5, 10, 15, 20, 50, 500), 
+     reset = FALSE, main = "Number of SMS Farmers by District")
+plot(farmers %&gt;% filter(uuid %in% unique(farmers_in_dists$uuid)) %&gt;%
+       st_geometry(), add = TRUE, pch = "+", col = "cyan", cex = 0.5)
+dev.off()
+```
+
+---
+# Today
+
+- The `R` ecosystem
+
+---
+# The R Ecosystem
+
+&lt;img src="figures/class5_u1m2.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+## The R Ecosystem
+### Common objects
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class2_objects.png" alt="Credit: L. Song" width="1893" /&gt;
+&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## The R Ecosystem
+### Data types
+There are 6 atomic data types:
+- character
+  e.g. `'hello world'`, `'abc'`
+- double (real or decimal)
+  e.g. `10`, `3.14`, `1e10`
+- integer
+  e.g. `1L`
+- logical
+  e.g. `TRUE`, `FALSE`, `T`, `F`
+- complex
+  e.g. `1 + 3i` (not commonly used by us)
+- *raw* (rarely used by us)
+
+---
+## The R Ecosystem
+### Special data types
+
+- `NULL`: Does not exist
+- Missing data: `NA`. A special logical type that converts into the type it is associated with.
+- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
+- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+
+---
+## The R Ecosystem
+### Special data types
+
+- Date: `as.Date('1970-1-5')`
+- Time: `as.POSIXct('1970-1-5')`
+- Factor: factors are integers with associated labels. 
+
+---
+## The R Ecosystem
+### Checking data type
+
+- `typeof(x)`
+- `is.xxx(x)`: 
+
+  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
+  
+  * `is.numeric(x)` 
+  
+  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
+
+---
+## The R Ecosystem
+### Converting data type
+
+- `as.xxx(x)`:
+
+  * e.g. `as.numeric(x)`, `as.double(x)`, `as.character(x)`, `as.integer(x)`, `as.logical(x)`, `as.complex(x)`, `as.raw(x)`, `as.factor(x)`, `as.Date(x)`, `as.POSIXct(x)`.
+  
+- logical &lt; integer &lt; double &lt; character
+
+---
+## The R Ecosystem
+### Data structures
+- Atomic vectors (most commonly thought of kind):
+
+  * A sequence of objects of the **same class**.
+  * Arrays and matrices are vectors with more than one dimension.
+  
+      - Matrices have 2 dimensions.
+      - Arrays could have higher dimensions.
+
+- Lists
+
+  * Lists can contain objects of **different classes**.
+  * Lists can be converted list-matrix or list-array by defining dimensions.
+  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
+
+---
+
+## The R Ecosystem
+### Vectors
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class2_vector.png" alt="Credit: L. Song" width="1921" /&gt;
+&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## Let's create some data
+
+
+---
+## Functions
+- Primitives
+- Operators
+- Control structures
+- Package functions
+- Generic functions
+---
+
+## Functions
+### Components
+
+
+```r
+function_name &lt;- function(arg1, 
+                          arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)){
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. 
+
+---
+## OO
+
+- Procedural versus object-oriented (OO) programming
+- OO bundles together data and functions into an object
+- Class defines type/structure of object and what methods (functions) are used with it
+- 3+ types of OO in R
+
+---
+## OO
+
+### Base system? 
+
+
+```r
+# names(methods:::.BasicFunsList) # list of base functions
+x &lt;- 1:10
+!is.object(x)  # if TRUE, base object. 
+```
+
+```
+## [1] TRUE
+```
+
+### S3 system?
+
+```r
+x &lt;- lm(x ~ rev(x))
+!is.object(x)  # if TRUE, base object. 
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!isS4(x)  # it’s S3
+```
+
+```
+## [1] TRUE
+```
+
+---
+## OO
+
+### S4 system? 
+
+```r
+x &lt;- raster::raster(nrow = 10, ncol = 10)
+!is.object(x)  # if TRUE, base object. 
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!isS4(x)  # it’s S3
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!is(x, "refClass") # it’s S4; otherwise it’s RC.
+```
+
+```
+## [1] TRUE
+```
+
+---
+
+## Environments
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class5_envs.png" alt="http://adv-r.had.co.nz/Environments.html" width="70%" /&gt;
+&lt;p class="caption"&gt;http://adv-r.had.co.nz/Environments.html&lt;/p&gt;
+&lt;/div&gt;
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
