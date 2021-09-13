@@ -3,7 +3,7 @@
 
 ## Fall 2021
 
-Updated on: 2021-09-08
+Updated on: 2021-09-13
 
 <center>
 
@@ -55,6 +55,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
         -   [rmarkdown demo](rmarkdown_demo.html)
 -   Week 3
     -   [Class 5 slides](class5.html)
+    -   [Class 6 slides](class6.html)
 -   Week 4
 -   Week 5
 -   Week 6

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class6.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 6
+
+---
+
+
+
+```r
+s3url &lt;- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+b &lt;- raster::brick(s3url)[[4:2]]
+png(here::here("external/slides/figures/ghana_planet.png"), height = 4, 
+    width = 4, units  = "in", res = 300, bg = "transparent")
+raster::plotRGB(b, stretch = "lin")
+dev.off()
+```
+
+
+---
+
+# Today
+
+- Assignment schedule
+- The `R` Ecosystem
+- Coding practice
+
+---
+
+
+```r
+library(lubridate)
+library(dplyr)
+
+wks &lt;- seq(ymd('2021-08-23'), ymd('2021-12-06'), by = 'day')
+assns &lt;- tibble(assn = NA, wks) %&gt;% 
+  mutate(day = weekdays(wks), wkno = week(wks))
+assns %&gt;% filter(day == "Friday") %&gt;% 
+  mutate(assn = case_when(
+  wkno == 36 ~ 1, 
+  wkno == 38 ~ 2,
+  wkno == 40 ~ 3,
+  wkno == 42 ~ 4,
+  wkno == 44 ~ 5, 
+  wkno == 45 ~ 6
+))
+```
+
+```
+## # A tibble: 15 × 4
+##     assn wks        day     wkno
+##    &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;  &lt;dbl&gt;
+##  1    NA 2021-08-27 Friday    35
+##  2     1 2021-09-03 Friday    36
+##  3    NA 2021-09-10 Friday    37
+##  4     2 2021-09-17 Friday    38
+##  5    NA 2021-09-24 Friday    39
+##  6     3 2021-10-01 Friday    40
+##  7    NA 2021-10-08 Friday    41
+##  8     4 2021-10-15 Friday    42
+##  9    NA 2021-10-22 Friday    43
+## 10     5 2021-10-29 Friday    44
+## 11     6 2021-11-05 Friday    45
+## 12    NA 2021-11-12 Friday    46
+## 13    NA 2021-11-19 Friday    47
+## 14    NA 2021-11-26 Friday    48
+## 15    NA 2021-12-03 Friday    49
+```
+
+---
+# The R Ecosystem
+
+&lt;img src="figures/class5_u1m2.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+## Data types
+
+---
+## Data structures
+- 1d
+- 2d
+- 3d
+
+---
+## Functions
+- Primitives
+- Operators
+- Control structures
+- Package functions
+- Generic functions
+---
+
+## OO
+
+- Procedural versus object-oriented (OO) programming
+- OO bundles together data and functions into an object
+- Class defines type/structure of object and what methods (functions) are used with it
+- 3+ types of OO in R
+
+---
+
+## OO - Base system? 
+
+```r
+x &lt;- 1:10
+!is.object(x)  # if TRUE, base object. 
+```
+
+```
+## [1] TRUE
+```
+
+```r
+str(x)
+```
+
+```
+##  int [1:10] 1 2 3 4 5 6 7 8 9 10
+```
+---
+## 00 - S3 system?
+
+```r
+x &lt;- lm(x ~ rev(x))
+!is.object(x)  # if TRUE, base object. 
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!isS4(x)  # it’s S3
+```
+
+```
+## [1] TRUE
+```
+
+```r
+str(x)
+```
+
+```
+## List of 12
+##  $ coefficients : Named num [1:2] 11 -1
+##   ..- attr(*, "names")= chr [1:2] "(Intercept)" "rev(x)"
+##  $ residuals    : Named num [1:10] 3.13e-15 -3.46e-15 -2.13e-16 -1.80e-16 -3.55e-17 ...
+##   ..- attr(*, "names")= chr [1:10] "1" "2" "3" "4" ...
+##  $ effects      : Named num [1:10] -1.74e+01 9.08 -4.44e-16 -7.77e-16 -9.99e-16 ...
+##   ..- attr(*, "names")= chr [1:10] "(Intercept)" "rev(x)" "" "" ...
+##  $ rank         : int 2
+##  $ fitted.values: Named num [1:10] 1 2 3 4 5 ...
+##   ..- attr(*, "names")= chr [1:10] "1" "2" "3" "4" ...
+##  $ assign       : int [1:2] 0 1
+##  $ qr           :List of 5
+##   ..$ qr   : num [1:10, 1:2] -3.162 0.316 0.316 0.316 0.316 ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:10] "1" "2" "3" "4" ...
+##   .. .. ..$ : chr [1:2] "(Intercept)" "rev(x)"
+##   .. ..- attr(*, "assign")= int [1:2] 0 1
+##   ..$ qraux: num [1:2] 1.32 1.27
+##   ..$ pivot: int [1:2] 1 2
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 2
+##   ..- attr(*, "class")= chr "qr"
+##  $ df.residual  : int 8
+##  $ xlevels      : Named list()
+##  $ call         : language lm(formula = x ~ rev(x))
+##  $ terms        :Classes 'terms', 'formula'  language x ~ rev(x)
+##   .. ..- attr(*, "variables")= language list(x, rev(x))
+##   .. ..- attr(*, "factors")= int [1:2, 1] 0 1
+##   .. .. ..- attr(*, "dimnames")=List of 2
+##   .. .. .. ..$ : chr [1:2] "x" "rev(x)"
+##   .. .. .. ..$ : chr "rev(x)"
+##   .. ..- attr(*, "term.labels")= chr "rev(x)"
+##   .. ..- attr(*, "order")= int 1
+##   .. ..- attr(*, "intercept")= int 1
+##   .. ..- attr(*, "response")= int 1
+##   .. ..- attr(*, ".Environment")=&lt;environment: R_GlobalEnv&gt; 
+##   .. ..- attr(*, "predvars")= language list(x, rev(x))
+##   .. ..- attr(*, "dataClasses")= Named chr [1:2] "numeric" "numeric"
+##   .. .. ..- attr(*, "names")= chr [1:2] "x" "rev(x)"
+##  $ model        :'data.frame':	10 obs. of  2 variables:
+##   ..$ x     : int [1:10] 1 2 3 4 5 6 7 8 9 10
+##   ..$ rev(x): int [1:10] 10 9 8 7 6 5 4 3 2 1
+##   ..- attr(*, "terms")=Classes 'terms', 'formula'  language x ~ rev(x)
+##   .. .. ..- attr(*, "variables")= language list(x, rev(x))
+##   .. .. ..- attr(*, "factors")= int [1:2, 1] 0 1
+##   .. .. .. ..- attr(*, "dimnames")=List of 2
+##   .. .. .. .. ..$ : chr [1:2] "x" "rev(x)"
+##   .. .. .. .. ..$ : chr "rev(x)"
+##   .. .. ..- attr(*, "term.labels")= chr "rev(x)"
+##   .. .. ..- attr(*, "order")= int 1
+##   .. .. ..- attr(*, "intercept")= int 1
+##   .. .. ..- attr(*, "response")= int 1
+##   .. .. ..- attr(*, ".Environment")=&lt;environment: R_GlobalEnv&gt; 
+##   .. .. ..- attr(*, "predvars")= language list(x, rev(x))
+##   .. .. ..- attr(*, "dataClasses")= Named chr [1:2] "numeric" "numeric"
+##   .. .. .. ..- attr(*, "names")= chr [1:2] "x" "rev(x)"
+##  - attr(*, "class")= chr "lm"
+```
+
+---
+## OO - S4 system? 
+
+```r
+x &lt;- raster::raster(nrow = 10, ncol = 10)
+!is.object(x)  # if TRUE, base object. 
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!isS4(x)  # it’s S3
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!is(x, "refClass") # it’s S4; otherwise it’s RC.
+```
+
+```
+## [1] TRUE
+```
+
+```r
+str(x)
+```
+
+```
+## Formal class 'RasterLayer' [package "raster"] with 12 slots
+##   ..@ file    :Formal class '.RasterFile' [package "raster"] with 13 slots
+##   .. .. ..@ name        : chr ""
+##   .. .. ..@ datanotation: chr "FLT4S"
+##   .. .. ..@ byteorder   : chr "little"
+##   .. .. ..@ nodatavalue : num -Inf
+##   .. .. ..@ NAchanged   : logi FALSE
+##   .. .. ..@ nbands      : int 1
+##   .. .. ..@ bandorder   : chr "BIL"
+##   .. .. ..@ offset      : int 0
+##   .. .. ..@ toptobottom : logi TRUE
+##   .. .. ..@ blockrows   : int 0
+##   .. .. ..@ blockcols   : int 0
+##   .. .. ..@ driver      : chr ""
+##   .. .. ..@ open        : logi FALSE
+##   ..@ data    :Formal class '.SingleLayerData' [package "raster"] with 13 slots
+##   .. .. ..@ values    : logi(0) 
+##   .. .. ..@ offset    : num 0
+##   .. .. ..@ gain      : num 1
+##   .. .. ..@ inmemory  : logi FALSE
+##   .. .. ..@ fromdisk  : logi FALSE
+##   .. .. ..@ isfactor  : logi FALSE
+##   .. .. ..@ attributes: list()
+##   .. .. ..@ haveminmax: logi FALSE
+##   .. .. ..@ min       : num Inf
+##   .. .. ..@ max       : num -Inf
+##   .. .. ..@ band      : int 1
+##   .. .. ..@ unit      : chr ""
+##   .. .. ..@ names     : chr ""
+##   ..@ legend  :Formal class '.RasterLegend' [package "raster"] with 5 slots
+##   .. .. ..@ type      : chr(0) 
+##   .. .. ..@ values    : logi(0) 
+##   .. .. ..@ color     : logi(0) 
+##   .. .. ..@ names     : logi(0) 
+##   .. .. ..@ colortable: logi(0) 
+##   ..@ title   : chr(0) 
+##   ..@ extent  :Formal class 'Extent' [package "raster"] with 4 slots
+##   .. .. ..@ xmin: num -180
+##   .. .. ..@ xmax: num 180
+##   .. .. ..@ ymin: num -90
+##   .. .. ..@ ymax: num 90
+##   ..@ rotated : logi FALSE
+##   ..@ rotation:Formal class '.Rotation' [package "raster"] with 2 slots
+##   .. .. ..@ geotrans: num(0) 
+##   .. .. ..@ transfun:function ()  
+##   ..@ ncols   : int 10
+##   ..@ nrows   : int 10
+##   ..@ crs     :Formal class 'CRS' [package "sp"] with 1 slot
+##   .. .. ..@ projargs: chr "+proj=longlat +datum=WGS84 +no_defs"
+##   ..@ history : list()
+##   ..@ z       : list()
+```
+
+---
+
+## Environments
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class5_envs.png" alt="http://adv-r.had.co.nz/Environments.html" width="70%" /&gt;
+&lt;p class="caption"&gt;http://adv-r.had.co.nz/Environments.html&lt;/p&gt;
+&lt;/div&gt;
+---
+- Function environment
+- Execution environment
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class3_env_nsp.png" alt="Credit: Lei Song" width="50%" /&gt;
+&lt;p class="caption"&gt;Credit: Lei Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+
+```r
+detach(package:dplyr)
+library(raster)
+```
+
+```
+## Loading required package: sp
+```
+
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:raster':
+## 
+##     intersect, select, union
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+search()
+```
+
+```
+##  [1] ".GlobalEnv"        "package:dplyr"    
+##  [3] "package:raster"    "package:sp"       
+##  [5] "package:lubridate" "tools:rstudio"    
+##  [7] "package:stats"     "package:graphics" 
+##  [9] "package:grDevices" "package:utils"    
+## [11] "package:datasets"  "package:methods"  
+## [13] "Autoloads"         "package:base"
+```
+
+
+---
+
+```r
+x &lt;- 1:10
+myfun &lt;- function() {
+  x * 10
+}
+myfun()
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+```r
+myfun &lt;- function(x) {
+  x &lt;- x * 10
+  return(x)
+}
+x &lt;- 10
+myfun(x = 20)
+```
+
+```
+## [1] 200
+```
+
+```r
+x
+```
+
+```
+## [1] 10
+```
+
+---
+
+
+```r
+myfun &lt;- function(x) {
+  x &lt;- x * 10
+  print(environment())
+  return(x)
+}
+myfun(x)
+```
+
+```
+## &lt;environment: 0x7ff34e6fc630&gt;
+```
+
+```
+## [1] 100
+```
+
+```r
+myfun(x)
+```
+
+```
+## &lt;environment: 0x7ff34e777c10&gt;
+```
+
+```
+## [1] 100
+```
+
+
+---
+
+
+## Create your own data
+
+- Create the following:
+  - `a`: a random vector of integers with 10 elements drawn from 1-20:
+    - Use the `sample` function with `set.seed(10)`
+    - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
+      - Use the `paste0` function to create those names.
+      - Create the identical vector of names using the `paste` function.
+  - `b`: Using `a` as an index to select from `letters`
+  - `d`: Use `rnorm` with a mean = 100 and an sd of 20
+  - Why did I skip `c`? 
+  - Create a list `l` from `a`, `b`, `d`. 
+    - Assign the names of the vectors in `l` to the `l`'s elements
+
+---
+## 2-d structures
+
+- Create the following:
+  - `m`: a matrix with three integer columns named "V1", "V2", "V3"
+    - Create each column first as its own vector, then combine
+    - `V1` = 1:10
+    - `V2` is a random sample between 1:100
+    - `V3` is drawn from a random uniform distribution between 0 and 50     - Use the same `set.seed(50)` as before
+    - Inspect the `str` and `class` of `m`
+  - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
+    - `V4` is a random selection of the letters A-E
+
+&lt;!-- --- --&gt;
+&lt;!-- ## 1-d Indexing/subsetting/replacing  --&gt;
+&lt;!-- - Select the 1st, 2nd, and 10th elements from `a` --&gt;
+&lt;!-- - Select the elements of `a` named V1, V2, V3 (use the names) --&gt;
+&lt;!-- - Replace the second to last value of `a` with the word "sasquatch" --&gt;
+
+&lt;!--   - Use code to find the index value, not the actual integer value of the index --&gt;
+&lt;!-- - Select from `b` the values "c", "d", "e" --&gt;
+&lt;!-- - Identify the index position in `b` of values "c", "d", "e" --&gt;
+&lt;!-- - Select the first 5 values of `d` and the last 5 values of `c` into two separate vectors and multiply them.  --&gt;
+&lt;!-- - Select from `d` all values &gt; 100: --&gt;
+&lt;!--   - How many values are there? --&gt;
+&lt;!-- - Select from `d` all values between 95 and 105, and replace them with 100 --&gt;
+&lt;!-- - Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l`  --&gt;
+
+&lt;!-- --- --&gt;
+&lt;!-- ## 2-d Indexing/subsetting/replacing --&gt;
+&lt;!-- - Select the first 10 values from `m`, using a single vector and no row or column information --&gt;
+&lt;!-- - Use a single vector to select the last row, column value from `m` --&gt;
+&lt;!-- - Replace the value selected in 2 above with -99 --&gt;
+&lt;!-- - Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10  --&gt;
+&lt;!-- - Do the same, but select the columns by their name, and reset the new values by dividing by 10 --&gt;
+&lt;!-- - Select from `dat` the values of V3, and square them. Do it using index notation, column name in `[]`, and `$` --&gt;
+&lt;!-- - Subset the first two rows and columns of `dat` into a new data.frame `datss`.  --&gt;
+&lt;!-- - Replace `dat` rows 1:2, column 1:2 with the values -1:-4 --&gt;
+&lt;!-- - Reset the part of `dat` you just changed with the values in `datss` --&gt;
+&lt;!-- --- --&gt;
+&lt;!-- ## Summarizing datasets --&gt;
+&lt;!-- - Calculate the row and column sums of both `m` and `dat`.  --&gt;
+&lt;!-- - Calculate the overall means and sums of all values in each dataset --&gt;
+&lt;!-- - From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable.  --&gt;
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

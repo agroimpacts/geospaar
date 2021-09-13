@@ -42,7 +42,7 @@ farmer_count &lt;- count(as_tibble(farmers_in_dists), distName)
 dists_w_farmers &lt;- left_join(dists, farmer_count) %&gt;% 
   mutate(n = ifelse(is.na(n), 0, n))
 
-png("external/slides/figures/sms-farmers.png", height = 4, width = 5, res = 300,
+png("figures/sms-farmers.png", height = 4, width = 5, res = 300,
     units = "in")
 plot(dists_w_farmers["n"], breaks = c(0, 5, 10, 15, 20, 50, 500), 
      reset = FALSE, main = "Number of SMS Farmers by District")
@@ -59,14 +59,14 @@ dev.off()
 ---
 # The R Ecosystem
 
-&lt;img src="figures/class5_u1m2.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/class5_u1m2.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 ## The R Ecosystem
 ### Common objects
 
 &lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="figures/class2_objects.png" alt="Credit: L. Song" width="1893" /&gt;
+&lt;img src="figures/class2_objects.png" alt="Credit: L. Song" width="80%" /&gt;
 &lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
 &lt;/div&gt;
 
@@ -156,6 +156,9 @@ There are 6 atomic data types:
 ---
 ## Let's create some data
 
+- `vector`
+- `data.frame`
+- `list`
 
 ---
 ## Functions

@@ -52,7 +52,7 @@ dev.off()
 ---
 # The R Ecosystem
 
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/class5_u1m2.png")
 ```
 
@@ -60,7 +60,7 @@ knitr::include_graphics("figures/class5_u1m2.png")
 ## The R Ecosystem
 ### Common objects
 
-```{r, echo=FALSE, fig.align='center', fig.cap='Credit: L. Song'}
+```{r, echo=FALSE, fig.align='center', out.width = "80%", fig.cap='Credit: L. Song'}
 knitr::include_graphics("figures/class2_objects.png")
 ```
 
@@ -149,6 +149,9 @@ knitr::include_graphics("figures/class2_vector.png")
 ---
 ## Let's create some data
 
+- `vector`
+- `data.frame`
+- `list`
 
 ---
 ## Functions
@@ -165,7 +168,7 @@ knitr::include_graphics("figures/class2_vector.png")
 ```{r, eval=F}
 function_name <- function(arg1, 
                           arg2 = 1:10, 
-                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)){
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
   body
 }
 ```
