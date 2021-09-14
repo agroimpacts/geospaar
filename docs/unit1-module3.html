@@ -1944,21 +1944,20 @@ An (approximate) lineage of R packages/objects involved in data handling and gra
 <span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3256  455</span></span>
 <span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a><span class="co"># #3</span></span>
-<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">2</span>, mean)</span>
-<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     a     b </span></span>
-<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 325.6  45.5</span></span>
-<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a><span class="co"># #4</span></span>
-<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">2</span>, range)</span>
-<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        a  b</span></span>
-<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  34 41</span></span>
-<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] 999 50</span></span>
-<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a><span class="co"># #5</span></span>
-<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x) <span class="sc">/</span> <span class="fu">sum</span>(dat))</span>
-<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753</span></span>
-<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] 0.02209647 0.02263541 0.02317435 0.02371328 0.02425222</span></span></code></pre></div>
-<p>We start by extracting one <code>data.frame</code> from <code>dat_list</code>, and then use various flavors of <code>apply</code> on that. In #1 and #2, we use the argument names for clarity (use <code>?apply</code>) to view them. #1 applies sum to each row of <code>dat</code>, #2 to each column (i.e. the exact same thing as <code>rowSums</code> and <code>colSums</code>). #3 takes the column means (i.e. the analog to <code>colMeans</code>), and #4 the range of values in each column. In the last case, <code>apply</code> is more useful because there is no <code>rowRanges</code> function that provides a simpler version. In #5 we use an anonymous function to take the row sums of <code>dat</code> and divide them by the total sum of <code>dat</code>, which gives us a weighted mean.</p>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">1</span>, mean)</span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 520.0 520.5 521.0  39.0  40.0  41.0  42.0  43.0  44.0  45.0</span></span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a><span class="co"># #4</span></span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">2</span>, range)</span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        a  b</span></span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  34 41</span></span>
+<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] 999 50</span></span>
+<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a><span class="co"># #5</span></span>
+<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x) <span class="sc">/</span> <span class="fu">sum</span>(dat))</span>
+<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753</span></span>
+<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] 0.02209647 0.02263541 0.02317435 0.02371328 0.02425222</span></span></code></pre></div>
+<p>We start by extracting one <code>data.frame</code> from <code>dat_list</code>, and then use various flavors of <code>apply</code> on that. In #1 and #2, we use the argument names for clarity (use <code>?apply</code>) to view them. #1 applies sum to each row of <code>dat</code>, #2 to each column (i.e. the exact same thing as <code>rowSums</code> and <code>colSums</code>). #3 takes the row means (i.e. the analog to <code>rowMeans</code>), and #4 the range of values in each column. In the last case, <code>apply</code> is more useful because there is no <code>rowRanges</code> function that provides a simpler version. In #5 we use an anonymous function to take the row sums of <code>dat</code> and divide them by the total sum of <code>dat</code>, which gives us a weighted mean.</p>
 </div>
 <div id="when-should-i-use-for-versus-apply" class="section level3" number="4.3.4">
 <h3 number="4.3.4"><span class="header-section-number">4.3.4</span> When should I use for versus *apply?</h3>
