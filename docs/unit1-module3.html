@@ -248,7 +248,7 @@
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2021-09-01 <a href="index.html">Back to home</a></p>
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2021-09-13 <a href="index.html">Back to home</a></p>
           </div>
    </div>
      
@@ -1958,7 +1958,7 @@ An (approximate) lineage of R packages/objects involved in data handling and gra
 <span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x) <span class="sc">/</span> <span class="fu">sum</span>(dat))</span>
 <span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753</span></span>
 <span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] 0.02209647 0.02263541 0.02317435 0.02371328 0.02425222</span></span></code></pre></div>
-<p>We start by extracting one <code>data.frame</code> from <code>dat_list</code>, and then use various flavors of <code>apply</code> on that. In #1 and #2, we use the argument names for clarity (use <code>?apply</code>) to view them. #1 applies sum to each row of <code>dat</code>, #2 to each column (i.e. the exact same thing as <code>rowSums</code> and <code>colSums</code>). #3 takes the row means (i.e. the analog to <code>rowMeans</code>), and #4 the range of values in each column. In the last case, <code>apply</code> is more useful because there is no <code>rowRanges</code> function that provides a simpler version. In #5 we use an anonymous function to take the row sums of <code>dat</code> and divide them by the total sum of <code>dat</code>, which gives us a weighted mean.</p>
+<p>We start by extracting one <code>data.frame</code> from <code>dat_list</code>, and then use various flavors of <code>apply</code> on that. In #1 and #2, we use the argument names for clarity (use <code>?apply</code>) to view them. #1 applies sum to each row of <code>dat</code>, #2 to each column (i.e. the exact same thing as <code>rowSums</code> and <code>colSums</code>). #3 takes the column means (i.e. the analog to <code>colMeans</code>), and #4 the range of values in each column. In the last case, <code>apply</code> is more useful because there is no <code>rowRanges</code> function that provides a simpler version. In #5 we use an anonymous function to take the row sums of <code>dat</code> and divide them by the total sum of <code>dat</code>, which gives us a weighted mean.</p>
 </div>
 <div id="when-should-i-use-for-versus-apply" class="section level3" number="4.3.4">
 <h3 number="4.3.4"><span class="header-section-number">4.3.4</span> When should I use for versus *apply?</h3>

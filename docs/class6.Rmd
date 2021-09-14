@@ -48,8 +48,7 @@ assns %>% filter(day == "Friday") %>%
   wkno == 42 ~ 4,
   wkno == 44 ~ 5, 
   wkno == 45 ~ 6
-))
-
+)) 
 ```
 
 ---
@@ -130,7 +129,7 @@ knitr::include_graphics("figures/class3_env_nsp.png")
 ---
 
 ```{r}
-detach(package:dplyr)
+detach(package:dp)
 library(raster)
 library(dplyr)
 search()

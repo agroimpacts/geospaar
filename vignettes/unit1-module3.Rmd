@@ -1253,7 +1253,7 @@ apply(dat, 2, range)
 apply(dat, 1, function(x) sum(x) / sum(dat))
 ```
 
-We start by extracting one `data.frame` from `dat_list`, and then use various flavors of `apply` on that. In #1 and #2, we use the argument names for clarity (use `?apply`) to view them.  #1 applies sum to each row of `dat`, #2 to each column (i.e. the exact same thing as `rowSums` and `colSums`).  #3 takes the row means (i.e. the analog to `rowMeans`), and #4 the range of values in each column. In the last case, `apply` is more useful because there is no `rowRanges` function that provides a simpler version.  In #5 we use an anonymous function to take the row sums of `dat` and divide them by the total sum of `dat`, which gives us a weighted mean. 
+We start by extracting one `data.frame` from `dat_list`, and then use various flavors of `apply` on that. In #1 and #2, we use the argument names for clarity (use `?apply`) to view them.  #1 applies sum to each row of `dat`, #2 to each column (i.e. the exact same thing as `rowSums` and `colSums`).  #3 takes the column means (i.e. the analog to `colMeans`), and #4 the range of values in each column. In the last case, `apply` is more useful because there is no `rowRanges` function that provides a simpler version.  In #5 we use an anonymous function to take the row sums of `dat` and divide them by the total sum of `dat`, which gives us a weighted mean. 
 
 ### When should I use for versus *apply?
 
