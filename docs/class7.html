@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class7.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 7
+
+---
+
+
+
+```r
+library(stars)
+s3url &lt;- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+p &lt;- read_stars(s3url, proxy = TRUE)
+png(here::here("external/slides/figures/ghana_planet_stars.png"), height = 2.9, 
+    width = 8, units  = "in", res = 300, bg = "white")
+plot(p)
+dev.off()
+```
+
+
+---
+
+# Today
+
+- R ecosystem continued: environments wrap-up
+- Indexing and subsetting
+
+---
+
+## Environments
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class5_envs.png" alt="http://adv-r.had.co.nz/Environments.html" width="70%" /&gt;
+&lt;p class="caption"&gt;http://adv-r.had.co.nz/Environments.html&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## Environments
+- Global environment
+- Package environment
+    - external interface to package - how we find functions 
+- Namespace environment
+    - internal interface to packge - how functions find variables
+- Function environment (see http://adv-r.had.co.nz/Environments.html#function-envs)
+  - Enclosing environment
+  - Binding environment
+  - Execution environment
+
+---
+###  Execution environments
+
+
+```r
+x &lt;- 1:10
+myfun &lt;- function() {
+  x * 10
+}
+myfun()
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+```r
+myfun &lt;- function(x) {
+  x &lt;- x * 10
+  return(x)
+}
+x &lt;- 10
+myfun(x = 20)
+```
+
+```
+## [1] 200
+```
+
+```r
+x
+```
+
+```
+## [1] 10
+```
+
+---
+
+
+```r
+myfun &lt;- function(x) {
+  x &lt;- x * 10
+  print(environment())
+  return(x)
+}
+myfun(x)
+```
+
+```
+## &lt;environment: 0x7fa10ac2b4a0&gt;
+```
+
+```
+## [1] 100
+```
+
+```r
+myfun(x)
+```
+
+```
+## &lt;environment: 0x7fa10acdc438&gt;
+```
+
+```
+## [1] 100
+```
+
+---
+## Create your own data
+
+- Create the following:
+  - `a`: a random vector of integers with 10 elements drawn from 1-20:
+    - Use the `sample` function with `set.seed(10)`
+    - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
+      - Use the `paste0` function to create those names.
+      - Create the identical vector of names using the `paste` function.
+  - `b`: Using `a` as an index to select from `letters`
+  - `d`: Use `rnorm` with a mean = 100 and an sd of 20
+  - Why did I skip `c`? 
+  - Create a list `l` from `a`, `b`, `d`. 
+    - Assign the names of the vectors in `l` to the `l`'s elements
+
+---
+## 2-d structures
+
+- Create the following:
+  - `m`: a matrix with three integer columns named "V1", "V2", "V3"
+    - Create each column first as its own vector, then combine
+    - `V1` = 1:10
+    - `V2` is a random sample between 1:100
+    - `V3` is drawn from a random uniform distribution between 0 and 50     - Use the same `set.seed(50)` as before
+    - Inspect the `str` and `class` of `m`
+  - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
+    - `V4` is a random selection of the letters A-E
+
+---
+## 1-d Indexing/subsetting/replacing 
+- Select the 1st, 2nd, and 10th elements from `a`
+- Select the elements of `a` named V1, V2, V3 (use the names)
+- Replace the second to last value of `a` with the word "sasquatch"
+  - Use code to find the index value, not the actual integer value of the index
+- Select from `b` the values "c", "d", "e"
+- Identify the index position in `b` of values "c", "d", "e"
+- Select the first 5 values of `d` and the last 5 values of `c` into two separate vectors and multiply them. 
+- Select from `d` all values &gt; 100:
+  - How many values are there?
+- Select from `d` all values between 95 and 105, and replace them with 100
+- Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l` 
+
+---
+## 2-d Indexing/subsetting/replacing
+- Select the first 10 values from `m`, using a single vector and no row or column information
+- Use a single vector to select the last row, column value from `m`
+- Replace the value selected in 2 above with -99
+- Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10 
+- Do the same, but select the columns by their name, and reset the new values by dividing by 10
+- Select from `dat` the values of V3, and square them. Do it using index notation, column name in `[]`, and `$`
+- Subset the first two rows and columns of `dat` into a new data.frame `datss`. 
+- Replace `dat` rows 1:2, column 1:2 with the values -1:-4
+- Reset the part of `dat` you just changed with the values in `datss`
+---
+
+## Summarizing datasets
+- Calculate the row and column sums of both `m` and `dat`. 
+- Calculate the overall means and sums of all values in each dataset
+- From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable. 
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

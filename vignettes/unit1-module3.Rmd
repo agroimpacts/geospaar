@@ -501,7 +501,9 @@ We'll leave you to figure out what is happening in Chunk 7 for the questions bel
 ## Two-dimensional structures
 The two-dimensional structures of greatest interest to us are the `matrix` and `data.frame`. Indexing into these works in a similar fashion as with 1-d structures, in that you can index with integers, by name, and logically. However, in this case your setup is `[r, c]`, where indexing is done row (r) and column (c). 
 
+
 ### matrix
+
 Let's start with a 5 row, 3-column integer matrix: 
 
 ```{r}
@@ -617,25 +619,37 @@ set.seed(1)
 d <- data.frame(a = letters[1:4], b = 1:4, c = runif(n = 4, min = 0, max = 20))
 d
 str(d)
-set.seed(1)
-d2 <- data.frame(a = letters[1:4], b = 1:4, 
-                 c = runif(n = 4, min = 0, max = 20), 
-                 stringsAsFactors = FALSE)
-str(d2)
 ```
 
 #### A word on factors
-One thing to point out about `data.frame` is that it typically defaults to treating a character variable as a **factor**. Here is a [definition](https://www.stat.berkeley.edu/~s133/factors.html):
+One thing to point out about `data.frame` is that it used to, prior to R4.0, default to treating a character variable as a **factor**. Here is a [definition](https://www.stat.berkeley.edu/~s133/factors.html):
 
 > Conceptually, factors are variables in R which take on a limited number of different values; such variables are often refered to as categorical variables. One of the most important uses of factors is in statistical modeling; since categorical variables enter into statistical models differently than continuous variables, storing data as factors insures that the modeling functions will treat such data correctly.
 >
 > Factors in R are stored as a vector of integer values with a corresponding set of character values to use when the factor is displayed. The factor function is used to create a factor. The only required argument to factor is a vector of values which will be returned as a vector of factor values. Both numeric and character variables can be made into factors, but a factor's levels will always be character values. You can see the possible levels for a factor through the levels command.
 
-I usually don't use them, and prefer to have non-numeric represented as characters, so I often as the `stringsAsFactors = FALSE` argument when creating a data.frame that has character variables. You can also do this to change it from factor to character:
+Although I usually don't use them, and prefer to have non-numeric represented as characters, factors are still widely used, and you may still sometimes encounter. And if you are loading a dataset made with an older R version, chances are the data.frame might have a factor variable in there. If you encounter a factor and don't want it, you can always change it to a character:
 
 ```{r}
-d$a <- as.character(d$a)
-str(d)
+set.seed(1)
+d2 <- data.frame(a = letters[1:4], b = 1:4, 
+                 c = runif(n = 4, min = 0, max = 20), 
+                 stringsAsFactors = TRUE)
+str(d2)
+
+d2$a <- as.character(d2$a)
+str(d2)
+```
+And you can change a character to a factor:
+
+```{r}
+set.seed(1)
+d2 <- data.frame(a = letters[1:4], b = 1:4, 
+                 c = runif(n = 4, min = 0, max = 20))
+str(d2)
+
+d2$a <- as.factor(d2$a)
+str(d2)
 ```
 
 #### Indexing differences compared to matrix
@@ -1244,7 +1258,7 @@ apply(X = dat, MARGIN = 1, FUN = sum)
 apply(X = dat, MARGIN = 2, FUN = sum)
 #
 # #3
-apply(dat, 2, mean)
+apply(dat, 1, mean)
 #
 # #4
 apply(dat, 2, range)
@@ -1253,7 +1267,7 @@ apply(dat, 2, range)
 apply(dat, 1, function(x) sum(x) / sum(dat))
 ```
 
-We start by extracting one `data.frame` from `dat_list`, and then use various flavors of `apply` on that. In #1 and #2, we use the argument names for clarity (use `?apply`) to view them.  #1 applies sum to each row of `dat`, #2 to each column (i.e. the exact same thing as `rowSums` and `colSums`).  #3 takes the column means (i.e. the analog to `colMeans`), and #4 the range of values in each column. In the last case, `apply` is more useful because there is no `rowRanges` function that provides a simpler version.  In #5 we use an anonymous function to take the row sums of `dat` and divide them by the total sum of `dat`, which gives us a weighted mean. 
+We start by extracting one `data.frame` from `dat_list`, and then use various flavors of `apply` on that. In #1 and #2, we use the argument names for clarity (use `?apply`) to view them.  #1 applies sum to each row of `dat`, #2 to each column (i.e. the exact same thing as `rowSums` and `colSums`).  #3 takes the row means (i.e. the analog to `rowMeans`), and #4 the range of values in each column. In the last case, `apply` is more useful because there is no `rowRanges` function that provides a simpler version.  In #5 we use an anonymous function to take the row sums of `dat` and divide them by the total sum of `dat`, which gives us a weighted mean. 
 
 ### When should I use for versus *apply?
 
@@ -1360,7 +1374,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Question: why shouldn't you use the name "df" to name this object?  
     - Change the column names of `DF` to "a", "b", "c", and "grp". 
     - Question: why is it okay to rename a column in `DF` "c", but not to rename `v3` that name? 
-    - Look at the `str` of `DF`. What kind of data type is "grp"? What are two ways you can change it from a factor to a character? (Hint: one is when you create it, one is after you have created it. Both answers are available in the vignette) 
+    - Look at the `str` of `DF`. What kind of data type is "grp"? How would you change it between character and factor and back again? 
 
 4. Demonstrate the use of your new function: 
     - Use `mycalc` to sum and divide the following pairs of objects:
