@@ -610,7 +610,9 @@ m[!m[, "a"] %in% 3:5, 1:3]
 
 In Chunk 11 #1 we search in `m`'s first column for the row that holds the value 3, and then use that to select the values on that row in columns 1-3, which is the equivalent of `m[3, ]` (because the values in `m[, 1]` correspond to the row numbers). #2 looks for all values >11 in column 2, but selects the values from column 3.  #3 searches for values >3 in column 1 and values <15 in column 2, pulling out values from column 3. #4 does the same search using column names rather than column index integers, but pulls out values from columns 2 and 3. Finally, #5 introduces the operator `!`, which, when combined with `%in%` is used to identify the rows in column a (1) that do not match the values 3, 4, or 5, and then subset the values in columns 1-3 (a, b, and c).
 
+
 ### data.frame
+
 
 We now know that a `data.frame` is a matrix that contains more than one data type. It is also a column-bound list. When it comes to indexing, `data.frame` is very similar to `matrix`, but also has some differences. 
 
