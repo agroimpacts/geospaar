@@ -7,132 +7,93 @@
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
-    <link rel="stylesheet" href="themes/class7.css" type="text/css" />
+    <link rel="stylesheet" href="themes/class8.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
 # Geospatial Analysis with R
-## Class 7
+## Class 8
 
 ---
-
 
 
 ```r
-library(stars)
-s3url &lt;- glue::glue("/vsis3/activemapper/",
-                    "planet/composite_sr_buf_fix/GS/",
-                    "tile486317_736815_736967.tif")  # not accessible
-p &lt;- read_stars(s3url, proxy = TRUE)
-png(here::here("external/slides/figures/ghana_planet_stars.png"), height = 2.9, 
-    width = 8, units  = "in", res = 300, bg = "white")
-plot(p)
-dev.off()
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+data(world.cities, package = "maps")
+
+world &lt;- ne_countries(scale = "medium", returnclass = "sf")
+afr_capitals &lt;- world.cities %&gt;% filter(capital == 1) %&gt;% 
+  st_as_sf(coords = c("long", "lat"), crs = 4326) %&gt;% 
+  st_intersection(., world %&gt;% filter(continent == "Africa"))
+p &lt;- world %&gt;% filter(continent == "Africa") %&gt;% 
+  ggplot() + geom_sf(aes(fill = name), lwd = 0.2) + 
+  geom_sf(data = afr_capitals, col = "blue", size = 0.5) + 
+  scale_fill_grey(guide = FALSE) + theme_minimal()
+ggsave(here::here("external/slides/figures/africa_capitals.png"), 
+       width = 5, height = 4, dpi = 300, bg = "transparent")
 ```
 
-
 ---
+# Programming tip
+
+- Whenever possible, let the computer do your counting for you:
+
+```r
+a &lt;- 1:1001
+a[length(a)]
+```
+
+```
+## [1] 1001
+```
+- Rather than 
+
+```r
+a[1001]
+```
+
+```
+## [1] 1001
+```
+- Imagine this case:
+
+```r
+set.seed(1)
+b &lt;- 1:sample(1:10000, 1)
+b[length(b)]
+```
+
+```
+## [1] 1017
+```
+---
+
 
 # Today
 
-- R ecosystem continued: environments wrap-up
-- Indexing and subsetting
+- Next module
+- 2-d indexing
+- A little bit of summarizing
+- Control structures (maybe)
 
 ---
 
-## Environments
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="figures/class5_envs.png" alt="http://adv-r.had.co.nz/Environments.html" width="70%" /&gt;
-&lt;p class="caption"&gt;http://adv-r.had.co.nz/Environments.html&lt;/p&gt;
-&lt;/div&gt;
-
----
-## Environments
-- Global environment
-- Package environment
-    - external interface to package - how we find functions 
-- Namespace environment
-    - internal interface to packge - how functions find variables
-- Function environment (see http://adv-r.had.co.nz/Environments.html#function-envs)
-  - Enclosing environment
-  - Binding environment
-  - Execution environment
-
----
-###  Execution environments
+## Next module
+- Reading and writing non-spatial data
+- Data preparation/shaping
+- Basic analyses
+- Visualization (non-spatial)
 
 
-```r
-x &lt;- 1:10
-myfun &lt;- function() {
-  x * 10
-}
-myfun()
-```
-
-```
-##  [1]  10  20  30  40  50  60  70  80  90 100
-```
-
-```r
-myfun &lt;- function(x) {
-  x &lt;- x * 10
-  return(x)
-}
-x &lt;- 10
-myfun(x = 20)
-```
-
-```
-## [1] 200
-```
-
-```r
-x
-```
-
-```
-## [1] 10
-```
-
----
-
-
-```r
-myfun &lt;- function(x) {
-  x &lt;- x * 10
-  print(environment())
-  return(x)
-}
-myfun(x)
-```
-
-```
-## &lt;environment: 0x7ff4c96e1cb0&gt;
-```
-
-```
-## [1] 100
-```
-
-```r
-myfun(x)
-```
-
-```
-## &lt;environment: 0x7ff4c973f770&gt;
-```
-
-```
-## [1] 100
-```
-
----
 ## Create your own data
 
-- Create the following:
+- Create the following 1-D structures
   - `a`: a random vector of integers with 10 elements drawn from 1-20:
     - Use the `sample` function with `set.seed(10)`
     - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
@@ -140,56 +101,236 @@ myfun(x)
       - Create the identical vector of names using the `paste` function.
   - `b`: Using `a` as an index to select from `letters`
   - `d`: Use `rnorm` with a mean = 100 and an sd of 20
-  - Why did I skip `c`? 
+    - Why did I skip `c`? 
   - Create a list `l` from `a`, `b`, `d`. 
     - Assign the names of the vectors in `l` to the `l`'s elements
 
----
-## 2-d structures
 
-- Create the following:
+---
+## Create your own data
+
+- Create the following 2-d structures
   - `m`: a matrix with three integer columns named "V1", "V2", "V3"
     - Create each column first as its own vector, then combine
     - `V1` = 1:10
     - `V2` is a random sample between 1:100
-    - `V3` is drawn from a random uniform distribution between 0 and 50     - Use the same `set.seed(50)` as before
+    - `V3` is drawn from a random uniform distribution between 0 and 50     
+    - Use `set.seed(10)`
     - Inspect the `str` and `class` of `m`
   - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
     - `V4` is a random selection of the letters A-E
+    
 
----
-## 1-d Indexing/subsetting/replacing 
-- Select the 1st, 2nd, and 10th elements from `a`
-- Select the elements of `a` named V1, V2, V3 (use the names)
-- Replace the second to last value of `a` with the word "sasquatch"
-  - Use code to find the index value, not the actual integer value of the index
-- Select from `b` the values "c", "d", "e"
-- Identify the index position in `b` of values "c", "d", "e"
-- Select the first 5 values of `d` and the last 5 values of `c` into two separate vectors and multiply them. 
-- Select from `d` all values &gt; 100:
-  - How many values are there?
-- Select from `d` all values between 95 and 105, and replace them with 100
-- Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l` 
+```
+##  num [1:10, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
+##  - attr(*, "dimnames")=List of 2
+##   ..$ : NULL
+##   ..$ : chr [1:3] "V1" "V2" "V3"
+```
 
+```
+##    V1 V2        V3 V4
+## 1   1  9 29.796265  c
+## 2   2 74 17.902499  b
+## 3   3 76 21.440471  e
+## 4   4 55  2.595166  e
+## 5   5 72 13.208883  e
+## 6   6 54 19.939537  a
+## 7   7 39 41.806707  d
+## 8   8 83 43.236061  b
+## 9   9 88 30.767621  e
+## 10 10 15 38.755495  b
+```
 ---
+
 ## 2-d Indexing/subsetting/replacing
 - Select the first 10 values from `m`, using a single vector and no row or column information
 - Use a single vector to select the last row, column value from `m`
 - Replace the value selected in 2 above with -99
+
+
+```r
+m[length(m), 1] &lt;- -99
+```
+
 - Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10 
+
+
+```r
+m[3: 1:2] &lt;- m[3, 12] * 10
+```
+
 - Do the same, but select the columns by their name, and reset the new values by dividing by 10
-- Select from `dat` the values of V3, and square them. Do it using index notation, column name in `[]`, and `$`
-- Subset the first two rows and columns of `dat` into a new data.frame `datss`. 
-- Replace `dat` rows 1:2, column 1:2 with the values -1:-4
-- Reset the part of `dat` you just changed with the values in `datss`
+
+
+```r
+m[3, c("V1", "V2")] &lt;-  # finish this
+```
+
 ---
 
-## Summarizing datasets
-- Calculate the row and column sums of both `m` and `dat`. 
-- Calculate the overall means and sums of all values in each dataset
-- From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable. 
+- Extract V3 from `dat` and square it. Using the column name and both `[]` (there are three ways) and `$` to do the subsetting.
 
 
+```r
+# The 1 provided, two missing
+dat[["V3"]]^2
+```
+
+- Subset the first two rows and columns of `dat` into a new data.frame `datss`.
+- Replace `dat` rows 1:2, column 1:2 with the values -1:-4
+- Reset the part of `dat` you just changed with the values in `datss`
+
+
+```r
+datss &lt;- dat[1:2]  # 1
+dat[1:2][1:2] &lt;- c(-1, -4)  # 2
+# ??? # 3
+```
+
+
+
+
+---
+## Control structures
+### Branching
+
+```r
+a &lt;- 5
+if(a &gt; 10) {
+  print("Greater than 10!")
+} else {
+  print("Less than or equal to 10")
+}
+```
+
+```
+## [1] "Less than or equal to 10"
+```
+
+### Looping
+
+```r
+b &lt;- 1:3
+for(i in b) print(i)
+```
+
+```
+## [1] 1
+## [1] 2
+## [1] 3
+```
+
+---
+
+### *apply
+- A special form of looping
+- Intended for *applying* a function to data
+
+
+```r
+l &lt;- list(dat$V1, dat$V2, dat$V3)
+l
+```
+
+```
+## [[1]]
+##  [1]  1  2  3  4  5  6  7  8  9 10
+## 
+## [[2]]
+##  [1]  9 74 76 55 72 54 39 83 88 15
+## 
+## [[3]]
+##  [1] 29.796265 17.902499 21.440471  2.595166 13.208883 19.939537 41.806707
+##  [8] 43.236061 30.767621 38.755495
+```
+
+```r
+lapply(l, mean)
+```
+
+```
+## [[1]]
+## [1] 5.5
+## 
+## [[2]]
+## [1] 56.5
+## 
+## [[3]]
+## [1] 25.94487
+```
+
+---
+### *apply
+
+- Key uses: 
+  - Return results of loop directly into object
+  - Use with anonymous functions to pass an iterator, often into more complex procedures
+  
+
+```r
+# Simple
+o &lt;- lapply(1:2, function(x) l[[x]])
+o
+```
+
+```
+## [[1]]
+##  [1]  1  2  3  4  5  6  7  8  9 10
+## 
+## [[2]]
+##  [1]  9 74 76 55 72 54 39 83 88 15
+```
+
+---
+
+```r
+# More complex
+o2 &lt;- lapply(1:5, function(x) {
+  l[[1]][x] - l[[2]][x]
+})
+o2
+```
+
+```
+## [[1]]
+## [1] -8
+## 
+## [[2]]
+## [1] -72
+## 
+## [[3]]
+## [1] -73
+## 
+## [[4]]
+## [1] -51
+## 
+## [[5]]
+## [1] -67
+```
+
+---
+## Looping practice
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+
+
+```r
+for(i in 10) i
+```
+
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+
+```r
+for(i in c(1, 10)) {
+  o &lt;- i * 10
+}
+```
+
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
