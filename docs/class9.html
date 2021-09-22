@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class9.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 9
+
+---
+
+
+
+
+
+```r
+# code adapted from example from 
+# https://www.r-graph-gallery.com/330-bubble-map-with-ggplot2
+library(tidyverse)
+library(sf)
+library(geospaar)
+districts &lt;- read_sf(
+  system.file("extdata", "districts.shp", package = "geospaar")
+)
+farmers &lt;- read_csv(
+  system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+) %&gt;% group_by(uuid) %&gt;% 
+  summarize(x = mean(x), y = mean(y), n = n()) %&gt;%
+  filter(y &gt; -18) #%&gt;% st_as_sf(coords = c("x", "y"), crs = 4326)
+p &lt;- ggplot() + 
+  geom_sf(data = districts, lwd = 0.1) + 
+  geom_point(data = farmers, 
+             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+  scale_color_viridis_c(guide = FALSE) + theme_void() + 
+  theme(legend.position = c(0.85, 0.2)) +
+  scale_size(range = c(0.1, 5), name = "N reports/week")
+ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "grey")
+```
+
+---
+
+# Today
+
+- Control structures/looping
+- Reading in data
+- Reshaping
+
+---
+
+## Looping practice (wrap-up)
+
+- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+
+
+```r
+for(i in 10) i
+```
+
+- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+
+```r
+for(i in c(1, 10)) {
+  o &lt;- i * 10
+}
+```
+
+- Do the same as above, but use an `lapply` that assigns output to `o`
+- Do the same as above, but use `sapply` instead of `lapply`
+- Let's use `sapply` to find which elements of `l` are `matrix`
+- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+---
+## Looping practice continued
+### First let's create some new data
+
+```r
+set.seed(100)
+m1 &lt;- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+```
+
+- Create an `m2` and `m3` with the same settings, but use a seed of 200 for `m2` and 300 for `m3`.  
+
+---
+
+## Looping
+### Create a list of matrices
+- Create the matrices `m1`, `m2`, `m3` using an `lapply`: 
+- Ingredients:
+  - vector to iterate over: `c(100, 200, 300)`
+  - output object: `l`
+  - anonymous function to create each matrix: 
+  
+
+```r
+function(x) {
+  m &lt;- cbind(...)  
+}
+```
+
+---
+## Looping 2
+### Create list of data.frames
+- Create a list `l2` with three data.frames, having the same variables `V1:V3` as in m, but with a 4th variable `GRP` that is sampled from the first 5 values of `LETTERS`
+- Ingredients:
+  - Same code used to make `l`
+  - Within the anonymous function, make a fourth variable `v` using `sample` below the code to make `m`
+  - Combine `m` and `v` (naming it `GRP`) using `data.frame`
+
+---
+## Reading/writing data
+
+Let's first write some data and read it back in:
+
+```r
+dummy_data &lt;- data.frame(a = 1:10, b = sample(letters[1:5], 10, replace = TRUE))
+
+# two ways of writing
+write.csv(dummy_data, file = "~/Desktop/demo/dummy_data.csv")
+readr::write_csv(dummy_data, file = "~/Desktop/demo/dummy_data.csv")
+
+# two ways of reading
+read.csv("~/Desktop/demo/dummy_data.csv")
+readr::read_csv("~/Desktop/demo/dummy_data.csv")
+```
+
+---
+## Reading/writing data
+With a bit of reshaping to start
+
+- Let's take `l2` from the previous exercise
+- Combine it into a single `data.frame` using the following code
+
+```r
+d &lt;- do.call(rbind, l2)
+```
+
+- Now write that out using `write.csv` and `readr::write_csv`
+- And read it back in using `read.csv` and `readr::read_csv`
+
+---
+## Reading/writing and looping
+
+- Let's write `l2` out using a `for` loop to create three output csv files
+
+```r
+for(i in 1:length(l2)) {
+  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"))
+}
+```
+
+- And read those back into a list: use `lapply` to capture data in list `l3`
+- Ingredients:
+  - Iterate over `1:3`
+  - Have `read.csv` in anonymous function body
+  - Reuse the `paste0` from code chunk above
+  
+---
+## Reshaping data
+
+Going from long to wide and back again
+
+```r
+library(dplyr)
+library(tidyr)
+
+# d1 &lt;- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
+d1 &lt;- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
+d2 &lt;- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
+DF &lt;- rbind(d1, d2)
+
+df_wide &lt;- DF %&gt;% pivot_wider(names_from = grp, values_from = a)
+df_long &lt;- df_wide %&gt;% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
+```
+
+- Reorder columns and sort grp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
