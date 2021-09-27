@@ -136,7 +136,7 @@ plot(price_weight$price, price_weight$weight)
 - Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
 
 ---
-## Practice
+## Demo
 ### Split-Apply-Combine
 
 #### tidyverse
@@ -162,119 +162,15 @@ do.call(rbind, lapply(unique(df_long$grp), function(x) {
 }))
 ```
 
-
-
-
-
-
-
-
-
+---
+## Practice
+- Use `dplyr` on `price_weight_long` to calculate the mean and standard deviation of "value" by the "element" variable
+- Do the same, but with `lapply`
 
 ---
-### Part 2
-- Calculate the mean of production for each crop (`dplyr`)
-- Calculate the mean of production for each crop by country (`dplyr`)
-- Calculate the mean yield (`prod / harv_area`) for each crop by country (`dplyr`)
-- Advanced: do this with `lapply` as well as `dplyr`
+## Plotting
 
-
----
-## Part 3
-- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
-- Using `ggplot2`, plot a histogram of maize yields for Zambia (blue fill, grey outline)
-- Do the same with base plots
-
-
-
-## Additional practicals - SAC
-- *set up:* create a named list `l` made up of three matrices (`m1`, `m2`, `m3`)
-  - matrix dimensions: 10 X 3, variables v1:v3: 1:10, `rnorm(10, 100, 20)`, `sample(1:100, 10, replace = TRUE)`; seeds of 1, 2, and 3
-- *Write a `for` that*:
-  - Iterate over `1:10` and `print`s iterator `i` times 10
-  - Iterates over the rows of `l$m1`, printing sum of each row
-  - Iterate over each element of `l`, printing first row of each element
-- *Write an `lapply` that*:
-  - Iterates over `1:10` and returns iterator `i` times 10
-  - Applies the `sum` function to each element of `l`
-  - Applies the `rowSums` function to each element of `l`
-  - Applies the `sum` function to the first row of each element of `l`
-- *Repeat previous steps with `sapply`*
-
----
-
-```r
-set.seed(1)
-m1 &lt;- cbind(V1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
-            v3 = sample(1:100, size = 10, replace = TRUE))
-set.seed(2)
-m2 &lt;- cbind(V1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
-            v3 = sample(1:100, size = 10, replace = TRUE))
-set.seed(3)
-m3 &lt;- cbind(V1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
-            v3 = sample(1:100, size = 10, replace = TRUE))
-
-for(i in 1:10) print(i * 10)
-for(i in 1:nrow(l$m1)) print(sum(l$m1[i, ]))
-for(i in 1:length(l)) print(l[[i]][1, ])
-
-lapply(1:10, function(x) x * 10)
-lapply(l, sum)
-lapply(l, rowSums)
-lapply(1:length(l), function(x) sum(l[[x]][1, ]))
-
-sapply(1:10, function(x) x * 10)
-sapply(l, sum)
-sapply(l, rowSums)
-sapply(1:length(l), function(x) sum(l[[x]][1, ]))
-```
----
-
-### SAC Extras
-- Use an `lapply` to create `l`. 
-- Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`. Now do `sapply`
-- Add a `data.frame` `d` to `l`. `d` is `m1` and `v4` random sample of a-e
-- Use lapply with a conditional to test whether elements of `l` are a matrix. If they are calculate `mean`, `sd`.  If they are not (i.e. it's a `data.frame`), then calculate `mean` and `sd` of appropriate columns
----
-
-
-```r
-seeds &lt;- c(1, 2, 3)  # or 100 * 1:3
-l &lt;- lapply(seeds, function(x) {
-  set.seed(x)
-  m &lt;- cbind(v1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
-             v3 = sample(1:100, size = 10, replace = TRUE))
-})
-names(l) &lt;- paste0("m", 1:3)
-
-lapply(l, function(x) c("mu" = mean(x), "sd" = sd(x)))
-sapply(l, function(x) c("mu" = mean(x), "sd" = sd(x)))
-
-l$d &lt;- data.frame(l$m1, v4 = sample(letters[1:5], 10, replace = TRUE))
-
-lapply(l, function(x) {
-  if(is.matrix(x)) {
-    c("mu" = mean(x), "sd" = sd(x))
-  } else {
-    c("mu" = mean(unlist(x[, 1:3])), "sd" = sd(unlist(x[, 1:3])))
-  } 
-})
-```
-
----
-### Data shaping
-
-- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
-- Determine the unique (distinct) values in the *group* and *element* columns
-- Spread `tb_df` so that "Price" and "Element" have their own columns
-- Do the same as above, but exclude the *group* variable
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in decending order
-- Calculate a new column that describes the weight:price ratio
-
----
-### Data Shaping Extras
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order, select out the values of group *a*, and calculate the weight:price ratio just for those
+- Plot values by groups
 
 
 ---

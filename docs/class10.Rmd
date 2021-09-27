@@ -63,7 +63,7 @@ for(i in 1:length(l2)) {
 ## Reshaping data
 
 Going from long to wide and back again
-```{r, eval=TRUE, message=FALSE, warning=FALSE,}
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(tidyverse)
 
 # d1 <- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
