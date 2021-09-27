@@ -95,6 +95,12 @@ function(x) {
   m <- cbind(...)  
 }
 ```
+```{r, eval=FALSE}
+l <- lapply(put your iterator here, function(x) {
+  m <- grab the statement from the m1 and drop in here
+})
+```
+
 
 ---
 ## Looping 2
@@ -113,12 +119,13 @@ Let's first write some data and read it back in:
 dummy_data <- data.frame(a = 1:10, b = sample(letters[1:5], 10, replace = TRUE))
 
 # two ways of writing
-write.csv(dummy_data, file = "~/Desktop/demo/dummy_data.csv")
-readr::write_csv(dummy_data, file = "~/Desktop/demo/dummy_data.csv")
+f <- "~/Desktop/demo/dummy_data.csv"
+write.csv(dummy_data, file = f, row.names = FALSE)
+# readr::write_csv(dummy_data, file = f)
 
 # two ways of reading
-read.csv("~/Desktop/demo/dummy_data.csv")
-readr::read_csv("~/Desktop/demo/dummy_data.csv")
+read.csv(f)
+# readr::read_csv(f)
 ```
 
 ---
@@ -166,6 +173,7 @@ DF <- rbind(d1, d2)
 df_wide <- DF %>% pivot_wider(names_from = grp, values_from = a)
 df_long <- df_wide %>% 
   pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
+df_long %>% select(i, a, grp) %>% arrange(grp)
 
 ```
 

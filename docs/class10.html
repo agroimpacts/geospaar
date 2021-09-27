@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class9.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 10
+
+---
+
+
+&lt;img src="figures/zambia_topo.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+library(raster)
+library(geospaar)
+data(dem)
+topo &lt;- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
+png(here::here("external/slides/figures/zambia_topo.png"), 
+       width = 6, height = 3, res = 300, units = "in", bg = "grey")
+par(mfrow = c(1, 2), mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
+plot(topo[[1]], main = "TRI", axes = FALSE, box = FALSE)
+plot(topo[[2]], main = "Flow Direction", axes = FALSE, box = FALSE)
+dev.off()
+```
+---
+# Today
+
+- Homework review
+- Data shaping
+- Analysis: SAC
+- Plotting
+
+---
+
+# Homework
+
+## Set-up
+
+```r
+l2 &lt;- lapply(c(100, 200, 300), function(x){
+  set.seed(x)
+  m &lt;- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE),
+             V3 = rnorm(n = 20, mean = 500, sd = 100))
+  v &lt;- sample(LETTERS[1:5], size = nrow(m), replace = TRUE)
+  d &lt;- data.frame(m, GRP = v)
+})
+
+for(i in 1:length(l2)) {
+  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"), 
+            row.names = FALSE)
+}
+```
+
+?? Result
+
+---
+## Reshaping data
+
+Going from long to wide and back again
+
+```r
+library(tidyverse)
+
+# d1 &lt;- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
+d1 &lt;- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
+d2 &lt;- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
+DF &lt;- rbind(d1, d2)
+
+df_wide &lt;- DF %&gt;% pivot_wider(names_from = grp, values_from = a)
+df_long &lt;- df_wide %&gt;% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
+df_long %&gt;% select(i, a, grp) %&gt;% arrange(grp)
+```
+
+```
+## # A tibble: 20 × 3
+##        i     a grp  
+##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;
+##  1     1     1 a    
+##  2     2     2 a    
+##  3     3     3 a    
+##  4     4     4 a    
+##  5     5     5 a    
+##  6     6     6 a    
+##  7     7     7 a    
+##  8     8     8 a    
+##  9     9     9 a    
+## 10    10    10 a    
+## 11     1    11 b    
+## 12     2    12 b    
+## 13     3    13 b    
+## 14     4    14 b    
+## 15     5    15 b    
+## 16     6    16 b    
+## 17     7    17 b    
+## 18     8    18 b    
+## 19     9    19 b    
+## 20    10    20 b
+```
+
+
+---
+## New dataset
+
+
+```r
+set.seed(1)
+price_weight &lt;- tibble(
+  year = 1951:2000, 
+  price = runif(n = length(year), 20, 50),
+  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
+)
+plot(price_weight$price, price_weight$weight)
+```
+
+&lt;img src="class10_files/figure-html/unnamed-chunk-5-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+## Practice
+### Reshaping
+- Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%&gt;%`, `pivot_longer`. Name it `price_weight_long`.
+- Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
+
+---
+## Practice
+### Split-Apply-Combine
+
+#### tidyverse
+
+```r
+df_long &lt;- df_wide %&gt;% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a") %&gt;% 
+  select(i, a, grp) %&gt;% arrange(grp)
+
+df_long %&gt;% 
+  group_by(grp) %&gt;% 
+  summarize(mean = mean(a), stdev = sd(a))
+```
+
+#### Old school
+
+```r
+do.call(rbind, lapply(unique(df_long$grp), function(x) {
+  df_long %&gt;% 
+    filter(grp == x) %&gt;% 
+    summarize(mean = mean(a), stdev = sd(a)) %&gt;% 
+    mutate(grp = x) %&gt;% select(grp, mean, stdev)
+}))
+```
+
+
+
+
+
+
+
+
+
+
+---
+### Part 2
+- Calculate the mean of production for each crop (`dplyr`)
+- Calculate the mean of production for each crop by country (`dplyr`)
+- Calculate the mean yield (`prod / harv_area`) for each crop by country (`dplyr`)
+- Advanced: do this with `lapply` as well as `dplyr`
+
+
+---
+## Part 3
+- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
+- Using `ggplot2`, plot a histogram of maize yields for Zambia (blue fill, grey outline)
+- Do the same with base plots
+
+
+
+## Additional practicals - SAC
+- *set up:* create a named list `l` made up of three matrices (`m1`, `m2`, `m3`)
+  - matrix dimensions: 10 X 3, variables v1:v3: 1:10, `rnorm(10, 100, 20)`, `sample(1:100, 10, replace = TRUE)`; seeds of 1, 2, and 3
+- *Write a `for` that*:
+  - Iterate over `1:10` and `print`s iterator `i` times 10
+  - Iterates over the rows of `l$m1`, printing sum of each row
+  - Iterate over each element of `l`, printing first row of each element
+- *Write an `lapply` that*:
+  - Iterates over `1:10` and returns iterator `i` times 10
+  - Applies the `sum` function to each element of `l`
+  - Applies the `rowSums` function to each element of `l`
+  - Applies the `sum` function to the first row of each element of `l`
+- *Repeat previous steps with `sapply`*
+
+---
+
+```r
+set.seed(1)
+m1 &lt;- cbind(V1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
+            v3 = sample(1:100, size = 10, replace = TRUE))
+set.seed(2)
+m2 &lt;- cbind(V1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
+            v3 = sample(1:100, size = 10, replace = TRUE))
+set.seed(3)
+m3 &lt;- cbind(V1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
+            v3 = sample(1:100, size = 10, replace = TRUE))
+
+for(i in 1:10) print(i * 10)
+for(i in 1:nrow(l$m1)) print(sum(l$m1[i, ]))
+for(i in 1:length(l)) print(l[[i]][1, ])
+
+lapply(1:10, function(x) x * 10)
+lapply(l, sum)
+lapply(l, rowSums)
+lapply(1:length(l), function(x) sum(l[[x]][1, ]))
+
+sapply(1:10, function(x) x * 10)
+sapply(l, sum)
+sapply(l, rowSums)
+sapply(1:length(l), function(x) sum(l[[x]][1, ]))
+```
+---
+
+### SAC Extras
+- Use an `lapply` to create `l`. 
+- Use `lapply` to calculate and output `mean` and `sd` of each matrix in `l`. Now do `sapply`
+- Add a `data.frame` `d` to `l`. `d` is `m1` and `v4` random sample of a-e
+- Use lapply with a conditional to test whether elements of `l` are a matrix. If they are calculate `mean`, `sd`.  If they are not (i.e. it's a `data.frame`), then calculate `mean` and `sd` of appropriate columns
+---
+
+
+```r
+seeds &lt;- c(1, 2, 3)  # or 100 * 1:3
+l &lt;- lapply(seeds, function(x) {
+  set.seed(x)
+  m &lt;- cbind(v1 = 1:10, v2 = rnorm(n = 10, mean = 100, sd = 10), 
+             v3 = sample(1:100, size = 10, replace = TRUE))
+})
+names(l) &lt;- paste0("m", 1:3)
+
+lapply(l, function(x) c("mu" = mean(x), "sd" = sd(x)))
+sapply(l, function(x) c("mu" = mean(x), "sd" = sd(x)))
+
+l$d &lt;- data.frame(l$m1, v4 = sample(letters[1:5], 10, replace = TRUE))
+
+lapply(l, function(x) {
+  if(is.matrix(x)) {
+    c("mu" = mean(x), "sd" = sd(x))
+  } else {
+    c("mu" = mean(unlist(x[, 1:3])), "sd" = sd(unlist(x[, 1:3])))
+  } 
+})
+```
+
+---
+### Data shaping
+
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in decending order
+- Calculate a new column that describes the weight:price ratio
+
+---
+### Data Shaping Extras
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order, select out the values of group *a*, and calculate the weight:price ratio just for those
+
+
+---
+
+
+
+
+```r
+tb_df &lt;- readr::read_csv(here::here("external/notebooks/data/dummy_data2.csv"))
+tb_df %&gt;% distinct(group, element)
+# tb_df %&gt;% distinct(group)
+# tb_df %&gt;% distinct(element)
+tb_df %&gt;% pivot_wider(names_from = element, values_from = value)
+tb_df %&gt;% select(-group) %&gt;% 
+  pivot_wider(names_from = element, values_from = value)
+tb_df %&gt;% 
+  pivot_wider(names_from = element, values_from = value) %&gt;% 
+  arrange(group)
+tb_df %&gt;% pivot_wider(names_from = element, values_from = value) %&gt;% 
+  arrange(group, desc(year))
+tb_df %&gt;% pivot_wider(names_from = element, values_from = value) %&gt;% 
+  mutate(wt_price = Weight / Price)
+# extra
+tb_df %&gt;% pivot_wider(names_from = element, values_from = value) %&gt;% 
+  arrange(group, desc(year)) %&gt;%
+  filter(group == "a") %&gt;% mutate(wt_price = Weight / Price)
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 10
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class9.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, out.width = "100%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/zambia_topo.png")
+```
+
+---
+
+```{r, eval=FALSE}
+library(raster)
+library(geospaar)
+data(dem)
+topo <- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
+png(here::here("external/slides/figures/zambia_topo.png"), 
+       width = 6, height = 3, res = 300, units = "in", bg = "grey")
+par(mfrow = c(1, 2), mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
+plot(topo[[1]], main = "TRI", axes = FALSE, box = FALSE)
+plot(topo[[2]], main = "Flow Direction", axes = FALSE, box = FALSE)
+dev.off()
+```
+---
+# Today
+
+- Homework review
+- Data shaping
+- Analysis: SAC
+- Plotting
+
+---
+
+# Homework
+
+## Set-up
+```{r, eval=FALSE}
+l2 <- lapply(c(100, 200, 300), function(x){
+  set.seed(x)
+  m <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE),
+             V3 = rnorm(n = 20, mean = 500, sd = 100))
+  v <- sample(LETTERS[1:5], size = nrow(m), replace = TRUE)
+  d <- data.frame(m, GRP = v)
+})
+
+for(i in 1:length(l2)) {
+  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"), 
+            row.names = FALSE)
+}
+```
+
+?? Result
+
+---
+## Reshaping data
+
+Going from long to wide and back again
+```{r, eval=TRUE, message=FALSE, warning=FALSE,}
+library(tidyverse)
+
+# d1 <- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
+d1 <- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
+d2 <- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
+DF <- rbind(d1, d2)
+
+df_wide <- DF %>% pivot_wider(names_from = grp, values_from = a)
+df_long <- df_wide %>% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
+df_long %>% select(i, a, grp) %>% arrange(grp)
+
+```
+
+
+---
+## New dataset
+
+```{r, message=FALSE, warning=FALSE, out.width="40%", fig.align='center'}
+
+set.seed(1)
+price_weight <- tibble(
+  year = 1951:2000, 
+  price = runif(n = length(year), 20, 50),
+  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
+)
+plot(price_weight$price, price_weight$weight)
+
+```
+
+---
+## Practice
+### Reshaping
+- Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%>%`, `pivot_longer`. Name it `price_weight_long`.
+- Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
+
+---
+## Demo
+### Split-Apply-Combine
+
+#### tidyverse
+```{r, eval=FALSE}
+df_long <- df_wide %>% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a") %>% 
+  select(i, a, grp) %>% arrange(grp)
+
+df_long %>% 
+  group_by(grp) %>% 
+  summarize(mean = mean(a), stdev = sd(a))
+```
+
+#### Old school
+```{r, eval=FALSE}
+do.call(rbind, lapply(unique(df_long$grp), function(x) {
+  df_long %>% 
+    filter(grp == x) %>% 
+    summarize(mean = mean(a), stdev = sd(a)) %>% 
+    mutate(grp = x) %>% select(grp, mean, stdev)
+}))
+```
+
+---
+## Practice
+- Use `dplyr` on `price_weight_long` to calculate the mean and standard deviation of "value" by the "element" variable
+- Do the same, but with `lapply`
+
+---
+## Plotting
+
+- Plot values by groups
+
+
+---
+```{r, echo = FALSE, eval = FALSE}
+library(tidyverse)
+set.seed(1)
+tb_df <- tibble(year = rep(1951:2000, 2), 
+                group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
+                value = runif(n = 100, min = 50, max = 100),
+                element = c(rep("Price", 50), rep("Weight", 50)))
+readr::write_csv(tb_df, 
+                 path = here::here("external/notebooks/data/dummy_data2.csv"))
+```
+
+
+```{r, eval = FALSE}
+tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data2.csv"))
+tb_df %>% distinct(group, element)
+# tb_df %>% distinct(group)
+# tb_df %>% distinct(element)
+tb_df %>% pivot_wider(names_from = element, values_from = value)
+tb_df %>% select(-group) %>% 
+  pivot_wider(names_from = element, values_from = value)
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group)
+tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group, desc(year))
+tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+  mutate(wt_price = Weight / Price)
+# extra
+tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group, desc(year)) %>%
+  filter(group == "a") %>% mutate(wt_price = Weight / Price)
+```
