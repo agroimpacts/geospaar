@@ -11,6 +11,40 @@ output:
       countIncrementalSlides: false
 ---
 
+```{r, out.width = "100%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/tanzam_rainfall.png")
+```
+
+---
+
+
+```{r, eval=FALSE}
+tz <- st_read(here::here("external/data/tanzania.geojson"))
+sagcot <- st_read(here::here("external/data/sagcotcl.geojson"))
+zambia <- st_read(
+  system.file("extdata/districts.shp", package = "geospaar")
+) %>% st_union()
+prec <- raster::getData(name = "worldclim", var = "prec", res = 2.5)
+
+precsum <- terra::app(terra::rast(prec), sum)
+tz_sagcot <- terra::vect(st_union(sagcot, zambia))
+prec_tzzam <- terra::mask(terra::crop(precsum, tz_sagcot), tz_sagcot)
+
+prec_stars <- stars::st_as_stars(raster::raster(prec_tzzam))
+p <- ggplot(zambia) + 
+  geom_sf(data = tz) +  
+  stars::geom_stars(data = prec_stars) +
+  scale_fill_viridis_c(name = "Rainfall (mm)", na.value = "transparent") + 
+  geom_sf(data = tz, fill = "transparent") +
+  geom_sf(data = zambia, fill = "transparent") +
+  geom_sf(data = sagcot, fill = "transparent") +
+  labs(x = NULL, y = NULL) +
+  theme_linedraw()
+ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4, 
+       width = 7, units = "in", dpi = 300)  
+```
+
+
 
 ---
 ## Homework 

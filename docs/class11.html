@@ -19,6 +19,39 @@ class: center, middle, inverse, title-slide
 ---
 
 
+&lt;img src="figures/tanzam_rainfall.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+```r
+tz &lt;- st_read(here::here("external/data/tanzania.geojson"))
+sagcot &lt;- st_read(here::here("external/data/sagcotcl.geojson"))
+zambia &lt;- st_read(
+  system.file("extdata/districts.shp", package = "geospaar")
+) %&gt;% st_union()
+prec &lt;- raster::getData(name = "worldclim", var = "prec", res = 2.5)
+
+precsum &lt;- terra::app(terra::rast(prec), sum)
+tz_sagcot &lt;- terra::vect(st_union(sagcot, zambia))
+prec_tzzam &lt;- terra::mask(terra::crop(precsum, tz_sagcot), tz_sagcot)
+
+prec_stars &lt;- stars::st_as_stars(raster::raster(prec_tzzam))
+p &lt;- ggplot(zambia) + 
+  geom_sf(data = tz) +  
+  stars::geom_stars(data = prec_stars) +
+  scale_fill_viridis_c(name = "Rainfall (mm)", na.value = "transparent") + 
+  geom_sf(data = tz, fill = "transparent") +
+  geom_sf(data = zambia, fill = "transparent") +
+  geom_sf(data = sagcot, fill = "transparent") +
+  labs(x = NULL, y = NULL) +
+  theme_linedraw()
+ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4, 
+       width = 7, units = "in", dpi = 300)  
+```
+
+
 
 ---
 ## Homework 
@@ -65,7 +98,7 @@ points(value ~ year, col = "blue", pch = 16,
        data = price_weight_long[price_weight_long$element == "weight", ])
 ```
 
-&lt;img src="/Users/lestes/Dropbox/teaching/clark/courses/geog_246-346/geospaar/docs/class11_files/figure-html/unnamed-chunk-2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-4-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 ## ggplot solution?
