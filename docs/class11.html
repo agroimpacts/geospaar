@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 11
+
+---
+
+
+
+---
+## Homework 
+Plot values by groups, `ggplot` version
+
+### Data
+
+```r
+library(tidyverse)
+set.seed(1)
+price_weight_long &lt;- tibble(
+  year = 1951:2000, 
+  price = runif(n = length(year), 20, 50),
+  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
+) %&gt;% 
+  pivot_longer(cols = price:weight, names_to = "element", values_to = "value")
+price_weight_long
+```
+
+```
+## # A tibble: 100 × 3
+##     year element value
+##    &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;
+##  1  1951 price    28.0
+##  2  1951 weight  277. 
+##  3  1952 price    31.2
+##  4  1952 weight  357. 
+##  5  1953 price    37.2
+##  6  1953 weight  363. 
+##  7  1954 price    47.2
+##  8  1954 weight  424. 
+##  9  1955 price    26.1
+## 10  1955 weight  216. 
+## # … with 90 more rows
+```
+---
+## The base way
+
+```r
+plot(value ~ year, col = "red", pch = 16, 
+     ylim = range(price_weight_long$value),
+     data = price_weight_long[price_weight_long$element == "price", ])
+points(value ~ year, col = "blue", pch = 16, 
+       data = price_weight_long[price_weight_long$element == "weight", ])
+```
+
+&lt;img src="/Users/lestes/Dropbox/teaching/clark/courses/geog_246-346/geospaar/docs/class11_files/figure-html/unnamed-chunk-2-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+## ggplot solution?
+
+---
+## New data
+
+```r
+library(tidyverse)
+set.seed(1)
+tb_df &lt;- tibble(year = rep(1951:2000, 2), 
+                group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
+                value = runif(n = 100, min = 50, max = 100),
+                element = c(rep("Price", 50), rep("Weight", 50)))
+```
+
+- Use `readr::write_csv` to write out `tb_df` to your `~/Desktop` to a csv file named `dummy_data2.csv`. 
+
+---
+## Data shaping
+
+- Use `readr::read_csv` to read `dummy_data2.csv` into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Closely related example:
+
+
+```r
+price_weight_long %&gt;% distinct(element)
+```
+
+```
+## # A tibble: 2 × 1
+##   element
+##   &lt;chr&gt;  
+## 1 price  
+## 2 weight
+```
+
+---
+
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- `pivot_wider` is your friend
+
+---
+
+- Spread `tb_df` so that "Price" and "Element" have their own columns, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
+- Calculate a new column that describes the weight:price ratio
+
+---
+- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
+- Determine the unique (distinct) values in the *group* and *element* columns
+- Spread `tb_df` so that "Price" and "Element" have their own columns
+- Do the same as above, but exclude the *group* variable
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
+- Redo the `pivot_wider` that includes *group*, and calculate a new column that describes the weight:price ratio (name it `wt_price`)
+- Do the same as above, but calculate the average weight, price, and `wt_price` for each group
+
+---
+
+- A little extra
+
+```r
+tb_df %&gt;% pivot_wider(names_from = element, values_from = value) %&gt;% 
+  arrange(group, desc(year)) %&gt;%
+  filter(group == "a") %&gt;% mutate(wt_price = Weight / Price)
+```
+
+
+
+---
+## Plotting
+
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis: both base and ggplot
+- Let's plot a line graph of Price (y axis) against year (x axis): base and ggplot
+- Calculate the mean Weight and Price by year, and plot as an XY scatter
+- Plot Weight against Year as a line plot, with a separate series for each group
+- Let's calculate a histogram of wt_price
+- Do the same, but let's make a histogram for each group. 
+
+
+
+
+---
+## Practical
+### Part 1
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%&gt;%`, `select`, `pivot_wider`, `rename`. 
+- Combine all these into a single data.frame `crops_df`
+- Best: the previous two points using `lapply` and `do.call(rbind)`
+- Okay: Do this separately for each dataset and then combine with `rbind`
+
+
+
+
+
+---
+### Part 2
+- Create (`mutate`) a new column *yield*
+- Calculate the mean of production &amp; yield for each crop (`dplyr`)
+- Calculate the mean of production &amp; yield for each crop by country (`dplyr`)
+- Advanced 1: do this with `sapply` as well as `dplyr`
+- Advanced 2:`arrange` mean yield by *crop* and *country* in ascending order
+
+
+
+---
+### Part 3
+- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
+- Using `ggplot2`, plot a histogram of maize yields for Zambia (blue fill, grey outline)
+- Advanced 1: Do the same for yields, but with base plots
+- Advanced 2: use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this. 
+- Advanced 3: as above, but with histograms. Side by side histogram bars for each country (`position = "dodge"`)
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

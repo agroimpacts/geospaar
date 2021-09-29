@@ -27,7 +27,6 @@ class: center, middle, inverse, title-slide
 ```r
 library(raster)
 library(geospaar)
-data(dem)
 topo &lt;- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
 png(here::here("external/slides/figures/zambia_topo.png"), 
        width = 6, height = 3, res = 300, units = "in", bg = "grey")
@@ -65,7 +64,14 @@ for(i in 1:length(l2)) {
 }
 ```
 
-?? Result
+The answer!
+
+```r
+l3 &lt;- lapply(1:3, function(x) {
+  read.csv(file = paste0("~/Desktop/demo/dummy_data", x, ".csv"))
+})
+```
+
 
 ---
 ## Reshaping data
@@ -82,34 +88,8 @@ DF &lt;- rbind(d1, d2)
 
 df_wide &lt;- DF %&gt;% pivot_wider(names_from = grp, values_from = a)
 df_long &lt;- df_wide %&gt;% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
-df_long %&gt;% select(i, a, grp) %&gt;% arrange(grp)
-```
-
-```
-## # A tibble: 20 × 3
-##        i     a grp  
-##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;
-##  1     1     1 a    
-##  2     2     2 a    
-##  3     3     3 a    
-##  4     4     4 a    
-##  5     5     5 a    
-##  6     6     6 a    
-##  7     7     7 a    
-##  8     8     8 a    
-##  9     9     9 a    
-## 10    10    10 a    
-## 11     1    11 b    
-## 12     2    12 b    
-## 13     3    13 b    
-## 14     4    14 b    
-## 15     5    15 b    
-## 16     6    16 b    
-## 17     7    17 b    
-## 18     8    18 b    
-## 19     9    19 b    
-## 20    10    20 b
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a") %&gt;%
+  select(i, a, grp) %&gt;% arrange(grp)
 ```
 
 
@@ -127,13 +107,22 @@ price_weight &lt;- tibble(
 plot(price_weight$price, price_weight$weight)
 ```
 
-&lt;img src="class10_files/figure-html/unnamed-chunk-5-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class10_files/figure-html/unnamed-chunk-6-1.png" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 ## Practice
 ### Reshaping
 - Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%&gt;%`, `pivot_longer`. Name it `price_weight_long`.
 - Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
+
+
+```r
+price_weight_long &lt;- price_weight %&gt;% 
+  pivot_longer(cols = price:weight, names_to = "element", values_to = "value")
+
+price_weight_wide &lt;- price_weight_long %&gt;% 
+  pivot_wider(names_from = element, values_from = value)
+```
 
 ---
 ## Demo
@@ -155,17 +144,43 @@ df_long %&gt;%
 
 ```r
 do.call(rbind, lapply(unique(df_long$grp), function(x) {
-  df_long %&gt;% 
-    filter(grp == x) %&gt;% 
-    summarize(mean = mean(a), stdev = sd(a)) %&gt;% 
-    mutate(grp = x) %&gt;% select(grp, mean, stdev)
+  # df_long %&gt;% 
+  #   filter(grp == x) %&gt;% 
+  #   summarize(mean = mean(a), stdev = sd(a)) %&gt;% 
+  #   mutate(grp = x) %&gt;% select(grp, mean, stdev)
+  dat &lt;- df_long[df_long$grp == x, ]
+  data.frame(grp = x, mean = mean(dat$a), stdev = sd(dat$a))
 }))
 ```
 
 ---
 ## Practice
 - Use `dplyr` on `price_weight_long` to calculate the mean and standard deviation of "value" by the "element" variable
+
+
+```r
+price_weight_long %&gt;% 
+  group_by(element) %&gt;% 
+  summarize(mean = mean(value), stdev = sd(value))
+```
 - Do the same, but with `lapply`
+
+
+```r
+do.call(rbind, lapply(unique(price_weight_long$element), function(x) {
+  price_weight_long %&gt;% 
+    filter(element == x) %&gt;% 
+    summarize(mean = mean(value), stdev = sd(value)) %&gt;% 
+    mutate(element = x) %&gt;% select(element, mean, stdev)
+}))
+
+do.call(rbind, lapply(unique(price_weight_long$element), function(x){
+  dat &lt;- price_weight_long[price_weight_long$element == x, ]
+  data.frame(element = x, mean = mean(dat$value), stdev = sd(dat$value))
+}))
+```
+
+
 
 ---
 ## Plotting
