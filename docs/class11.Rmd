@@ -31,11 +31,10 @@ tz_sagcot <- terra::vect(st_union(sagcot, zambia))
 prec_tzzam <- terra::mask(terra::crop(precsum, tz_sagcot), tz_sagcot)
 
 prec_stars <- stars::st_as_stars(raster::raster(prec_tzzam))
-p <- ggplot(zambia) + 
+p <- ggplot() + 
   geom_sf(data = tz) +  
   stars::geom_stars(data = prec_stars) +
   scale_fill_viridis_c(name = "Rainfall (mm)", na.value = "transparent") + 
-  geom_sf(data = tz, fill = "transparent") +
   geom_sf(data = zambia, fill = "transparent") +
   geom_sf(data = sagcot, fill = "transparent") +
   labs(x = NULL, y = NULL) +
@@ -75,6 +74,20 @@ points(value ~ year, col = "blue", pch = 16,
 ---
 ## ggplot solution?
 
+```{r, fig.align='center', out.width="40%"}
+p <- price_weight_long %>% 
+  ggplot() + geom_point(aes(x = year, y = value, color = element)) +
+  xlab("Year") + ylab("value") + 
+  ggtitle("Relation between year and value") + # Shiqi's solution
+  theme(
+    text = element_text(size = 20),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(hjust = 0.5),
+  )  # Galen's tweak
+p
+```
+
+
 ---
 ## New data
 ```{r}
@@ -88,6 +101,12 @@ tb_df <- tibble(year = rep(1951:2000, 2),
 
 - Use `readr::write_csv` to write out `tb_df` to your `~/Desktop` to a csv file named `dummy_data2.csv`. 
 
+```{r}
+readr::write_csv(tb_df, file =  "~/Desktop/dummy_data2.csv")
+# write.csv(tb_df, file =  "~/Desktop/dummy_data2.csv") # names rows by default :()
+```
+
+
 ---
 ## Data shaping
 
@@ -98,28 +117,82 @@ tb_df <- tibble(year = rep(1951:2000, 2),
 ```{r}
 price_weight_long %>% distinct(element)
 ```
+```{r, message=FALSE, warning=FALSE}
+tb_df <- readr::read_csv("~/Desktop/dummy_data2.csv") 
+tb_df %>% distinct(group, element)
+# tb_df %>% select(group, element) %>% View()
+```
+
 
 ---
 
 - Spread `tb_df` so that "Price" and "Element" have their own columns
 - `pivot_wider` is your friend
+- Related:
+
+```{r, eval = FALSE}
+price_weight_wide <- price_weight_long %>% 
+  pivot_wider(names_from = element, values_from = value)
+```
+```{r}
+tb_df_wide <- tb_df %>% 
+  pivot_wider(names_from = element, values_from = value)
+```
 
 ---
 
 - Spread `tb_df` so that "Price" and "Element" have their own columns, but exclude the *group* variable
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
-- Calculate a new column that describes the weight:price ratio
+
+```{r}
+tb_df %>% select(-group) %>% 
+  pivot_wider(names_from = element, values_from = value)
+# tb_df[, -grep("group", colnames(tb_df))]
+# tb_df[, -grep("group", colnames(tb_df))]
+```
 
 ---
-- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
-- Determine the unique (distinct) values in the *group* and *element* columns
-- Spread `tb_df` so that "Price" and "Element" have their own columns
-- Do the same as above, but exclude the *group* variable
 - Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+```{r}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>% 
+  arrange(group)
+```
+
+---
 - Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
-- Redo the `pivot_wider` that includes *group*, and calculate a new column that describes the weight:price ratio (name it `wt_price`)
-- Do the same as above, but calculate the average weight, price, and `wt_price` for each group
+```{r}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  arrange(group, desc(year))
+```
+
+---
+- Calculate a new column that describes the weight:price ratio, name it `wt_price`
+
+```{r}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  mutate(wt_price = Weight / Price)
+```
+
+---
+- Do the same as above, but calculate the average `weight`, `price`, and `wt_price` for each group
+
+```{r}
+tb_df %>%
+  pivot_wider(names_from = "element", values_from = "value") %>% 
+  mutate(wt_price = Weight / Price) %>% group_by(group) %>% 
+  summarize(price = mean(Price), weight = mean(Weight), 
+            wt_price = mean(wt_price))
+
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>% 
+  mutate(wt_price = Weight / Price) %>% 
+  group_by(group) %>% 
+  # summarise_all(funs(mean = mean)) %>% 
+  summarise_all(list(mean))
+```
+
 
 ---
 
@@ -149,113 +222,60 @@ tb_df %>% pivot_wider(names_from = element, values_from = value) %>%
 ---
 ## Plotting
 
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis: both base and ggplot
-- Let's plot a line graph of Price (y axis) against year (x axis): base and ggplot
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis
+
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  mutate(wt_price = Weight / Price) %>% 
+  ggplot() + geom_point(aes(x = Price, y = Weight))
+```
+
+---
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  mutate(wt_price = Weight / Price) %>% 
+  ggplot() + geom_line(aes(x = year, y = Price))
+```
+
+---
 - Calculate the mean Weight and Price by year, and plot as an XY scatter
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  group_by(year) %>% select(-group) %>% 
+  summarize_all(list(mean)) %>% 
+  ggplot() + geom_point(aes(x = Weight, y = Price))
+```
+---
 - Plot Weight against Year as a line plot, with a separate series for each group
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  ggplot() + geom_line(aes(x = year, y = Weight, color = group))
+```
+---
 - Let's calculate a histogram of wt_price
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  mutate(wt_price = Weight / Price) %>% 
+  ggplot() + 
+  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20)
+```
+---
 - Do the same, but let's make a histogram for each group. 
-
-
-
-
----
-## Practical
-### Part 1
-- read in the three `geospaar` FAO datasets into a list using `lapply`
-- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%>%`, `select`, `pivot_wider`, `rename`. 
-- Combine all these into a single data.frame `crops_df`
-- Best: the previous two points using `lapply` and `do.call(rbind)`
-- Okay: Do this separately for each dataset and then combine with `rbind`
-
-
-```{r, echo=FALSE, eval=FALSE}
-library(geospaar)
-fs <- dir(system.file("extdata/", package = "geospaar"), 
-          pattern = "FAOSTAT", full.names = TRUE)
-crops <- lapply(fs, readr::read_csv)
-crops_df <- do.call(rbind, lapply(crops, function(x) {
-  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    pivot_wider(names_from = Element, values_from = Value) %>% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production)
-}))
-crops_df
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+tb_df %>% 
+  pivot_wider(names_from = element, values_from = value) %>%  
+  mutate(wt_price = Weight / Price) %>% 
+  ggplot() + 
+  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20) +
+  facet_wrap(facets = ~group)
 ```
 
-
----
-### Part 2
-- Create (`mutate`) a new column *yield*
-- Calculate the mean of production & yield for each crop (`dplyr`)
-- Calculate the mean of production & yield for each crop by country (`dplyr`)
-- Advanced 1: do this with `sapply` as well as `dplyr`
-- Advanced 2:`arrange` mean yield by *crop* and *country* in ascending order
-
-```{r, echo=FALSE, eval=FALSE}
-crops_df <- crops_df %>% mutate(yield = prod / harv_area)
-crops_df %>% group_by(crop) %>% 
-  summarize(prod = mean(prod), yield = mean(yield))
-crops_df %>% group_by(crop) %>% select(prod, yield) %>% 
-  summarize_all(funs(mean))
-
-crops_df %>% group_by(crop, country) %>% select(prod, yield) %>% 
-  summarize_all(funs(mean)) %>% ungroup %>% 
-  arrange(crop, yield)
-
-sapply(c("Maize", "Sorghum", "Wheat"), function(x) {
-  c(mean(crops_df[crops_df$crop == x, ]$prod), 
-    mean(crops_df[crops_df$crop == x, ]$yield))
-})
-sapply(c("Maize", "Sorghum", "Wheat"), function(x) {
-  sapply(c("South Africa", "Zambia"), function(y) {
-    c(mean(crops_df[crops_df$crop == x & crops_df$country == y, ]$prod), 
-      mean(crops_df[crops_df$crop == x & crops_df$country == y, ]$yield))
-  })
-})
-sapply(c("Maize", "Sorghum", "Wheat"), function(x) {
-  sapply(c("South Africa", "Zambia"), function(y) {
-    d <- crops_df[crops_df$crop == x & crops_df$country == y, ]
-  })
-})
-
-```
-
----
-### Part 3
-- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
-- Using `ggplot2`, plot a histogram of maize yields for Zambia (blue fill, grey outline)
-- Advanced 1: Do the same for yields, but with base plots
-- Advanced 2: use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this. 
-- Advanced 3: as above, but with histograms. Side by side histogram bars for each country (`position = "dodge"`)
-
-```{r, echo = FALSE, eval=FALSE}
-ggplot(crops_df) + # %>% #filter(crop == "Maize")) + 
-  geom_line(aes(x = year, y = prod / harv_area, color = country)) + 
-  facet_grid(cols = vars(crop)) +
-  scale_color_manual(values = c("blue", "red"))
-ggplot(crops_df %>% filter(crop == "Maize" & country == "Zambia")) + 
-  geom_histogram(aes(x = prod), bins = 20, fill = "blue", col = "grey")
-
-# advanced
-plot(yield ~ year, 
-     data = crops_df[crops_df$crop == "Maize" & 
-                       crops_df$country == "South Africa", ], type = "l", 
-     col = "blue", ylim = c(0, 7))
-lines(yield ~ year, 
-      data = crops_df[crops_df$crop == "Maize" & 
-                        crops_df$country == "Zambia", ], col = "red")
-
-ggplot(crops_df) + # %>% #filter(crop == "Maize")) + 
-  geom_line(aes(x = year, y = prod / harv_area, color = country)) + 
-  facet_grid(cols = vars(crop)) +
-  scale_color_manual(values = c("blue", "red"))
-ggplot(crops_df) + 
-  geom_histogram(aes(x = prod / harv_area, fill = country), bins = 20,  
-                 col = "grey", position = "dodge") + 
-  scale_fill_manual(values = c("blue", "red")) + 
-  facet_grid(cols = vars(crop)) + xlab("Yield (t / ha)") + 
-  theme_bw()
-
-```
 

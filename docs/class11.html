@@ -38,11 +38,10 @@ tz_sagcot &lt;- terra::vect(st_union(sagcot, zambia))
 prec_tzzam &lt;- terra::mask(terra::crop(precsum, tz_sagcot), tz_sagcot)
 
 prec_stars &lt;- stars::st_as_stars(raster::raster(prec_tzzam))
-p &lt;- ggplot(zambia) + 
+p &lt;- ggplot() + 
   geom_sf(data = tz) +  
   stars::geom_stars(data = prec_stars) +
   scale_fill_viridis_c(name = "Rainfall (mm)", na.value = "transparent") + 
-  geom_sf(data = tz, fill = "transparent") +
   geom_sf(data = zambia, fill = "transparent") +
   geom_sf(data = sagcot, fill = "transparent") +
   labs(x = NULL, y = NULL) +
@@ -103,6 +102,23 @@ points(value ~ year, col = "blue", pch = 16,
 ---
 ## ggplot solution?
 
+
+```r
+p &lt;- price_weight_long %&gt;% 
+  ggplot() + geom_point(aes(x = year, y = value, color = element)) +
+  xlab("Year") + ylab("value") + 
+  ggtitle("Relation between year and value") + # Shiqi's solution
+  theme(
+    text = element_text(size = 20),
+    panel.background = element_rect(fill = "white"),
+    plot.title = element_text(hjust = 0.5),
+  )  # Galen's tweak
+p
+```
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-5-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+
 ---
 ## New data
 
@@ -116,6 +132,13 @@ tb_df &lt;- tibble(year = rep(1951:2000, 2),
 ```
 
 - Use `readr::write_csv` to write out `tb_df` to your `~/Desktop` to a csv file named `dummy_data2.csv`. 
+
+
+```r
+readr::write_csv(tb_df, file =  "~/Desktop/dummy_data2.csv")
+# write.csv(tb_df, file =  "~/Desktop/dummy_data2.csv") # names rows by default :()
+```
+
 
 ---
 ## Data shaping
@@ -137,27 +160,203 @@ price_weight_long %&gt;% distinct(element)
 ## 2 weight
 ```
 
+```r
+tb_df &lt;- readr::read_csv("~/Desktop/dummy_data2.csv") 
+tb_df %&gt;% distinct(group, element)
+```
+
+```
+## # A tibble: 10 × 2
+##    group element
+##    &lt;chr&gt; &lt;chr&gt;  
+##  1 a     Price  
+##  2 d     Price  
+##  3 b     Price  
+##  4 e     Price  
+##  5 c     Price  
+##  6 a     Weight 
+##  7 d     Weight 
+##  8 b     Weight 
+##  9 e     Weight 
+## 10 c     Weight
+```
+
+```r
+# tb_df %&gt;% select(group, element) %&gt;% View()
+```
+
+
 ---
 
 - Spread `tb_df` so that "Price" and "Element" have their own columns
 - `pivot_wider` is your friend
+- Related:
+
+
+```r
+price_weight_wide &lt;- price_weight_long %&gt;% 
+  pivot_wider(names_from = element, values_from = value)
+```
+
+```r
+tb_df_wide &lt;- tb_df %&gt;% 
+  pivot_wider(names_from = element, values_from = value)
+```
 
 ---
 
 - Spread `tb_df` so that "Price" and "Element" have their own columns, but exclude the *group* variable
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
-- Calculate a new column that describes the weight:price ratio
+
+
+```r
+tb_df %&gt;% select(-group) %&gt;% 
+  pivot_wider(names_from = element, values_from = value)
+```
+
+```
+## # A tibble: 50 × 3
+##     year Price Weight
+##    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1  1951  87.9   96.4
+##  2  1952  60.1   79.9
+##  3  1953  85.6   78.0
+##  4  1954  56.1   76.3
+##  5  1955  62.3   99.3
+##  6  1956  57.2   75.4
+##  7  1957  62.0   84.1
+##  8  1958  52.9   80.1
+##  9  1959  82.1   61.9
+## 10  1960  93.8   62.9
+## # … with 40 more rows
+```
+
+```r
+# tb_df[, -grep("group", colnames(tb_df))]
+# tb_df[, -grep("group", colnames(tb_df))]
+```
 
 ---
-- Use `readr::read_csv` to read dummy_dataset.csv into `tb_df`
-- Determine the unique (distinct) values in the *group* and *element* columns
-- Spread `tb_df` so that "Price" and "Element" have their own columns
-- Do the same as above, but exclude the *group* variable
 - Redo the `pivot_wider` that includes *group*, and then arrange by *group*
+
+```r
+tb_df %&gt;% 
+  pivot_wider(names_from = element, values_from = value) %&gt;% 
+  arrange(group)
+```
+
+```
+## # A tibble: 50 × 4
+##     year group Price Weight
+##    &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1  1951 a      87.9   96.4
+##  2  1953 a      85.6   78.0
+##  3  1960 a      93.8   62.9
+##  4  1965 a      90.5   55.2
+##  5  1968 a      67.7   77.9
+##  6  1969 a      63.5   66.4
+##  7  1974 a      73.9   53.8
+##  8  1976 a      79.9   60.6
+##  9  1986 a      82.0   66.9
+## 10  1987 a      99.6   81.5
+## # … with 40 more rows
+```
+
+---
 - Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
-- Redo the `pivot_wider` that includes *group*, and calculate a new column that describes the weight:price ratio (name it `wt_price`)
-- Do the same as above, but calculate the average weight, price, and `wt_price` for each group
+
+```r
+tb_df %&gt;% 
+  pivot_wider(names_from = element, values_from = value) %&gt;%  
+  arrange(group, desc(year))
+```
+
+```
+## # A tibble: 50 × 4
+##     year group Price Weight
+##    &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1  1996 a      79.8   95.2
+##  2  1989 a      74.2   92.8
+##  3  1987 a      99.6   81.5
+##  4  1986 a      82.0   66.9
+##  5  1976 a      79.9   60.6
+##  6  1974 a      73.9   53.8
+##  7  1969 a      63.5   66.4
+##  8  1968 a      67.7   77.9
+##  9  1965 a      90.5   55.2
+## 10  1960 a      93.8   62.9
+## # … with 40 more rows
+```
+
+---
+- Calculate a new column that describes the weight:price ratio, name it `wt_price`
+
+
+```r
+tb_df %&gt;% 
+  pivot_wider(names_from = element, values_from = value) %&gt;%  
+  mutate(wt_price = Weight / Price)
+```
+
+```
+## # A tibble: 50 × 5
+##     year group Price Weight wt_price
+##    &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+##  1  1951 a      87.9   96.4    1.10 
+##  2  1952 d      60.1   79.9    1.33 
+##  3  1953 a      85.6   78.0    0.912
+##  4  1954 b      56.1   76.3    1.36 
+##  5  1955 e      62.3   99.3    1.59 
+##  6  1956 c      57.2   75.4    1.32 
+##  7  1957 b      62.0   84.1    1.36 
+##  8  1958 c      52.9   80.1    1.51 
+##  9  1959 c      82.1   61.9    0.754
+## 10  1960 a      93.8   62.9    0.671
+## # … with 40 more rows
+```
+
+---
+- Do the same as above, but calculate the average `weight`, `price`, and `wt_price` for each group
+
+
+```r
+tb_df %&gt;%
+  pivot_wider(names_from = "element", values_from = "value") %&gt;% 
+  mutate(wt_price = Weight / Price) %&gt;% group_by(group) %&gt;% 
+  summarize(price = mean(Price), weight = mean(Weight), 
+            wt_price = mean(wt_price))
+```
+
+```
+## # A tibble: 5 × 4
+##   group price weight wt_price
+##   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+## 1 a      81.5   74.0    0.921
+## 2 b      64.7   76.7    1.19 
+## 3 c      72.7   72.6    1.04 
+## 4 d      72.0   77.6    1.17 
+## 5 e      80.7   83.4    1.08
+```
+
+```r
+tb_df %&gt;% 
+  pivot_wider(names_from = element, values_from = value) %&gt;% 
+  mutate(wt_price = Weight / Price) %&gt;% 
+  group_by(group) %&gt;% 
+  # summarise_all(funs(mean = mean)) %&gt;% 
+  summarise_all(list(mean))
+```
+
+```
+## # A tibble: 5 × 5
+##   group  year Price Weight wt_price
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+## 1 a     1973.  81.5   74.0    0.921
+## 2 b     1977.  64.7   76.7    1.19 
+## 3 c     1980.  72.7   72.6    1.04 
+## 4 d     1980.  72.0   77.6    1.17 
+## 5 e     1968.  80.7   83.4    1.08
+```
+
 
 ---
 
@@ -174,47 +373,28 @@ tb_df %&gt;% pivot_wider(names_from = element, values_from = value) %&gt;%
 ---
 ## Plotting
 
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis: both base and ggplot
-- Let's plot a line graph of Price (y axis) against year (x axis): base and ggplot
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-19-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-20-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
 - Calculate the mean Weight and Price by year, and plot as an XY scatter
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-21-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
 - Plot Weight against Year as a line plot, with a separate series for each group
+&lt;img src="class11_files/figure-html/unnamed-chunk-22-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
 - Let's calculate a histogram of wt_price
+&lt;img src="class11_files/figure-html/unnamed-chunk-23-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
 - Do the same, but let's make a histogram for each group. 
-
-
-
-
----
-## Practical
-### Part 1
-- read in the three `geospaar` FAO datasets into a list using `lapply`
-- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%&gt;%`, `select`, `pivot_wider`, `rename`. 
-- Combine all these into a single data.frame `crops_df`
-- Best: the previous two points using `lapply` and `do.call(rbind)`
-- Okay: Do this separately for each dataset and then combine with `rbind`
-
-
-
-
-
----
-### Part 2
-- Create (`mutate`) a new column *yield*
-- Calculate the mean of production &amp; yield for each crop (`dplyr`)
-- Calculate the mean of production &amp; yield for each crop by country (`dplyr`)
-- Advanced 1: do this with `sapply` as well as `dplyr`
-- Advanced 2:`arrange` mean yield by *crop* and *country* in ascending order
-
-
-
----
-### Part 3
-- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
-- Using `ggplot2`, plot a histogram of maize yields for Zambia (blue fill, grey outline)
-- Advanced 1: Do the same for yields, but with base plots
-- Advanced 2: use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this. 
-- Advanced 3: as above, but with histograms. Side by side histogram bars for each country (`position = "dodge"`)
-
+&lt;img src="class11_files/figure-html/unnamed-chunk-24-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 
     </textarea>
