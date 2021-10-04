@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 12
+
+---
+
+
+### Today
+
+- Reshaping/analysis/plotting - fix the error!
+- Spatial data beginnings
+
+---
+### Syntax dos and don'ts
+
+```r
+a &lt;- 1:10  # yes
+a&lt;-1:10  # no (you can't make this if you use crtl/CMD + -)
+a &lt;-1:10  # no (you can't make this if you use crtl/CMD + -)
+a&lt;- 1:10  # no (you can't make this if you use crtl/CMD + -)
+
+lapply(1:10, function(x) {  # yes
+  print(x)
+})
+lapply (1:10,function(x){  # no
+print(x)  
+})
+
+dat %&gt;% filter(a &gt; 10) %&gt;% mutate(a = a * 10)  # yes
+dat%&gt;%filter (a&gt;10)%&gt;%mutate (a=a*10)  # no
+
+mean(x = c(NA, 1:10), na.rm = TRUE)  # yes
+mean (x=c(NA,1:10),na.rm=T)  # no
+
+dat &lt;- data.frame(v1 = 1:10, v2 = 1:10)  # yes
+dat&lt;-data.frame(v1=1:10,v2=1:10)  # certainly no
+dat$v1  # yes
+dat $v1  # no
+dat$ v1 # no
+dat $ v1 # no
+dat       $      v1  # hell no
+```
+
+---
+
+### Part 1
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%&gt;%`, `select`, `pivot_wider`, `rename`. 
+- Combine all these into a single data.frame `crops_df`
+- Best: combine the previous two points using `lapply` and `do.call(rbind)`
+- Okay: Do this separately for each dataset and then combine with `rbind`
+
+---
+
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+
+
+```r
+library(geospaar)
+fs &lt;- dir(system.file("extdat", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
+crops &lt;- lapply(fs, readr::read_csv)
+```
+
+Should see...
+```
+[[1]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+# … with 218 more rows, and 8 more variables: `Item Code` &lt;dbl&gt;,
+...
+
+[[2]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+
+...
+
+[[3]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+...
+```
+---
+
+- Reshape each of the three datasets in `crops` by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. 
+- Combine all these into a single data.frame `crops_df`
+
+
+
+```r
+crops_df &lt;- do.call(rbind, lapply(crops, function(x) {
+  x %&gt;% select(Item, Area, Element, Year, Value) %&gt;% 
+    pivot_wider(names = Element, values = Value) %&gt;% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = Area harvested, prod = Production)
+}))
+crops_df
+```
+
+Should see:
+
+```
+&gt; crops_df
+# A tibble: 342 x 5
+   crop  country       year harv_area    prod
+   &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Maize South Africa  1961   4118000 5293000
+ 2 Maize South Africa  1962   4341000 6024000
+ 3 Maize South Africa  1963   4339000 6127000
+ 4 Maize South Africa  1964   4433000 4310000
+ 5 Maize South Africa  1965   4290000 4608000
+ 6 Maize South Africa  1966   4241000 5161000
+ 7 Maize South Africa  1967   4589000 9802000
+ 8 Maize South Africa  1968   4728000 5358000
+ 9 Maize South Africa  1969   4387000 5378000
+10 Maize South Africa  1970   4418000 6179000
+# … with 332 more rows
+```
+
+---
+#### Pipeline example
+
+```r
+fs &lt;- dir(system.file("extdata", package = "geospaar"), 
+          pattern = "maize", full.names = TRUE)
+dat &lt;- readr::read_csv(fs) %&gt;% 
+  dplyr::select(Item, Area, Element, Year, Value) %&gt;% 
+  pivot_wider(names_from = Element, values_from = Value) %&gt;% 
+  rename(harv_area = `Area harvested`, prod = Production, country = Area) %&gt;% 
+  mutate(yield = prod / harv_area) %&gt;% 
+  dplyr::select(country, harv_area, prod, yield) %&gt;% 
+  group_by(country) %&gt;% 
+  summarise_all(list(mu = mean, sdev = sd))
+```
+
+---
+### Part 2 - plotting
+Using `crops_df`:
+- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
+- Use `ggplot2` to make three side-by-side line plots of production per year for all three crops by country (red for Zambia, blue South Africa). You need `facet_grid` for this. Do the same for yield (you will need to a new column *yield*)
+- Plot the linear regression fit between year wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate series and fit for South African and Zambian yields.
+
+---
+- Use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this.
+
+
+```r
+ggplot(crops_df) + 
+  geom_line(aes(x = year, y = prod, color = country)) +
+  facet_grid(crop)
+```
+
+
+---
+## Spatial
+
+- Non-spatial to spatial
+- Read and write spatial
+- CRS
+- Make data from scratch
+- Spatial properties
+
+---
+### Non-spatial to spatial
+
+- Read in farmer data
+
+```r
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() 
+farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+- Write and read the spatial data
+
+```r
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.sqlite")
+farmers_sf &lt;- read_sf("external/notebooks/data/farmers_spatial.sqlite")
+districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+---
+  
+### Wrangle spatial data
+
+```r
+farmers %&gt;% filter(uuid == "009a8424")
+farmers_sf %&gt;% filter(uuid == "009a8424")
+farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
+  arrange(n) %&gt;% st_geometry %&gt;% plot(pch = 16, cex = 0.5)
+farmers_sf %&gt;% arrange(uuid)
+class(farmers_sf)
+
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
+  st_join(., districts, left = FALSE)
+
+plot(st_geometry(districts))
+farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% st_geometry %&gt;% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %&gt;% st_geometry %&gt;% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+```
+
+---
+### Make spatial data
+
+
+```r
+pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
+  cbind(ID = 1:nrow(.), .)
+pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+```
+
+---
+### Spatial properties
+
+```r
+pol %&gt;% st_area
+pol %&gt;% st_sf(crs = 4326) %&gt;% st_area
+sline %&gt;% st_sf(crs = 4326) %&gt;% st_length
+```
+
+---
+### Spatial transforms
+
+```r
+pol %&gt;% st_sf(crs = 4326) %&gt;% st_transform(., st_crs(roads)) %&gt;% st_area
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

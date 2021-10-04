@@ -1,0 +1,241 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 12
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class4plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+### Today
+
+- Reshaping/analysis/plotting - fix the error!
+- Spatial data beginnings
+
+---
+### Syntax dos and don'ts
+```{r, eval = FALSE}
+a <- 1:10  # yes
+a<-1:10  # no (you can't make this if you use crtl/CMD + -)
+a <-1:10  # no (you can't make this if you use crtl/CMD + -)
+a<- 1:10  # no (you can't make this if you use crtl/CMD + -)
+
+lapply(1:10, function(x) {  # yes
+  print(x)
+})
+lapply (1:10,function(x){  # no
+print(x)  
+})
+
+dat %>% filter(a > 10) %>% mutate(a = a * 10)  # yes
+dat%>%filter (a>10)%>%mutate (a=a*10)  # no
+
+mean(x = c(NA, 1:10), na.rm = TRUE)  # yes
+mean (x=c(NA,1:10),na.rm=T)  # no
+
+dat <- data.frame(v1 = 1:10, v2 = 1:10)  # yes
+dat<-data.frame(v1=1:10,v2=1:10)  # certainly no
+dat$v1  # yes
+dat $v1  # no
+dat$ v1 # no
+dat $ v1 # no
+dat       $      v1  # hell no
+```
+
+---
+
+### Part 1
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%>%`, `select`, `pivot_wider`, `rename`. 
+- Combine all these into a single data.frame `crops_df`
+- Best: combine the previous two points using `lapply` and `do.call(rbind)`
+- Okay: Do this separately for each dataset and then combine with `rbind`
+
+---
+
+- read in the three `geospaar` FAO datasets into a list using `lapply`
+
+```{r, eval=FALSE}
+library(geospaar)
+fs <- dir(system.file("extdat", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
+crops <- lapply(fs, readr::read_csv)
+```
+
+Should see...
+```
+[[1]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   <chr>         <chr>        <dbl> <chr>          <dbl> <chr>  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+# … with 218 more rows, and 8 more variables: `Item Code` <dbl>,
+...
+
+[[2]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   <chr>         <chr>        <dbl> <chr>          <dbl> <chr>  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+
+...
+
+[[3]]
+# A tibble: 228 x 14
+   `Domain Code` Domain `Area Code` Area  `Element Code` Element
+   <chr>         <chr>        <dbl> <chr>          <dbl> <chr>  
+ 1 QC            Crops          202 Sout…           5312 Area h…
+ 2 QC            Crops          202 Sout…           5312 Area h…
+...
+```
+---
+
+- Reshape each of the three datasets in `crops` by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. 
+- Combine all these into a single data.frame `crops_df`
+
+
+```{r, eval=FALSE}
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% select(Item, Area, Element, Year, Value) %>% 
+    pivot_wider(names = Element, values = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = Area harvested, prod = Production)
+}))
+crops_df
+```
+
+Should see:
+
+```
+> crops_df
+# A tibble: 342 x 5
+   crop  country       year harv_area    prod
+   <chr> <chr>        <dbl>     <dbl>   <dbl>
+ 1 Maize South Africa  1961   4118000 5293000
+ 2 Maize South Africa  1962   4341000 6024000
+ 3 Maize South Africa  1963   4339000 6127000
+ 4 Maize South Africa  1964   4433000 4310000
+ 5 Maize South Africa  1965   4290000 4608000
+ 6 Maize South Africa  1966   4241000 5161000
+ 7 Maize South Africa  1967   4589000 9802000
+ 8 Maize South Africa  1968   4728000 5358000
+ 9 Maize South Africa  1969   4387000 5378000
+10 Maize South Africa  1970   4418000 6179000
+# … with 332 more rows
+```
+
+---
+#### Pipeline example
+```{r, eval = FALSE}
+fs <- dir(system.file("extdata", package = "geospaar"), 
+          pattern = "maize", full.names = TRUE)
+dat <- readr::read_csv(fs) %>% 
+  dplyr::select(Item, Area, Element, Year, Value) %>% 
+  pivot_wider(names_from = Element, values_from = Value) %>% 
+  rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
+  mutate(yield = prod / harv_area) %>% 
+  dplyr::select(country, harv_area, prod, yield) %>% 
+  group_by(country) %>% 
+  summarise_all(list(mu = mean, sdev = sd))
+```
+
+---
+### Part 2 - plotting
+Using `crops_df`:
+- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
+- Use `ggplot2` to make three side-by-side line plots of production per year for all three crops by country (red for Zambia, blue South Africa). You need `facet_grid` for this. Do the same for yield (you will need to a new column *yield*)
+- Plot the linear regression fit between year wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate series and fit for South African and Zambian yields.
+
+---
+- Use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this.
+
+```{r, eval=FALSE}
+ggplot(crops_df) + 
+  geom_line(aes(x = year, y = prod, color = country)) +
+  facet_grid(crop)
+```
+
+
+---
+## Spatial
+
+- Non-spatial to spatial
+- Read and write spatial
+- CRS
+- Make data from scratch
+- Spatial properties
+
+---
+### Non-spatial to spatial
+
+- Read in farmer data
+```{r, eval = FALSE}
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() 
+farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+- Write and read the spatial data
+```{r, eval=FALSE}
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.sqlite")
+farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.sqlite")
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+---
+  
+### Wrangle spatial data
+```{r, eval = FALSE}
+farmers %>% filter(uuid == "009a8424")
+farmers_sf %>% filter(uuid == "009a8424")
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  arrange(n) %>% st_geometry %>% plot(pch = 16, cex = 0.5)
+farmers_sf %>% arrange(uuid)
+class(farmers_sf)
+
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  st_join(., districts, left = FALSE)
+
+plot(st_geometry(districts))
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+
+```
+
+---
+### Make spatial data
+
+```{r, eval = FALSE}
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
+  cbind(ID = 1:nrow(.), .)
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+```
+
+---
+### Spatial properties
+```{r, eval=FALSE}
+pol %>% st_area
+pol %>% st_sf(crs = 4326) %>% st_area
+sline %>% st_sf(crs = 4326) %>% st_length
+```
+
+---
+### Spatial transforms
+```{r, eval=FALSE}
+pol %>% st_sf(crs = 4326) %>% st_transform(., st_crs(roads)) %>% st_area
+```
