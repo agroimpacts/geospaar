@@ -407,7 +407,9 @@ So this was an estimate of area from a non-project dataset. How does that compar
 
 ```{r}
 # Chunk 21
-dist_areas_alb <- districts %>% st_transform(crs = st_crs(roads)) %>% st_area()
+dist_areas_alb <- districts %>% 
+  st_transform(crs = st_crs(roads)) %>% 
+  st_area()
 mean(abs(dist_areas_alb - dist_areas)) %>% units::set_units("ha")
 mean(abs(dist_areas_alb - dist_areas)) / mean(dist_areas_alb) * 100
 ```
@@ -418,7 +420,8 @@ Using `st_transform` with the CRS from `roads` to reproject `district`, and then
 # Chunk 22
 districts %>% 
   st_area() %>% units::set_units("km^2") %>% as.numeric() %>% 
-  tibble(km2 = .) %>% ggplot() + 
+  tibble(km2 = .) %>% 
+  ggplot() + 
   geom_histogram(aes(x = km2), bins = 15, fill = "blue", col = "grey") + 
   xlab(bquote("km"^2))
 ```
@@ -599,7 +602,9 @@ We can do the same thing for standard deviation, but using a quintile grouping:
 ```{r, out.width="50%"}
 # Chunk 31
 quintiles <- function(x) quantile(x, probs = seq(0, 1, 0.2))
-dist_quintiles <- districts %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%   mutate(acls = cut(area, breaks = quintiles(area), include.lowest = TRUE)) %>% 
+dist_quintiles <- districts %>% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  mutate(acls = cut(area, breaks = quintiles(area), include.lowest = TRUE)) %>% 
   group_by(acls) %>% summarize(sd_area = sd(area))
 dist_quintiles
 

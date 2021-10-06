@@ -25,8 +25,23 @@ Each student will undertake an R-based final project for this class. This projec
 This list is currently in thumbnail form, and will fill out during the next few weeks. 
 
 # Potential project list
-## Add on to our COVID-19 tracker
-Have a look at our existing [repo/package](https://github.com/agroimpacts/covid19clark), and some of the initial dashboards our previous class made. Potential projects include converting the current code to an operational shiny dashboard (as opposed to a local one) and integrating more measures. For example, write a scraper to ingest the [Mass DPH's weekly town-level](https://www.mass.gov/info-details/covid-19-response-reporting#covid-19-daily-dashboard-) case rates and map these. 
+## USF projects
+1. Mapping the sources/destinations/flows of budget revenues for police departments, from federal/state/municipal sources. 
+2. Changes in property valuation versus police activity and/or budgets (linked to #1)
+3. Spatio-temporal patterns and associations of police misconduct
+4. Spatio-temporal patterns of surveillance (e.g. CCTV)
+5. Mapping #blacklivesmatter social media
+
+
+## Analyzing Ghanaian croplands 
+
+The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05$^\circ$ tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: 
+
+### Evaluating field characteristics
+Use the vector data to examine field size class distributions in different agro-ecosystems. Is there a link between these and any socio-economic datasets (e.g. World Bank LSMS data)? Use the cropland probability images and input satellite imagery to identify whether the degree of certainty in probability images is informative about the status of fields (e.g. fallow versus active).  
+
+### Vector refining
+With many vector data come many data processing challenges. Can you code up methods for merging adjacent polygons from neighboring tiles, or simplifying polygons in a way that preserves adjacency? There are `R`-based solutions for these. 
 
 ## Analyzing agro-climatological data 
 ### Over Zambia
@@ -49,13 +64,11 @@ Use the SMS data to analyze the start and end of the maize planting season and h
 The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
 
 ### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
-
 Put another way, do farming communities in areas with higher rainfall variability show higher variability between farmers in terms of when crops are planted?  We hypothesize that this might be the case, as it might be a community-level adaptive response for dealing with climatic uncertainty.  
 
 This analysis would be undertaken using remotely sensed datasets: NDVI time series, gridded rainfall datasets, and a cropland mask. The NDVI time series are processed into values that identify the date of green-up over ~18 years. The rainfall data should be used to calculate the coefficient of variation (CV) of rainfall in the first 2 months of the growing season, and the long-term mean rainfall. Comparing croplands from areas of similar mean rainfall, see if there is a relationship between CV of rainfall and CV of green-up date. 
 
 ## In Sutton, MA
-
 Continuing analyses of UAS, satellite, and sensor datasets collected during the  past two summers in Sutton MA. 
 
 Among possible ideas are Shiny dashboards for: 1) displaying pod data over time; 2) displaying "cones of uncertainty" from projected crop yield simulations.
@@ -64,34 +77,9 @@ Among possible ideas are Shiny dashboards for: 1) displaying pod data over time;
 
 Use R-implemented machine learning techniques to classify fungal blight in UAS time series collected over cranberry bogs in New Jersey. This would be a great project for getting a deep learning model running in `R`.
 
-## Analyzing Ghanaian croplands 
 
-The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05$^\circ$ tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: 
-
-### Evaluating field characteristics
-Use the vector data to examine field size class distributions in different agro-ecosystems. Is there a link between these and any socio-economic datasets (e.g. World Bank LSMS data)? Use the cropland probability images and input satellite imagery to identify whether the degree of certainty in probability images is informative about the status of fields (e.g. fallow versus active).  
-
-### Vector refining
-With many vector data come many data processing challenges. Can you code up methods for merging adjacent polygons from neighboring tiles, or simplifying polygons in a way that preserves adjacency? There are `R`-based solutions for these. 
-
-### Map visualization
-Come up with `shiny` solution for presenting and analyzing map data. 
-
-## Politics
-### Gerrymandering
-#### Implement a Shiny interface
-There are several potential projects that will help contribute to an understanding of the impacts of gerrymandering in US politics. These ideas come the [Princeton Gerrymandering project](http://gerrymander.princeton.edu).  
-
-#### Voting Precinct Demography
-The project will assess the demographics of different voting precincts in different states, using the information contained in the polygons representing voting precincts and US census blocks. The final desired result is an R package that has reusable code that can be used to process any of the varying precinct data available from different states, intersect these with census blocks, and produce demographic metrics from these. (Builds on class project from prior year)
-
-#### Districting and Population Visualizations
-The goal is to demonstrate how redistricters gerrymander congressional districts by "packing" or "cracking" high population areas. Background on the issue can be seen in this LA Times [article](http://www.latimes.com/opinion/op-ed/la-oe-wang-remlinger-gerrymandering-20170505-story.html), in which the graphics were mostly made with R with some Adode Illustrator post-hoc manipulations done by the newspaper. What we would really like to do is represented by the purple-yellow scale map of North Carolina [here](http://gerrymander.princeton.edu/info), which didn't make the article, but was done to support it. The goal is to create a package that can: 
-1. Take population data from a given year, and congressional district boundary polygons from a corresponding year
-2. Convert them quickly and efficiently into similar maps
-3. Create the package so that it installs and demos with data from North Carolina (all available years), and, depending on data availability, possibly one or two other states (e.g. Pennsylvania).
-4. Additionally, if the same package can also create maps that, together with the population density information, show which party won the district, [as in this visualization](https://static01.nyt.com/images/2017/09/03/magazine/03gerrymandering_map/03gerrymandering_map-superJumbo.gif), that would be even better.  
-
+## Map visualization
+Come up with `shiny` solution for presenting and analyzing map data, for any of these projects. 
 
 # Assignment
 

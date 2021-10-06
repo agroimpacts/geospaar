@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 13
+
+---
+
+## Election Results
+&lt;img src="/Users/lestes/Dropbox/teaching/clark/courses/geog_246-346/geospaar/docs/class13_files/figure-html/unnamed-chunk-1-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+```r
+library(tidyverse)
+library(rvest)
+
+URL &lt;- "https://history.house.gov/Institution/Party-Divisions/Party-Divisions/"
+webpage &lt;- read_html(URL)
+cong &lt;- as_tibble(html_table(webpage)[[1]])
+onms &lt;- colnames(cong)
+newnms &lt;- c("congress", "seats", "D", "R", "other", "delres")
+cong &lt;- cong %&gt;% 
+  slice((which(grepl("^Republican", `Anti-Administration`))[1] + 1):nrow(.)) %&gt;%
+  filter(`Congress (Years)` != colnames(cong)[1]) %&gt;% 
+  mutate(year = gsub("(*.*-)|(*.*–)|)|)2", "", `Congress (Years)`)) %&gt;%
+  mutate(year = as.numeric(year) - 2) %&gt;% 
+  rename_at(vars(onms), ~newnms) %&gt;% select(-other, -delres) %&gt;%
+  mutate(seats = substr(seats, 1, 3)) %&gt;% 
+  mutate_at(.vars = vars(seats, D, R), as.numeric) %&gt;% 
+  mutate(swing = (D - R) / (D + R)) 
+cong %&gt;%  
+  ggplot() + geom_line(aes(year, swing)) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) + 
+  geom_hline(yintercept = 0, lty = 2, col = "red") + 
+  xlab("") + ylab("(D - R) / (D + R)") + 
+  ggtitle("Normalized Party Control Index for US House") + theme_linedraw() + 
+  scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 2))
+```
+---
+## Today
+
+- Project
+- Spatial data
+  - Non-spatial to spatial
+  - Read and write spatial
+  - CRS
+  - Make data from scratch
+  - Spatial properties
+
+---
+## Projects
+- On [projects page](https://agroimpacts.github.io/geospaar/projects.html)
+- USF-projects:
+  - Mapping the sources/destinations/flows of budget revenues for police departments, from federal/state/municipal sources. 
+  - Changes in property valuation versus police activity and/or budgets (linked to #1)
+  - Spatio-temporal patterns and associations of police misconduct
+  - Spatio-temporal patterns of surveillance (e.g. CCTV)
+  - Mapping #blacklivesmatter social media
+
+---
+
+### Datasets for today
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% st_as_sfc(coords = c("X", "y"))
+districts &lt;- st_reader(
+  system.file("extdata/districts.shp", package = "geospaar")
+)
+roads &lt;- read_sfc(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+### Non-spatial to spatial
+
+- Read in farmer data
+
+```r
+library(sf)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() 
+farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+- Write and read the spatial data
+
+```r
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
+farmers_sf &lt;- read_sf("external/notebooks/data/farmers_spatial.geojson")
+```
+
+---
+  
+### Wrangle spatial data
+
+```r
+farmers %&gt;% filter(uuid == "009a8424")
+farmers_sf %&gt;% filter(uuid == "009a8424")
+farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
+  arrange(n) %&gt;% st_geometry %&gt;% plot(pch = 16, cex = 0.5)
+farmers_sf %&gt;% arrange(uuid)
+class(farmers_sf)
+
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
+  st_join(., districts, left = FALSE)
+
+plot(st_geometry(districts))
+farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% st_geometry %&gt;% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %&gt;% st_geometry %&gt;% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+```
+
+---
+### Make spatial data
+
+Points and lines
+
+```r
+pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
+  cbind(ID = 1:nrow(.), .)
+
+# polyline
+sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline &lt;- st_geometry(sline) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+```
+---
+
+Polygons
+
+```r
+# Single polygon
+pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+
+# single polygon
+pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+# plot(pol)
+pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% st_cast("POLYGON") %&gt;% 
+  cbind(ID = 1:nrow(.), .)
+# plot(pol)
+
+# multipolygon
+pols &lt;- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
+                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
+                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
+                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
+                                          1))))
+pols &lt;- pols %&gt;% st_geometry %&gt;% st_cast("POLYGON") %&gt;% st_as_sf() %&gt;% 
+  mutate(ID = 1:nrow(.)) %&gt;% #as.data.frame() %&gt;%
+  dplyr::select(ID)
+# plot(pols)
+```
+---
+### Spatial properties
+
+```r
+pol %&gt;% st_area
+pol %&gt;% st_sf(crs = 4326) %&gt;% st_area
+sline %&gt;% st_sf(crs = 4326) %&gt;% st_length
+```
+
+---
+### Spatial transforms
+
+```r
+pol %&gt;% 
+  st_sf(crs = 4326) %&gt;% 
+  st_transform(., st_crs(roads)) %&gt;% 
+  st_area
+```
+
+---
+
+### Tidy analysis `sf` data
+
+- Let's make some data
+
+
+```r
+set.seed(1)
+districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()) %&gt;% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %&gt;%
+  dplyr::select(distName, X, Y, yield)
+ggplot(districts2) + geom_sf(aes(fill = yield))
+districts2 &lt;- districts2 %&gt;% 
+  mutate(
+    grp = case_when(
+      grepl("Cha", distName) ~ "A",
+      grepl("Chi", distName) ~ "B", 
+      grepl("^L", distName) ~ "C", 
+      TRUE ~ "D"
+    )
+  ) %&gt;% dplyr::select(distName, grp, X, Y, yield)
+```
+
+---
+- And analyze it
+
+
+```r
+districts2 %&gt;% 
+  dplyr::select(yield) %&gt;% 
+  summarize_all(funs(mean, sd))
+districts2 %&gt;% 
+  summarize(mean(yield), sd(yield))
+```
+
+---
+
+```r
+districts2 %&gt;% dplyr::select(yield) %&gt;% summarize_all(funs(mean, sd))
+districts2 %&gt;% summarize(mean(yield), sd(yield))
+districts_mu &lt;- districts2 %&gt;% 
+  mutate(yld_cat = ifelse(yield &gt; 4.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield &lt; 3.5, "low", yld_cat)) %&gt;% 
+  dplyr::select(1:5, 7) %&gt;% 
+  group_by(yld_cat) %&gt;% summarize(yield = mean(yield))
+ggplot(districts_mu) + geom_sf(aes(fill = yield))
+```
+
+---
+### Subsetting
+
+By count
+
+```r
+as.data.frame(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
+  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n)) %&gt;% 
+  ggplot() + geom_sf(aes(fill = log10(n)))
+```
+
+By area
+
+```r
+p &lt;- ggplot(districts2) + geom_sf()
+districts2 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
+  filter(area == quantile(area, probs = 0.5, type = 1))
+districts2 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
+  arrange(area) %&gt;% slice(nrow(.))
+districts2 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
+  arrange(area) %&gt;% pull(distName)
+```
+
+---
+### Spatial joins
+
+```r
+farmer_ct &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% count()
+farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
+farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
+```
+
+---
+### Spatial-non-spatial join
+
+```r
+as.data.frame(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
+  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n)) %&gt;% 
+  ggplot() + geom_sf(aes(fill = log10(n)))
+```
+
+---
+### Intersects/Intersection
+
+
+```r
+districts2 %&gt;% 
+  slice(which(st_intersects(districts2, st_union(pols), sparse = FALSE))
+        
+districts_pol &lt;- st_intersection(districts2, st_union(pols))
+ggplot(districts_pol) + geom_sf(aes(fill = distName))
+```
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
