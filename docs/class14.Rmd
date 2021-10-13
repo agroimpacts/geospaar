@@ -18,7 +18,7 @@ output:
 
 ---
 ### Assignment 3 recap
-```{r}
+```{r, eval=FALSE}
 set.seed(1)
 t1 <- tibble(V1 = paste0("G", 1:10), V2 = runif(n = 10, 75, 125))
 t2 <- tibble(v1 = paste0("G", 1:15), 
@@ -38,7 +38,8 @@ t1 %>% inner_join(., t2, by = c("V1" = "v1")) %>%
 
 ---
 ### Read in `geospaar` data
-```{r, eval=FALSE}
+Use code from previous classes to read in `farmers` (make into `sf`), `districts`, and `roads`
+```{r, eval=FALSE, echo = FALSE}
 library(geospaar)
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
   read_csv() %>% st_as_sf(coords = c("x", "y"))
@@ -167,7 +168,7 @@ p + geom_sf(data = districts_pol, aes(fill = distName))
 ---
 ### On your own
 
-1. Select the smallest district in Zambia from `districts3`, and convert that
+- Select the smallest district in Zambia from `districts3`, and convert that
 to centroid
 ```{r, eval = FALSE}
 smallest_centroid <- districts3 %>% 
@@ -175,26 +176,29 @@ smallest_centroid <- districts3 %>%
   filter
 ```
 
-2. Create a buffer of width 0.5 around that
+- Create a buffer of width 0.5 around that
 ```{r, eval = FALSE}
 smallest_buffer <- smallest_centroid %>% st_buf...
 ```
 
-3. Use the buffer to select the districts from `districts3` that intersect with it
+- Use the buffer to select the districts from `districts3` that intersect with it
 ```{r, eval = FALSE}
 dists_in_buff <- districts3 %>% 
   filter(st_intersects(., smallest_buffer...
 ```
 
-4. Use the buffer to do an intersection with `districts3`
+
+---
+- Use the buffer to do an intersection with `districts3`
 ```{r, eval=FALSE}
 buff_int_dists <- st_intersection(...
 # p + geom_sf(data = buff_int_dists, aes(fill = distName))
 ```
 
-5. Calculate the area of the intersection
 
+- Calculate the area of the intersection
 
+---
 
 
 ## Visualization
@@ -343,4 +347,3 @@ g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"),
 cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
 ```
 
----

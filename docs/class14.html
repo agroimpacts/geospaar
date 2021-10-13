@@ -36,120 +36,19 @@ t3 &lt;- tibble(v1 = paste0("G", 1:20),
              v4 = rnorm(n = 20, mean = 100, sd = 20))
 t1 %&gt;% left_join(., t2, by = c("V1" = "v1")) %&gt;% 
   left_join(., t3, by = c("V1" = "v1"))
-```
-
-```
-## # A tibble: 10 × 4
-##    V1       V2 v3       v4
-##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-##  1 G1     88.3 C      94.0
-##  2 G2     93.6 C      91.8
-##  3 G3    104.  A     105. 
-##  4 G4    120.  E      82.2
-##  5 G5     85.1 E     109. 
-##  6 G6    120.  B      75.2
-##  7 G7    122.  F      95.5
-##  8 G8    108.  F     108. 
-##  9 G9    106.  B     103. 
-## 10 G10    78.1 A     116.
-```
-
-```r
 t1 %&gt;% right_join(., t2, by = c("V1" = "v1")) %&gt;% 
   right_join(., t3, by = c("V1" = "v1"))
-```
-
-```
-## # A tibble: 20 × 4
-##    V1       V2 v3       v4
-##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-##  1 G1     88.3 C      94.0
-##  2 G2     93.6 C      91.8
-##  3 G3    104.  A     105. 
-##  4 G4    120.  E      82.2
-##  5 G5     85.1 E     109. 
-##  6 G6    120.  B      75.2
-##  7 G7    122.  F      95.5
-##  8 G8    108.  F     108. 
-##  9 G9    106.  B     103. 
-## 10 G10    78.1 A     116. 
-## 11 G11    NA   E      98.9
-## 12 G12    NA   E     110. 
-## 13 G13    NA   A     122. 
-## 14 G14    NA   A      86.2
-## 15 G15    NA   F      74.3
-## 16 G16    NA   &lt;NA&gt;  101. 
-## 17 G17    NA   &lt;NA&gt;   95.3
-## 18 G18    NA   &lt;NA&gt;   89.1
-## 19 G19    NA   &lt;NA&gt;   91.3
-## 20 G20    NA   &lt;NA&gt;   87.0
-```
-
-```r
 t1 %&gt;% full_join(., t2, by = c("V1" = "v1")) %&gt;% 
   full_join(., t3, by = c("V1" = "v1"))
-```
-
-```
-## # A tibble: 20 × 4
-##    V1       V2 v3       v4
-##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-##  1 G1     88.3 C      94.0
-##  2 G2     93.6 C      91.8
-##  3 G3    104.  A     105. 
-##  4 G4    120.  E      82.2
-##  5 G5     85.1 E     109. 
-##  6 G6    120.  B      75.2
-##  7 G7    122.  F      95.5
-##  8 G8    108.  F     108. 
-##  9 G9    106.  B     103. 
-## 10 G10    78.1 A     116. 
-## 11 G11    NA   E      98.9
-## 12 G12    NA   E     110. 
-## 13 G13    NA   A     122. 
-## 14 G14    NA   A      86.2
-## 15 G15    NA   F      74.3
-## 16 G16    NA   &lt;NA&gt;  101. 
-## 17 G17    NA   &lt;NA&gt;   95.3
-## 18 G18    NA   &lt;NA&gt;   89.1
-## 19 G19    NA   &lt;NA&gt;   91.3
-## 20 G20    NA   &lt;NA&gt;   87.0
-```
-
-```r
 t1 %&gt;% inner_join(., t2, by = c("V1" = "v1")) %&gt;% 
   inner_join(., t3, by = c("V1" = "v1"))
-```
-
-```
-## # A tibble: 10 × 4
-##    V1       V2 v3       v4
-##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-##  1 G1     88.3 C      94.0
-##  2 G2     93.6 C      91.8
-##  3 G3    104.  A     105. 
-##  4 G4    120.  E      82.2
-##  5 G5     85.1 E     109. 
-##  6 G6    120.  B      75.2
-##  7 G7    122.  F      95.5
-##  8 G8    108.  F     108. 
-##  9 G9    106.  B     103. 
-## 10 G10    78.1 A     116.
 ```
 
 
 ---
 ### Read in `geospaar` data
+Use code from previous classes to read in `farmers` (make into `sf`), `districts`, and `roads`
 
-```r
-library(geospaar)
-farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
-  read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
-districts &lt;- st_read(
-  system.file("extdata/districts.shp", package = "geospaar")
-)
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-```
 
 ---
 ### Adding to data
@@ -278,7 +177,7 @@ p + geom_sf(data = districts_pol, aes(fill = distName))
 ---
 ### On your own
 
-1. Select the smallest district in Zambia from `districts3`, and convert that
+- Select the smallest district in Zambia from `districts3`, and convert that
 to centroid
 
 ```r
@@ -287,29 +186,32 @@ smallest_centroid &lt;- districts3 %&gt;%
   filter
 ```
 
-2. Create a buffer of width 0.5 around that
+- Create a buffer of width 0.5 around that
 
 ```r
 smallest_buffer &lt;- smallest_centroid %&gt;% st_buf...
 ```
 
-3. Use the buffer to select the districts from `districts3` that intersect with it
+- Use the buffer to select the districts from `districts3` that intersect with it
 
 ```r
 dists_in_buff &lt;- districts3 %&gt;% 
   filter(st_intersects(., smallest_buffer...
 ```
 
-4. Use the buffer to do an intersection with `districts3`
+
+---
+- Use the buffer to do an intersection with `districts3`
 
 ```r
 buff_int_dists &lt;- st_intersection(...
 # p + geom_sf(data = buff_int_dists, aes(fill = distName))
 ```
 
-5. Calculate the area of the intersection
 
+- Calculate the area of the intersection
 
+---
 
 
 ## Visualization
@@ -464,7 +366,6 @@ g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"),
 cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
 ```
 
----
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
