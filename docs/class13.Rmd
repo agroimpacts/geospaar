@@ -101,6 +101,7 @@ districts <- st_reader(
 roads <- read_sfc(system.file("extdata/roads.shp", package = "geospaar"))
 ```
 
+---
 ### Non-spatial to spatial
 
 - Read in farmer data
@@ -113,8 +114,8 @@ farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
 
 - Write and read the spatial data
 ```{r, eval=FALSE}
-write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
-farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.geojson")
+write_sf(farmers_sf, dsn = "~/Desktop/demo/farmers_spatial.geojson")
+farmers_sf <- read_sf("~/Desktop/demo/farmers_spatial.geojson")
 ```
 
 ---
@@ -122,22 +123,32 @@ farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.geojson")
 ### Wrangle spatial data
 ```{r, eval = FALSE}
 farmers %>% filter(uuid == "009a8424")
-farmers_sf %>% filter(uuid == "009a8424")
+# farmers %>% distinct(uuid)
+farmers_sf %>% filter(uuid == "05a95f44")
+farmers_sf %>% filter(uuid == "064beba0")
 farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
-  arrange(n) %>% st_geometry %>% plot(pch = 16, cex = 0.5)
+  arrange(desc(n)) %>% 
+  st_geometry %>% 
+  plot(pch = 16, cex = 0.5)
+
 farmers_sf %>% arrange(uuid)
+farmers_sf %>% arrange(uuid, desc(date))
+
 class(farmers_sf)
+str(farmers_sf)
 
 # intersection with st_join and left = FALSE to remove plots outside of Zambia
-farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+farmers_sf_trim <- farmers_sf %>% 
+  group_by(uuid) %>% 
+  summarize(n = n()) %>% 
   st_join(., districts, left = FALSE)
 
+par(mar = rep(0, 4))
 plot(st_geometry(districts))
 farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
   plot(pch = 16, add = TRUE, cex = 1)
 farmers_sf_trim %>% st_geometry %>% 
   plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
-
 ```
 
 ---
@@ -147,11 +158,12 @@ Points and lines
 ```{r, eval = FALSE}
 pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
 pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
-  cbind(ID = 1:nrow(.), .)
+  cbind(ID = 1:nrow(.), .) %>% rename(geometry = x)
 
 # polyline
 sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
 sline <- st_geometry(sline) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+plot(sline)
 ```
 ---
 
@@ -161,14 +173,7 @@ Polygons
 pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
                              y = c(-15.5, -16.5, -17, -16, -15.5))))
 pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-
-# single polygon
-pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
-                             y = c(-15.5, -16.5, -17, -16, -15.5))))
-# plot(pol)
-pol <- st_geometry(pol) %>% st_as_sf() %>% st_cast("POLYGON") %>% 
-  cbind(ID = 1:nrow(.), .)
-# plot(pol)
+plot(pol)
 
 # multipolygon
 pols <- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
@@ -228,7 +233,7 @@ districts2 <- districts2 %>%
 ```{r, eval=FALSE}
 districts2 %>% 
   dplyr::select(yield) %>% 
-  summarize_all(funs(mean, sd))
+  summarize_all(list(mean, sd))
 districts2 %>% 
   summarize(mean(yield), sd(yield))
 ```

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class14plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 14
+
+---
+
+
+### Today
+
+- More on vectors and analytics
+- Maybe some visualization
+
+---
+### Assignment 3 recap
+
+```r
+set.seed(1)
+t1 &lt;- tibble(V1 = paste0("G", 1:10), V2 = runif(n = 10, 75, 125))
+t2 &lt;- tibble(v1 = paste0("G", 1:15), 
+             v3 = sample(LETTERS[1:6], size = 15, replace = TRUE))
+t3 &lt;- tibble(v1 = paste0("G", 1:20), 
+             v4 = rnorm(n = 20, mean = 100, sd = 20))
+t1 %&gt;% left_join(., t2, by = c("V1" = "v1")) %&gt;% 
+  left_join(., t3, by = c("V1" = "v1"))
+```
+
+```
+## # A tibble: 10 × 4
+##    V1       V2 v3       v4
+##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1 G1     88.3 C      94.0
+##  2 G2     93.6 C      91.8
+##  3 G3    104.  A     105. 
+##  4 G4    120.  E      82.2
+##  5 G5     85.1 E     109. 
+##  6 G6    120.  B      75.2
+##  7 G7    122.  F      95.5
+##  8 G8    108.  F     108. 
+##  9 G9    106.  B     103. 
+## 10 G10    78.1 A     116.
+```
+
+```r
+t1 %&gt;% right_join(., t2, by = c("V1" = "v1")) %&gt;% 
+  right_join(., t3, by = c("V1" = "v1"))
+```
+
+```
+## # A tibble: 20 × 4
+##    V1       V2 v3       v4
+##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1 G1     88.3 C      94.0
+##  2 G2     93.6 C      91.8
+##  3 G3    104.  A     105. 
+##  4 G4    120.  E      82.2
+##  5 G5     85.1 E     109. 
+##  6 G6    120.  B      75.2
+##  7 G7    122.  F      95.5
+##  8 G8    108.  F     108. 
+##  9 G9    106.  B     103. 
+## 10 G10    78.1 A     116. 
+## 11 G11    NA   E      98.9
+## 12 G12    NA   E     110. 
+## 13 G13    NA   A     122. 
+## 14 G14    NA   A      86.2
+## 15 G15    NA   F      74.3
+## 16 G16    NA   &lt;NA&gt;  101. 
+## 17 G17    NA   &lt;NA&gt;   95.3
+## 18 G18    NA   &lt;NA&gt;   89.1
+## 19 G19    NA   &lt;NA&gt;   91.3
+## 20 G20    NA   &lt;NA&gt;   87.0
+```
+
+```r
+t1 %&gt;% full_join(., t2, by = c("V1" = "v1")) %&gt;% 
+  full_join(., t3, by = c("V1" = "v1"))
+```
+
+```
+## # A tibble: 20 × 4
+##    V1       V2 v3       v4
+##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1 G1     88.3 C      94.0
+##  2 G2     93.6 C      91.8
+##  3 G3    104.  A     105. 
+##  4 G4    120.  E      82.2
+##  5 G5     85.1 E     109. 
+##  6 G6    120.  B      75.2
+##  7 G7    122.  F      95.5
+##  8 G8    108.  F     108. 
+##  9 G9    106.  B     103. 
+## 10 G10    78.1 A     116. 
+## 11 G11    NA   E      98.9
+## 12 G12    NA   E     110. 
+## 13 G13    NA   A     122. 
+## 14 G14    NA   A      86.2
+## 15 G15    NA   F      74.3
+## 16 G16    NA   &lt;NA&gt;  101. 
+## 17 G17    NA   &lt;NA&gt;   95.3
+## 18 G18    NA   &lt;NA&gt;   89.1
+## 19 G19    NA   &lt;NA&gt;   91.3
+## 20 G20    NA   &lt;NA&gt;   87.0
+```
+
+```r
+t1 %&gt;% inner_join(., t2, by = c("V1" = "v1")) %&gt;% 
+  inner_join(., t3, by = c("V1" = "v1"))
+```
+
+```
+## # A tibble: 10 × 4
+##    V1       V2 v3       v4
+##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1 G1     88.3 C      94.0
+##  2 G2     93.6 C      91.8
+##  3 G3    104.  A     105. 
+##  4 G4    120.  E      82.2
+##  5 G5     85.1 E     109. 
+##  6 G6    120.  B      75.2
+##  7 G7    122.  F      95.5
+##  8 G8    108.  F     108. 
+##  9 G9    106.  B     103. 
+## 10 G10    78.1 A     116.
+```
+
+
+---
+### Read in `geospaar` data
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
+districts &lt;- st_read(
+  system.file("extdata/districts.shp", package = "geospaar")
+)
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+---
+### Adding to data
+
+Add some categories
+
+```r
+set.seed(2)
+districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()) %&gt;% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %&gt;%
+  mutate(yld_cat = ifelse(yield &gt; 4.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield &lt; 3.5, "low", yld_cat)) %&gt;% 
+  dplyr::select(distName, X, Y, yield, yld_cat)
+```
+---
+
+## Analyses
+
+```r
+# districts2 %&gt;% dplyr::select(yield) %&gt;% summarize_all(funs(mean, sd))
+# districts2 %&gt;% summarize(mean(yield), sd(yield))
+districts2 %&gt;% group_by(yld_cat) %&gt;% 
+  summarize(yield = mean(yield)) %&gt;% 
+  ggplot() + geom_sf(aes(fill = yield))
+  # geom_sf(aes(fill = yld_cat))
+```
+
+---
+### Spatial joins
+
+```r
+p &lt;- ggplot(districts2) + geom_sf(fill = "grey")
+# farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count()
+# st_crs(farmer_ct) &lt;- st_crs(districts)
+farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
+  st_set_crs(st_crs(districts))
+farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
+# p + geom_sf(data = farmers_districts)
+
+farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
+p + geom_sf(data = farmers_per_dist) + 
+  geom_sf(data = farmers_per_dist %&gt;% st_centroid(), col = "blue")
+```
+
+---
+### Spatial-non-spatial join
+
+```r
+districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
+  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n))
+
+p + geom_sf(data = districts3, aes(fill = log10(n)))
+# p + geom_sf(data = districts3, aes(fill = n))
+```
+
+---
+### Subsetting
+
+By count
+
+```r
+p + districts3 %&gt;% filter(n &gt; 15) %&gt;% geom_sf(data = ., fill = "red") + 
+  districts3 %&gt;% filter(between(n, 1, 15)) %&gt;% geom_sf(data = ., fill = "blue")
+p + geom_sf(data = districts3 %&gt;% filter(n &gt; 15), fill = "red") + 
+  geom_sf(data = districts3 %&gt;% filter(between(n, 1, 15)), fill = "blue")
+```
+
+By area
+
+```r
+dmed &lt;- districts3 %&gt;% #mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
+  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %&gt;% 
+  filter(area == quantile(area, probs = 0.5, type = 1)) 
+p2 &lt;- p + geom_sf(data = dmed, fill = "red")
+
+dmax &lt;- districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
+  # arrange(area) %&gt;% slice(nrow(.)) %&gt;% 
+  arrange(desc(area)) %&gt;% slice(1) 
+  # slice_max(order_by = area) #
+p2 + geom_sf(data = dmax, fill = "blue")
+
+districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
+  arrange(area) %&gt;% pull(distName)
+```
+
+---
+## Various
+
+Dataset
+
+```r
+pols &lt;- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
+                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
+                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
+                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
+                                          1))))
+pols &lt;- pols %&gt;% st_geometry %&gt;% st_cast("POLYGON") %&gt;% st_as_sf(crs = 4326) %&gt;%   
+  mutate(ID = 1:nrow(.)) %&gt;% #as.data.frame() %&gt;%
+  dplyr::select(ID)
+
+p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
+  geom_sf(data = st_union(pols), 
+          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
+```
+
+---
+### Intersects
+
+```r
+int_dists &lt;- districts2 %&gt;% 
+  slice(which(st_intersects(districts2, st_union(pols), sparse = FALSE)))
+p + geom_sf(data = int_dists, fill = "red") + 
+  geom_sf(data = pols, fill = "transparent", col = "blue")
+```
+
+---
+### Intersection
+
+```r
+districts_pol &lt;- st_intersection(districts2, st_union(pols))
+ggplot(districts_pol) + geom_sf(aes(fill = distName))
+p + geom_sf(data = districts_pol, aes(fill = distName))
+```
+
+---
+### On your own
+
+1. Select the smallest district in Zambia from `districts3`, and convert that
+to centroid
+
+```r
+smallest_centroid &lt;- districts3 %&gt;% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
+  filter
+```
+
+2. Create a buffer of width 0.5 around that
+
+```r
+smallest_buffer &lt;- smallest_centroid %&gt;% st_buf...
+```
+
+3. Use the buffer to select the districts from `districts3` that intersect with it
+
+```r
+dists_in_buff &lt;- districts3 %&gt;% 
+  filter(st_intersects(., smallest_buffer...
+```
+
+4. Use the buffer to do an intersection with `districts3`
+
+```r
+buff_int_dists &lt;- st_intersection(...
+# p + geom_sf(data = buff_int_dists, aes(fill = distName))
+```
+
+5. Calculate the area of the intersection
+
+
+
+
+## Visualization
+
+- `graphics` versus `ggplot`
+
+
+```r
+library(tidyverse)
+fs &lt;- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
+          full.names = TRUE)
+crops &lt;- lapply(fs, readr::read_csv)
+crops_df &lt;- do.call(rbind, lapply(crops, function(x) {
+  x %&gt;% dplyr::select(Item, Area, Element, Year, Value) %&gt;% 
+    spread(key = Element, value = Value) %&gt;% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production) %&gt;% 
+    mutate(harv_km2 = harv_area / 100)
+}))
+crop_ylds &lt;- crops_df %&gt;% mutate(yields = prod / harv_area) %&gt;%     
+  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %&gt;%  
+  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %&gt;% 
+  mutate(harv_km2 = harv_area / 100)
+```
+
+---
+### `graphics`
+
+- Need this because we'll use a lot with `sf` and `raster`
+- Key functions: 
+  - `plot`, `barplot`, `hist`, `boxplot`, `par`
+- Other helpers:
+  - `axis`, `text`, `mtext`, `legend`
+
+---
+### `graphics` examples
+- Scatter
+- Histogram
+- multi-panel
+
+---
+#### Scatter
+
+```r
+# single line
+cols &lt;- c("red", "orange", "blue", "purple")
+par(mfrow = c(2, 2), mar = rep(0, 4))
+for(i in 1:4) {
+  crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;% 
+    plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
+}
+# multiple lines
+par(mar = rep(3, 4))
+# crop_ylds[crop_ylds$country == "ZAF" &amp; crop_ylds$crop == "Maize", ]
+crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;%
+  plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
+# dat &lt;- crop_ylds[crop_ylds$country == "ZAF" &amp; crop_ylds$crop == "Maize", ]
+# plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
+axis(side = 1, las = 2)
+axis(side = 2, las = 2)
+
+crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;%
+  plot(yields ~ year, data = ., col = "blue", type = "l")
+crop_ylds %&gt;% filter(country == "ZMB" &amp; crop == "Maize") %&gt;%
+  lines(yields ~ year, data = ., col = "red")
+```
+
+---
+
+```r
+# change axes
+dat &lt;- crop_ylds[crop_ylds$country == "ZAF" &amp; crop_ylds$crop == "Maize", ]
+plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
+axis(side = 1, las = 2)
+axis(side = 2, las = 2)
+
+# multiple panels
+par(mfrow = c(2, 1))
+crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;%
+  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
+crop_ylds %&gt;% filter(country == "ZMB" &amp; crop == "Maize") %&gt;%
+  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
+```
+
+---
+#### Histogram
+
+```r
+# basic
+par(mar = c(3, 3, 1, 1))
+crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
+  pull(yields) %&gt;% hist(., breaks = seq(0, 7, 0.5), main = "Maize yields")
+
+# side-by-side
+par(mfrow = c(1, 2))
+crop_ylds %&gt;% filter(crop == "Maize" &amp; country == "ZAF") %&gt;%
+  pull(yields) %&gt;% 
+  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
+crop_ylds %&gt;% filter(crop == "Maize" &amp; country == "ZMB") %&gt;%
+  pull(yields) %&gt;% 
+  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
+```
+
+---
+### ggplot examples
+#### scatters
+
+```r
+# basic points
+crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
+  ggplot() + geom_point(aes(x = year, y = yields))
+
+# basic lines
+crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
+  ggplot() + geom_line(mapping = aes(x = year, y = yields))
+
+# multiple lines
+crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue"))
+
+# change axes/theme
+crop_ylds %&gt;% filter(crop == "Maize") %&gt;%   
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue")) + 
+  scale_x_continuous(breaks = seq(1960, 2020, 5), expand = c(0, 0)) +
+  theme(axis.text.x = element_text(angle = 90), 
+        panel.background = element_blank())
+```
+
+---
+#### multi-panel
+
+```r
+# from a single variable, facet_grid, facet_wrap
+crop_ylds %&gt;% 
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue")) + 
+  facet_grid(cols = vars(crop))
+
+# multiple variables
+p1 &lt;- crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
+  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
+  scale_color_manual(values = c("green", "blue")) 
+p2 &lt;- crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
+  ggplot() + geom_line(aes(x = year, y = harv_area, color = country)) +
+  scale_color_manual(values = c("green", "blue")) 
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
+                         p2 + theme(legend.position = "none"))
+cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
+```
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
