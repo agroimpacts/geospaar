@@ -100,7 +100,7 @@ smallest_centroid <- districts3 %>%
 (2) Create a buffer of width 0.5 (50 km) around that
 ```{r, eval = FALSE}
 sf_use_s2(TRUE)
-smallest_buffer <- smallest_centroid %>% st_buffer(dist = 50000)
+smallest_buffer <- smallest_centroid %>% st_buffer(dist = 55000)
 ggplot() + geom_sf(data = smallest_buffer)
 
 sf_use_s2(FALSE)
@@ -134,7 +134,10 @@ p + geom_sf(data = buff_int_dists, aes(fill = distName))
 
 (5) Calculate the area of the intersection, converting the area to hectares, and dropping all other variables from `buff_int_dists` except "distName", and the new "int_area"
 ```{r, eval=FALSE}
-buff_int_dists %>% mutate(int_area = units::set_units...
+area_buff <- buff_int_dists %>% 
+  mutate(int_area = as.numeric(units::set_units(st_area(.), "ha"))) %>%
+  select(distName,int_area)
+ggplot() + geom_sf(data = area_buff, aes(fill = log10(int_area))) 
 ```
 
 ---
@@ -153,6 +156,28 @@ buff_int_dists %>% mutate(int_area = units::set_units...
 - multi-panel
 
 ---
+
+```{r, eval=FALSE}
+library(tidyverse)
+fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
+          full.names = TRUE)
+crops <- lapply(fs, readr::read_csv)
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
+    spread(key = Element, value = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production) %>% 
+    mutate(harv_km2 = harv_area / 100)
+}))
+crop_ylds <- crops_df %>% mutate(yields = prod / harv_area) %>%     
+  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
+  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
+  mutate(harv_km2 = harv_area / 100)
+```
+
+
+---
+
 #### Scatter
 ```{r, eval = FALSE}
 # single line
@@ -160,7 +185,8 @@ cols <- c("red", "orange", "blue", "purple")
 par(mfrow = c(2, 2), mar = rep(0, 4))
 for(i in 1:4) {
   crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>% 
-    plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
+    # plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
+    plot(yields ~ year, data = ., cex = i, col = cols[i], axes = FALSE)
 }
 # multiple lines
 par(mar = rep(3, 4))
@@ -169,8 +195,10 @@ crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
   plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
 # dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
 # plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
+axis(side = 1, las = 2, mgp = c(0.1, 0.5, 0), cex.axis = 0.8)
+mtext("year", side = 1, line = 2)
 axis(side = 2, las = 2)
+mtext("yield", side = 2, line = 2)
 
 crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
   plot(yields ~ year, data = ., col = "blue", type = "l")
@@ -265,6 +293,10 @@ cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
 ##### patchwork example
 ```{r, eval=FALSE}
 library(patchwork)
+
+p1 + p2 + plot_layout(guides = "collect")
+p1 + p1 / p
+
 ```
 
 
@@ -309,7 +341,7 @@ b3 <- lapply(1:10, function(x) {
   values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
   r
 }) %>% stack %>% brick
-plot(b3)
+plot(b3[[1]], )
 
 ```
 

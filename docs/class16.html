@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 16
+
+---
+
+
+## Today
+
+- Raster intro, continued
+  - classes
+  - dummy rasters
+  - reading and writing
+  - rasterize, raster to vector
+  - pre-processing
+  - calculations
+
+---
+### Demo
+
+
+```r
+library(parallel)
+system.time(b3 &lt;- lapply(1:500, function(x) {
+  r &lt;- raster(extent(30, 31, -14, -13), res = 0.001, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
+})) 
+system.time(b4 &lt;- lapply(1:500, function(x) {
+  r &lt;- raster(extent(30, 31, -14, -13), res = 0.001, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
+}, mc.cores = 7)) 
+
+
+system.time(l1 &lt;- lapply(b3[1:10], function(x) calc(x, mean)))
+system.time(l2 &lt;- mclapply(b3, function(x) calc(x, mean), mc.cores = 4))
+```
+
+
+
+
+---
+
+
+### Data
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;%
+  read_csv %&gt;% distinct(uuid, .keep_all = TRUE) %&gt;% select(uuid, x, y) %&gt;% 
+  mutate(count = 1) %&gt;% st_as_sf(coords = c("x", "y"))
+roads &lt;- system.file("extdata/roads.shp", package = "geospaar") %&gt;% st_read
+districts &lt;- system.file("extdata/districts.shp", package = "geospaar") %&gt;%
+  st_read
+```
+
+---
+## Reading/Writing/Manipulating rasters
+
+- create
+
+```r
+r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
+            crs = "+proj=longlat +datum=WGS84")
+values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+
+par(mar = c(0, 0, 0, 0))
+plot(districts %&gt;% st_geometry)
+plot(r, add = TRUE)
+plot(r)
+
+s &lt;- stack(r, log10(r))
+names(s) &lt;- c("dummy", "log10dummy")
+plot(s)
+
+b &lt;- brick(s)
+plot(b)
+
+b2 &lt;- lapply(1:10, function(x) {
+  r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %&gt;% stack %&gt;% brick
+plot(b2)
+```
+
+---
+### A large brick
+
+```r
+b3 &lt;- lapply(1:10, function(x) {
+  r &lt;- raster(extent(30, 31, -14, -13), res = 0.001, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %&gt;% stack %&gt;% brick
+plot(b3)
+```
+
+---
+
+- read and write
+
+
+```r
+writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
+# rm(r)
+r &lt;- raster(file.path(tempdir(), "mydummy.tif"))
+plot(r)
+
+brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
+brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
+brick(file.path(tempdir(), "mydumbrick.tif"))
+brick(file.path(tempdir(), "mydumbrick.grd"))
+```
+
+---
+
+- plot
+
+```r
+plot(b)
+plot(b2)
+plot_noaxes(b)
+plot_noaxes(b2, main = paste("Random", 1:10))
+plot(b2, main = paste("Random", 1:10))
+plot_noaxes(b, legend = FALSE)
+plot_noaxes(b[[1]], legend = FALSE)
+legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
+       bty = "n")
+
+# plotting with larger datasets
+plot_noaxes(b3, main = paste("Random", 1:10))
+rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
+
+rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b[[1]])
+rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
+  scale_fill_viridis_c()
+ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
+  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
+  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
+st_as_stars(b) %&gt;% plot()
+```
+
+---
+## Raster to other types
+
+```r
+b[1:10]
+b[1:ncell(b)]
+as.matrix(b)
+as.data.frame(b) %&gt;% as_tibble()
+```
+---
+## Pre-processing
+- Aggregating/disaggregating
+
+```r
+aggregate(b, fact = 2) %&gt;% plot
+# aggregate(b, fun = min, fact = 2) %&gt;% plot
+# aggregate(b, fun = sd, fact = 2) %&gt;% plot
+disaggregate(b, fact = 2) %&gt;% plot
+disaggregate(b, fact = 2, bilinear = TRUE) %&gt;% plot
+```
+
+- Masking
+
+```r
+data(chirps)
+plot_noaxes(chirps[[1]])
+chirpsz &lt;- mask(chirps, districts)
+plot_noaxes(chirpsz[[1]])
+plot(st_geometry(districts), add = TRUE)
+# rasterVis::levelplot(chirpsz[[1:5]])
+plot_noaxes(chirpsz, nr = 2, nc = 3, maxnl = 6, mar = c(0, 0, 0, 0), 
+            legend = FALSE, zlim = c(0, 50))
+plot(chirpsz, nr = 2, nc = 3, maxnl = 6, mar = c(0, 0, 0, 0), 
+     legend = FALSE, zlim = c(0, 50))
+```
+
+---
+
+- Projecting
+
+```r
+chirpsz %&gt;% projectRaster(., crs = crs(roads), res = 5000) -&gt; chirpsz_alb
+chirpsz_alb %&gt;% print
+```
+
+- Rasterize/vectorize
+
+```r
+distsr &lt;- districts %&gt;% rasterize(., chirpsz)
+distsr %&gt;% plot_noaxes
+# stack(distsr, chirpsz[[1:2]]) %&gt;% plotRGB(stretch = "lin")
+distsr_pol &lt;- rasterToPolygons(distsr, dissolve = TRUE)
+distsr_pol %&gt;% st_as_sf %&gt;% st_geometry %&gt;% plot
+distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
+```
+
+---
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+---
+## Exercises
+
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall &gt; 10 mm
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
