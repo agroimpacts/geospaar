@@ -26,14 +26,15 @@ output:
 
 ```{r, eval=FALSE}
 library(parallel)
-system.time(b3 <- lapply(1:500, function(x) {
+system.time(b3 <- lapply(1:250, function(x) {
   r <- raster(extent(30, 31, -14, -13), res = 0.001, 
               crs = "+proj=longlat +datum=WGS84")
   set.seed(x)
   values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
   stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
 })) 
-system.time(b4 <- lapply(1:500, function(x) {
+
+system.time(b4 <- mclapply(1:250, function(x) {
   r <- raster(extent(30, 31, -14, -13), res = 0.001, 
               crs = "+proj=longlat +datum=WGS84")
   set.seed(x)
@@ -41,14 +42,14 @@ system.time(b4 <- lapply(1:500, function(x) {
   stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
 }, mc.cores = 7)) 
 
+system.time(l1 <- lapply(b3, function(x) calc(x, mean)))
+system.time(l2 <- mclapply(b4, function(x) calc(x, mean), mc.cores = 7))
 
-system.time(l1 <- lapply(b3[1:10], function(x) calc(x, mean)))
-system.time(l2 <- mclapply(b3, function(x) calc(x, mean), mc.cores = 4))
-
+s1 <- stack(l2)
+system.time(calc(s1, mean))
+b1 <- brick(l2)
+system.time(calc(b1, mean))
 ```
-
-
-
 
 ---
 
@@ -115,7 +116,8 @@ plot(b3)
 
 ```{r, eval = FALSE}
 writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
-# rm(r)
+rm(r)
+r
 r <- raster(file.path(tempdir(), "mydummy.tif"))
 plot(r)
 
@@ -159,8 +161,10 @@ st_as_stars(b) %>% plot()
 ```{r, eval=FALSE}
 b[1:10]
 b[1:ncell(b)]
+values(b)
 as.matrix(b)
 as.data.frame(b) %>% as_tibble()
+values(b[[1]])
 ```
 ---
 ## Pre-processing
@@ -169,8 +173,9 @@ as.data.frame(b) %>% as_tibble()
 aggregate(b, fact = 2) %>% plot
 # aggregate(b, fun = min, fact = 2) %>% plot
 # aggregate(b, fun = sd, fact = 2) %>% plot
+plot(b)
 disaggregate(b, fact = 2) %>% plot
-disaggregate(b, fact = 2, bilinear = TRUE) %>% plot
+disaggregate(b, fact = 2, method = "bilinear") %>% plot
 ```
 
 - Masking
@@ -183,6 +188,10 @@ plot(st_geometry(districts), add = TRUE)
 # rasterVis::levelplot(chirpsz[[1:5]])
 plot_noaxes(chirpsz, nr = 2, nc = 3, maxnl = 6, mar = c(0, 0, 0, 0), 
             legend = FALSE, zlim = c(0, 50))
+plot_noaxes(chirpsz, nr = 3, nc = 3, maxnl = 9, mar = c(0, 0, 0, 0), 
+            legend = FALSE, zlim = c(0, 50))
+plot_noaxes(chirpsz, nr = 2, nc = 3, maxnl = 6, mar = c(0, 0, 0, 0), 
+            legend = FALSE, zlim = c(0, 50))
 plot(chirpsz, nr = 2, nc = 3, maxnl = 6, mar = c(0, 0, 0, 0), 
      legend = FALSE, zlim = c(0, 50))
 ```
@@ -193,6 +202,8 @@ plot(chirpsz, nr = 2, nc = 3, maxnl = 6, mar = c(0, 0, 0, 0),
 ```{r, eval = FALSE}
 chirpsz %>% projectRaster(., crs = crs(roads), res = 5000) -> chirpsz_alb
 chirpsz_alb %>% print
+plot(chirpsz_alb[[1]])
+plot(chirpsz[[1]])
 ```
 
 - Rasterize/vectorize
@@ -203,14 +214,34 @@ distsr %>% plot_noaxes
 distsr_pol <- rasterToPolygons(distsr, dissolve = TRUE)
 distsr_pol %>% st_as_sf %>% st_geometry %>% plot
 distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
+distsr_pol %>% st_as_sf %>% slice(49) %>% plot()
 ```
 
 ---
 ## Calculations
 
 - raster algebra
+```{r}
+rf1 <- chirpsz[[1]] + chirpsz[[2]]
+plot(rf1)
+plot(rf1 / 1000)
+```
+
 - statistics
+```{r}
+cellStats(chirpsz[[1]], stat = mean)
+cellStats(chirpsz[[1]], stat = range)
+cellStats(chirpsz, stat = mean)
+cellStats(chirpsz, stat = sum)
+cellStats(chirpsz, stat = range)
+```
+
 - z dimension stats
+```{r}
+plot(calc(chirpsz, mean))
+plot(calc(chirpsz, sum))
+plot(calc(chirpsz, range))
+```
 
 ---
 ## Exercises
@@ -220,7 +251,5 @@ distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
 - Disaggregate to 0.02 degrees (bilinear and NGB)
 - Calculate the sum of rainfall from `chirps`
 - Identify all areas of total rainfall > 10 mm
-- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
-
-
+- Calculate the mean rainfall in Zambia for the 15th day in `chirpsz`
 

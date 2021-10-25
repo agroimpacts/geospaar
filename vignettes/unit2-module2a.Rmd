@@ -582,6 +582,7 @@ chirpsz1km
 The first option is the default one, which just breaks apart each pixel into the number of smaller new pixels specified by the factor, assigning each new pixel the same value as its larger parent. Here we specified a factor of 5, leading to an output resolution of 0.01 (~1 km), and thus 25 times the number of pixels as in the original `chirpsz[[1]]` (run `ncell(chirpsz1km) / ncell(chirpsz[[1]])` to see).
 
 The second way (commented out), is to set `method = bilinear`, which interpolates during disaggregation. In this case, `disaggregate` does the job using the `resample` function, which we will see next.  
+
 ### Resampling
 
 Resampling is done for many reasons, but one particularly common case is as a final step following aggregation or disaggregation, when it is needed to co-register the resulting grid to another grid. 
