@@ -24,6 +24,8 @@ output:
 library(geospaar)
 districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
   st_read
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+
 data(chirps)
 chirpsz <- mask(chirps, districts)
 ```
@@ -49,26 +51,16 @@ system.time(b4 <- mclapply(1:250, function(x) {
   values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
   stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
 }, mc.cores = 7)) 
-
-system.time(l1 <- lapply(b3, function(x) calc(x, mean)))
-system.time(l2 <- mclapply(b4, function(x) calc(x, mean), mc.cores = 7))
 ```
 
 ---
 ## Windows parallelization
 
 ```{r, eval=FALSE}
-detectCores()
-cl <- makeCluster(8)
-rast_fun <- function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}
+# detectCores()
+cl <- makeCluster(7)
 clusterEvalQ(cl, library(raster))
-system.time(l3 <- parLapply(cl, 1:250, function(x) {
+system.time(b5 <- parLapply(cl, 1:250, function(x) {
   r <- raster(extent(30, 31, -14, -13), res = 0.001, 
               crs = "+proj=longlat +datum=WGS84")
   set.seed(x)
@@ -76,17 +68,74 @@ system.time(l3 <- parLapply(cl, 1:250, function(x) {
   stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
 }))
 stopCluster(cl)
+# sapply(1:250, function(x) b4[[x]] == b5[[x]])
 ```
 
 ---
 ## Exercises
 ### Last class
-- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1 
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+
+```{r, eval=FALSE}
+# Arman's solution
+# creating raster dist49_dummy
+dist49_dummy <- raster(extent(districts[49, ]), res = 0.1, crs = 4326)
+
+# assigning values for dist49_dummy
+values(dist49_dummy) <- sample(1:100, size = ncell(r), replace = TRUE)
+plot_noaxes(dist49_dummy)
+```
+---
 - Reproject to Albers 
+
+
+```{r, eval=FALSE}
+# Galen's solution ("but it's about the class")
+dist49_dummy_alb <- dist49_dummy %>% projectRaster(., crs = crs(roads))
+
+# alternate
+projectRaster(dist49_dummy, crs = "ESRI:102022")
+```
+---
 - Disaggregate to 0.02 degrees (bilinear and NGB) 
+
+```{r, eval=FALSE}
+# Vanchy's solution
+dist49_dummy_d <- disaggregate(x = dist49_dummy, fact = 5, method = "bilinear")
+
+# Claire's solution 
+dist49_NGB <- disaggregate(dist49_dummy, fact = 5)
+
+plot(dist49_dummy_d)
+plot(dist49_NGB)
+```
+
+---
 - Calculate the sum of rainfall from `chirpsz`
-- Identify all areas of total rainfall > 10 mm
+
+```{r, eval=FALSE}
+# Claire's solution
+chirps_sum <- calc(chirpsz, fun = sum)
+plot(chirps_sum)
+
+# Galen's solution
+cellStats(chirps_sum, mean)
+```
+
+- Identify all areas of total rainfall > 100 mm
+
+```{r, eval=FALSE}
+# Arman's solution
+chirps_gt10 <- chirps_sum > 100
+plot_noaxes(chirps_gt10)
+```
+
 - Calculate the mean rainfall in Zambia for the 15th day in `chirpsz`
+
+```{r, eval=FALSE}
+# Anna and Julia's solutions
+cellStats(chirpsz[[15]], stat = mean)
+```
 
 ---
 
@@ -102,23 +151,28 @@ districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
 chirpsz <- mask(chirps, districts)
 ```
 
-- Dummy raster
-```{r, eval=FALSE}
-e <- districts %>% slice(49) %>% extent()
-r <- raster(e, res = 0.1, crs = 4326)
-r[] <- sample(1:100, size = ncell(r), replace = TRUE)
-
-plot(r)
-plot(aggregate(r, fact = 2))
-plot(disaggregate(r, fact = 2, method = "bilinear"))
-```
-
 ---
 
 ### New
 - From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
+
+```{r}
+raintot <- calc(chirpsz, sum)
+raincat <- cut(raintot, breaks = c(0, 50, 200))
+plot_noaxes(raincat, col = c("grey70", "lightblue"))
+```
+
 - Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
+
+```{r}
+# w <- matrix(1, nrow = 3, ncol = 3)
+w <- matrix(1, nrow = 9, ncol = 9)
+plot(raintot)
+plot(focal(raintot, w = w, fun = mean, na.rm = TRUE))
+plot(focal(raintot, w = w, fun = mean))
+```
 - Calculate the average elevation and slope in each district of Zambia
+
 
 
 

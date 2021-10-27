@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 18
+
+---
+
+
+## Today
+
+- Parallelization
+- Exercises from last class
+- New exercises (teams)
+
+---
+## Data
+
+
+```r
+library(geospaar)
+districts &lt;- system.file("extdata/districts.shp", package = "geospaar") %&gt;%
+  st_read
+roads &lt;- system.file("extdata/roads.shp", package = "geospaar") %&gt;% st_read
+
+data(chirps)
+chirpsz &lt;- mask(chirps, districts)
+```
+
+---
+
+
+### Results from homework
+- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall &lt; 50 mm, medium is 50-100 m, and high is rainfall &gt; 100 mm
+
+
+```r
+raintot &lt;- calc(chirpsz, sum)
+raincat &lt;- cut(raintot, breaks = c(0, 50, 200))
+plot_noaxes(raincat, col = c("grey70", "lightblue"))
+```
+
+- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
+
+
+```r
+# w &lt;- matrix(1, nrow = 3, ncol = 3)
+w &lt;- matrix(1, nrow = 9, ncol = 9)
+plot(raintot)
+plot(focal(raintot, w = w, fun = mean, na.rm = TRUE))
+plot(focal(raintot, w = w, fun = mean))
+```
+- Calculate the average elevation and slope in each district of Zambia
+---
+
+
+---
+### mapView
+
+```r
+library(mapview)
+mapview(districts)
+viewRGB(x = chirpsz[[1:3]])
+mapView(districts, alpha.regions = 0, legend = FALSE) + mapview(raintot) 
+
+kili_data &lt;- system.file("extdata", "kiliNDVI.tif", package = "mapview") %&gt;%
+  raster::stack(.)
+mapview(kili_data[[1:3]])
+```
+
+---
+
+### tmap
+
+```r
+library(tmap)
+data(World)
+# tmaptools::palette_explorer()
+tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
+  tm_shape(districts) + tm_borders() + 
+  tm_layout(bg.color = "grey", inner.margins = 0.1) # +
+  # tm_shape(World) + tm_borders()
+```
+---
+
+### leaflet
+
+```r
+library(leaflet)
+m &lt;- leaflet() %&gt;% addTiles()
+m  # a map with the default OSM tile layer
+
+
+# set bounds
+m %&gt;% fitBounds(0, 40, 10, 50)
+
+# move the center to Snedecor Hall
+m &lt;- m %&gt;% setView(-93.65, 42.0285, zoom = 17)
+m
+
+# popup
+m %&gt;% addPopups(-93.65, 42.0285, 
+                "Here is the &lt;b&gt;Department of Statistics&lt;/b&gt;, ISU")
+rand_lng &lt;- function(n = 10) rnorm(n, -93.65, .01)
+rand_lat &lt;- function(n = 10) rnorm(n, 42.0285, .01)
+
+# use automatic bounds derived from lng/lat data
+m &lt;- m %&gt;% clearBounds()
+
+# popup
+m %&gt;% addPopups(rand_lng(), rand_lat(), "Random popups")
+```
+---
+
+
+### RStoolbox
+
+```r
+library(RStoolbox)
+data(lsat)
+ggRGB(lsat, stretch = "lin")
+ggRGB(lsat[[2:4]], stretch = "lin")
+ggR(lsat[[1]])
+ggR(lsat[[1]], stretch = "hist")
+ggR(lsat[[1]], stretch = "lin")
+ggR(raintot)
+```
+
+---
+
+### RStoolbox::spectralIndices
+
+```r
+ndvi &lt;- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "NDVI")
+ggR(ndvi, geom_raster = TRUE) +
+  scale_fill_gradientn(colours = c("black", "white"))
+  # scale_fill_viridis_c()
+
+mtlFile  &lt;- system.file("external/landsat/LT52240631988227CUB02_MTL.txt", 
+                        package="RStoolbox")
+lsat_ref &lt;- radCor(lsat, mtlFile, method = "apref")
+
+SI &lt;- spectralIndices(lsat_ref, red = "B3_tre", nir = "B4_tre")
+plot(SI)
+# rasterVis::levelplot(SI)
+```
+
+---
+### Plotly
+
+Many examples in code demos section of `plotly` help
+
+
+```r
+library(plotly)
+library(sf)
+
+nc &lt;- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+p &lt;- ggplot(nc) + geom_sf(aes(fill = AREA))
+ggplotly(p)
+ggplot() + geom_sf(data = nc, aes(fill = AREA))
+
+# If not supplied, coord_sf() will take the CRS from the first layer
+# and automatically transform all other layers to use that CRS. This
+# ensures that all data will correctly line up
+nc_3857 &lt;- sf::st_transform(nc, "+init=epsg:3857")
+p2 &lt;- ggplot() +
+  geom_sf(data = nc) +
+  geom_sf(data = nc_3857, colour = "red", fill = NA)
+ggplotly(p2)
+```
+
+---
+
+### Plotly cont.
+
+```r
+# Unfortunately if you plot other types of feature you'll need to use
+# show.legend to tell ggplot2 what type of legend to use
+nc_3857$mid &lt;- sf::st_centroid(nc_3857$geometry)
+p3 &lt;- ggplot(nc_3857) +
+  geom_sf(colour = "white") +
+  geom_sf(aes(geometry = mid, size = AREA), show.legend = "point")
+ggplotly(p3)
+
+# You can also use layers with x and y aesthetics: these are
+# assumed to already be in the common CRS.
+p4 &lt;- ggplot(nc) +
+  geom_sf() +
+  annotate("point", x = -80, y = 35, colour = "red", size = 4)
+ggplotly(p4)
+```
+
+---
+## Modelling demo
+### Random Forests
+
+```r
+# Train model
+require(caTools)
+library(randomForest)
+library(dplyr)
+
+# read in train set
+train_ref &lt;- readr::read_csv(
+  system.file("extdata/train_reference.csv", package = "ecaascrops")
+) %&gt;% mutate(crop = factor(case_when(
+  class == "Maize" ~ 1,
+  class == "Rice" ~ 2,
+  class == "Other" ~ 3,
+  class == "noncrop" ~ 4
+))) %&gt;% select(id, class, crop, !!names(.))
+```
+
+---
+### Model 
+
+
+```r
+# prepare dataset
+dset &lt;- train_ref %&gt;% filter(type == "mean") %&gt;%
+  select(-id, -class, -type, -seed)
+set.seed(10)
+samp &lt;- sample.split(dset$crop, SplitRatio = 0.8)
+train &lt;- subset(dset, samp == TRUE)
+test &lt;- subset(dset, samp == FALSE)
+# train %&gt;% tidyr::drop_na()
+
+# fit model
+set.seed(123)
+mod &lt;- randomForest(crop ~ ., data = train, ntree = 1000,
+                    importance = TRUE)
+
+# Evaluation
+pred &lt;- predict(mod, newdata = test %&gt;% dplyr::select(-c(crop)))
+cm &lt;- table(test$crop, pred)
+
+rf_results &lt;- list("train" = train, "test" = test, "mod" = mod, "pred" = pred,
+                   "error_mat" = cm)
+```
+
+---
+
+```r
+imptab &lt;- mod$importance
+nms &lt;- rownames(imptab)
+imp_tbl &lt;- as_tibble(imptab) %&gt;% 
+  mutate(Variable = nms) %&gt;% 
+  dplyr::select(Variable, MeanDecreaseAccuracy) %&gt;% 
+  arrange(MeanDecreaseAccuracy) %&gt;% 
+  mutate(order = 1:n()) %&gt;% 
+  mutate(Variable = gsub("\\.", "_", Variable))
+
+p &lt;- ggplot(imp_tbl) + 
+  geom_point(aes(MeanDecreaseAccuracy, factor(order))) + 
+  scale_y_discrete(labels = toupper(imp_tbl$Variable)) + 
+  ylab("Variable") + xlab("Mean Decrease in Accuracy") + 
+  theme_linedraw() + 
+  theme(axis.text = element_text(size = 7), 
+        axis.title = element_text(size = 7))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

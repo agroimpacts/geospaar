@@ -3,7 +3,7 @@
 
 ## Fall 2021
 
-Updated on: 2021-10-25
+Updated on: 2021-10-27
 
 <center>
 
@@ -74,4 +74,5 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 16 slides](class16.html)
 -   Week 10
     -   [Class 17 slides](class17.html)
+    -   [Class 18 slides](class18.html)
 -   Week 11-15

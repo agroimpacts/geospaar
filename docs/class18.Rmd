@@ -1,0 +1,266 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 18
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Parallelization
+- Exercises from last class
+- New exercises (teams)
+
+---
+## Data
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+library(geospaar)
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
+  st_read
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+
+data(chirps)
+chirpsz <- mask(chirps, districts)
+```
+
+---
+
+
+### Results from homework
+- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
+
+```{r, eval=FALSE}
+raintot <- calc(chirpsz, sum)
+raincat <- cut(raintot, breaks = c(0, 50, 200))
+plot_noaxes(raincat, col = c("grey70", "lightblue"))
+```
+
+- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
+
+```{r, eval=FALSE}
+# w <- matrix(1, nrow = 3, ncol = 3)
+w <- matrix(1, nrow = 9, ncol = 9)
+plot(raintot)
+plot(focal(raintot, w = w, fun = mean, na.rm = TRUE))
+plot(focal(raintot, w = w, fun = mean))
+```
+- Calculate the average elevation and slope in each district of Zambia
+---
+
+
+---
+### mapView
+```{r, eval = FALSE}
+library(mapview)
+mapview(districts)
+viewRGB(x = chirpsz[[1:3]])
+mapView(districts, alpha.regions = 0, legend = FALSE) + mapview(raintot) 
+
+kili_data <- system.file("extdata", "kiliNDVI.tif", package = "mapview") %>%
+  raster::stack(.)
+mapview(kili_data[[1:3]])
+```
+
+---
+
+### tmap
+```{r, eval = FALSE}
+library(tmap)
+data(World)
+# tmaptools::palette_explorer()
+tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
+  tm_shape(districts) + tm_borders() + 
+  tm_layout(bg.color = "grey", inner.margins = 0.1) # +
+  # tm_shape(World) + tm_borders()
+```
+---
+
+### leaflet
+```{r, eval = FALSE}
+library(leaflet)
+m <- leaflet() %>% addTiles()
+m  # a map with the default OSM tile layer
+
+
+# set bounds
+m %>% fitBounds(0, 40, 10, 50)
+
+# move the center to Snedecor Hall
+m <- m %>% setView(-93.65, 42.0285, zoom = 17)
+m
+
+# popup
+m %>% addPopups(-93.65, 42.0285, 
+                "Here is the <b>Department of Statistics</b>, ISU")
+rand_lng <- function(n = 10) rnorm(n, -93.65, .01)
+rand_lat <- function(n = 10) rnorm(n, 42.0285, .01)
+
+# use automatic bounds derived from lng/lat data
+m <- m %>% clearBounds()
+
+# popup
+m %>% addPopups(rand_lng(), rand_lat(), "Random popups")
+```
+---
+
+
+### RStoolbox
+```{r, eval = FALSE}
+library(RStoolbox)
+data(lsat)
+ggRGB(lsat, stretch = "lin")
+ggRGB(lsat[[2:4]], stretch = "lin")
+ggR(lsat[[1]])
+ggR(lsat[[1]], stretch = "hist")
+ggR(lsat[[1]], stretch = "lin")
+ggR(raintot)
+```
+
+---
+
+### RStoolbox::spectralIndices
+```{r, eval = FALSE}
+ndvi <- spectralIndices(lsat, red = "B3_dn", nir = "B4_dn", indices = "NDVI")
+ggR(ndvi, geom_raster = TRUE) +
+  scale_fill_gradientn(colours = c("black", "white"))
+  # scale_fill_viridis_c()
+
+mtlFile  <- system.file("external/landsat/LT52240631988227CUB02_MTL.txt", 
+                        package="RStoolbox")
+lsat_ref <- radCor(lsat, mtlFile, method = "apref")
+
+SI <- spectralIndices(lsat_ref, red = "B3_tre", nir = "B4_tre")
+plot(SI)
+# rasterVis::levelplot(SI)
+```
+
+---
+### Plotly
+
+Many examples in code demos section of `plotly` help
+
+```{r, eval=FALSE}
+library(plotly)
+library(sf)
+
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+p <- ggplot(nc) + geom_sf(aes(fill = AREA))
+ggplotly(p)
+ggplot() + geom_sf(data = nc, aes(fill = AREA))
+
+# If not supplied, coord_sf() will take the CRS from the first layer
+# and automatically transform all other layers to use that CRS. This
+# ensures that all data will correctly line up
+nc_3857 <- sf::st_transform(nc, "+init=epsg:3857")
+p2 <- ggplot() +
+  geom_sf(data = nc) +
+  geom_sf(data = nc_3857, colour = "red", fill = NA)
+ggplotly(p2)
+```
+
+---
+
+### Plotly cont.
+```{r, eval=FALSE}
+# Unfortunately if you plot other types of feature you'll need to use
+# show.legend to tell ggplot2 what type of legend to use
+nc_3857$mid <- sf::st_centroid(nc_3857$geometry)
+p3 <- ggplot(nc_3857) +
+  geom_sf(colour = "white") +
+  geom_sf(aes(geometry = mid, size = AREA), show.legend = "point")
+ggplotly(p3)
+
+# You can also use layers with x and y aesthetics: these are
+# assumed to already be in the common CRS.
+p4 <- ggplot(nc) +
+  geom_sf() +
+  annotate("point", x = -80, y = 35, colour = "red", size = 4)
+ggplotly(p4)
+```
+
+---
+## Modelling demo
+### Random Forests
+```{r, eval=FALSE}
+# Train model
+require(caTools)
+library(randomForest)
+library(dplyr)
+
+# read in train set
+train_ref <- readr::read_csv(
+  system.file("extdata/train_reference.csv", package = "ecaascrops")
+) %>% mutate(crop = factor(case_when(
+  class == "Maize" ~ 1,
+  class == "Rice" ~ 2,
+  class == "Other" ~ 3,
+  class == "noncrop" ~ 4
+))) %>% select(id, class, crop, !!names(.))
+```
+
+---
+### Model 
+
+```{r, eval=FALSE}
+# prepare dataset
+dset <- train_ref %>% filter(type == "mean") %>%
+  select(-id, -class, -type, -seed)
+set.seed(10)
+samp <- sample.split(dset$crop, SplitRatio = 0.8)
+train <- subset(dset, samp == TRUE)
+test <- subset(dset, samp == FALSE)
+# train %>% tidyr::drop_na()
+
+# fit model
+set.seed(123)
+mod <- randomForest(crop ~ ., data = train, ntree = 1000,
+                    importance = TRUE)
+
+# Evaluation
+pred <- predict(mod, newdata = test %>% dplyr::select(-c(crop)))
+cm <- table(test$crop, pred)
+
+rf_results <- list("train" = train, "test" = test, "mod" = mod, "pred" = pred,
+                   "error_mat" = cm)
+```
+
+---
+```{r, eval=FALSE}
+imptab <- mod$importance
+nms <- rownames(imptab)
+imp_tbl <- as_tibble(imptab) %>% 
+  mutate(Variable = nms) %>% 
+  dplyr::select(Variable, MeanDecreaseAccuracy) %>% 
+  arrange(MeanDecreaseAccuracy) %>% 
+  mutate(order = 1:n()) %>% 
+  mutate(Variable = gsub("\\.", "_", Variable))
+
+p <- ggplot(imp_tbl) + 
+  geom_point(aes(MeanDecreaseAccuracy, factor(order))) + 
+  scale_y_discrete(labels = toupper(imp_tbl$Variable)) + 
+  ylab("Variable") + xlab("Mean Decrease in Accuracy") + 
+  theme_linedraw() + 
+  theme(axis.text = element_text(size = 7), 
+        axis.title = element_text(size = 7))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
