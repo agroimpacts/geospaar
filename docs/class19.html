@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geospatial Analysis with R
+## Class 19
+
+---
+
+
+## Today
+
+- Parallelization
+- Projections
+- SAC
+- Random Forests
+
+---
+## Parallelization
+
+```r
+# detectCores()
+library(parallel)
+cl &lt;- makeCluster(14)
+clusterEvalQ(cl, library(raster))
+system.time(b5 &lt;- parLapply(cl, 1:1000, function(x) {
+  r &lt;- raster(extent(30, 31, -14, -13), res = 0.01, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
+}))
+stopCluster(cl)
+
+system.time(b5 &lt;- lapply(1:1000, function(x) {
+  r &lt;- raster(extent(30, 31, -14, -13), res = 0.01, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
+}))
+```
+---
+
+
+## Projections
+
+Some data
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;%
+  readr::read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
+districts &lt;- system.file("extdata/districts.shp", package = "geospaar") %&gt;%
+  st_read
+roads &lt;- system.file("extdata/roads.shp", package = "geospaar") %&gt;% st_read
+
+data(chirps)
+chirpsz &lt;- mask(chirps, districts)
+```
+---
+## Set CRS/proj versus st_transform/project
+
+
+
+---
+## Split apply combine
+
+
+```r
+r_tbl &lt;- do.call(
+  rbind, 
+  lapply(1:ncell(b5), function(x) cbind(id = x, values(b5[[x]])))
+) %&gt;% as.data.frame() %&gt;% as_tibble()
+```
+
+- dplyr
+- base
+
+---
+
+## Modelling demo
+### Random Forests
+
+```r
+# Train model
+require(caTools)
+library(randomForest)
+library(dplyr)
+
+# read in train set
+train_ref &lt;- readr::read_csv(
+  system.file("extdata/train_reference.csv", package = "ecaascrops")
+) %&gt;% mutate(crop = factor(case_when(
+  class == "Maize" ~ 1,
+  class == "Rice" ~ 2,
+  class == "Other" ~ 3,
+  class == "noncrop" ~ 4
+))) %&gt;% select(id, class, crop, !!names(.))
+```
+
+---
+### Model 
+
+
+```r
+# prepare dataset
+dset &lt;- train_ref %&gt;% filter(type == "mean") %&gt;%
+  select(-id, -class, -type, -seed)
+set.seed(10)
+samp &lt;- sample.split(dset$crop, SplitRatio = 0.8)
+train &lt;- subset(dset, samp == TRUE)
+test &lt;- subset(dset, samp == FALSE)
+# train %&gt;% tidyr::drop_na()
+
+# fit model
+set.seed(123)
+mod &lt;- randomForest(crop ~ ., data = train, ntree = 1000,
+                    importance = TRUE)
+
+# Evaluation
+pred &lt;- predict(mod, newdata = test %&gt;% dplyr::select(-c(crop)))
+cm &lt;- table(test$crop, pred)
+
+rf_results &lt;- list("train" = train, "test" = test, "mod" = mod, "pred" = pred,
+                   "error_mat" = cm)
+```
+
+---
+
+```r
+imptab &lt;- mod$importance
+nms &lt;- rownames(imptab)
+imp_tbl &lt;- as_tibble(imptab) %&gt;% 
+  mutate(Variable = nms) %&gt;% 
+  dplyr::select(Variable, MeanDecreaseAccuracy) %&gt;% 
+  arrange(MeanDecreaseAccuracy) %&gt;% 
+  mutate(order = 1:n()) %&gt;% 
+  mutate(Variable = gsub("\\.", "_", Variable))
+
+p &lt;- ggplot(imp_tbl) + 
+  geom_point(aes(MeanDecreaseAccuracy, factor(order))) + 
+  scale_y_discrete(labels = toupper(imp_tbl$Variable)) + 
+  ylab("Variable") + xlab("Mean Decrease in Accuracy") + 
+  theme_linedraw() + 
+  theme(axis.text = element_text(size = 7), 
+        axis.title = element_text(size = 7))
+```
+
+---
+
+
+
+
+# Map
+
+
+```r
+r &lt;- terra::rast("external/data/rststack_1016-1063_crop.tif")
+
+# pred_stack
+predvars &lt;- rownames(mod$importance)
+pred_stack &lt;- "external/data/rststack_1016-1063.tif"
+rtemp &lt;- r[[1]]
+v &lt;- values(r2)
+v_tb &lt;- as_tibble(v) %&gt;% 
+  mutate(
+    ndvi_1 = (B8_1 - B4_1) / (B8_1 + B4_1),
+    ndvi_2 = (B8_2 - B4_2) / (B8_2 + B4_2),
+    rg1_ndvi_1 = (B8_1 - B5_1) / (B8_1 + B5_1),
+    rg1_ndvi_2 = (B8_2 - B5_2) / (B8_2 + B5_2),
+    rg2_ndvi_1 = (B8_1 - B6_1) / (B8_1 + B6_1),
+    rg2_ndvi_2 = (B8_2 - B6_2) / (B8_2 + B6_2),
+    
+    gcvi_1 = (B8_1 / (B3_1 + 0.00001)) - 1,
+    gcvi_2 = (B8_2 / (B3_2 + 0.00001)) - 1,
+    rg1_gcvi_1 = (B8_1 / (B5_1 + 0.00001)) - 1,
+    rg1_gcvi_2 = (B8_2 / (B5_2 + 0.00001)) - 1,
+    rg2_gcvi_1 = (B8_1 / (B6_1 + 0.00001)) - 1,
+    rg2_gcvi_2 = (B8_2 / (B6_2 + 0.00001)) - 1,
+    
+    mtci_1 = (B8_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
+    mtci_2 = (B8_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
+    mtci2_1 = (B6_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
+    mtci2_2 = (B6_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
+    
+    reip_1 = 700 + 40 * ((B4_1 + B7_1) / 2 - B5_1) / (B7_1 - B5_1),
+    reip_2 = 700 + 40 * ((B4_2 + B7_2) / 2 - B5_2) / (B7_2 - B5_2),
+    
+    nbr1_1 = (B8_1 - B11_1) / (B8_1 + B11_1),
+    nbr1_2 = (B8_2 - B11_2) / (B8_2 + B11_2),
+    nbr2_1 = (B8_1 - B12_1) / (B8_1 + B12_1),
+    nbr2_2 = (B8_2 - B12_2) / (B8_2 + B12_2),
+    
+    ndti_1 = (B11_1 - B12_1) / (B11_1 + B12_1),
+    ndti_2 = (B11_2 - B12_2) / (B11_2 + B12_2),
+    
+    crc_1 = (B11_1 - B3_1) / (B11_1 + B3_1),
+    crc_2 = (B11_2 - B3_2) / (B11_2 + B3_2),
+    
+    sti_1 = B11_1 / (B12_1 + 0.00001),
+    sti_2 = B11_2 / (B12_2 + 0.00001)
+  ) %&gt;% dplyr::select(all_of(predvars))
+
+# clean up NA and Inf
+v_tb &lt;- v_tb %&gt;% 
+  mutate_all(function(x) ifelse(is.infinite(x), NA, x)) %&gt;% 
+  mutate_at(vars(predvars), zoo::na.aggregate)  # replace NA with mean
+
+# predict probabilities of each class
+pred &lt;- predict(mod, v_tb, type = "prob")
+
+# create probability stack
+pred_stack &lt;- do.call(c, lapply(1:ncol(pred), function(y) {
+  predr &lt;- rtemp
+  values(predr) &lt;- pred[, y]
+  predr
+}))
+plot(pred_stack)
+
+# write out to local
+f &lt;- here::here(glue("external/data/rf_probs/probs_{tile_each}.tif"))
+writeRaster(pred_stack, filename = f, overwrite = TRUE)
+rm(r, v_tb, v, pred)
+gc()
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

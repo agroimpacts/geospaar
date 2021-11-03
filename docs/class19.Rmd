@@ -1,0 +1,244 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 19
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Today
+
+- Parallelization
+- Projections
+- SAC
+- Random Forests
+
+---
+## Parallelization
+```{r, eval=FALSE}
+# detectCores()
+library(parallel)
+cl <- makeCluster(14)
+clusterEvalQ(cl, library(raster))
+system.time(b5 <- parLapply(cl, 1:1000, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.01, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
+}))
+stopCluster(cl)
+
+system.time(b5 <- lapply(1:1000, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.01, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
+}))
+```
+---
+
+
+## Projections
+
+Some data
+```{r, warning=FALSE, message=FALSE, results='hide'}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
+  readr::read_csv() %>% st_as_sf(coords = c("x", "y"))
+districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
+  st_read
+roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+
+data(chirps)
+chirpsz <- mask(chirps, districts)
+```
+---
+## Set CRS/proj versus st_transform/project
+
+```{r}
+
+```
+
+---
+## Split apply combine
+
+```{r, eval=FALSE}
+r_tbl <- do.call(
+  rbind, 
+  lapply(1:ncell(b5), function(x) cbind(id = x, values(b5[[x]])))
+) %>% as.data.frame() %>% as_tibble()
+```
+
+- dplyr
+- base
+
+---
+
+## Modelling demo
+### Random Forests
+```{r, eval=FALSE}
+# Train model
+require(caTools)
+library(randomForest)
+library(dplyr)
+
+# read in train set
+train_ref <- readr::read_csv(
+  system.file("extdata/train_reference.csv", package = "ecaascrops")
+) %>% mutate(crop = factor(case_when(
+  class == "Maize" ~ 1,
+  class == "Rice" ~ 2,
+  class == "Other" ~ 3,
+  class == "noncrop" ~ 4
+))) %>% select(id, class, crop, !!names(.))
+```
+
+---
+### Model 
+
+```{r, eval=FALSE}
+# prepare dataset
+dset <- train_ref %>% filter(type == "mean") %>%
+  select(-id, -class, -type, -seed)
+set.seed(10)
+samp <- sample.split(dset$crop, SplitRatio = 0.8)
+train <- subset(dset, samp == TRUE)
+test <- subset(dset, samp == FALSE)
+# train %>% tidyr::drop_na()
+
+# fit model
+set.seed(123)
+mod <- randomForest(crop ~ ., data = train, ntree = 1000,
+                    importance = TRUE)
+
+# Evaluation
+pred <- predict(mod, newdata = test %>% dplyr::select(-c(crop)))
+cm <- table(test$crop, pred)
+
+rf_results <- list("train" = train, "test" = test, "mod" = mod, "pred" = pred,
+                   "error_mat" = cm)
+```
+
+---
+```{r, eval=FALSE}
+imptab <- mod$importance
+nms <- rownames(imptab)
+imp_tbl <- as_tibble(imptab) %>% 
+  mutate(Variable = nms) %>% 
+  dplyr::select(Variable, MeanDecreaseAccuracy) %>% 
+  arrange(MeanDecreaseAccuracy) %>% 
+  mutate(order = 1:n()) %>% 
+  mutate(Variable = gsub("\\.", "_", Variable))
+
+p <- ggplot(imp_tbl) + 
+  geom_point(aes(MeanDecreaseAccuracy, factor(order))) + 
+  scale_y_discrete(labels = toupper(imp_tbl$Variable)) + 
+  ylab("Variable") + xlab("Mean Decrease in Accuracy") + 
+  theme_linedraw() + 
+  theme(axis.text = element_text(size = 7), 
+        axis.title = element_text(size = 7))
+```
+
+---
+
+```{r, eval=FALSE, echo=FALSE}
+pred_stack <- "external/data/rststack_1016-1063.tif"
+r <- terra::rast(pred_stack)
+r <- terra::crop(r, terra::ext(r) * 0.2)
+writeRaster(r, "external/data/rststack_1016-1063_crop.tif")
+```
+
+
+# Map
+
+```{r, eval=FALSE}
+r <- terra::rast("external/data/rststack_1016-1063_crop.tif")
+
+# pred_stack
+predvars <- rownames(mod$importance)
+pred_stack <- "external/data/rststack_1016-1063.tif"
+rtemp <- r[[1]]
+v <- values(r2)
+v_tb <- as_tibble(v) %>% 
+  mutate(
+    ndvi_1 = (B8_1 - B4_1) / (B8_1 + B4_1),
+    ndvi_2 = (B8_2 - B4_2) / (B8_2 + B4_2),
+    rg1_ndvi_1 = (B8_1 - B5_1) / (B8_1 + B5_1),
+    rg1_ndvi_2 = (B8_2 - B5_2) / (B8_2 + B5_2),
+    rg2_ndvi_1 = (B8_1 - B6_1) / (B8_1 + B6_1),
+    rg2_ndvi_2 = (B8_2 - B6_2) / (B8_2 + B6_2),
+    
+    gcvi_1 = (B8_1 / (B3_1 + 0.00001)) - 1,
+    gcvi_2 = (B8_2 / (B3_2 + 0.00001)) - 1,
+    rg1_gcvi_1 = (B8_1 / (B5_1 + 0.00001)) - 1,
+    rg1_gcvi_2 = (B8_2 / (B5_2 + 0.00001)) - 1,
+    rg2_gcvi_1 = (B8_1 / (B6_1 + 0.00001)) - 1,
+    rg2_gcvi_2 = (B8_2 / (B6_2 + 0.00001)) - 1,
+    
+    mtci_1 = (B8_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
+    mtci_2 = (B8_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
+    mtci2_1 = (B6_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
+    mtci2_2 = (B6_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
+    
+    reip_1 = 700 + 40 * ((B4_1 + B7_1) / 2 - B5_1) / (B7_1 - B5_1),
+    reip_2 = 700 + 40 * ((B4_2 + B7_2) / 2 - B5_2) / (B7_2 - B5_2),
+    
+    nbr1_1 = (B8_1 - B11_1) / (B8_1 + B11_1),
+    nbr1_2 = (B8_2 - B11_2) / (B8_2 + B11_2),
+    nbr2_1 = (B8_1 - B12_1) / (B8_1 + B12_1),
+    nbr2_2 = (B8_2 - B12_2) / (B8_2 + B12_2),
+    
+    ndti_1 = (B11_1 - B12_1) / (B11_1 + B12_1),
+    ndti_2 = (B11_2 - B12_2) / (B11_2 + B12_2),
+    
+    crc_1 = (B11_1 - B3_1) / (B11_1 + B3_1),
+    crc_2 = (B11_2 - B3_2) / (B11_2 + B3_2),
+    
+    sti_1 = B11_1 / (B12_1 + 0.00001),
+    sti_2 = B11_2 / (B12_2 + 0.00001)
+  ) %>% dplyr::select(all_of(predvars))
+
+# clean up NA and Inf
+v_tb <- v_tb %>% 
+  mutate_all(function(x) ifelse(is.infinite(x), NA, x)) %>% 
+  mutate_at(vars(predvars), zoo::na.aggregate)  # replace NA with mean
+
+# predict probabilities of each class
+pred <- predict(mod, v_tb, type = "prob")
+
+# create probability stack
+pred_stack <- do.call(c, lapply(1:ncol(pred), function(y) {
+  predr <- rtemp
+  values(predr) <- pred[, y]
+  predr
+}))
+plot(pred_stack)
+
+# write out to local
+f <- here::here(glue("external/data/rf_probs/probs_{tile_each}.tif"))
+writeRaster(pred_stack, filename = f, overwrite = TRUE)
+rm(r, v_tb, v, pred)
+gc()
+
+```
+
+---
+
+
+
+
+
+
+
+
+
+
+
+

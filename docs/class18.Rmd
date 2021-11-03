@@ -37,23 +37,77 @@ chirpsz <- mask(chirps, districts)
 - From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
 
 ```{r, eval=FALSE}
-raintot <- calc(chirpsz, sum)
-raincat <- cut(raintot, breaks = c(0, 50, 200))
-plot_noaxes(raincat, col = c("grey70", "lightblue"))
+# Serina and Clare
+chirpsz <- mask(chirps, districts)
+raincat <- cut(calc(chirpsz, sum), breaks = c(0, 50, 100, 200))
+cols <- c("grey70", "lightblue", "lightgreen")
+plot_noaxes(raincat, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+```
+
+```{r, eval=FALSE}
+# Claire and Atlas
+raintot <- calc(chirpsz, fun = sum)
+rain <- cellStats(raintot, range)
+rain_3 <- cbind(c(floor(rain[1]), 50, 100),
+                 c(50, 100, ceiling(rain[2])), 1:3)
+raincat <- reclassify(raintot, rain_3, include.lowest = TRUE)
+
+cols <- c('red', 'yellow2', 'blue')
+plot_noaxes(raincat, legend = FALSE,
+            main = "Rainfall distribution in Zambia", col = cols,
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("Low", "Intermediate", "High"),
+       pch = 15, pt.cex = 3, col = cols,
+       bty = "n")
 ```
 
 - Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
 
 ```{r, eval=FALSE}
 # w <- matrix(1, nrow = 3, ncol = 3)
-w <- matrix(1, nrow = 9, ncol = 9)
-plot(raintot)
-plot(focal(raintot, w = w, fun = mean, na.rm = TRUE))
-plot(focal(raintot, w = w, fun = mean))
+w <- matrix(1, nrow = 5, ncol = 5)
+rainwindow <- focal(raintot, w = w, fun = sd, na.rm = TRUE)
+plot_noaxes(rainwindow)
+plot_noaxes(mask(rainwindow, districts))
 ```
-- Calculate the average elevation and slope in each district of Zambia
----
 
+---
+- Calculate the average elevation and slope in each district of Zambia
+
+```{r, eval=FALSE}
+# Rasterize districts
+districts <- districts %>% mutate(ID = 1:nrow(.))
+distsr <- districts %>% rasterize(x = ., y = raintot, field = "ID") %>% print()
+
+# Download DEM
+dem <- getData(name = "alt", country = "ZMB", path = tempdir())
+
+# calculate slope
+slope <- terrain(x = dem, opt = 'slope', unit = 'degrees')
+
+# calculate mean by district
+distsr_rs <- resample(x = distsr, y = slope, method = "ngb")
+zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean")
+zoneelevation <- zonal(x = dem, z = distsr_rs, fun = "mean")
+
+# map zonal statistics
+distr_slopezone <- zoneslope %>% data.frame %>%  
+  subs(x = distsr_rs, y = ., by = "zone")
+distr_elezone <- zoneelevation %>% data.frame %>% 
+  subs(x = distsr_rs, y = ., by = "zone")
+
+# plot
+l <- list(distr_elezone,distr_slopezone)
+titles <- c("Elevation", "Slope")
+par(mfrow = c(1, 2))
+for(i in 1:length(l)) {
+  plot_noaxes(l[[i]], main = titles[i])
+}
+```
 
 ---
 ### mapView
@@ -61,11 +115,13 @@ plot(focal(raintot, w = w, fun = mean))
 library(mapview)
 mapview(districts)
 viewRGB(x = chirpsz[[1:3]])
+# mapView(districts, alpha.regions = 1, legend = FALSE)
 mapView(districts, alpha.regions = 0, legend = FALSE) + mapview(raintot) 
 
 kili_data <- system.file("extdata", "kiliNDVI.tif", package = "mapview") %>%
   raster::stack(.)
-mapview(kili_data[[1:3]])
+mapview(kili_data[[c(1, 10, 23)]])
+
 ```
 
 ---
@@ -83,22 +139,23 @@ tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
 ---
 
 ### leaflet
-```{r, eval = FALSE}
+```{r, eval = TRUE, echo=FALSE}
 library(leaflet)
 m <- leaflet() %>% addTiles()
-m  # a map with the default OSM tile layer
-
-
-# set bounds
-m %>% fitBounds(0, 40, 10, 50)
-
-# move the center to Snedecor Hall
-m <- m %>% setView(-93.65, 42.0285, zoom = 17)
-m
-
-# popup
-m %>% addPopups(-93.65, 42.0285, 
-                "Here is the <b>Department of Statistics</b>, ISU")
+# # m  # a map with the default OSM tile layer
+# 
+# # m %>% addProviderTiles("Esri.WorldImagery")
+# 
+# # set bounds
+# # m %>% fitBounds(0, 40, 10, 50)
+# #
+# # # move the center to Snedecor Hall
+# # m <- m %>% setView(-93.65, 42.0285, zoom = 17)
+# # m
+# #
+# # popup
+# # m %>% addPopups(-93.65, 42.0285,
+# #                 "Here is the <b>Department of Statistics</b>, ISU")
 rand_lng <- function(n = 10) rnorm(n, -93.65, .01)
 rand_lat <- function(n = 10) rnorm(n, 42.0285, .01)
 
@@ -121,6 +178,9 @@ ggR(lsat[[1]])
 ggR(lsat[[1]], stretch = "hist")
 ggR(lsat[[1]], stretch = "lin")
 ggR(raintot)
+ggR(raintot) + 
+  theme_linedraw() + xlab("") + ylab("")
+  # theme_void()
 ```
 
 ---
