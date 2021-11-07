@@ -271,6 +271,7 @@ terra::plot(pred_stack, axes = FALSE, range = c(0, 1), plg = list(inset = -1))
 dev.off()
 
 ```
+
 ```{r, echo=FALSE, out.width="60%", fig.align='center'}
 knitr::include_graphics("figures/crop_probs.png")
 ```
