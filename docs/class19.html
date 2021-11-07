@@ -72,7 +72,32 @@ chirpsz &lt;- mask(chirps, districts)
 ---
 ## Set CRS/proj versus st_transform/project
 
+- setting crs
 
+```r
+farmers %&gt;% st_set_crs(4326)
+st_crs(farmers) &lt;- 4326
+
+r &lt;- raster(extent(30, 31, -14, -13), res = 0.01)
+values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+crs(r) &lt;- 4326
+```
+
+- spatial transformation/projection
+
+```r
+farmers %&gt;% st_transform(crs = st_crs(roads))
+farmers %&gt;% st_transform(crs = "ESRI:102022")
+
+st_crs(roads)$proj4string
+# projectRaster(chirpsz, crs = crs(roads))
+# projectRaster(chirpsz, crs = st_crs(roads)$proj4string)
+projectRaster(chirpsz, crs = "ESRI:102022")
+
+r &lt;- raster(extent(30, 31, -14, -13), res = 0.01)
+values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+projectRaster(r, crs = "ESRI:102022")
+```
 
 ---
 ## Split apply combine
@@ -81,12 +106,35 @@ chirpsz &lt;- mask(chirps, districts)
 ```r
 r_tbl &lt;- do.call(
   rbind, 
-  lapply(1:ncell(b5), function(x) cbind(id = x, values(b5[[x]])))
+  lapply(1:length(b5), function(x) cbind(id = x, values(b5[[x]])))
 ) %&gt;% as.data.frame() %&gt;% as_tibble()
 ```
 
-- dplyr
+- implicit
+
+```r
+names(r_tbl) &lt;- c("id", "l1", "l2", "l3")
+r_tbl %&gt;% 
+  group_by(id) %&gt;% 
+  summarize(l2 = mean(l2))
+  # filter(l1 == max(l1)) %&gt;% 
+  # slice(1)
+```
+---
 - base
+
+```r
+# mini_splits &lt;- lapply(unique(r_tbl$id), function(x) {
+#   d &lt;- r_tbl[r_tbl$id == x, ]
+#   tibble(id = x, l2 = mean(d$l2))
+# }) 
+# do.call(rbind, mini_splits)
+mini_splits &lt;- do.call(rbind, lapply(unique(r_tbl$id), function(x) {
+  d &lt;- r_tbl[r_tbl$id == x, ]
+  tibble(id = x, l2 = mean(d$l2))
+})) 
+do.call(rbind, mini_splits)
+```
 
 ---
 
@@ -95,7 +143,7 @@ r_tbl &lt;- do.call(
 
 ```r
 # Train model
-require(caTools)
+library(caTools)
 library(randomForest)
 library(dplyr)
 
@@ -128,6 +176,7 @@ test &lt;- subset(dset, samp == FALSE)
 set.seed(123)
 mod &lt;- randomForest(crop ~ ., data = train, ntree = 1000,
                     importance = TRUE)
+summary(mod)
 
 # Evaluation
 pred &lt;- predict(mod, newdata = test %&gt;% dplyr::select(-c(crop)))
@@ -165,78 +214,10 @@ p &lt;- ggplot(imp_tbl) +
 
 # Map
 
+Look at Rmd file to see code use to make prediction map for crop types. 
 
-```r
-r &lt;- terra::rast("external/data/rststack_1016-1063_crop.tif")
+&lt;img src="figures/crop_probs.png" width="60%" style="display: block; margin: auto;" /&gt;
 
-# pred_stack
-predvars &lt;- rownames(mod$importance)
-pred_stack &lt;- "external/data/rststack_1016-1063.tif"
-rtemp &lt;- r[[1]]
-v &lt;- values(r2)
-v_tb &lt;- as_tibble(v) %&gt;% 
-  mutate(
-    ndvi_1 = (B8_1 - B4_1) / (B8_1 + B4_1),
-    ndvi_2 = (B8_2 - B4_2) / (B8_2 + B4_2),
-    rg1_ndvi_1 = (B8_1 - B5_1) / (B8_1 + B5_1),
-    rg1_ndvi_2 = (B8_2 - B5_2) / (B8_2 + B5_2),
-    rg2_ndvi_1 = (B8_1 - B6_1) / (B8_1 + B6_1),
-    rg2_ndvi_2 = (B8_2 - B6_2) / (B8_2 + B6_2),
-    
-    gcvi_1 = (B8_1 / (B3_1 + 0.00001)) - 1,
-    gcvi_2 = (B8_2 / (B3_2 + 0.00001)) - 1,
-    rg1_gcvi_1 = (B8_1 / (B5_1 + 0.00001)) - 1,
-    rg1_gcvi_2 = (B8_2 / (B5_2 + 0.00001)) - 1,
-    rg2_gcvi_1 = (B8_1 / (B6_1 + 0.00001)) - 1,
-    rg2_gcvi_2 = (B8_2 / (B6_2 + 0.00001)) - 1,
-    
-    mtci_1 = (B8_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
-    mtci_2 = (B8_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
-    mtci2_1 = (B6_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
-    mtci2_2 = (B6_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
-    
-    reip_1 = 700 + 40 * ((B4_1 + B7_1) / 2 - B5_1) / (B7_1 - B5_1),
-    reip_2 = 700 + 40 * ((B4_2 + B7_2) / 2 - B5_2) / (B7_2 - B5_2),
-    
-    nbr1_1 = (B8_1 - B11_1) / (B8_1 + B11_1),
-    nbr1_2 = (B8_2 - B11_2) / (B8_2 + B11_2),
-    nbr2_1 = (B8_1 - B12_1) / (B8_1 + B12_1),
-    nbr2_2 = (B8_2 - B12_2) / (B8_2 + B12_2),
-    
-    ndti_1 = (B11_1 - B12_1) / (B11_1 + B12_1),
-    ndti_2 = (B11_2 - B12_2) / (B11_2 + B12_2),
-    
-    crc_1 = (B11_1 - B3_1) / (B11_1 + B3_1),
-    crc_2 = (B11_2 - B3_2) / (B11_2 + B3_2),
-    
-    sti_1 = B11_1 / (B12_1 + 0.00001),
-    sti_2 = B11_2 / (B12_2 + 0.00001)
-  ) %&gt;% dplyr::select(all_of(predvars))
-
-# clean up NA and Inf
-v_tb &lt;- v_tb %&gt;% 
-  mutate_all(function(x) ifelse(is.infinite(x), NA, x)) %&gt;% 
-  mutate_at(vars(predvars), zoo::na.aggregate)  # replace NA with mean
-
-# predict probabilities of each class
-pred &lt;- predict(mod, v_tb, type = "prob")
-
-# create probability stack
-pred_stack &lt;- do.call(c, lapply(1:ncol(pred), function(y) {
-  predr &lt;- rtemp
-  values(predr) &lt;- pred[, y]
-  predr
-}))
-plot(pred_stack)
-
-# write out to local
-f &lt;- here::here(glue("external/data/rf_probs/probs_{tile_each}.tif"))
-writeRaster(pred_stack, filename = f, overwrite = TRUE)
-rm(r, v_tb, v, pred)
-gc()
-```
-
----
 
 
 

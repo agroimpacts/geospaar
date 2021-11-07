@@ -48,7 +48,7 @@ system.time(b5 <- lapply(1:1000, function(x) {
 ## Projections
 
 Some data
-```{r, warning=FALSE, message=FALSE, results='hide'}
+```{r, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
 library(geospaar)
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
   readr::read_csv() %>% st_as_sf(coords = c("x", "y"))
@@ -62,8 +62,29 @@ chirpsz <- mask(chirps, districts)
 ---
 ## Set CRS/proj versus st_transform/project
 
-```{r}
+- setting crs
+```{r, eval=FALSE}
+farmers %>% st_set_crs(4326)
+st_crs(farmers) <- 4326
 
+r <- raster(extent(30, 31, -14, -13), res = 0.01)
+values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+crs(r) <- 4326
+```
+
+- spatial transformation/projection
+```{r, eval=FALSE}
+farmers %>% st_transform(crs = st_crs(roads))
+farmers %>% st_transform(crs = "ESRI:102022")
+
+st_crs(roads)$proj4string
+# projectRaster(chirpsz, crs = crs(roads))
+# projectRaster(chirpsz, crs = st_crs(roads)$proj4string)
+projectRaster(chirpsz, crs = "ESRI:102022")
+
+r <- raster(extent(30, 31, -14, -13), res = 0.01)
+values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+projectRaster(r, crs = "ESRI:102022")
 ```
 
 ---
@@ -72,12 +93,33 @@ chirpsz <- mask(chirps, districts)
 ```{r, eval=FALSE}
 r_tbl <- do.call(
   rbind, 
-  lapply(1:ncell(b5), function(x) cbind(id = x, values(b5[[x]])))
+  lapply(1:length(b5), function(x) cbind(id = x, values(b5[[x]])))
 ) %>% as.data.frame() %>% as_tibble()
 ```
 
-- dplyr
+- implicit
+```{r, eval=FALSE}
+names(r_tbl) <- c("id", "l1", "l2", "l3")
+r_tbl %>% 
+  group_by(id) %>% 
+  summarize(l2 = mean(l2))
+  # filter(l1 == max(l1)) %>% 
+  # slice(1)
+```
+---
 - base
+```{r, eval=FALSE}
+# mini_splits <- lapply(unique(r_tbl$id), function(x) {
+#   d <- r_tbl[r_tbl$id == x, ]
+#   tibble(id = x, l2 = mean(d$l2))
+# }) 
+# do.call(rbind, mini_splits)
+mini_splits <- do.call(rbind, lapply(unique(r_tbl$id), function(x) {
+  d <- r_tbl[r_tbl$id == x, ]
+  tibble(id = x, l2 = mean(d$l2))
+})) 
+do.call(rbind, mini_splits)
+```
 
 ---
 
@@ -85,7 +127,7 @@ r_tbl <- do.call(
 ### Random Forests
 ```{r, eval=FALSE}
 # Train model
-require(caTools)
+library(caTools)
 library(randomForest)
 library(dplyr)
 
@@ -117,6 +159,7 @@ test <- subset(dset, samp == FALSE)
 set.seed(123)
 mod <- randomForest(crop ~ ., data = train, ntree = 1000,
                     importance = TRUE)
+summary(mod)
 
 # Evaluation
 pred <- predict(mod, newdata = test %>% dplyr::select(-c(crop)))
@@ -158,14 +201,15 @@ writeRaster(r, "external/data/rststack_1016-1063_crop.tif")
 
 # Map
 
-```{r, eval=FALSE}
+Look at Rmd file to see code use to make prediction map for crop types. 
+```{r, eval=FALSE, echo=FALSE}
 r <- terra::rast("external/data/rststack_1016-1063_crop.tif")
 
 # pred_stack
 predvars <- rownames(mod$importance)
-pred_stack <- "external/data/rststack_1016-1063.tif"
+# pred_stack <- "external/data/rststack_1016-1063.tif"
 rtemp <- r[[1]]
-v <- values(r2)
+v <- values(r)
 v_tb <- as_tibble(v) %>% 
   mutate(
     ndvi_1 = (B8_1 - B4_1) / (B8_1 + B4_1),
@@ -219,17 +263,18 @@ pred_stack <- do.call(c, lapply(1:ncol(pred), function(y) {
   values(predr) <- pred[, y]
   predr
 }))
-plot(pred_stack)
+names(pred_stack) <- c("Maize", "Rice", "Other Crops", "Non crop")
 
-# write out to local
-f <- here::here(glue("external/data/rf_probs/probs_{tile_each}.tif"))
-writeRaster(pred_stack, filename = f, overwrite = TRUE)
-rm(r, v_tb, v, pred)
-gc()
+png(filename = here::here("docs/figures/crop_probs.png"), width = 4.5, height = 4, 
+    units = "in", res = 300)
+terra::plot(pred_stack, axes = FALSE, range = c(0, 1), plg = list(inset = -1))
+dev.off()
 
 ```
+```{r, echo=FALSE, out.width="60%", fig.align='center'}
+knitr::include_graphics("figures/crop_probs.png")
+```
 
----
 
 
 
