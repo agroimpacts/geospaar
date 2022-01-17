@@ -339,7 +339,7 @@ You can explore those further at your leisure. In our example, we choose the agg
 
 ### Pixel resolution/area 
 
-The DEM we downloaded is in decimal degrees with a resolution of `r raster::res(dem)[1]`&deg;, which means the area of each pixel varies through Zambia. To illustrate that, we use a nice function that `raster` provides, which lets you calculate the pixel areas, even when the raster is in geographic coordinates:
+The DEM we downloaded is in decimal degrees with a resolution of 0.008333333&deg;, which means the area of each pixel varies through Zambia. To illustrate that, we use a nice function that `raster` provides, which lets you calculate the pixel areas, even when the raster is in geographic coordinates:
 
 ```{r demarea, eval=FALSE}
 # Chunk 43

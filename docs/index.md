@@ -1,16 +1,16 @@
 
 # Geospatial Analysis with R <img src="https://s28151.pcdn.co/offices/marketing-and-communications/wp-content/blogs.dir/3/files/sites/106/2019/08/CU_Seal_Red_SM_60_75_v4-768x768.png" align="right" width="120" />
 
-## Fall 2021
+## Spring 2022
 
-Updated on: 2021-11-03
+Updated on: 2022-01-17
 
 <center>
 
-|                    |                                                      |
-|:-------------------|:-----------------------------------------------------|
-| Instructor         | Lyndon Estes (<lestes@clarku.edu>)                   |
-| Teaching assistant | Pilar Delpino Marimón (<PDelpinoMarimon@clarku.edu>) |
+|                    |                                    |
+|:-------------------|:-----------------------------------|
+| Instructor         | Lyndon Estes (<lestes@clarku.edu>) |
+| Teaching assistant | Anna Bebbington                    |
 
 </center>
 
@@ -50,31 +50,13 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 1 slides](class1.html)
     -   [Class 2 slides](class2.html)
 -   Week 2
-    -   [Class 3 slides](class3.html)
-    -   [Class 4 slides](class4.html)
-        -   [rmarkdown demo](rmarkdown_demo.html)
 -   Week 3
-    -   [Class 5 slides](class5.html)
 -   Week 4
-    -   [Class 6 slides](class6.html)
-    -   [Class 7 slides](class7.html)
 -   Week 5
-    -   [Class 8 slides](class8.html)
-    -   [Class 9 slides](class9.html)
 -   Week 6
-    -   [Class 10 slides](class10.html)
-    -   [Class 11 slides](class11.html)
 -   Week 7
-    -   [Class 12 slides](class12.html)
-    -   [Class 13 slides](class13.html)
 -   Week 8
-    -   [Class 14 slides](class14.html)
 -   Week 9
-    -   [Class 15 slides](class15.html)
-    -   [Class 16 slides](class16.html)
 -   Week 10
-    -   [Class 17 slides](class17.html)
-    -   [Class 18 slides](class18.html)
 -   Week 11
-    -   [Class 19 slides](class19.html)
 -   Week 12-15
