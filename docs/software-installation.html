@@ -132,12 +132,12 @@
       <li><a href="#step-2-install-r"><span class="toc-section-number">2.2</span> Step 2: Install R</a></li>
       <li><a href="#step-3-install-rstudio-desktop"><span class="toc-section-number">2.3</span> Step 3: Install RStudio Desktop</a></li>
       <li><a href="#step-4-install-rtools-windows-only"><span class="toc-section-number">2.4</span> Step 4: Install RTools (Windows only)</a></li>
-      <li><a href="#step-5-install-gdal"><span class="toc-section-number">2.5</span> Step 5: Install GDAL</a></li>
+      <li><a href="#step-5-optionally-install-gdal"><span class="toc-section-number">2.5</span> Step 5: (Optionally) install GDAL</a></li>
       </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-01-17 <a href="index.html">Back to home</a></p>
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-01-19 <a href="index.html">Back to home</a></p>
           </div>
    </div>
      
@@ -159,22 +159,22 @@
 </div>
 <div id="step-2-install-r" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Step 2: Install R</h2>
-<p>Go to <a href="https://www.r-project.org">R page</a> and download the current stable release, R 4.0.3, using the correct version for your operating system (Linux x86, Mac, Windows, etc).</p>
+<p>Go to <a href="https://www.r-project.org">R page</a> and download the current stable release, R 4.1.2, using the correct version for your operating system (Linux x86, Mac, Windows, etc).</p>
 </div>
 <div id="step-3-install-rstudio-desktop" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Step 3: Install RStudio Desktop</h2>
-<p>Go to <a href="https://rstudio.com/products/rstudio/download/#download">RStudio page</a> and download the current stable release, RStudio-1.4.1103, using the correct version for your operating system (Linux x86, Mac, Windows, etc).</p>
+<p>Go to <a href="https://rstudio.com/products/rstudio/download/#download">RStudio page</a> and download the current stable release, using the correct version for your operating system (Linux x86, Mac, Windows, etc).</p>
 </div>
 <div id="step-4-install-rtools-windows-only" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> Step 4: Install RTools (Windows only)</h2>
 <p>Windows machine needs RTools to build some packages from source. It is better to install it beforehand. Go to <a href="https://cran.r-project.org/bin/windows/Rtools/">RTools page</a> to read the instruction, then download and install.</p>
 </div>
-<div id="step-5-install-gdal" class="section level2" number="2.5">
-<h2><span class="header-section-number">2.5</span> Step 5: Install GDAL</h2>
-<p>GDAL is a widely used library for geospatial data. A lot of R geospatial packages rely on it. The way to install is very different for different operating systems:</p>
+<div id="step-5-optionally-install-gdal" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Step 5: (Optionally) install GDAL</h2>
+<p>GDAL is a widely used library for geospatial data. A lot of R geospatial packages rely on it. R packages at the point (I think) typically don’t require it to function properly, but it will likely be useful for research projects later in the class. The way to install it differs by operating systems:</p>
 <ul>
 <li><p>Windows: go to this <a href="https://gdal.org/download.html">page</a> to download and install the current stable version.</p></li>
-<li><p>Mac: a bit trickier, but probably best is to install <a href="https://www.kyngchaos.com/software/frameworks/">frameworks</a>. If you use homebrew often, you also could use homebrew formula to install: <code>brew install gdal</code>.</p></li>
+<li><p>Mac: a bit trickier, but probably best is to install using <code>homebrew</code> (see <a href="https://brew.sh/">here</a> for how to install it): <code>brew install gdal</code>.</p></li>
 <li><p>Linux: If you use a Linux machine, try to search the tutorial online for your operating systems to install. For example, GDAL is available for Ubuntu from the <a href="https://launchpad.net/~ubuntugis/+archive/ubuntu/ppa?field.series_filter=xenial">UbuntuGIS-Stable PPA</a>. Let’s solve together if you got any issues.</p></li>
 </ul>
 <hr />
