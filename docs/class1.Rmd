@@ -34,7 +34,7 @@ dev.off()
 ---
 ## Introductions 
 
-- COVID preparedness
+- COVID preparedness (revised)
 - Zoom considerations
 
 ---
