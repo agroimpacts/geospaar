@@ -50,9 +50,8 @@ dev.off()
 
 ---
 # Today's Topics
-- Pressing/burning issues? 
 - Tips and tricks
-  - Knowing how to get help is a
+  - Knowing how to get help is a skill
 - Overview of assignment
 - Keeping up to date with class materials
 - More on installing/building `R` packages
@@ -60,9 +59,6 @@ dev.off()
 
 ---
 
-# Issues arising? 
-
----
 # Tips and tricks
 ## Knowing how to get help is a skill
 
@@ -155,7 +151,7 @@ knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
 ---
 ## Our Branching Model
 
-```{r, out.width = "20%", echo=FALSE, fig.align='center'}
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/class3_1.png")
 ```
 
