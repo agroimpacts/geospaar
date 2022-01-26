@@ -51,7 +51,7 @@ dev.off()
 ---
 # Today's Topics
 - Tips and tricks
-  - Knowing how to get help is a skill
+  - Knowing how to get help is *an important* skill
 - Overview of assignment
 - Keeping up to date with class materials
 - More on installing/building `R` packages
