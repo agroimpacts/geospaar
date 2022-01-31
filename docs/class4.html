@@ -3,11 +3,11 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
-    <link rel="stylesheet" href="themes/class3plus.css" type="text/css" />
+    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -28,6 +28,7 @@ class: center, middle, inverse, title-slide
 data("chirps")
 library(rasterVis)
 library(lubridate)
+library(RColorBrewer)
 zam &lt;- getData("GADM", country = "ZMB", level = 1)
 
 dates &lt;- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
@@ -41,7 +42,7 @@ names(rfweek) &lt;- wk
 
 mapTheme &lt;- rasterTheme(region = brewer.pal(9, "Blues"))
 pstrip &lt;- list(cex = 1, col = "white")
-png("inst/slides/figures/weekly-rf.png", height = 5, width = 5, res = 300,
+png("figures/weekly-rf.png", height = 5, width = 5, res = 300,
     units = "in", bg = "transparent")
 p &lt;- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
                names.attr = paste("Week of", wk), axes = FALSE, xlab = "",
@@ -60,10 +61,10 @@ dev.off()
 - A review of where we are so far
 - Rmarkdown demo
 - Picking up from last class
-  - `git`/GitHub overview
+  - Projects and package set-up
   - Practical work:
-    - Projects and package set-up
-    - `git` work: syncing, commit, push, pull, branching, merging
+      - Basic functions and documentation
+      - `git` work: syncing, commit, push, pull, branching, merging
 
 ---
 # What we should know by now
@@ -71,16 +72,15 @@ dev.off()
 - We should know:
   - Key concepts/tools of reproducibility and why we use them
   - How to set up R package project with `git` VCS
-  - How package source differs from installed package
-    - Bundled versus binary: see [here](https://r-pkgs.org/package-structure-state.html)
+  - More on package structures: see [here](https://r-pkgs.org/package-structure-state.html)
   - Where your library lives
-  - What the key ingredients in a package are
+  - *What the key ingredients in a package are*
   - *How to keep project synced between local and remote repos*
-  - *How to document functions*
 
 --
 
 - What we might not know (about packages):
+  - How to document functions
   - data folder and lazy loads
   - inst folder and how to get at it
 
@@ -160,7 +160,7 @@ library(geospaar)
 ```
 
 ```
-## Linking to GEOS 3.8.1, GDAL 3.2.1, PROJ 7.2.1
+## Linking to GEOS 3.8.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE
 ```
 
 ```
@@ -173,9 +173,9 @@ library(geospaar)
 
 ```
 ## ✓ ggplot2 3.3.5     ✓ purrr   0.3.4
-## ✓ tibble  3.1.4     ✓ dplyr   1.0.7
-## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
-## ✓ readr   2.0.1     ✓ forcats 0.5.1
+## ✓ tibble  3.1.6     ✓ dplyr   1.0.7
+## ✓ tidyr   1.1.4     ✓ stringr 1.4.0
+## ✓ readr   2.1.1     ✓ forcats 0.5.1
 ```
 
 ```
@@ -231,7 +231,7 @@ system.file("extdata", package = "geospaar")
 ```
 
 ```
-## [1] "/Library/Frameworks/R.framework/Versions/4.0/Resources/library/geospaar/extdata"
+## [1] "/Library/Frameworks/R.framework/Versions/4.1/Resources/library/geospaar/extdata"
 ```
 
 ```r
@@ -239,11 +239,10 @@ dir(system.file("extdata", package = "geospaar"))
 ```
 
 ```
-##  [1] "chirps.tif"          "covid19_daily.csv"   "districts.dbf"      
-##  [4] "districts.prj"       "districts.shp"       "districts.shx"      
-##  [7] "dummy_raster.tif"    "FAOSTAT_maize.csv"   "FAOSTAT_sorghum.csv"
-## [10] "FAOSTAT_wheat.csv"   "farmer_spatial.csv"  "roads.dbf"          
-## [13] "roads.prj"           "roads.shp"           "roads.shx"
+##  [1] "districts.dbf"       "districts.prj"       "districts.shp"      
+##  [4] "districts.shx"       "FAOSTAT_maize.csv"   "FAOSTAT_sorghum.csv"
+##  [7] "FAOSTAT_wheat.csv"   "farmer_spatial.csv"  "roads.dbf"          
+## [10] "roads.prj"           "roads.shp"           "roads.shx"
 ```
 
 ```r
@@ -301,6 +300,7 @@ Chunk options
 ---
 ## Practical work
 - Projects and package set-up
+  - Basic function and documentation
   - Structuring your project directory
 - `git` work: syncing, commit, push, pull, branching, merging
  d

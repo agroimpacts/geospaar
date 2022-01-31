@@ -35,7 +35,7 @@ names(rfweek) <- wk
 
 mapTheme <- rasterTheme(region = brewer.pal(9, "Blues"))
 pstrip <- list(cex = 1, col = "white")
-png("inst/slides/figures/weekly-rf.png", height = 5, width = 5, res = 300,
+png("figures/weekly-rf.png", height = 5, width = 5, res = 300,
     units = "in", bg = "transparent")
 p <- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
                names.attr = paste("Week of", wk), axes = FALSE, xlab = "",
@@ -54,10 +54,10 @@ dev.off()
 - A review of where we are so far
 - Rmarkdown demo
 - Picking up from last class
-  - `git`/GitHub overview
+  - Projects and package set-up
   - Practical work:
-    - Projects and package set-up
-    - `git` work: syncing, commit, push, pull, branching, merging
+      - Basic functions and documentation
+      - `git` work: syncing, commit, push, pull, branching, merging
 
 ---
 # What we should know by now
@@ -65,16 +65,15 @@ dev.off()
 - We should know:
   - Key concepts/tools of reproducibility and why we use them
   - How to set up R package project with `git` VCS
-  - How package source differs from installed package
-    - Bundled versus binary: see [here](https://r-pkgs.org/package-structure-state.html)
+  - More on package structures: see [here](https://r-pkgs.org/package-structure-state.html)
   - Where your library lives
-  - What the key ingredients in a package are
+  - *What the key ingredients in a package are*
   - *How to keep project synced between local and remote repos*
-  - *How to document functions*
 
 --
 
 - What we might not know (about packages):
+  - How to document functions
   - data folder and lazy loads
   - inst folder and how to get at it
 
@@ -170,6 +169,7 @@ knitr::include_graphics("figures/class4_gitmerge.png")
 ---
 ## Practical work
 - Projects and package set-up
+  - Basic function and documentation
   - Structuring your project directory
 - `git` work: syncing, commit, push, pull, branching, merging
  d
