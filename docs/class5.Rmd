@@ -47,6 +47,7 @@ dev.off()
 ---
 # Today
 
+- A bit more on projects/repos/branches
 - The `R` ecosystem
 
 ---
