@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -47,39 +47,39 @@ dev.off()
 library(lubridate)
 library(dplyr)
 
-wks &lt;- seq(ymd('2021-08-23'), ymd('2021-12-06'), by = 'day')
+wks &lt;- seq(ymd('2022-01-18'), ymd('2022-05-02'), by = 'day')
 assns &lt;- tibble(assn = NA, wks) %&gt;% 
   mutate(day = weekdays(wks), wkno = week(wks))
 assns %&gt;% filter(day == "Friday") %&gt;% 
   mutate(assn = case_when(
-  wkno == 36 ~ 1, 
-  wkno == 38 ~ 2,
-  wkno == 40 ~ 3,
-  wkno == 42 ~ 4,
-  wkno == 44 ~ 5, 
-  wkno == 45 ~ 6
-))
+  wkno == 5 ~ 1, 
+  wkno == 7 ~ 2,
+  wkno == 9 ~ 3,
+  wkno == 12 ~ 4,
+  wkno == 14 ~ 5, 
+  wkno == 15 ~ 6
+)) 
 ```
 
 ```
 ## # A tibble: 15 × 4
 ##     assn wks        day     wkno
 ##    &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;  &lt;dbl&gt;
-##  1    NA 2021-08-27 Friday    35
-##  2     1 2021-09-03 Friday    36
-##  3    NA 2021-09-10 Friday    37
-##  4     2 2021-09-17 Friday    38
-##  5    NA 2021-09-24 Friday    39
-##  6     3 2021-10-01 Friday    40
-##  7    NA 2021-10-08 Friday    41
-##  8     4 2021-10-15 Friday    42
-##  9    NA 2021-10-22 Friday    43
-## 10     5 2021-10-29 Friday    44
-## 11     6 2021-11-05 Friday    45
-## 12    NA 2021-11-12 Friday    46
-## 13    NA 2021-11-19 Friday    47
-## 14    NA 2021-11-26 Friday    48
-## 15    NA 2021-12-03 Friday    49
+##  1    NA 2022-01-21 Friday     3
+##  2    NA 2022-01-28 Friday     4
+##  3     1 2022-02-04 Friday     5
+##  4    NA 2022-02-11 Friday     6
+##  5     2 2022-02-18 Friday     7
+##  6    NA 2022-02-25 Friday     8
+##  7     3 2022-03-04 Friday     9
+##  8    NA 2022-03-11 Friday    10
+##  9    NA 2022-03-18 Friday    11
+## 10     4 2022-03-25 Friday    12
+## 11    NA 2022-04-01 Friday    13
+## 12     5 2022-04-08 Friday    14
+## 13     6 2022-04-15 Friday    15
+## 14    NA 2022-04-22 Friday    16
+## 15    NA 2022-04-29 Friday    17
 ```
 
 ---
@@ -88,13 +88,83 @@ assns %&gt;% filter(day == "Friday") %&gt;%
 &lt;img src="figures/class5_u1m2.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
-## Data types
+## The R Ecosystem
+### Converting data type
+
+- `as.xxx(x)`:
+
+  * e.g. `as.numeric(x)`, `as.double(x)`, `as.character(x)`, `as.integer(x)`, `as.logical(x)`, `as.complex(x)`, `as.raw(x)`, `as.factor(x)`, `as.Date(x)`, `as.POSIXct(x)`.
+  
+- logical &lt; integer &lt; double &lt; character
 
 ---
-## Data structures
+## The R Ecosystem
+### Data structures
+- Atomic vectors (most commonly thought of kind):
+
+  * A sequence of objects of the **same class**.
+  * Arrays and matrices are vectors with more than one dimension.
+  
+      - Matrices have 2 dimensions.
+      - Arrays could have higher dimensions.
+
+- Lists
+
+  * Lists can contain objects of **different classes**.
+  * Lists can be converted list-matrix or list-array by defining dimensions.
+  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
+
+---
+## The R Ecosystem
+### Data structures
 - 1d
 - 2d
 - 3d
+
+---
+
+## The R Ecosystem
+### Vectors
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class2_vector.png" alt="Credit: L. Song" width="1921" /&gt;
+&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## Let's create some data
+
+- `vector`
+- `data.frame`
+- `list`
+
+---
+## Functions
+- Primitives
+- Operators
+- Control structures
+- Package functions
+- Generic functions
+---
+
+## Functions
+### Components
+
+
+```r
+function_name &lt;- function(arg1, 
+                          arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. 
 
 ---
 ## Functions
@@ -298,6 +368,7 @@ str(x)
 ##   ..@ nrows   : int 10
 ##   ..@ crs     :Formal class 'CRS' [package "sp"] with 1 slot
 ##   .. .. ..@ projargs: chr "+proj=longlat +datum=WGS84 +no_defs"
+##   .. .. ..$ comment: chr "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.25722"| __truncated__
 ##   ..@ history : list()
 ##   ..@ z       : list()
 ```
@@ -310,7 +381,7 @@ str(x)
 &lt;p class="caption"&gt;http://adv-r.had.co.nz/Environments.html&lt;/p&gt;
 &lt;/div&gt;
 ---
-- Function environment
+- [Function environment](https://agroimpacts.github.io/geospaar/unit1-module2.html#the-function-environment)
 - Execution environment
 
 ---
@@ -420,7 +491,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7f91adaa1f48&gt;
+## &lt;environment: 0x7fc7b16f3d90&gt;
 ```
 
 ```
@@ -432,7 +503,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7f91ac4efc98&gt;
+## &lt;environment: 0x7fc7b17587d8&gt;
 ```
 
 ```
@@ -470,37 +541,6 @@ myfun(x)
   - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
     - `V4` is a random selection of the letters A-E
 
-&lt;!-- --- --&gt;
-&lt;!-- ## 1-d Indexing/subsetting/replacing  --&gt;
-&lt;!-- - Select the 1st, 2nd, and 10th elements from `a` --&gt;
-&lt;!-- - Select the elements of `a` named V1, V2, V3 (use the names) --&gt;
-&lt;!-- - Replace the second to last value of `a` with the word "sasquatch" --&gt;
-
-&lt;!--   - Use code to find the index value, not the actual integer value of the index --&gt;
-&lt;!-- - Select from `b` the values "c", "d", "e" --&gt;
-&lt;!-- - Identify the index position in `b` of values "c", "d", "e" --&gt;
-&lt;!-- - Select the first 5 values of `d` and the last 5 values of `c` into two separate vectors and multiply them.  --&gt;
-&lt;!-- - Select from `d` all values &gt; 100: --&gt;
-&lt;!--   - How many values are there? --&gt;
-&lt;!-- - Select from `d` all values between 95 and 105, and replace them with 100 --&gt;
-&lt;!-- - Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l`  --&gt;
-
-&lt;!-- --- --&gt;
-&lt;!-- ## 2-d Indexing/subsetting/replacing --&gt;
-&lt;!-- - Select the first 10 values from `m`, using a single vector and no row or column information --&gt;
-&lt;!-- - Use a single vector to select the last row, column value from `m` --&gt;
-&lt;!-- - Replace the value selected in 2 above with -99 --&gt;
-&lt;!-- - Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10  --&gt;
-&lt;!-- - Do the same, but select the columns by their name, and reset the new values by dividing by 10 --&gt;
-&lt;!-- - Select from `dat` the values of V3, and square them. Do it using index notation, column name in `[]`, and `$` --&gt;
-&lt;!-- - Subset the first two rows and columns of `dat` into a new data.frame `datss`.  --&gt;
-&lt;!-- - Replace `dat` rows 1:2, column 1:2 with the values -1:-4 --&gt;
-&lt;!-- - Reset the part of `dat` you just changed with the values in `datss` --&gt;
-&lt;!-- --- --&gt;
-&lt;!-- ## Summarizing datasets --&gt;
-&lt;!-- - Calculate the row and column sums of both `m` and `dat`.  --&gt;
-&lt;!-- - Calculate the overall means and sums of all values in each dataset --&gt;
-&lt;!-- - From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable.  --&gt;
 
 
     </textarea>
