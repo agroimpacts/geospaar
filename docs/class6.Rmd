@@ -42,12 +42,12 @@ assns <- tibble(assn = NA, wks) %>%
   mutate(day = weekdays(wks), wkno = week(wks))
 assns %>% filter(day == "Friday") %>% 
   mutate(assn = case_when(
-  wkno == 5 ~ 1, 
-  wkno == 7 ~ 2,
-  wkno == 9 ~ 3,
-  wkno == 12 ~ 4,
-  wkno == 14 ~ 5, 
-  wkno == 15 ~ 6
+    wkno == 5 ~ 1, 
+    wkno == 7 ~ 2,
+    wkno == 9 ~ 3,
+    wkno == 12 ~ 4,
+    wkno == 14 ~ 5, 
+    wkno == 15 ~ 6
 )) 
 ```
 

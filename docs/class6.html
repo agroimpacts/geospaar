@@ -52,12 +52,12 @@ assns &lt;- tibble(assn = NA, wks) %&gt;%
   mutate(day = weekdays(wks), wkno = week(wks))
 assns %&gt;% filter(day == "Friday") %&gt;% 
   mutate(assn = case_when(
-  wkno == 5 ~ 1, 
-  wkno == 7 ~ 2,
-  wkno == 9 ~ 3,
-  wkno == 12 ~ 4,
-  wkno == 14 ~ 5, 
-  wkno == 15 ~ 6
+    wkno == 5 ~ 1, 
+    wkno == 7 ~ 2,
+    wkno == 9 ~ 3,
+    wkno == 12 ~ 4,
+    wkno == 14 ~ 5, 
+    wkno == 15 ~ 6
 )) 
 ```
 
@@ -491,7 +491,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7ff9ba643190&gt;
+## &lt;environment: 0x7fc7ea433350&gt;
 ```
 
 ```
@@ -503,7 +503,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7ff9ba6a7bd8&gt;
+## &lt;environment: 0x7fc7ea495d98&gt;
 ```
 
 ```
