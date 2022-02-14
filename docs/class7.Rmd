@@ -23,7 +23,6 @@ plot(p)
 dev.off()
 ```
 
-
 ---
 
 # Today
@@ -60,6 +59,14 @@ myfun <- function() {
 }
 myfun()
 
+myfun <- function() {
+  x <- x * 10
+  # return(x)
+  # print(x)
+}
+x1 <- myfun()
+x
+
 myfun <- function(x) {
   x <- x * 10
   return(x)
@@ -67,6 +74,8 @@ myfun <- function(x) {
 x <- 10
 myfun(x = 20)
 x
+
+
 ```
 
 ---
@@ -79,6 +88,52 @@ myfun <- function(x) {
 }
 myfun(x)
 myfun(x)
+```
+
+---
+```{r}
+i <- 0
+lapply(1:10, function(x) {
+  print(environment())
+  return(x)
+})
+
+i <- 0
+for(i in 1:10) {
+  print(environment())
+}
+```
+
+---
+```{r}
+i <- 0
+sapply(1:10, function(x) {
+  i <- i + x
+  return(i)
+})
+
+i <- 0
+for(x in 1:10) {
+  i <- i + x 
+  print(i)
+}
+```
+
+---
+```{r}
+# restart r
+search()
+library(raster)
+library(dplyr)
+
+tibble(a = 1:10, b = 1:10) %>% 
+  select(a)
+
+# restart R
+library(dplyr)
+library(raster)
+tibble(a = 1:10, b = 1:10) %>% 
+  dplyr::select(a)
 ```
 
 ---

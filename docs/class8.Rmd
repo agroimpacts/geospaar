@@ -31,6 +31,26 @@ ggsave(here::here("external/slides/figures/africa_capitals.png"),
 ```
 
 ---
+
+A question from last class. 
+
+```{r, eval=FALSE}
+library(stars)
+tif <- system.file("tif/L7_ETMs.tif", package = "stars")
+x <- read_stars(tif)
+plot(x, axes = TRUE)
+plot(x[, , , 4:2], axes = TRUE)
+
+s3url <- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+p <- read_stars(s3url, proxy = TRUE)
+plot(p[, , , 1:3])
+```
+
+See [here](https://r-spatial.github.io/stars/articles/stars1.html) for more details.
+
+---
 # Programming tip
 
 - Whenever possible, let the computer do your counting for you:
@@ -53,8 +73,7 @@ b[length(b)]
 
 # Today
 
-- Next module
-- 2-d indexing
+- Indexing practice
 - A little bit of summarizing
 - Control structures (maybe)
 
@@ -110,9 +129,9 @@ set.seed(10)
 m <- cbind(V1 = 1:10, 
            V2 = sample(1:100, size = 10, replace = TRUE), 
            V3 = runif(n = 10, min = 0, max = 50))
-str(m)
+# str(m)
 dat <- data.frame(m, V4 = sample(letters[1:5], size = 10, replace = TRUE))
-dat
+# dat
 ```
 ---
 
@@ -120,58 +139,12 @@ dat
 - Select the first 10 values from `m`, using a single vector and no row or column information
 - Use a single vector to select the last row, column value from `m`
 - Replace the value selected in 2 above with -99
-
-```{r, eval=FALSE}
-m[length(m), 1] <- -99
-```
-
 - Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10 
-
-```{r, eval=FALSE}
-m[3: 1:2] <- m[3, 12] * 10
-```
-
 - Do the same, but select the columns by their name, and reset the new values by dividing by 10
-
-```{r, eval=FALSE}
-m[3, c("V1", "V2")] <-  # finish this
-```
-
----
-
 - Extract V3 from `dat` and square it. Using the column name and both `[]` (there are three ways) and `$` to do the subsetting.
-
-```{r, eval=FALSE}
-# The 1 provided, two missing
-dat[["V3"]]^2
-```
-
 - Subset the first two rows and columns of `dat` into a new data.frame `datss`.
 - Replace `dat` rows 1:2, column 1:2 with the values -1:-4
 - Reset the part of `dat` you just changed with the values in `datss`
-
-```{r, eval=FALSE}
-datss <- dat[1:2]  # 1
-dat[1:2][1:2] <- c(-1, -4)  # 2
-# ??? # 3
-```
-
-
-```{r, echo=FALSE, eval = FALSE}
-m[1:10, ]
-m[length(m)]
-m[length(m)] <- -99
-m[3, 1:2] <- m[3, 1:2] * 10
-m[3, c("V1", "V2")] <- m[3, c("V1", "V2")] / 10
-dat$V3^2
-dat[, 3]^2
-dat[["V3"]]^2
-dat["V3"]^2
-dat[, "V3"]^2
-datss <- dat[1:2, 1:2]
-dat[1:2, 1:2] <- -1:-4
-dat[1:2, 1:2] <- datss
-```
 
 ---
 ## Control structures

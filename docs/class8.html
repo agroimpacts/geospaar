@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -38,6 +38,27 @@ p &lt;- world %&gt;% filter(continent == "Africa") %&gt;%
 ggsave(here::here("external/slides/figures/africa_capitals.png"), 
        width = 5, height = 4, dpi = 300, bg = "transparent")
 ```
+
+---
+
+A question from last class. 
+
+
+```r
+library(stars)
+tif &lt;- system.file("tif/L7_ETMs.tif", package = "stars")
+x &lt;- read_stars(tif)
+plot(x, axes = TRUE)
+plot(x[, , , 4:2], axes = TRUE)
+
+s3url &lt;- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+p &lt;- read_stars(s3url, proxy = TRUE)
+plot(p[, , , 1:3])
+```
+
+See [here](https://r-spatial.github.io/stars/articles/stars1.html) for more details.
 
 ---
 # Programming tip
@@ -77,8 +98,7 @@ b[length(b)]
 
 # Today
 
-- Next module
-- 2-d indexing
+- Indexing practice
 - A little bit of summarizing
 - Control structures (maybe)
 
@@ -121,75 +141,18 @@ b[length(b)]
     - `V4` is a random selection of the letters A-E
     
 
-```
-##  num [1:10, 1:3] 1 2 3 4 5 6 7 8 9 10 ...
-##  - attr(*, "dimnames")=List of 2
-##   ..$ : NULL
-##   ..$ : chr [1:3] "V1" "V2" "V3"
-```
-
-```
-##    V1 V2        V3 V4
-## 1   1  9 29.796265  c
-## 2   2 74 17.902499  b
-## 3   3 76 21.440471  e
-## 4   4 55  2.595166  e
-## 5   5 72 13.208883  e
-## 6   6 54 19.939537  a
-## 7   7 39 41.806707  d
-## 8   8 83 43.236061  b
-## 9   9 88 30.767621  e
-## 10 10 15 38.755495  b
-```
 ---
 
 ## 2-d Indexing/subsetting/replacing
 - Select the first 10 values from `m`, using a single vector and no row or column information
 - Use a single vector to select the last row, column value from `m`
 - Replace the value selected in 2 above with -99
-
-
-```r
-m[length(m), 1] &lt;- -99
-```
-
 - Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10 
-
-
-```r
-m[3: 1:2] &lt;- m[3, 12] * 10
-```
-
 - Do the same, but select the columns by their name, and reset the new values by dividing by 10
-
-
-```r
-m[3, c("V1", "V2")] &lt;-  # finish this
-```
-
----
-
 - Extract V3 from `dat` and square it. Using the column name and both `[]` (there are three ways) and `$` to do the subsetting.
-
-
-```r
-# The 1 provided, two missing
-dat[["V3"]]^2
-```
-
 - Subset the first two rows and columns of `dat` into a new data.frame `datss`.
 - Replace `dat` rows 1:2, column 1:2 with the values -1:-4
 - Reset the part of `dat` you just changed with the values in `datss`
-
-
-```r
-datss &lt;- dat[1:2]  # 1
-dat[1:2][1:2] &lt;- c(-1, -4)  # 2
-# ??? # 3
-```
-
-
-
 
 ---
 ## Control structures
