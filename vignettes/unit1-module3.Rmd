@@ -1390,7 +1390,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Using `mycalc` with `DF`:
         - Multiply row1, column1 by row1, column2
         - Multiply rows 1-10, column 1-3 by rows1-10, columns 1-3
-        - Divide the values in columns "a" and "b" by the values in column "c" and of `DF` corresponding to "grp" values "E". In selecting the columns, use their names, rather than their index numbers, to select them
+        - Divide the values in columns "a" and "b" by the values in column "c" of `DF` corresponding to the rows in "grp" that have values "E". In selecting the columns, use their names, rather than their index numbers, to select them
     - Repeat the last of the aforementioned calculations, but this time do not use `mycalc`. Simply do it using the two `DF` subsets with the `/` operator
 
 5. Demonstrate the use of `*apply`:

@@ -1274,7 +1274,7 @@ There are no package functions to create for this assignment. All work is to be 
 
 6. Create a single scatter plot with `ggplot` that shows the relationship between *harv_area* (x-axis) and *yield* (y-axis) for maize, separated by country on a single plot. Make it a point scatter plot, with a straight trendline fit through each set of points (i.e. `method = "lm"`). You will need to use `geom_point` and `geom_smooth`. Make a title ("Harvested area versus yield") and x ("Harvested area (ha)") and y ("Yield (t/ha)") labels.   
 
-7. Create a single scatter plot with `graphics::plot` that plots just South Africa wheat yields (y-axis) against year (x-axis). Plot the points, and then add a linear trendline to it, by wrapping the `abline` around the `lm` function. Make the points solid grey ("grey") and the `abline` blue. Label the y axis as "Yield (t/ha)". Remove the x-axis label. Give a title: "South African wheat (1961-2017)". Chunk 54 is your guide. 
+7. Create a single scatter plot with `graphics::plot` that plots just South African wheat yields (y-axis) against year (x-axis). Plot the points, and then add a linear trendline to it, by wrapping the `abline` around the `lm` function. Make the points solid grey ("grey") and the `abline` blue. Label the y axis as "Yield (t/ha)". Remove the x-axis label. Give a title: "South African wheat (1961-2017)". Chunk 54 is your guide. 
 
 8. Use `ggplot` to make a 5-bin histogram of Zambia's maize yields. The x-label should be "Yield (t/ha)", the title should be "Zambian Maize", and bins should be blue with black outlines. 
 

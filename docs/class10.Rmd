@@ -31,37 +31,127 @@ dev.off()
 ---
 # Today
 
-- Homework review
+- Looking at next assignment
+- More looping/apply
 - Data shaping
 - Analysis: SAC
 - Plotting
 
 ---
+## Unit assignment
 
-# Homework
+- [Assignment](https://agroimpacts.github.io/geospaar/unit1-module4.html#unit-assignment)
 
-## Set-up
+---
+
+## Looping practice continued
+### First let's create some new data
 ```{r, eval=FALSE}
-l2 <- lapply(c(100, 200, 300), function(x){
-  set.seed(x)
-  m <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE),
-             V3 = rnorm(n = 20, mean = 500, sd = 100))
-  v <- sample(LETTERS[1:5], size = nrow(m), replace = TRUE)
-  d <- data.frame(m, GRP = v)
-})
+set.seed(100)
+m1 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+            V3 = rnorm(n = 20, mean = 500, sd = 100))
+```
 
+- Create an `m2` and `m3` with the same settings, but use a seed of 200 for `m2` and 300 for `m3`.  
+
+---
+
+## Looping
+### Create a list of matrices
+- Create the matrices `m1`, `m2`, `m3` using an `lapply`: 
+- Ingredients:
+  - vector to iterate over: `c(100, 200, 300)`
+  - output object: `l`
+  - anonymous function to create each matrix: 
+  
+```{r, eval = FALSE}
+function(x) {
+  m <- cbind(...)  
+}
+```
+```{r, eval=FALSE}
+l <- lapply(put your iterator here, function(x) {
+  m <- grab the statement from the m1 and drop in here
+})
+```
+
+
+---
+## Looping 2
+### Create list of data.frames
+- Create a list `l2` with three data.frames, having the same variables `V1:V3` as in m, but with a 4th variable `GRP` that is sampled from the first 5 values of `LETTERS`
+- Ingredients:
+  - Same code used to make `l`
+  - Within the anonymous function, make a fourth variable `v` using `sample` below the code to make `m`
+  - Combine `m` and `v` (naming it `GRP`) using `data.frame`
+
+---
+## Reading/writing data
+
+Let's first write some data and read it back in:
+```{r, eval=FALSE}
+dummy_data <- data.frame(a = 1:10, b = sample(letters[1:5], 10, replace = TRUE))
+
+# two ways of writing
+f <- "~/Desktop/demo/dummy_data.csv"
+write.csv(dummy_data, file = f, row.names = FALSE)
+# readr::write_csv(dummy_data, file = f)
+
+# two ways of reading
+read.csv(f)
+# readr::read_csv(f)
+```
+
+---
+## Reading/writing data
+With a bit of reshaping to start
+
+- Let's take `l2` from the previous exercise
+- Combine it into a single `data.frame` using the following code
+```{r, eval=FALSE}
+d <- do.call(rbind, l2)
+```
+
+- Now write that out using `write.csv` and `readr::write_csv`
+- And read it back in using `read.csv` and `readr::read_csv`
+
+---
+## Reading/writing and looping
+
+- Let's write `l2` out using a `for` loop to create three output csv files
+```{r, eval=FALSE}
 for(i in 1:length(l2)) {
-  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"), 
-            row.names = FALSE)
+  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"))
 }
 ```
 
-The answer!
+- And read those back into a list: use `lapply` to capture data in list `l3`
+- Ingredients:
+  - Iterate over `1:3`
+  - Have `read.csv` in anonymous function body
+  - Reuse the `paste0` from code chunk above
+  
+---
+## Reshaping data
+
+Going from long to wide and back again
 ```{r, eval=FALSE}
-l3 <- lapply(1:3, function(x) {
-  read.csv(file = paste0("~/Desktop/demo/dummy_data", x, ".csv"))
-})
+library(dplyr)
+library(tidyr)
+
+# d1 <- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
+d1 <- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
+d2 <- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
+DF <- rbind(d1, d2)
+
+df_wide <- DF %>% pivot_wider(names_from = grp, values_from = a)
+df_long <- df_wide %>% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
+df_long %>% select(i, a, grp) %>% arrange(grp)
+
 ```
+
+- Reorder columns and sort by grp
 
 
 ---
@@ -167,7 +257,7 @@ do.call(rbind, lapply(unique(price_weight_long$element), function(x){
 
 - Plot values by groups
 
-```{r}
+```{r, eval=FALSE}
 plot(value ~ year, col = "red", pch = 16, 
      ylim = range(price_weight_long$value),
      data = price_weight_long[price_weight_long$element == "price", ])

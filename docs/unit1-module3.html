@@ -248,7 +248,7 @@
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-01-17 <a href="index.html">Back to home</a></p>
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-02-21 <a href="index.html">Back to home</a></p>
           </div>
    </div>
      
@@ -366,8 +366,12 @@ An (approximate) lineage of R packages/objects involved in data handling and gra
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>d[, <span class="fu">mean</span>(b), by <span class="ot">=</span> a][<span class="fu">order</span>(a)]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `[.data.frame`(d, , mean(b), by = a): unused argument (by = a)</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>d_tb[, <span class="fu">mean</span>(b), by <span class="ot">=</span> a][<span class="fu">order</span>(a)]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: Must subset columns with a valid subscript vector.</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x Can&#39;t convert from &lt;double&gt; to &lt;integer&gt; due to loss of precision.</span></span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! Must subset columns with a valid subscript vector.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x Can&#39;t convert from &lt;double&gt; to &lt;integer&gt; due to loss of precision.</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Caused by error in `stop_vctrs()`:</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! Can&#39;t convert from &lt;double&gt; to &lt;integer&gt; due to loss of precision.</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • Locations: 1</span></span></code></pre></div>
 <p><code>data.table</code> is extremely powerful, and is the tool of choice for working with extremely large tabular datasets (it seems to have heavy uptake in quantitative finance, for example), and by some <a href="https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping">measures</a> beats out <code>pandas</code> in <code>python</code> However, the syntax is much more arcane, and, more importantly, not really part of <code>R</code>’s spatial packages, so we won’t learn it further (but it is well worth learning).</p>
 <p><code>dplyr</code>, however, is quite important to know, as the functionality it provides is being incorporated into <code>sf</code> and <code>stars</code> (the package that <em>might</em> be replacing <code>raster</code>–but see <a href="https://github.com/rspatial/terra"><code>terra</code></a>). It is also really great for accessing databases such as postgres. So we will learn base <code>R</code> along with some <code>dplyr</code> and a few other tidyverse functions so that we can get ready for these changes.</p>
 </div>
@@ -2123,7 +2127,7 @@ An (approximate) lineage of R packages/objects involved in data handling and gra
 <ul>
 <li>Multiply row1, column1 by row1, column2</li>
 <li>Multiply rows 1-10, column 1-3 by rows1-10, columns 1-3</li>
-<li>Divide the values in columns “a” and “b” by the values in column “c” and of <code>DF</code> corresponding to “grp” values “E”. In selecting the columns, use their names, rather than their index numbers, to select them</li>
+<li>Divide the values in columns “a” and “b” by the values in column “c” of <code>DF</code> corresponding to the rows in “grp” that have values “E”. In selecting the columns, use their names, rather than their index numbers, to select them</li>
 </ul></li>
 <li>Repeat the last of the aforementioned calculations, but this time do not use <code>mycalc</code>. Simply do it using the two <code>DF</code> subsets with the <code>/</code> operator</li>
 </ul></li>

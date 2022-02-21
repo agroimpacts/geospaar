@@ -260,7 +260,7 @@ df_long %>% select(i, a, grp) %>% arrange(grp)
 
 ```
 
-- Reorder columns and sort grp
+- Reorder columns and sort by grp
 
 
 
