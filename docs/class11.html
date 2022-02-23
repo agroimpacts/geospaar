@@ -50,6 +50,16 @@ ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4,
        width = 7, units = "in", dpi = 300)  
 ```
 
+---
+## Issue from last class
+
+```r
+library(geospaar)
+topo &lt;- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
+par(mfrow = c(1, 2), mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
+plot(topo[[1]], main = "TRI", axes = FALSE, box = FALSE)
+plot(topo[[2]], main = "Flow Direction", axes = FALSE, box = FALSE)
+```
 
 
 ---
@@ -116,7 +126,7 @@ price_weight &lt;- tibble(
 plot(price_weight$price, price_weight$weight)
 ```
 
-&lt;img src="class11_files/figure-html/unnamed-chunk-7-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-8-1.png" width="40%" style="display: block; margin: auto;" /&gt;
 
 
 
@@ -186,7 +196,7 @@ points(value ~ year, col = "blue", pch = 16,
        data = price_weight_long[price_weight_long$element == "weight", ])
 ```
 
-&lt;img src="class11_files/figure-html/unnamed-chunk-14-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-15-1.png" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -206,26 +216,26 @@ p &lt;- price_weight_long %&gt;%
 p
 ```
 
-&lt;img src="class11_files/figure-html/unnamed-chunk-15-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-16-1.png" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 - Let's do a scatter plot, with Price on the x axis and weight on the y axis
 
-&lt;img src="class11_files/figure-html/unnamed-chunk-16-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 - Let's plot a line graph of Price (y axis) against year (x axis)
 
-&lt;img src="class11_files/figure-html/unnamed-chunk-17-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 - Calculate the mean Weight and Price by year, and plot as an XY scatter
 
-&lt;img src="class11_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-19-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 ---
 
 - Let's calculate a histogram of wt_price
-&lt;img src="class11_files/figure-html/unnamed-chunk-19-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-20-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 ---
 
 ## More practice

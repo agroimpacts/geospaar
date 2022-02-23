@@ -46,6 +46,15 @@ ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4,
        width = 7, units = "in", dpi = 300)  
 ```
 
+---
+## Issue from last class
+```{r, eval=FALSE}
+library(geospaar)
+topo <- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
+par(mfrow = c(1, 2), mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
+plot(topo[[1]], main = "TRI", axes = FALSE, box = FALSE)
+plot(topo[[2]], main = "Flow Direction", axes = FALSE, box = FALSE)
+```
 
 
 ---
