@@ -20,6 +20,7 @@ knitr::include_graphics("figures/zambia_topo.png")
 ```{r, eval=FALSE}
 library(raster)
 library(geospaar)
+# data(dem)
 topo <- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
 png(here::here("external/slides/figures/zambia_topo.png"), 
        width = 6, height = 3, res = 300, units = "in", bg = "grey")
@@ -112,7 +113,7 @@ With a bit of reshaping to start
 d <- do.call(rbind, l2)
 ```
 
-- Now write that out using `write.csv` and `readr::write_csv`
+- Now write that out using `write.csv` and `readr::write_csv`. Write it to "mybigdummydata.csv"
 - And read it back in using `read.csv` and `readr::read_csv`
 
 ---

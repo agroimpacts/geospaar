@@ -11,8 +11,11 @@ output:
       countIncrementalSlides: false
 ---
 
-```{r, out.width = "100%", echo=FALSE, fig.align='center'}
+```{r, out.width = "100%", echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
 knitr::include_graphics("figures/tanzam_rainfall.png")
+library(dplyr)
+library(ggplot2)
+library(tidyr)
 ```
 
 ---
@@ -46,24 +49,156 @@ ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4,
 
 
 ---
-## Homework 
-Plot values by groups, `ggplot` version
+## Where we ended up
+### Reading/writing and looping
+```{r, echo=FALSE}
+mlist2 <- lapply(c(100, 200, 300), function(x) {
+  set.seed(x)
+  m <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
+             V3 = rnorm(n = 20, mean = 500, sd = 100))
+  data.frame(m, 
+             GRP = sample(LETTERS[1:5], size = nrow(m), replace = TRUE))
+})
+names(mlist2) <- paste0("m", 1:3)
+```
 
-### Data
-```{r, warning=FALSE, message=FALSE}
-library(tidyverse)
+
+- Let's write `l2` out using a `for` loop to create three output csv files
+```{r, eval=FALSE}
+
+for(i in 1:length(l2)) {
+  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"))
+}
+```
+- And read those back into a list: use `lapply` to capture data in list `l3`
+- Ingredients:
+  - Iterate over `1:3`
+  - Have `read.csv` in anonymous function body
+  - Reuse the `paste0` from code chunk above
+  
+```{r, eval=FALSE}
+mlist3 <- lapply(1:3, function(x) {
+  # read.csv(paste0(here::here("external/data/"), "dummy_data", x, ".csv"))
+  readr::read_csv(paste0(here::here("external/data/"), "dummy_data", x, ".csv"))
+})
+
+```
+
+---
+## Reshaping data
+
+Going from long to wide and back again
+```{r, eval=FALSE}
+library(dplyr)
+library(tidyr)
+
+# d1 <- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
+d1 <- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
+d2 <- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
+DF <- rbind(d1, d2)
+
+df_wide <- DF %>% pivot_wider(names_from = grp, values_from = a)
+df_long <- df_wide %>% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
+df_long %>% select(i, a, grp) %>% arrange(grp)
+```
+
+- Reorder columns and sort by grp
+
+
+---
+## New dataset
+
+```{r, message=FALSE, warning=FALSE, out.width="40%", fig.align='center'}
 set.seed(1)
-price_weight_long <- tibble(
+price_weight <- tibble(
   year = 1951:2000, 
   price = runif(n = length(year), 20, 50),
   weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
-) %>% 
+)
+plot(price_weight$price, price_weight$weight)
+
+```
+```{r, echo=FALSE}
+price_weight_long <- price_weight %>% 
   pivot_longer(cols = price:weight, names_to = "element", values_to = "value")
-price_weight_long
+
+price_weight_wide <- price_weight_long %>% 
+  pivot_wider(names_from = element, values_from = value)
+```
+
+
+---
+## Practice
+### Reshaping
+- Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%>%`, `pivot_longer`. Name it `price_weight_long`.
+- Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
+
+```{r, eval=FALSE}
+price_weight_long <- price_weight %>% 
+  pivot_longer(cols = <column values>, <missing_arg>, values_to = "value")
+
+price_weight_wide <- price_weight_long %>% 
+  pivot_wider(names_from = element, <missing_arg>)
+```
+
+---
+## Demo
+### Split-Apply-Combine
+
+#### tidyverse
+```{r, eval=FALSE}
+df_long <- df_wide %>% 
+  pivot_longer(cols = a:b, names_to = "grp", values_to = "a") %>% 
+  select(i, a, grp) %>% arrange(grp)
+
+df_long %>% 
+  group_by(grp) %>% 
+  summarize(mean = mean(a), stdev = sd(a))
+```
+
+#### Old school
+```{r, eval=FALSE}
+do.call(rbind, lapply(unique(df_long$grp), function(x) {
+  # df_long %>% 
+  #   filter(grp == x) %>% 
+  #   summarize(mean = mean(a), stdev = sd(a)) %>% 
+  #   mutate(grp = x) %>% select(grp, mean, stdev)
+  dat <- df_long[df_long$grp == x, ]
+  data.frame(grp = x, mean = mean(dat$a), stdev = sd(dat$a))
+}))
+```
+
+---
+## Practice
+- Use `dplyr` on `price_weight_long` to calculate the mean and standard deviation of "value" by the "element" variable
+
+```{r, eval=FALSE, echo=FALSE}
+price_weight_long %>% 
+  group_by(element) %>% 
+  summarize(mean = mean(value), stdev = sd(value))
+```
+- Do the same, but with `lapply`
+
+```{r, eval=FALSE, echo=FALSE}
+do.call(rbind, lapply(unique(price_weight_long$element), function(x) {
+  price_weight_long %>% 
+    filter(element == x) %>% 
+    summarize(mean = mean(value), stdev = sd(value)) %>% 
+    mutate(element = x) %>% select(element, mean, stdev)
+}))
+
+do.call(rbind, lapply(unique(price_weight_long$element), function(x){
+  dat <- price_weight_long[price_weight_long$element == x, ]
+  data.frame(element = x, mean = mean(dat$value), stdev = sd(dat$value))
+}))
 ```
 ---
-## The base way
-```{r, out.width="60%", fig.align='center'}
+## Plotting
+
+- Plot values by groups, the base way
+
+```{r, fig.align='center', out.width="40%"}
 plot(value ~ year, col = "red", pch = 16, 
      ylim = range(price_weight_long$value),
      data = price_weight_long[price_weight_long$element == "price", ])
@@ -72,39 +207,76 @@ points(value ~ year, col = "blue", pch = 16,
 ```
 
 ---
-## ggplot solution?
+
+- Plot values by groups, `ggplot` version
 
 ```{r, fig.align='center', out.width="40%"}
 p <- price_weight_long %>% 
   ggplot() + geom_point(aes(x = year, y = value, color = element)) +
   xlab("Year") + ylab("value") + 
-  ggtitle("Relation between year and value") + # Shiqi's solution
+  ggtitle("Relation between year and value") + 
   theme(
     text = element_text(size = 20),
     panel.background = element_rect(fill = "white"),
     plot.title = element_text(hjust = 0.5),
-  )  # Galen's tweak
+  ) 
 p
 ```
 
+---
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis
+
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = weight / price) %>%
+  ggplot() + geom_point(aes(x = price, y = weight))
+```
 
 ---
-## New data
+
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = weight / price) %>%
+  ggplot() + geom_line(aes(x = year, y = price))
+```
+
+- Calculate the mean Weight and Price by year, and plot as an XY scatter
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  group_by(year) %>% 
+  summarize_all(list(mean)) %>%
+  ggplot() + geom_point(aes(x = weight, y = price))
+```
+---
+
+- Let's calculate a histogram of wt_price
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = weight / price) %>%
+  ggplot() +
+  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20)
+```
+---
+
+## More practice
+### New data
 ```{r}
 library(tidyverse)
 set.seed(1)
-tb_df <- tibble(year = rep(1951:2000, 2), 
-                group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
+tb_df <- tibble(year = rep(1951:2000, 2),
+                group = rep(sample(letters[1:5], 50, replace = TRUE), 2),
                 value = runif(n = 100, min = 50, max = 100),
                 element = c(rep("Price", 50), rep("Weight", 50)))
 ```
 
-- Use `readr::write_csv` to write out `tb_df` to your `~/Desktop` to a csv file named `dummy_data2.csv`. 
-
-```{r}
-readr::write_csv(tb_df, file =  "~/Desktop/dummy_data2.csv")
-# write.csv(tb_df, file =  "~/Desktop/dummy_data2.csv") # names rows by default :()
-```
+- Use `readr::write_csv` to write out `tb_df` to your `~/Desktop` to a csv file named `dummy_data2.csv`.
 
 
 ---
@@ -117,8 +289,8 @@ readr::write_csv(tb_df, file =  "~/Desktop/dummy_data2.csv")
 ```{r}
 price_weight_long %>% distinct(element)
 ```
-```{r, message=FALSE, warning=FALSE}
-tb_df <- readr::read_csv("~/Desktop/dummy_data2.csv") 
+```{r, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+tb_df <- readr::read_csv("~/Desktop/dummy_data2.csv")
 tb_df %>% distinct(group, element)
 # tb_df %>% select(group, element) %>% View()
 ```
@@ -131,11 +303,7 @@ tb_df %>% distinct(group, element)
 - Related:
 
 ```{r, eval = FALSE}
-price_weight_wide <- price_weight_long %>% 
-  pivot_wider(names_from = element, values_from = value)
-```
-```{r}
-tb_df_wide <- tb_df %>% 
+price_weight_wide <- price_weight_long %>%
   pivot_wider(names_from = element, values_from = value)
 ```
 
@@ -143,139 +311,76 @@ tb_df_wide <- tb_df %>%
 
 - Spread `tb_df` so that "Price" and "Element" have their own columns, but exclude the *group* variable
 
-```{r}
-tb_df %>% select(-group) %>% 
-  pivot_wider(names_from = element, values_from = value)
-# tb_df[, -grep("group", colnames(tb_df))]
-# tb_df[, -grep("group", colnames(tb_df))]
-```
-
 ---
 - Redo the `pivot_wider` that includes *group*, and then arrange by *group*
-```{r}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>% 
-  arrange(group)
-```
 
 ---
 - Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
-```{r}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  arrange(group, desc(year))
-```
 
 ---
 - Calculate a new column that describes the weight:price ratio, name it `wt_price`
 
-```{r}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  mutate(wt_price = Weight / Price)
-```
-
 ---
 - Do the same as above, but calculate the average `weight`, `price`, and `wt_price` for each group
 
-```{r}
-tb_df %>%
-  pivot_wider(names_from = "element", values_from = "value") %>% 
-  mutate(wt_price = Weight / Price) %>% group_by(group) %>% 
-  summarize(price = mean(Price), weight = mean(Weight), 
-            wt_price = mean(wt_price))
 
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>% 
-  mutate(wt_price = Weight / Price) %>% 
-  group_by(group) %>% 
-  # summarise_all(funs(mean = mean)) %>% 
-  summarise_all(list(mean))
-```
+<!-- --- -->
+<!-- ## Plotting -->
 
+<!-- - Let's do a scatter plot, with Price on the x axis and weight on the y axis -->
 
----
+<!-- ```{r, out.width = "60%", echo=FALSE, fig.align='center'} -->
+<!-- tb_df %>%  -->
+<!--   pivot_wider(names_from = element, values_from = value) %>%   -->
+<!--   mutate(wt_price = Weight / Price) %>%  -->
+<!--   ggplot() + geom_point(aes(x = Price, y = Weight)) -->
+<!-- ``` -->
 
-- A little extra
-```{r, eval=FALSE}
-tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
-  arrange(group, desc(year)) %>%
-  filter(group == "a") %>% mutate(wt_price = Weight / Price)
+<!-- --- -->
+<!-- - Let's plot a line graph of Price (y axis) against year (x axis) -->
 
-```
+<!-- ```{r, out.width = "70%", echo=FALSE, fig.align='center'} -->
+<!-- tb_df %>%  -->
+<!--   pivot_wider(names_from = element, values_from = value) %>%   -->
+<!--   mutate(wt_price = Weight / Price) %>%  -->
+<!--   ggplot() + geom_line(aes(x = year, y = Price)) -->
+<!-- ``` -->
 
-```{r, echo=FALSE}
-# tb_df <- readr::read_csv(here::here("external/notebooks/data/dummy_data.csv"))
-# tb_df %>% distinct(group, element)
-# tb_df %>% pivot_wider(names_from = element, values_from = value)
-# tb_df %>% select(-group) %>% 
-#   pivot_wider(names_from = element, values_from = value)
-# tb_df %>% 
-#   pivot_wider(names_from = element, values_from = value) %>% 
-#   arrange(group)
-# tb_df %>% pivot_wider(names_from = element, values_from = value) %>% 
-#   arrange(group, desc(year))
-# tb_df %>% pivot_wider(names_from = element, values_from = value) %>%
-#   mutate(wt_price = Weight / Price)
-```
+<!-- --- -->
+<!-- - Calculate the mean Weight and Price by year, and plot as an XY scatter -->
 
----
-## Plotting
-
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis
-
-```{r, out.width = "60%", echo=FALSE, fig.align='center'}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  mutate(wt_price = Weight / Price) %>% 
-  ggplot() + geom_point(aes(x = Price, y = Weight))
-```
-
----
-- Let's plot a line graph of Price (y axis) against year (x axis)
-
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  mutate(wt_price = Weight / Price) %>% 
-  ggplot() + geom_line(aes(x = year, y = Price))
-```
-
----
-- Calculate the mean Weight and Price by year, and plot as an XY scatter
-
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  group_by(year) %>% select(-group) %>% 
-  summarize_all(list(mean)) %>% 
-  ggplot() + geom_point(aes(x = Weight, y = Price))
-```
----
-- Plot Weight against Year as a line plot, with a separate series for each group
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  ggplot() + geom_line(aes(x = year, y = Weight, color = group))
-```
----
-- Let's calculate a histogram of wt_price
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  mutate(wt_price = Weight / Price) %>% 
-  ggplot() + 
-  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20)
-```
----
-- Do the same, but let's make a histogram for each group. 
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-tb_df %>% 
-  pivot_wider(names_from = element, values_from = value) %>%  
-  mutate(wt_price = Weight / Price) %>% 
-  ggplot() + 
-  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20) +
-  facet_wrap(facets = ~group)
-```
+<!-- ```{r, out.width = "70%", echo=FALSE, fig.align='center'} -->
+<!-- tb_df %>%  -->
+<!--   pivot_wider(names_from = element, values_from = value) %>%   -->
+<!--   group_by(year) %>% select(-group) %>%  -->
+<!--   summarize_all(list(mean)) %>%  -->
+<!--   ggplot() + geom_point(aes(x = Weight, y = Price)) -->
+<!-- ``` -->
+<!-- --- -->
+<!-- - Plot Weight against Year as a line plot, with a separate series for each group -->
+<!-- ```{r, out.width = "70%", echo=FALSE, fig.align='center'} -->
+<!-- tb_df %>%  -->
+<!--   pivot_wider(names_from = element, values_from = value) %>%   -->
+<!--   ggplot() + geom_line(aes(x = year, y = Weight, color = group)) -->
+<!-- ``` -->
+<!-- --- -->
+<!-- - Let's calculate a histogram of wt_price -->
+<!-- ```{r, out.width = "70%", echo=FALSE, fig.align='center'} -->
+<!-- tb_df %>%  -->
+<!--   pivot_wider(names_from = element, values_from = value) %>%   -->
+<!--   mutate(wt_price = Weight / Price) %>%  -->
+<!--   ggplot() +  -->
+<!--   geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20) -->
+<!-- ``` -->
+<!-- --- -->
+<!-- - Do the same, but let's make a histogram for each group.  -->
+<!-- ```{r, out.width = "70%", echo=FALSE, fig.align='center'} -->
+<!-- tb_df %>%  -->
+<!--   pivot_wider(names_from = element, values_from = value) %>%   -->
+<!--   mutate(wt_price = Weight / Price) %>%  -->
+<!--   ggplot() +  -->
+<!--   geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20) + -->
+<!--   facet_wrap(facets = ~group) -->
+<!-- ``` -->
 
 
