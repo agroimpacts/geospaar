@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -21,42 +21,97 @@ class: center, middle, inverse, title-slide
 
 ### Today
 
-- Reshaping/analysis/plotting - fix the error!
-- Spatial data beginnings
+- Homework
+- More practice with reshaping/analysis/plotting 
+
 
 ---
-### Syntax dos and don'ts
+### Data 
+
 
 ```r
-a &lt;- 1:10  # yes
-a&lt;-1:10  # no (you can't make this if you use crtl/CMD + -)
-a &lt;-1:10  # no (you can't make this if you use crtl/CMD + -)
-a&lt;- 1:10  # no (you can't make this if you use crtl/CMD + -)
+library(tidyverse)
+set.seed(1)
+price_weight_long &lt;- tibble(
+  year = 1951:2000, 
+  price = runif(n = length(year), 20, 50),
+  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
+) %&gt;% pivot_longer(
+  cols = price:weight, names_to = "element", values_to = "value"
+) %&gt;% arrange(element)
+```
 
-lapply(1:10, function(x) {  # yes
-  print(x)
-})
-lapply (1:10,function(x){  # no
-print(x)  
-})
 
-dat %&gt;% filter(a &gt; 10) %&gt;% mutate(a = a * 10)  # yes
-dat%&gt;%filter (a&gt;10)%&gt;%mutate (a=a*10)  # no
+---
+### Homework
 
-mean(x = c(NA, 1:10), na.rm = TRUE)  # yes
-mean (x=c(NA,1:10),na.rm=T)  # no
 
-dat &lt;- data.frame(v1 = 1:10, v2 = 1:10)  # yes
-dat&lt;-data.frame(v1=1:10,v2=1:10)  # certainly no
-dat$v1  # yes
-dat $v1  # no
-dat$ v1 # no
-dat $ v1 # no
-dat       $      v1  # hell no
+```r
+price_weight_long %&gt;% 
+  group_by(element) %&gt;% 
+  summarize(mean = mean(value), sd = sd(value))
+
+do.call(rbind, lapply(unique(price_weight_long$element), function(x){
+  dat &lt;- price_weight_long[price_weight_long$element == x, ]
+  data.frame(element = x, mean = mean(dat$value), stdev = sd(dat$value))
+}))
 ```
 
 ---
+### A few more plots
 
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-4-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+- Calculate the mean Weight and Price by year, and plot as an XY scatter
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
+
+- Let's calculate a histogram of wt_price
+&lt;img src="class12_files/figure-html/unnamed-chunk-6-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
+### Dataset
+
+
+```r
+set.seed(1)
+price_weight2 &lt;- tibble(
+  year = rep(1951:2000, 2), 
+  group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
+  value = runif(n = 100, min = 50, max = 100),
+  element = c(rep("Price", 50), rep("Weight", 50))
+)
+```
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis, with one series for each year
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+- Let's calculate a histogram of wt_price
+&lt;img src="class12_files/figure-html/unnamed-chunk-10-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
+- Do the same, but let's make a histogram for each group.
+&lt;img src="class12_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## More practice
 ### Part 1
 - read in the three `geospaar` FAO datasets into a list using `lapply`
 - Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%&gt;%`, `select`, `pivot_wider`, `rename`. 
@@ -174,89 +229,6 @@ ggplot(crops_df) +
   facet_grid(crop)
 ```
 
-
----
-## Spatial
-
-- Non-spatial to spatial
-- Read and write spatial
-- CRS
-- Make data from scratch
-- Spatial properties
-
----
-### Non-spatial to spatial
-
-- Read in farmer data
-
-```r
-farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
-  read_csv() 
-farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
-```
-
-- Write and read the spatial data
-
-```r
-write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.sqlite")
-farmers_sf &lt;- read_sf("external/notebooks/data/farmers_spatial.sqlite")
-districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-```
-
----
-  
-### Wrangle spatial data
-
-```r
-farmers %&gt;% filter(uuid == "009a8424")
-farmers_sf %&gt;% filter(uuid == "009a8424")
-farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  arrange(n) %&gt;% st_geometry %&gt;% plot(pch = 16, cex = 0.5)
-farmers_sf %&gt;% arrange(uuid)
-class(farmers_sf)
-
-# intersection with st_join and left = FALSE to remove plots outside of Zambia
-farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  st_join(., districts, left = FALSE)
-
-plot(st_geometry(districts))
-farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% st_geometry %&gt;% 
-  plot(pch = 16, add = TRUE, cex = 1)
-farmers_sf_trim %&gt;% st_geometry %&gt;% 
-  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
-```
-
----
-### Make spatial data
-
-
-```r
-pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
-  cbind(ID = 1:nrow(.), .)
-pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
-                             y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
-sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
-sline &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
-```
-
----
-### Spatial properties
-
-```r
-pol %&gt;% st_area
-pol %&gt;% st_sf(crs = 4326) %&gt;% st_area
-sline %&gt;% st_sf(crs = 4326) %&gt;% st_length
-```
-
----
-### Spatial transforms
-
-```r
-pol %&gt;% st_sf(crs = 4326) %&gt;% st_transform(., st_crs(roads)) %&gt;% st_area
-```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

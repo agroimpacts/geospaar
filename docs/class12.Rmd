@@ -13,41 +13,141 @@ output:
 
 ### Today
 
-- Reshaping/analysis/plotting - fix the error!
-- Spatial data beginnings
+- Homework
+- More practice with reshaping/analysis/plotting 
+
 
 ---
-### Syntax dos and don'ts
-```{r, eval = FALSE}
-a <- 1:10  # yes
-a<-1:10  # no (you can't make this if you use crtl/CMD + -)
-a <-1:10  # no (you can't make this if you use crtl/CMD + -)
-a<- 1:10  # no (you can't make this if you use crtl/CMD + -)
+### Data 
 
-lapply(1:10, function(x) {  # yes
-  print(x)
-})
-lapply (1:10,function(x){  # no
-print(x)  
-})
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+set.seed(1)
+price_weight_long <- tibble(
+  year = 1951:2000, 
+  price = runif(n = length(year), 20, 50),
+  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
+) %>% pivot_longer(
+  cols = price:weight, names_to = "element", values_to = "value"
+) %>% arrange(element)
 
-dat %>% filter(a > 10) %>% mutate(a = a * 10)  # yes
-dat%>%filter (a>10)%>%mutate (a=a*10)  # no
+```
 
-mean(x = c(NA, 1:10), na.rm = TRUE)  # yes
-mean (x=c(NA,1:10),na.rm=T)  # no
 
-dat <- data.frame(v1 = 1:10, v2 = 1:10)  # yes
-dat<-data.frame(v1=1:10,v2=1:10)  # certainly no
-dat$v1  # yes
-dat $v1  # no
-dat$ v1 # no
-dat $ v1 # no
-dat       $      v1  # hell no
+---
+### Homework
+
+```{r, eval=FALSE}
+price_weight_long %>% 
+  group_by(element) %>% 
+  summarize(mean = mean(value), sd = sd(value))
+
+do.call(rbind, lapply(unique(price_weight_long$element), function(x){
+  dat <- price_weight_long[price_weight_long$element == x, ]
+  data.frame(element = x, mean = mean(dat$value), stdev = sd(dat$value))
+}))
+
+```
+
+---
+### A few more plots
+
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis
+
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = weight / price) %>%
+  ggplot() + geom_point(aes(x = price, y = weight))
 ```
 
 ---
 
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = weight / price) %>%
+  ggplot() + geom_line(aes(x = year, y = price))
+```
+
+---
+- Calculate the mean Weight and Price by year, and plot as an XY scatter
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  group_by(year) %>% 
+  summarize_all(list(mean)) %>%
+  ggplot() + geom_point(aes(x = weight, y = price))
+```
+---
+
+- Let's calculate a histogram of wt_price
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight_long %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = weight / price) %>%
+  ggplot() +
+  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20)
+```
+---
+### Dataset
+
+```{r, message=FALSE, warning=FALSE}
+set.seed(1)
+price_weight2 <- tibble(
+  year = rep(1951:2000, 2), 
+  group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
+  value = runif(n = 100, min = 50, max = 100),
+  element = c(rep("Price", 50), rep("Weight", 50))
+)
+```
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis, with one series for each year
+
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+price_weight2 %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = Weight / Price) %>%
+  ggplot() + geom_point(aes(x = Price, y = Weight, color = group))
+```
+
+---
+- Let's plot a line graph of Price (y axis) against year (x axis)
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight2 %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = Weight / Price) %>%
+  ggplot() + geom_line(aes(x = year, y = wt_price, color = group))
+```
+
+---
+
+- Let's calculate a histogram of wt_price
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight2 %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = Weight / Price) %>%
+  ggplot() +
+  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20)
+```
+---
+- Do the same, but let's make a histogram for each group.
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+price_weight2 %>%
+  pivot_wider(names_from = element, values_from = value) %>%
+  mutate(wt_price = Weight / Price) %>%
+  ggplot() +
+  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20) +
+  facet_wrap(facets = ~group)
+```
+
+
+---
+
+## More practice
 ### Part 1
 - read in the three `geospaar` FAO datasets into a list using `lapply`
 - Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%>%`, `select`, `pivot_wider`, `rename`. 
@@ -161,81 +261,3 @@ ggplot(crops_df) +
   facet_grid(crop)
 ```
 
-
----
-## Spatial
-
-- Non-spatial to spatial
-- Read and write spatial
-- CRS
-- Make data from scratch
-- Spatial properties
-
----
-### Non-spatial to spatial
-
-- Read in farmer data
-```{r, eval = FALSE}
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() 
-farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
-```
-
-- Write and read the spatial data
-```{r, eval=FALSE}
-write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.sqlite")
-farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.sqlite")
-districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-```
-
----
-  
-### Wrangle spatial data
-```{r, eval = FALSE}
-farmers %>% filter(uuid == "009a8424")
-farmers_sf %>% filter(uuid == "009a8424")
-farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
-  arrange(n) %>% st_geometry %>% plot(pch = 16, cex = 0.5)
-farmers_sf %>% arrange(uuid)
-class(farmers_sf)
-
-# intersection with st_join and left = FALSE to remove plots outside of Zambia
-farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
-  st_join(., districts, left = FALSE)
-
-plot(st_geometry(districts))
-farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
-  plot(pch = 16, add = TRUE, cex = 1)
-farmers_sf_trim %>% st_geometry %>% 
-  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
-
-```
-
----
-### Make spatial data
-
-```{r, eval = FALSE}
-pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
-  cbind(ID = 1:nrow(.), .)
-pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
-                             y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
-sline <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-```
-
----
-### Spatial properties
-```{r, eval=FALSE}
-pol %>% st_area
-pol %>% st_sf(crs = 4326) %>% st_area
-sline %>% st_sf(crs = 4326) %>% st_length
-```
-
----
-### Spatial transforms
-```{r, eval=FALSE}
-pol %>% st_sf(crs = 4326) %>% st_transform(., st_crs(roads)) %>% st_area
-```
