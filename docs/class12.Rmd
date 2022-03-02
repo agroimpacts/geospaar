@@ -54,7 +54,7 @@ do.call(rbind, lapply(unique(price_weight_long$element), function(x){
 
 - Let's do a scatter plot, with Price on the x axis and weight on the y axis
 
-```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+```{r, out.width = "60%", fig.align='center'}
 price_weight_long %>%
   pivot_wider(names_from = element, values_from = value) %>%
   mutate(wt_price = weight / price) %>%
@@ -65,7 +65,7 @@ price_weight_long %>%
 
 - Let's plot a line graph of Price (y axis) against year (x axis)
 
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+```{r, out.width = "55%", fig.align='center', fig.cap="Demo line plot"}
 price_weight_long %>%
   pivot_wider(names_from = element, values_from = value) %>%
   mutate(wt_price = weight / price) %>%
@@ -73,19 +73,9 @@ price_weight_long %>%
 ```
 
 ---
-- Calculate the mean Weight and Price by year, and plot as an XY scatter
-
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-price_weight_long %>%
-  pivot_wider(names_from = element, values_from = value) %>%
-  group_by(year) %>% 
-  summarize_all(list(mean)) %>%
-  ggplot() + geom_point(aes(x = weight, y = price))
-```
----
 
 - Let's calculate a histogram of wt_price
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
 price_weight_long %>%
   pivot_wider(names_from = element, values_from = value) %>%
   mutate(wt_price = weight / price) %>%
@@ -104,7 +94,7 @@ price_weight2 <- tibble(
   element = c(rep("Price", 50), rep("Weight", 50))
 )
 ```
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis, with one series for each year
+- Let's do a scatter plot, with Price on the x axis and weight on the y axis, with one series for each group
 
 ```{r, out.width = "60%", echo=FALSE, fig.align='center'}
 price_weight2 %>%
@@ -131,7 +121,7 @@ price_weight2 %>%
   pivot_wider(names_from = element, values_from = value) %>%
   mutate(wt_price = Weight / Price) %>%
   ggplot() +
-  geom_histogram(aes(x = wt_price), color = "black", fill = "blue", bins = 20)
+  geom_histogram(aes(x = wt_price, color = group), bins = 20)
 ```
 ---
 - Do the same, but let's make a histogram for each group.

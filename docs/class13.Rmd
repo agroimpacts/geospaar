@@ -68,236 +68,130 @@ cong %>%
   scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 2))
 ```
 ---
+
 ## Today
-
-- Project
-- Spatial data
-  - Non-spatial to spatial
-  - Read and write spatial
-  - CRS
-  - Make data from scratch
-  - Spatial properties
-
----
-## Projects
-- On [projects page](https://agroimpacts.github.io/geospaar/projects.html)
-- USF-projects:
-  - Mapping the sources/destinations/flows of budget revenues for police departments, from federal/state/municipal sources. 
-  - Changes in property valuation versus police activity and/or budgets (linked to #1)
-  - Spatio-temporal patterns and associations of police misconduct
-  - Spatio-temporal patterns of surveillance (e.g. CCTV)
-  - Mapping #blacklivesmatter social media
+- Pipeline and plotting exercises (in small groups)
 
 ---
 
-### Datasets for today
+## Data reading and pipelines
+
 ```{r, eval=FALSE}
 library(geospaar)
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() %>% st_as_sfc(coords = c("X", "y"))
-districts <- st_reader(
-  system.file("extdata/districts.shp", package = "geospaar")
-)
-roads <- read_sfc(system.file("extdata/roads.shp", package = "geospaar"))
+fs <- dir(system.file("extdata", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
+crops <- lapply(fs, readr::read_csv)
 ```
 
 ---
-### Non-spatial to spatial
 
-- Read in farmer data
+```{r, eval=FALSE}
+crops_df <- do.call(rbind, lapply(crops, function(x) {
+  x %>% select(Item, Area, Element, Year, Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production)
+}))
+crops_df
+```
+
+---
+
+#### Analysis example 
+
+Average maize yield by country
+```{r, eval=FALSE}
+crops_df %>% 
+  filter(crop == "Maize") %>% 
+  mutate(yield = prod / harv_area) %>% 
+  group_by(country) %>% 
+  summarize(yield = mean(yield))
+```
+
+---
+
+#### Pipeline example 1
+
+Mean and standard deviation of maize yield by country
 ```{r, eval = FALSE}
-library(sf)
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
-  read_csv() 
-farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+fs <- dir(system.file("extdata", package = "geospaar"), 
+          pattern = "maize", full.names = TRUE)
+dat <- readr::read_csv(fs) %>% 
+  dplyr::select(Item, Area, Element, Year, Value) %>% 
+  pivot_wider(names_from = Element, values_from = Value) %>% 
+  rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
+  mutate(yield = prod / harv_area) %>% 
+  dplyr::select(country, harv_area, prod, yield) %>% 
+  group_by(country) %>% 
+  summarise_all(list(mu = mean, sdev = sd))
 ```
 
-- Write and read the spatial data
+---
+#### Pipeline example 2
+
+Creating `crops_df` in one step
 ```{r, eval=FALSE}
-write_sf(farmers_sf, dsn = "~/Desktop/demo/farmers_spatial.geojson")
-farmers_sf <- read_sf("~/Desktop/demo/farmers_spatial.geojson")
+library(geospaar)
+fs <- dir(system.file("extdata", package = "geospaar"), 
+          pattern = "FAOSTAT", full.names = TRUE)
+crops_df <- do.call(rbind, lapply(fs, function(x) {
+  readr::read_csv(x) %>% 
+    select(Item, Area, Element, Year, Value) %>% 
+    pivot_wider(names_from = Element, values_from = Value) %>% 
+    rename(crop = Item, country = Area, year = Year, 
+           harv_area = `Area harvested`, prod = Production)
+}))
+
 ```
 
 ---
-  
-### Wrangle spatial data
-```{r, eval = FALSE}
-farmers %>% filter(uuid == "009a8424")
-# farmers %>% distinct(uuid)
-farmers_sf %>% filter(uuid == "05a95f44")
-farmers_sf %>% filter(uuid == "064beba0")
-farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
-  arrange(desc(n)) %>% 
-  st_geometry %>% 
-  plot(pch = 16, cex = 0.5)
+#### Exercises 
 
-farmers_sf %>% arrange(uuid)
-farmers_sf %>% arrange(uuid, desc(date))
+##### 1. Adapt the code from the Analysis example to calculate mean wheat yields for Zambia and South Africa. 
 
-class(farmers_sf)
-str(farmers_sf)
+##### 2. Adapt the code from the Analysis example to calculate mean yields of each of the three crops for each country. 
 
-# intersection with st_join and left = FALSE to remove plots outside of Zambia
-farmers_sf_trim <- farmers_sf %>% 
-  group_by(uuid) %>% 
-  summarize(n = n()) %>% 
-  st_join(., districts, left = FALSE)
+##### 3. Adapt the code from Pipeline example 2 so that the resulting `crops_df` includes a yield variable. The relevant code you need to do this is found in Pipeline example 1. 
 
-par(mar = rep(0, 4))
-plot(st_geometry(districts))
-farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
-  plot(pch = 16, add = TRUE, cex = 1)
-farmers_sf_trim %>% st_geometry %>% 
-  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
-```
 
 ---
-### Make spatial data
+### Plotting exercises
 
-Points and lines
-```{r, eval = FALSE}
-pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
-  cbind(ID = 1:nrow(.), .) %>% rename(geometry = x)
+Using `crops_df`:
+- Using `ggplot2`, make a line plot of the annual maize production by country. Challenge: make Zambia's line red and South Africa's blue
 
-# polyline
-sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
-sline <- st_geometry(sline) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-plot(sline)
-```
----
-
-Polygons
-```{r, eval = FALSE}
-# Single polygon
-pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
-                             y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-plot(pol)
-
-# multipolygon
-pols <- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
-                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
-                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
-                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
-                                          1))))
-pols <- pols %>% st_geometry %>% st_cast("POLYGON") %>% st_as_sf() %>% 
-  mutate(ID = 1:nrow(.)) %>% #as.data.frame() %>%
-  dplyr::select(ID)
-# plot(pols)
-
-```
----
-### Spatial properties
+Starter code:
 ```{r, eval=FALSE}
-pol %>% st_area
-pol %>% st_sf(crs = 4326) %>% st_area
-sline %>% st_sf(crs = 4326) %>% st_length
+ggplot(crops_df) + 
+  geom_line(aes(x = , y = , ))
 ```
 
 ---
-### Spatial transforms
+
+- Use `ggplot2` to make three side-by-side line plots of yield per year for all three crops by country (red for Zambia, blue South Africa). You need `facet_wrap` or `facet_grid` for this. 
+
+Starter code
 ```{r, eval=FALSE}
-pol %>% 
-  st_sf(crs = 4326) %>% 
-  st_transform(., st_crs(roads)) %>% 
-  st_area
+crops_df %>% 
+  mutate() %>% 
+ggplot() + 
+  geom_line(aes(x = ??, y = ??, color = ??)) + ??
 ```
 
 ---
 
-### Tidy analysis `sf` data
+- Plot the linear regression fit between year wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate point series and fit for South African and Zambian yields.
 
-- Let's make some data
+Starter code
 
 ```{r, eval=FALSE}
-set.seed(1)
-districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
-  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
-  dplyr::select(distName, X, Y, yield)
-ggplot(districts2) + geom_sf(aes(fill = yield))
-districts2 <- districts2 %>% 
-  mutate(
-    grp = case_when(
-      grepl("Cha", distName) ~ "A",
-      grepl("Chi", distName) ~ "B", 
-      grepl("^L", distName) ~ "C", 
-      TRUE ~ "D"
-    )
-  ) %>% dplyr::select(distName, grp, X, Y, yield)
-```
+crops_df %>%
+  mutate(?) %>% 
+  ? %>% 
+ggplot() + 
+  geom_??(aes(x = , y = , ?)) + 
+  geom_smooth(aes(x = , y = , ?), ?)
 
----
-- And analyze it
-
-```{r, eval=FALSE}
-districts2 %>% 
-  dplyr::select(yield) %>% 
-  summarize_all(list(mean, sd))
-districts2 %>% 
-  summarize(mean(yield), sd(yield))
-```
-
----
-```{r, eval=FALSE}
-districts2 %>% dplyr::select(yield) %>% summarize_all(funs(mean, sd))
-districts2 %>% summarize(mean(yield), sd(yield))
-districts_mu <- districts2 %>% 
-  mutate(yld_cat = ifelse(yield > 4.5, "high", "other"), 
-         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
-         yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
-  dplyr::select(1:5, 7) %>% 
-  group_by(yld_cat) %>% summarize(yield = mean(yield))
-ggplot(districts_mu) + geom_sf(aes(fill = yield))
-  
-```
-
----
-### Subsetting
-
-By count
-```{r, eval = FALSE}
-as.data.frame(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
-  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n)) %>% 
-  ggplot() + geom_sf(aes(fill = log10(n)))
-```
-
-By area
-```{r, eval = FALSE}
-p <- ggplot(districts2) + geom_sf()
-districts2 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  filter(area == quantile(area, probs = 0.5, type = 1))
-districts2 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  arrange(area) %>% slice(nrow(.))
-districts2 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
-  arrange(area) %>% pull(distName)
-```
-
----
-### Spatial joins
-```{r, eval=FALSE}
-farmer_ct <- farmers_sf %>% group_by(uuid) %>% count()
-farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
-farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
-```
-
----
-### Spatial-non-spatial join
-```{r, eval=FALSE}
-as.data.frame(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
-  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n)) %>% 
-  ggplot() + geom_sf(aes(fill = log10(n)))
-```
-
----
-### Intersects/Intersection
-
-```{r, eval=FALSE}
-districts2 %>% 
-  slice(which(st_intersects(districts2, st_union(pols), sparse = FALSE))
-        
-districts_pol <- st_intersection(districts2, st_union(pols))
-ggplot(districts_pol) + geom_sf(aes(fill = distName))
 ```
 
 

@@ -62,22 +62,37 @@ do.call(rbind, lapply(unique(price_weight_long$element), function(x){
 
 - Let's do a scatter plot, with Price on the x axis and weight on the y axis
 
+
+```r
+price_weight_long %&gt;%
+  pivot_wider(names_from = element, values_from = value) %&gt;%
+  mutate(wt_price = weight / price) %&gt;%
+  ggplot() + geom_point(aes(x = price, y = weight))
+```
+
 &lt;img src="class12_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 - Let's plot a line graph of Price (y axis) against year (x axis)
 
-&lt;img src="class12_files/figure-html/unnamed-chunk-4-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
----
-- Calculate the mean Weight and Price by year, and plot as an XY scatter
+```r
+price_weight_long %&gt;%
+  pivot_wider(names_from = element, values_from = value) %&gt;%
+  mutate(wt_price = weight / price) %&gt;%
+  ggplot() + geom_line(aes(x = year, y = price))
+```
 
-&lt;img src="class12_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="class12_files/figure-html/unnamed-chunk-4-1.png" alt="Demo line plot" width="55%" /&gt;
+&lt;p class="caption"&gt;Demo line plot&lt;/p&gt;
+&lt;/div&gt;
+
 ---
 
 - Let's calculate a histogram of wt_price
-&lt;img src="class12_files/figure-html/unnamed-chunk-6-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class12_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 ---
 ### Dataset
 
@@ -93,20 +108,20 @@ price_weight2 &lt;- tibble(
 ```
 - Let's do a scatter plot, with Price on the x axis and weight on the y axis, with one series for each year
 
-&lt;img src="class12_files/figure-html/unnamed-chunk-8-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class12_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 - Let's plot a line graph of Price (y axis) against year (x axis)
 
-&lt;img src="class12_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class12_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
 - Let's calculate a histogram of wt_price
-&lt;img src="class12_files/figure-html/unnamed-chunk-10-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class12_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 ---
 - Do the same, but let's make a histogram for each group.
-&lt;img src="class12_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="class12_files/figure-html/unnamed-chunk-10-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 
 ---
