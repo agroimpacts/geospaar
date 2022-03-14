@@ -3,7 +3,7 @@
 
 ## Spring 2022
 
-Updated on: 2022-03-02
+Updated on: 2022-03-14
 
 <center>
 
@@ -67,6 +67,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 12 slides](class12.html)
     -   [Class 13 slides](class13.html)
 -   Week 8
+    -   [Class 14 slides](class14.html)
 -   Week 9
 -   Week 10
 -   Week 11

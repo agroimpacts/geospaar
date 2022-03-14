@@ -11,39 +11,117 @@ output:
       countIncrementalSlides: false
 ---
 
-### Today
+```{r, message=FALSE, warning=FALSE}
+library(leaflet)
+library(sf)
+library(dplyr)
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+bb <- unname(st_bbox(districts))
+xy <- st_centroid(districts) %>% st_coordinates() %>% 
+  bind_cols(name = districts$distName, .)
+slist <- list("color" = "white")
+label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'center',
+                           textOnly = TRUE, textsize = "5px")
 
-- More on vectors and analytics
-- Maybe some visualization
-
----
-### Assignment 3 recap
-```{r, eval=FALSE}
-set.seed(1)
-t1 <- tibble(V1 = paste0("G", 1:10), V2 = runif(n = 10, 75, 125))
-t2 <- tibble(v1 = paste0("G", 1:15), 
-             v3 = sample(LETTERS[1:6], size = 15, replace = TRUE))
-t3 <- tibble(v1 = paste0("G", 1:20), 
-             v4 = rnorm(n = 20, mean = 100, sd = 20))
-t1 %>% left_join(., t2, by = c("V1" = "v1")) %>% 
-  left_join(., t3, by = c("V1" = "v1"))
-t1 %>% right_join(., t2, by = c("V1" = "v1")) %>% 
-  right_join(., t3, by = c("V1" = "v1"))
-t1 %>% full_join(., t2, by = c("V1" = "v1")) %>% 
-  full_join(., t3, by = c("V1" = "v1"))
-t1 %>% inner_join(., t2, by = c("V1" = "v1")) %>% 
-  inner_join(., t3, by = c("V1" = "v1"))
+m <- leaflet() %>% 
+  addProviderTiles("Esri.WorldImagery") %>% 
+  fitBounds(bb[1], bb[2], bb[3], bb[4]) %>% 
+  addPolygons(data = districts, fill = FALSE, color = "white", group = "Cell",
+              weight = 1) %>% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name,
+                      labelOptions = label_opts) %>%
+  addLayersControl(overlayGroups = c("districts"),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
 ```
 
 ---
-```{r}
-set.seed(1)
-t1 <- tibble(v1 = paste0("G", 1:10), v2 = runif(n = 10, 75, 125))
-t2 <- tibble(v1 = paste0("G", 1:15), 
-             v3 = sample(LETTERS[1:6], size = 15, replace = TRUE))
-t3 <- tibble(v1 = paste0("G", 1:20), 
-             v4 = rnorm(n = 20, mean = 100, sd = 20))
-t1 %>% left_join(., t2) %>% left_join(., t3)
+
+```{r, echo=FALSE, fig.align='center', out.width='100%'}
+m
+```
+
+
+
+---
+
+## Today
+
+### Intro to Spatial
+
+- Non-spatial to spatial
+- Read and write spatial
+- CRS
+- Make data from scratch
+- Spatial properties
+
+---
+
+### Non-spatial to spatial
+
+- Read in farmer data
+```{r, eval = FALSE}
+library(tidyverse)
+library(sf)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() 
+farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+- Write and read the spatial data
+```{r, eval=FALSE}
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
+farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.geojson")
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+---
+  
+### Wrangle spatial data
+```{r, eval = FALSE}
+farmers %>% filter(uuid == "009a8424")
+farmers_sf %>% filter(uuid == "009a8424")
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  arrange(n) %>% st_geometry %>% plot(pch = 16, cex = 0.5)
+farmers_sf %>% arrange(uuid)
+class(farmers_sf)
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  st_join(., districts, left = FALSE)
+plot(st_geometry(districts))
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+```
+
+---
+### Make spatial data
+
+```{r, eval = FALSE}
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
+  cbind(ID = 1:nrow(.), .)
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+```
+
+---
+### Spatial properties
+```{r, eval=FALSE}
+pol %>% st_area
+pol %>% st_sf(crs = 4326) %>% st_area
+sline %>% st_sf(crs = 4326) %>% st_length
+```
+
+---
+### Spatial transforms
+```{r, eval=FALSE}
+pol %>% st_sf(crs = 4326) %>% st_transform(., st_crs(roads)) %>% st_area
 ```
 
 ---
@@ -217,152 +295,5 @@ buff_int_dists <- st_intersection(...
 
 - Calculate the area of the intersection
 
----
 
-
-## Visualization
-
-- `graphics` versus `ggplot`
-
-```{r, eval = FALSE}
-library(tidyverse)
-fs <- dir(system.file("extdata/", package = "geospaar"), pattern = "FAOSTAT", 
-          full.names = TRUE)
-crops <- lapply(fs, readr::read_csv)
-crops_df <- do.call(rbind, lapply(crops, function(x) {
-  x %>% dplyr::select(Item, Area, Element, Year, Value) %>% 
-    spread(key = Element, value = Value) %>% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production) %>% 
-    mutate(harv_km2 = harv_area / 100)
-}))
-crop_ylds <- crops_df %>% mutate(yields = prod / harv_area) %>%     
-  mutate(country = ifelse(country == "South Africa", "ZAF", country)) %>%  
-  mutate(country = ifelse(country == "Zambia", "ZMB", country)) %>% 
-  mutate(harv_km2 = harv_area / 100)
-```
-
----
-### `graphics`
-
-- Need this because we'll use a lot with `sf` and `raster`
-- Key functions: 
-  - `plot`, `barplot`, `hist`, `boxplot`, `par`
-- Other helpers:
-  - `axis`, `text`, `mtext`, `legend`
-
----
-### `graphics` examples
-- Scatter
-- Histogram
-- multi-panel
-
----
-#### Scatter
-```{r, eval = FALSE}
-# single line
-cols <- c("red", "orange", "blue", "purple")
-par(mfrow = c(2, 2), mar = rep(0, 4))
-for(i in 1:4) {
-  crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>% 
-    plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
-}
-# multiple lines
-par(mar = rep(3, 4))
-# crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
-# dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-# plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
-
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l")
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  lines(yields ~ year, data = ., col = "red")
-```
-
----
-```{r, eval=FALSE}
-# change axes
-dat <- crop_ylds[crop_ylds$country == "ZAF" & crop_ylds$crop == "Maize", ]
-plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
-
-# multiple panels
-par(mfrow = c(2, 1))
-crop_ylds %>% filter(country == "ZAF" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
-crop_ylds %>% filter(country == "ZMB" & crop == "Maize") %>%
-  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
-```
-
----
-#### Histogram
-```{r, eval = FALSE}
-# basic
-par(mar = c(3, 3, 1, 1))
-crop_ylds %>% filter(crop == "Maize") %>% 
-  pull(yields) %>% hist(., breaks = seq(0, 7, 0.5), main = "Maize yields")
-
-# side-by-side
-par(mfrow = c(1, 2))
-crop_ylds %>% filter(crop == "Maize" & country == "ZAF") %>%
-  pull(yields) %>% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
-crop_ylds %>% filter(crop == "Maize" & country == "ZMB") %>%
-  pull(yields) %>% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
-```
-
----
-### ggplot examples
-#### scatters
-```{r, eval = FALSE}
-# basic points
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_point(aes(x = year, y = yields))
-
-# basic lines
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(mapping = aes(x = year, y = yields))
-
-# multiple lines
-crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue"))
-
-# change axes/theme
-crop_ylds %>% filter(crop == "Maize") %>%   
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  scale_x_continuous(breaks = seq(1960, 2020, 5), expand = c(0, 0)) +
-  theme(axis.text.x = element_text(angle = 90), 
-        panel.background = element_blank())
-```
-
----
-#### multi-panel
-```{r, eval = FALSE}
-# from a single variable, facet_grid, facet_wrap
-crop_ylds %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  facet_grid(cols = vars(crop))
-
-# multiple variables
-p1 <- crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-p2 <- crop_ylds %>% filter(crop == "Maize") %>% 
-  ggplot() + geom_line(aes(x = year, y = harv_area, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
-```
 
