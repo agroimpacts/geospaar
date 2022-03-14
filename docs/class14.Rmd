@@ -11,7 +11,7 @@ output:
       countIncrementalSlides: false
 ---
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, eval=FALSE, warning=FALSE}
 library(leaflet)
 library(sf)
 library(dplyr)
@@ -26,21 +26,25 @@ label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'center',
 m <- leaflet() %>% 
   addProviderTiles("Esri.WorldImagery") %>% 
   fitBounds(bb[1], bb[2], bb[3], bb[4]) %>% 
-  addPolygons(data = districts, fill = FALSE, color = "white", group = "Cell",
-              weight = 1) %>% 
-  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name,
+  addPolygons(data = districts, fill = FALSE, color = "white", 
+              group = "Districts", weight = 1) %>% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
                       labelOptions = label_opts) %>%
-  addLayersControl(overlayGroups = c("districts"),
+  addLayersControl(overlayGroups = c("Districts", "Names"),
                    options = layersControlOptions(collapsed = FALSE,
                                                   autoZIndex = FALSE))
 ```
+```{r, eval=FALSE, echo=FALSE}
+library(htmlwidgets) 
+saveWidget(m, "docs/figures/zambialeaflet.html")
+```
+
+
 
 ---
 
-```{r, echo=FALSE, fig.align='center', out.width='100%'}
-m
-```
-
+<iframe seamless src="figures/zambialeaflet.html" width="100%" 
+height="500"></iframe>
 
 
 ---
