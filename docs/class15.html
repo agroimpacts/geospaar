@@ -3,11 +3,11 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
-    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+    <link rel="stylesheet" href="themes/class14plus.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -19,53 +19,66 @@ class: center, middle, inverse, title-slide
 ---
 
 
-## Today
-
-- Finish up exercises from last class
-- Base versus ggplot graphics
-- Raster intro
-  - classes
-  - dummy rasters
-  - reading and writing
-  - rasterize, raster to vector
-
-
----
-&lt;img src="figures/zam_dem_raster.png" width="50%" /&gt;&lt;img src="figures/zam_dem_stars.png" width="50%" /&gt;
----
-
-### Code used
-
 
 ```r
-library(stars)
-library(raster)
-zlim &lt;- c(250, 2250)
-png(here::here("external/slides/figures/zam_dem_raster.png"), 
-    height = 4, width = 5, res = 300, units = "in")
-par(bg = "grey40", mar = c(0, 0, 0, 3))
-plot(dem, col = viridis::cividis(100), axes = FALSE, box = FALSE, zlim = zlim)
-dev.off()
-png(here::here("external/slides/figures/zam_dem_stars.png"), 
-    height = 4, width = 5, res = 300, units = "in", bg = "grey40")
-st_as_stars(dem) %&gt;%
-  plot(main = NULL, col = viridis::cividis(100), zlim = zlim)
-dev.off()
+library(leaflet)
+library(sf)
+library(dplyr)
+farmersn &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  readr::read_csv() %&gt;% group_by(uuid) %&gt;% 
+  summarize(x = mean(x), y = mean(y), n = n()) %&gt;% 
+  st_as_sf(coords = c("x", "y"), crs = 4326)
+districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+farmersn &lt;- st_join(farmersn, districts, left = FALSE)
+bb &lt;- unname(st_bbox(districts))
+xy &lt;- st_centroid(districts) %&gt;% st_coordinates() %&gt;% 
+  bind_cols(name = districts$distName, .)
+slist &lt;- list("color" = "white")
+label_opts &lt;- labelOptions(noHide = TRUE, style = slist, direction = 'center',
+                           textOnly = TRUE, textsize = "5px")
+qpal &lt;- colorQuantile("RdYlBu", farmersn$n, n = 5)
+
+m &lt;- leaflet() %&gt;% 
+  addProviderTiles("Esri.WorldImagery") %&gt;% 
+  fitBounds(bb[1], bb[2], bb[3], bb[4]) %&gt;% 
+  addPolygons(data = districts, fill = FALSE, color = "white", 
+              group = "Districts", weight = 1) %&gt;% 
+  addCircles(data = farmersn, popup = as.character(farmersn$n), 
+             color = ~qpal(n), group = "Farmers") %&gt;% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
+                      labelOptions = label_opts) %&gt;%
+  addLayersControl(overlayGroups = c("Districts", "Names", "Farmers"),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
 ```
 
+
+
 ---
 
-### Data
+&lt;iframe seamless src="figures/zambialeaflet2.html" width="100%" 
+height="500"&gt;&lt;/iframe&gt;
+
+
+---
+
+## Today
+
+### Intro to Spatial 2
+
+- Spatial properties
+
+---
+
+Data:  read in `farmers` and make into `sf`, `districts`, and `roads`
+
+
+---
+### Adding to data
+
+Add some categories
 
 ```r
-library(geospaar)
-farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;%
-  read_csv %&gt;% distinct(uuid, .keep_all = TRUE) %&gt;% select(uuid, x, y) %&gt;% 
-  mutate(count = 1) %&gt;% st_as_sf(coords = c("x", "y"))
-roads &lt;- system.file("extdata/roads.shp", package = "geospaar") %&gt;% st_read
-districts &lt;- system.file("extdata/districts.shp", package = "geospaar") %&gt;%
-  st_read
-
 set.seed(2)
 districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()) %&gt;% 
   mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %&gt;%
@@ -73,385 +86,163 @@ districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()
          yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
          yld_cat = ifelse(yield &lt; 3.5, "low", yld_cat)) %&gt;% 
   dplyr::select(distName, X, Y, yield, yld_cat)
+```
+---
 
-farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
-  st_set_crs(st_crs(districts))
-farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
-farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
+## Analyses
 
-districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
-  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n)) %&gt;% 
-  st_set_crs(4326)
-
-p &lt;- ggplot(districts2) + geom_sf(fill = "grey")
+```r
+# districts2 %&gt;% dplyr::select(yield) %&gt;% summarize_all(funs(mean, sd))
+# districts2 %&gt;% summarize(mean(yield), sd(yield))
+districts2 %&gt;% group_by(yld_cat) %&gt;% 
+  summarize(yield = mean(yield)) %&gt;% 
+  ggplot() + geom_sf(aes(fill = yield))
+  # geom_sf(aes(fill = yld_cat))
 ```
 
 ---
-## On your own exercises from last class
+### Spatial joins
 
-(1) Select the smallest district in Zambia from `districts3`, and convert that
+```r
+p &lt;- ggplot(districts2) + geom_sf(fill = "grey")
+# farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count()
+# st_crs(farmer_ct) &lt;- st_crs(districts)
+farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
+  st_set_crs(st_crs(districts))
+
+farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
+p + geom_sf(data = farmers_districts, aes(color = n)) + 
+  scale_color_viridis_c()
+
+# lapply(farmers_per_dist$distName, function(x) {
+#   farmers_per_dist %&gt;% filter(distName == x) %&gt;% st_cast("POINT")
+# }) %&gt;% do.call(rbind, .)
+# farmers_per_dist %&gt;% st_cast("POINT") %&gt;% plot()
+farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
+p + geom_sf(data = farmers_per_dist) + 
+  geom_sf(data = farmers_per_dist %&gt;% st_centroid(), col = "blue")
+```
+
+---
+### Spatial-non-spatial join
+
+```r
+districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
+  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n))
+
+p + geom_sf(data = districts3, aes(fill = log10(n))) +
+  scale_fill_brewer(palette = "RdBu")
+  # scale_fill_viridis_c()
+# p + geom_sf(data = districts3, aes(fill = n))
+```
+
+---
+### Subsetting
+
+By count
+
+```r
+p + districts3 %&gt;% filter(n &gt; 15) %&gt;% geom_sf(data = ., fill = "red") + 
+  districts3 %&gt;% filter(between(n, 1, 15)) %&gt;% geom_sf(data = ., fill = "blue")
+p + geom_sf(data = districts3 %&gt;% filter(n &gt; 15), fill = "red") + 
+  geom_sf(data = districts3 %&gt;% filter(between(n, 1, 15)), fill = "blue")
+```
+
+By area
+
+```r
+dmed &lt;- districts3 %&gt;% #mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
+  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %&gt;% 
+  filter(area == quantile(area, probs = 0.5, type = 1)) 
+p2 &lt;- p + geom_sf(data = dmed, fill = "red")
+
+dmax &lt;- districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
+  # arrange(area) %&gt;% slice(nrow(.)) %&gt;% 
+  arrange(desc(area)) %&gt;% slice(1) 
+  # slice_max(order_by = area) #
+p2 + geom_sf(data = dmax, fill = "blue")
+
+districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
+  arrange(area) %&gt;% pull(distName)
+```
+
+---
+## Various
+
+Dataset
+
+```r
+pols &lt;- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
+                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
+                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
+                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
+                                          1))))
+pols &lt;- pols %&gt;% st_geometry %&gt;% st_cast("POLYGON") %&gt;% 
+  st_as_sf(crs = 4326) %&gt;%   
+  mutate(ID = 1:nrow(.)) %&gt;% #as.data.frame() %&gt;%
+  dplyr::select(ID)
+
+p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
+  geom_sf(data = st_union(pols), 
+          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
+```
+
+---
+### Intersects
+
+```r
+# which(st_intersects(districts2, st_union(pols), sparse = FALSE))
+int_dists &lt;- districts2 %&gt;% 
+  slice(which(st_intersects(., st_union(pols), sparse = FALSE)))
+p + geom_sf(data = int_dists, fill = "red") + 
+  geom_sf(data = pols, fill = "transparent", col = "blue")
+```
+
+---
+### Intersection
+
+```r
+districts_pol &lt;- st_intersection(districts2, st_union(pols))
+ggplot(districts_pol) + geom_sf(aes(fill = distName))
+p + geom_sf(data = districts_pol, aes(fill = distName))
+```
+
+---
+### On your own
+
+- Select the smallest district in Zambia from `districts3`, and convert that
 to centroid
 
 ```r
 smallest_centroid &lt;- districts3 %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  arrange(area) %&gt;% slice(1) %&gt;% 
-  st_centroid()
-# or
-smallest_centroid &lt;- districts3 %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  filter(area == min(area)) %&gt;% 
-  st_centroid()
+  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
+  filter
 ```
 
-(2) Create a buffer of width 0.5 (50 km) around that
+- Create a buffer of width 0.5 around that
 
 ```r
-sf_use_s2(TRUE)
-smallest_buffer &lt;- smallest_centroid %&gt;% st_buffer(dist = 50000)
-ggplot() + geom_sf(data = smallest_buffer)
-
-sf_use_s2(FALSE)
-smallest_buffer2 &lt;- smallest_centroid %&gt;% st_buffer(dist = 0.5)
-ggplot() + geom_sf(data = smallest_buffer) + 
-  geom_sf(data = smallest_buffer2, fill = "transparent", col = "red")
+smallest_buffer &lt;- smallest_centroid %&gt;% st_buf...
 ```
 
----
-
-(3) Use the buffer to select the districts from `districts` that intersect with it
+- Use the buffer to select the districts from `districts3` that intersect with it
 
 ```r
 dists_in_buff &lt;- districts3 %&gt;% 
-  filter(st_intersects(., smallest_buffer, sparse = FALSE))
-p + geom_sf(data = dists_in_buff, fill = "grey30") + 
-  geom_sf(data = smallest_buffer, col = "blue", fill = "transparent")
-
-dists_in_buff2 &lt;- districts3 %&gt;% 
-  filter(st_intersects(., smallest_buffer2, sparse = FALSE))
-p + geom_sf(data = dists_in_buff2, fill = "grey30") + 
-  geom_sf(data = smallest_buffer, col = "blue", fill = "transparent")
+  filter(st_intersects(., smallest_buffer...
 ```
 
----
 
-(4) Use the buffer to do an intersection with `districts3`
+---
+- Use the buffer to do an intersection with `districts3`
 
 ```r
-buff_int_dists &lt;- st_intersection(districts3, smallest_buffer)
-p + geom_sf(data = buff_int_dists, aes(fill = distName))
-```
-
-(5) Calculate the area of the intersection, converting the area to hectares, and dropping all other variables from `buff_int_dists` except "distName", and the new "int_area"
-
-```r
-buff_int_dists %&gt;% mutate(int_area = units::set_units...
-```
-
----
-### `graphics`
-
-- Need this because we'll use a lot with `sf` and `raster`
-- Key functions: 
-  - `plot`, `barplot`, `hist`, `boxplot`, `par`
-- Other helpers:
-  - `axis`, `text`, `mtext`, `legend`
-
----
-### `graphics` examples
-- Scatter
-- Histogram
-- multi-panel
-
----
-#### Scatter
-
-```r
-# single line
-cols &lt;- c("red", "orange", "blue", "purple")
-par(mfrow = c(2, 2), mar = rep(0, 4))
-for(i in 1:4) {
-  crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;% 
-    plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
-}
-# multiple lines
-par(mar = rep(3, 4))
-# crop_ylds[crop_ylds$country == "ZAF" &amp; crop_ylds$crop == "Maize", ]
-crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;%
-  plot(yields ~ year, data = ., pch = i, col = cols[i], axes = FALSE)
-# dat &lt;- crop_ylds[crop_ylds$country == "ZAF" &amp; crop_ylds$crop == "Maize", ]
-# plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
-
-crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;%
-  plot(yields ~ year, data = ., col = "blue", type = "l")
-crop_ylds %&gt;% filter(country == "ZMB" &amp; crop == "Maize") %&gt;%
-  lines(yields ~ year, data = ., col = "red")
-```
-
----
-
-```r
-# change axes
-dat &lt;- crop_ylds[crop_ylds$country == "ZAF" &amp; crop_ylds$crop == "Maize", ]
-plot(yields ~ year, data = dat, pch = i, col = cols[i], axes = FALSE)
-axis(side = 1, las = 2)
-axis(side = 2, las = 2)
-
-# multiple panels
-par(mfrow = c(2, 1))
-crop_ylds %&gt;% filter(country == "ZAF" &amp; crop == "Maize") %&gt;%
-  plot(yields ~ year, data = ., col = "blue", type = "l", ylim = c(0, 7))
-crop_ylds %&gt;% filter(country == "ZMB" &amp; crop == "Maize") %&gt;%
-  plot(yields ~ year, data = ., col = "red", type = "l", ylim = c(0, 7))
-```
-
----
-#### Histogram
-
-```r
-# basic
-par(mar = c(3, 3, 1, 1))
-crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
-  pull(yields) %&gt;% hist(., breaks = seq(0, 7, 0.5), main = "Maize yields")
-
-# side-by-side
-par(mfrow = c(1, 2))
-crop_ylds %&gt;% filter(crop == "Maize" &amp; country == "ZAF") %&gt;%
-  pull(yields) %&gt;% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
-crop_ylds %&gt;% filter(crop == "Maize" &amp; country == "ZMB") %&gt;%
-  pull(yields) %&gt;% 
-  hist(., breaks = seq(0, 7, 0.5), main = "Maize yields", xlim = c(0, 10))
-```
-
----
-### ggplot examples
-#### scatters
-
-```r
-# basic points
-crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
-  ggplot() + geom_point(aes(x = year, y = yields))
-
-# basic lines
-crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
-  ggplot() + geom_line(mapping = aes(x = year, y = yields))
-
-# multiple lines
-crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue"))
-
-# change axes/theme
-crop_ylds %&gt;% filter(crop == "Maize") %&gt;%   
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  scale_x_continuous(breaks = seq(1960, 2020, 5), expand = c(0, 0)) +
-  theme(axis.text.x = element_text(angle = 90), 
-        panel.background = element_blank())
-```
-
----
-#### multi-panel
-
-```r
-# from a single variable, facet_grid, facet_wrap
-crop_ylds %&gt;% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) + 
-  facet_grid(cols = vars(crop))
-
-# multiple variables
-p1 &lt;- crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
-  ggplot() + geom_line(aes(x = year, y = yields, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-p2 &lt;- crop_ylds %&gt;% filter(crop == "Maize") %&gt;% 
-  ggplot() + geom_line(aes(x = year, y = harv_area, color = country)) +
-  scale_color_manual(values = c("green", "blue")) 
-
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.2))
-```
-
----
-##### patchwork example
-
-```r
-library(patchwork)
+buff_int_dists &lt;- st_intersection(...
+# p + geom_sf(data = buff_int_dists, aes(fill = distName))
 ```
 
 
----
-## Reading/Writing/Manipulating rasters
-
-- create
-
-```r
-r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
-            crs = "+proj=longlat +datum=WGS84")
-values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-
-par(mar = c(0, 0, 0, 0))
-plot(districts %&gt;% st_geometry)
-plot(r, add = TRUE)
-plot(r)
-
-s &lt;- stack(r, log10(r))
-names(s) &lt;- c("dummy", "log10dummy")
-plot(s)
-
-b &lt;- brick(s)
-plot(b)
-
-b2 &lt;- lapply(1:10, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %&gt;% stack %&gt;% brick
-plot(b2)
-```
-
----
-### A large brick
-
-```r
-b3 &lt;- lapply(1:10, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %&gt;% stack %&gt;% brick
-plot(b3)
-```
-
----
-
-- read and write
-
-
-```r
-writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
-# rm(r)
-r &lt;- raster(file.path(tempdir(), "mydummy.tif"))
-plot(r)
-
-brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
-brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
-brick(file.path(tempdir(), "mydumbrick.tif"))
-brick(file.path(tempdir(), "mydumbrick.grd"))
-```
-
----
-
-- plot
-
-```r
-plot(b)
-plot(b2)
-plot_noaxes(b)
-plot_noaxes(b2, main = paste("Random", 1:10))
-plot(b2, main = paste("Random", 1:10))
-plot_noaxes(b, legend = FALSE)
-plot_noaxes(b[[1]], legend = FALSE)
-legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
-       bty = "n")
-
-# plotting with larger datasets
-plot_noaxes(b3, main = paste("Random", 1:10))
-rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
-
-rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b[[1]])
-rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
-  scale_fill_viridis_c()
-ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
-  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
-  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
-st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
-st_as_stars(b) %&gt;% plot()
-```
-
----
-## Raster to other types
-
-```r
-b[1:10]
-b[1:ncell(b)]
-as.matrix(b)
-as.data.frame(b) %&gt;% as_tibble()
-```
-
-
----
-## Pre-processing
-- Aggregating/disaggregating
-
-```r
-aggregate(b, fact = 2) %&gt;% plot
-# aggregate(b, fun = min, fact = 2) %&gt;% plot
-# aggregate(b, fun = sd, fact = 2) %&gt;% plot
-disaggregate(b, fact = 2) %&gt;% plot
-disaggregate(b, fact = 2, bilinear = TRUE) %&gt;% plot
-```
-
-- Masking
-
-```r
-data(chirps)
-plot_noaxes(chirps[[1]])
-chirpsz &lt;- mask(chirps, districts)
-plot_noaxes(chirpsz[[1]])
-plot(st_geometry(districts), add = TRUE)
-# rasterVis::levelplot(chirpsz[[1:5]])
-plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-            legend = FALSE, zlim = c(0, 50))
-plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-     legend = FALSE, zlim = c(0, 50))
-```
-
----
-
-- Projecting
-
-```r
-chirpsz %&gt;% projectRaster(., crs = crs(roads), res = 5000) -&gt; chirpsz_alb
-chirpsz_alb %&gt;% print
-```
-
-- Rasterize/vectorize
-
-```r
-distsr &lt;- districts %&gt;% rasterize(., chirpsz)
-distsr %&gt;% plot_noaxes
-# stack(distsr, chirpsz[[1:2]]) %&gt;% plotRGB(stretch = "lin")
-distsr_pol &lt;- rasterToPolygons(distsr, dissolve = TRUE)
-distsr_pol %&gt;% st_as_sf %&gt;% st_geometry %&gt;% plot
-distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
-```
-
----
-## Calculations
-
-- raster algebra
-- statistics
-- z dimension stats
-
----
-## Exercises
-
-- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
-- Reproject to Albers
-- Disaggregate to 0.02 degrees (bilinear and NGB)
-- Calculate the sum of rainfall from `chirps`
-- Identify all areas of total rainfall &gt; 10 mm
-- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+- Calculate the area of the intersection
 
 
 
