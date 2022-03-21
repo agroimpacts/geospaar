@@ -30,6 +30,27 @@ class: center, middle, inverse, title-slide
 ### Data
 
 
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
+districts &lt;- st_read(system.file("extdata/districts.shp", package = "geospaar"))
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+
+set.seed(2)
+districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()) %&gt;% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %&gt;%
+  mutate(yld_cat = ifelse(yield &gt; 4.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield &lt; 3.5, "low", yld_cat)) %&gt;% 
+  dplyr::select(distName, X, Y, yield, yld_cat)
+farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
+  st_set_crs(st_crs(districts))
+farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
+farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
+districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
+  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n))
+```
 
 ---
 
@@ -44,14 +65,14 @@ smallest_centroid &lt;- districts3 %&gt;%
   mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
   filter(area == min(area)) %&gt;% st_centroid()
 ggplot() + geom_sf(data = districts3) + 
-  geom_sf(data = smallest_centroid, col = "red")
+  geom_sf(data = smallest_centroid, col = "red", cex = 0.1)
 ```
 
 - Create a buffer of width 0.5 around that
 
 ```r
-sf_use_s2(use_s2 = TRUE)
-# sf_use_s2(use_s2 = FALSE)
+# sf_use_s2(use_s2 = TRUE)
+sf_use_s2(use_s2 = FALSE)
 smallest_buffer &lt;- smallest_centroid %&gt;% st_buffer(dist = 0.5)
 ggplot() + geom_sf(data = smallest_centroid, col = "red") + 
   geom_sf(data = smallest_buffer, col = "blue", fill = "transparent") 
@@ -75,6 +96,8 @@ ggplot(districts3) + geom_sf() +
 buff_int_dists &lt;- st_intersection(smallest_buffer, districts3)
 ggplot(districts3) + geom_sf() +
   geom_sf(data = buff_int_dists, fill = "red")
+ggplot() +
+  geom_sf(data = buff_int_dists, aes(fill = distName.1))
 ```
 
 ---
@@ -89,7 +112,17 @@ roads20 &lt;- roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;%
   st_transform(crs = 4326)
 
 ggplot(districts3) + geom_sf() + 
-  geom_sf(data = roads20, fill = "red")
+  # geom_sf(data = roads20, fill = "red")
+  geom_sf(data = st_union(roads20), fill = "red")
+
+st_union(roads20) %&gt;% st_cast("POLYGON") %&gt;% st_as_sf() %&gt;% 
+  mutate(ID = as.character(1:nrow(.))) %&gt;% 
+  # ggplot() + geom_sf(aes(fill = as.factor(ID)))
+  ggplot() + geom_sf(aes(fill = ID))
+
+ggplot(districts3) + geom_sf(aes(fill = distName))
+districts3 %&gt;% mutate(ID = 1:nrow(.)) %&gt;% 
+  ggplot() + geom_sf(aes(fill = ID))
 ```
 
 - Differencing
@@ -97,6 +130,9 @@ ggplot(districts3) + geom_sf() +
 ```r
 dif &lt;- st_difference(districts3, smallest_buffer)
 ggplot(dif) + geom_sf(fill = "grey50")
+
+dif2 &lt;- st_difference(smallest_buffer, districts3)
+ggplot(dif2) + geom_sf(fill = "grey50")
 ```
 
 - Unioning
@@ -107,6 +143,10 @@ uni &lt;- st_union(dif)
 ggplot(uni) + geom_sf(fill = "grey50")
 uni2 &lt;- st_union(dif, smallest_buffer)
 ggplot(uni2) + geom_sf(fill = "grey50")
+uni3 &lt;- st_union(dif, buff_int_dists)
+ggplot(uni3) + geom_sf(fill = "grey50")
+
+uni3
 ```
 
 ---
@@ -115,8 +155,12 @@ ggplot(uni2) + geom_sf(fill = "grey50")
 
 ```r
 # simple within extent
+set.seed(1)
 sample100 &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% 
   st_sample(size = 100, exact = TRUE)
+ggplot(districts3) + geom_sf() + 
+  geom_sf(data = districts3 %&gt;% filter(n &gt; 0), fill = "lightblue") + 
+  geom_sf(data = sample100, size = 0.5, col = "red")
 
 # stratified by polygon
 ndists &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% nrow(.)
@@ -138,9 +182,28 @@ ggplot(districts3) + geom_sf() +
 - Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
 - Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
 
+
+```r
+# code to adapt
+roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;% 
+  filter(km &gt; 200) %&gt;% 
+  st_buffer(dist = 20000) %&gt;% 
+  st_transform(crs = 4326)
+st_difference(larger_object, smaller_object)
+ggplot() + geom_sf
+```
+
+---
+
 #### Round 2
-- Randomly sample 100 points within the 20 km road buffer
-- Plot the 20 km buffer (red) the points in it (blue) over the districts
+- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
+- Plot the 30 km buffer (red) the points in it (blue) over the districts
+
+
+```r
+buffered_object %&gt;% st_sample()
+```
+
 
 
 
