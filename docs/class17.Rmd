@@ -13,165 +13,123 @@ output:
 
 ## Today
 
-- Parallelization
-- Exercises from last class
-- New exercises (teams)
+- Homework from last class
+- Your questions
+- More exercises
 
 ---
-## Data
-
-```{r, warning=FALSE, message=FALSE, results='hide'}
-library(geospaar)
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
-  st_read
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
-
-data(chirps)
-chirpsz <- mask(chirps, districts)
-```
-
----
-
-
-## Mac/Linux parallelization
-```{r, eval=FALSE}
-library(parallel)
-system.time(b3 <- lapply(1:250, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-})) 
-
-system.time(b4 <- mclapply(1:250, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}, mc.cores = 7)) 
-```
-
----
-## Windows parallelization
-
-```{r, eval=FALSE}
-# detectCores()
-cl <- makeCluster(7)
-clusterEvalQ(cl, library(raster))
-system.time(b5 <- parLapply(cl, 1:250, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}))
-stopCluster(cl)
-# sapply(1:250, function(x) b4[[x]] == b5[[x]])
-```
-
----
-## Exercises
-### Last class
-- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
-
-```{r, eval=FALSE}
-# Arman's solution
-# creating raster dist49_dummy
-dist49_dummy <- raster(extent(districts[49, ]), res = 0.1, crs = 4326)
-
-# assigning values for dist49_dummy
-values(dist49_dummy) <- sample(1:100, size = ncell(r), replace = TRUE)
-plot_noaxes(dist49_dummy)
-```
----
-- Reproject to Albers 
-
-
-```{r, eval=FALSE}
-# Galen's solution ("but it's about the class")
-dist49_dummy_alb <- dist49_dummy %>% projectRaster(., crs = crs(roads))
-
-# alternate
-projectRaster(dist49_dummy, crs = "ESRI:102022")
-```
----
-- Disaggregate to 0.02 degrees (bilinear and NGB) 
-
-```{r, eval=FALSE}
-# Vanchy's solution
-dist49_dummy_d <- disaggregate(x = dist49_dummy, fact = 5, method = "bilinear")
-
-# Claire's solution 
-dist49_NGB <- disaggregate(dist49_dummy, fact = 5)
-
-plot(dist49_dummy_d)
-plot(dist49_NGB)
-```
-
----
-- Calculate the sum of rainfall from `chirpsz`
-
-```{r, eval=FALSE}
-# Claire's solution
-chirps_sum <- calc(chirpsz, fun = sum)
-plot(chirps_sum)
-
-# Galen's solution
-cellStats(chirps_sum, mean)
-```
-
-- Identify all areas of total rainfall > 100 mm
-
-```{r, eval=FALSE}
-# Arman's solution
-chirps_gt10 <- chirps_sum > 100
-plot_noaxes(chirps_gt10)
-```
-
-- Calculate the mean rainfall in Zambia for the 15th day in `chirpsz`
-
-```{r, eval=FALSE}
-# Anna and Julia's solutions
-cellStats(chirpsz[[15]], stat = mean)
-```
-
----
-
 ### Data
-```{r, warning=FALSE, message=FALSE, results='hide'}
+
+```{r, eval=FALSE}
 library(geospaar)
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
-  read_csv %>% distinct(uuid, .keep_all = TRUE) %>% select(uuid, x, y) %>% 
-  mutate(count = 1) %>% st_as_sf(coords = c("x", "y"))
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
-  st_read
-chirpsz <- mask(chirps, districts)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% st_as_sf(coords = c("x", "y"))
+districts <- st_read(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+
+set.seed(2)
+districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
+  mutate(yld_cat = ifelse(yield > 4.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
+  dplyr::select(distName, X, Y, yield, yld_cat)
+farmer_ct <- farmers %>% group_by(uuid) %>% count() %>% 
+  st_set_crs(st_crs(districts))
+farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
+farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
+districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
+  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n))
 ```
 
 ---
 
-### New
-- From `chirpsz`, create a categorical raster (`raincat`) containing legend with "low", "medium", "high" rainfall from `raintot`, wherein the low is areas with rainfall < 50 mm, medium is 50-100 m, and high is rainfall > 100 mm
+### Exercises
 
-```{r}
-raintot <- calc(chirpsz, sum)
-raincat <- cut(raintot, breaks = c(0, 50, 200))
-plot_noaxes(raincat, col = c("grey70", "lightblue"))
+#### Round 1
+- Calculate the length of roads in kilometers
+- Buffer roads > 100 km by 30 kilometers, save as new object
+- Buffer roads > 100 km 10 kilometers, save as new object
+- Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
+- Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
+
+```{r, eval=FALSE}
+roads_10 <- roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
+    filter(km > 100) %>% 
+    st_buffer(dist = 10000) %>% 
+    st_transform(crs = 4326) %>% 
+    st_union(.)
+roads_30 <- roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
+    filter(km > 100) %>% 
+    st_buffer(dist = 30000) %>% 
+    st_transform(crs = 4326) %>% 
+    st_union(.)
+buf_diffs <- st_difference(roads_30, roads_10)
+ggplot(districts) + geom_sf() + 
+  geom_sf(data = buf_diffs, fill = "red")
 ```
 
-- Calculate the local standard deviation of `raintot` in a 5X5 moving window. Remove NAs from the calculation so the boundaries are not shrunk
-
-```{r}
-# w <- matrix(1, nrow = 3, ncol = 3)
-w <- matrix(1, nrow = 9, ncol = 9)
-plot(raintot)
-plot(focal(raintot, w = w, fun = mean, na.rm = TRUE))
-plot(focal(raintot, w = w, fun = mean))
+---
+```{r, eval=FALSE}
+roads_bufs <- lapply(c(10000, 30000), function(x) {
+  roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
+    filter(km > 100) %>% 
+    st_buffer(dist = x) %>% 
+    st_transform(crs = 4326) %>% 
+    st_union(.)
+})
+buf_diffs <- st_difference(roads_bufs[[2]], roads_bufs[[1]])
+ggplot(districts) + geom_sf() + 
+  geom_sf(data = buf_diffs, fill = "red")
 ```
-- Calculate the average elevation and slope in each district of Zambia
+
+---
+
+#### Round 2
+- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
+- Plot the 30 km buffer (red) the points in it (blue) over the districts
+
+```{r, eval=FALSE}
+set.seed(1)
+roads_sample <- roads_bufs[[2]] %>% st_sample(size = 100)
+ggplot(districts) + geom_sf() + 
+  geom_sf(data = roads_bufs[[2]], fill = "red") + 
+  geom_sf(data = roads_sample, col = "blue")
+
+```
+
+---
+### How would you solve these problems? 
+
+- Calculate the area of Zambia's districts 
+- **Accurately** calculate the area of Zambia's districts
+- Find the largest and smallest districts in Zambia
+- Find the longest road in Zambia
+- Find the names of the districts that Zambia's longest road runs through
+- Calculate the area of each of those districts along Zambia's longest road that lies within 10 km distance of that road
+- Create a 0.5 (E-W) X 0.25 (N-S) degree polygon centered on Zambia's smallest district
+- Count how many farmers from our sample live within 10 km of Zambian roads that are longer than 200 km
+
+---
+### Solve the problems!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
