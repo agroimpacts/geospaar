@@ -57,13 +57,13 @@ districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>%
 roads_10 <- roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
     filter(km > 100) %>% 
     st_buffer(dist = 10000) %>% 
-    st_transform(crs = 4326) %>% 
-    st_union(.)
+    st_transform(crs = 4326) #%>% 
+    # st_union(.)
 roads_30 <- roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
     filter(km > 100) %>% 
     st_buffer(dist = 30000) %>% 
-    st_transform(crs = 4326) %>% 
-    st_union(.)
+    st_transform(crs = 4326) #%>% 
+    # st_union(.)
 buf_diffs <- st_difference(roads_30, roads_10)
 ggplot(districts) + geom_sf() + 
   geom_sf(data = buf_diffs, fill = "red")
@@ -95,13 +95,15 @@ roads_sample <- roads_bufs[[2]] %>% st_sample(size = 100)
 ggplot(districts) + geom_sf() + 
   geom_sf(data = roads_bufs[[2]], fill = "red") + 
   geom_sf(data = roads_sample, col = "blue")
-
 ```
 
 ---
 ### How would you solve these problems? 
 
 - Calculate the area of Zambia's districts 
+
+    - mutate on districts
+
 - **Accurately** calculate the area of Zambia's districts
 - Find the largest and smallest districts in Zambia
 - Find the longest road in Zambia
