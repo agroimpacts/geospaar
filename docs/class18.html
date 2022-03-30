@@ -155,7 +155,8 @@ b3 &lt;- lapply(1:10, function(x) {
   values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
   r
 }) %&gt;% stack %&gt;% brick
-plot(b3[[1]], )
+plot(b3)
+plot(b3[[1]])
 ```
 
 ---
@@ -201,8 +202,8 @@ rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) +
 ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
   # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
   geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
-st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
-st_as_stars(b) %&gt;% plot()
+stars::st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
+stars::st_as_stars(b) %&gt;% plot()
 ```
 
 ---
@@ -248,6 +249,7 @@ plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0),
 - Projecting
 
 ```r
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
 chirpsz %&gt;% projectRaster(., crs = crs(roads), res = 5000) -&gt; chirpsz_alb
 chirpsz_alb %&gt;% print
 ```

@@ -13,278 +13,158 @@ output:
 
 ## Today
 
-- Parallelization
-- Projections
-- SAC
-- Random Forests
+- Challenge from last class
+- Raster intro, continued
+  - rasterize, raster to vector
+  - raster stats
+  - raster math
+  - focal functions
+- Exercises
 
 ---
-## Parallelization
+### Challenge example
+
 ```{r, eval=FALSE}
-# detectCores()
-library(parallel)
-cl <- makeCluster(14)
-clusterEvalQ(cl, library(raster))
-system.time(b5 <- parLapply(cl, 1:1000, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.01, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}))
-stopCluster(cl)
+library(tidyverse)
+library(sf)
 
-system.time(b5 <- lapply(1:1000, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.01, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}))
+districts <- read_sf(
+  system.file("extdata/districts.shp", package = "geospaar")
+) %>% st_transform(4326)
+smallest_district <- districts %>% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
+  filter(area == min(area))
+smallest_centroid <- smallest_district %>% st_centroid()
+xy <- st_coordinates(smallest_centroid)
+
+minus <- function(a, b) a - b
+rect_pol <- function(width, hgt, xy, crs = 4326) {
+  w <- sapply(c(minus, minus, sum, sum, minus), function(x) x(xy[1], width / 2))
+  h <- sapply(c(minus, sum, sum, minus, minus), function(x) x(xy[2], hgt / 2))
+  l <- list(cbind(w, h))
+  p <- st_polygon(l) %>% st_sfc %>% st_sf(ID = 1:length(l), crs = crs)
+  return(p)
+}  
+pol <- rect_pol(0.5, 0.25, xy)  
+
+ggplot(districts) + geom_sf() +
+  geom_sf(data = smallest_district, fill = "red") +
+  geom_sf(data = pol, col = "blue", fill = "transparent")
 ```
+
 ---
+## More on rasters
 
+- create
+```{r, eval = FALSE}
+library(raster)
+r <- raster(extent(30, 31, -14, -13), res = 0.1, crs = 4326)
+values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
 
-## Projections
+s <- stack(r, log10(r))
+names(s) <- c("dummy", "log10dummy")
+plot(s)
 
-Some data
-```{r, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
-library(geospaar)
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
-  readr::read_csv() %>% st_as_sf(coords = c("x", "y"))
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>%
-  st_read
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+b2 <- lapply(1:10, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.1, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% stack %>% brick
+```
+
+---
+```{r, eval=FALSE}
+b3 <- lapply(1:10, function(x) {
+  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
+              crs = "+proj=longlat +datum=WGS84")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% stack %>% brick
 
 data(chirps)
 chirpsz <- mask(chirps, districts)
-```
----
-## Set CRS/proj versus st_transform/project
-
-- setting crs
-```{r, eval=FALSE}
-farmers %>% st_set_crs(4326)
-st_crs(farmers) <- 4326
-
-r <- raster(extent(30, 31, -14, -13), res = 0.01)
-values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-crs(r) <- 4326
-```
-
-- spatial transformation/projection
-```{r, eval=FALSE}
-farmers %>% st_transform(crs = st_crs(roads))
-farmers %>% st_transform(crs = "ESRI:102022")
-
-st_crs(roads)$proj4string
-# projectRaster(chirpsz, crs = crs(roads))
-# projectRaster(chirpsz, crs = st_crs(roads)$proj4string)
-projectRaster(chirpsz, crs = "ESRI:102022")
-
-r <- raster(extent(30, 31, -14, -13), res = 0.01)
-values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-projectRaster(r, crs = "ESRI:102022")
+chirpsz %>% projectRaster(., crs = "ESRI:102022", res = 5000) -> chirpsz_alb
 ```
 
 ---
-## Split apply combine
-
-```{r, eval=FALSE}
-r_tbl <- do.call(
-  rbind, 
-  lapply(1:length(b5), function(x) cbind(id = x, values(b5[[x]])))
-) %>% as.data.frame() %>% as_tibble()
+- Rasterize/vectorize
+```{r, eval = FALSE}
+distsr <- districts %>% rasterize(., chirpsz)
+distsr %>% plot_noaxes
+distsr_pol %>% st_as_sf %>% st_geometry %>% plot
+distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
 ```
 
-- implicit
+---
+## Calculations
+
 ```{r, eval=FALSE}
-names(r_tbl) <- c("id", "l1", "l2", "l3")
-r_tbl %>% 
-  group_by(id) %>% 
-  summarize(l2 = mean(l2))
-  # filter(l1 == max(l1)) %>% 
-  # slice(1)
+rf1 <- chirpsz[[1]] + chirpsz[[2]]
+plot(rf1)
+plot(rf1 / 1000)
+```
+
+- statistics
+```{r, eval=FALSE}
+cellStats(chirpsz[[1]], stat = mean)
+cellStats(chirpsz[[1]], stat = range)
+cellStats(chirpsz, stat = mean)
+cellStats(chirpsz, stat = sum)
+cellStats(chirpsz, stat = range)
+```
+
+- z dimension stats
+```{r, eval=FALSE}
+plot(calc(chirpsz, mean))
+plot(calc(chirpsz, sum))
+plot(calc(chirpsz, range))
 ```
 ---
-- base
+
+- neighborhoods
+
 ```{r, eval=FALSE}
-# mini_splits <- lapply(unique(r_tbl$id), function(x) {
-#   d <- r_tbl[r_tbl$id == x, ]
-#   tibble(id = x, l2 = mean(d$l2))
-# }) 
-# do.call(rbind, mini_splits)
-mini_splits <- do.call(rbind, lapply(unique(r_tbl$id), function(x) {
-  d <- r_tbl[r_tbl$id == x, ]
-  tibble(id = x, l2 = mean(d$l2))
-})) 
-do.call(rbind, mini_splits)
+w <- matrix(1, nrow = 5, ncol = 5)
+rainwindow <- focal(raintot, w = w, fun = mean, na.rm = TRUE)
 ```
 
 ---
 
-## Modelling demo
-### Random Forests
-```{r, eval=FALSE}
-# Train model
-library(caTools)
-library(randomForest)
-library(dplyr)
-
-# read in train set
-train_ref <- readr::read_csv(
-  system.file("extdata/train_reference.csv", package = "ecaascrops")
-) %>% mutate(crop = factor(case_when(
-  class == "Maize" ~ 1,
-  class == "Rice" ~ 2,
-  class == "Other" ~ 3,
-  class == "noncrop" ~ 4
-))) %>% select(id, class, crop, !!names(.))
-```
-
----
-### Model 
+- reclassify
 
 ```{r, eval=FALSE}
-# prepare dataset
-dset <- train_ref %>% filter(type == "mean") %>%
-  select(-id, -class, -type, -seed)
-set.seed(10)
-samp <- sample.split(dset$crop, SplitRatio = 0.8)
-train <- subset(dset, samp == TRUE)
-test <- subset(dset, samp == FALSE)
-# train %>% tidyr::drop_na()
-
-# fit model
-set.seed(123)
-mod <- randomForest(crop ~ ., data = train, ntree = 1000,
-                    importance = TRUE)
-summary(mod)
-
-# Evaluation
-pred <- predict(mod, newdata = test %>% dplyr::select(-c(crop)))
-cm <- table(test$crop, pred)
-
-rf_results <- list("train" = train, "test" = test, "mod" = mod, "pred" = pred,
-                   "error_mat" = cm)
+raincat <- cut(calc(chirpsz, sum), breaks = c(0, 50, 100, 200))
+cols <- c("grey70", "lightblue", "lightgreen")
+plot_noaxes(raincat, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
 
----
 ```{r, eval=FALSE}
-imptab <- mod$importance
-nms <- rownames(imptab)
-imp_tbl <- as_tibble(imptab) %>% 
-  mutate(Variable = nms) %>% 
-  dplyr::select(Variable, MeanDecreaseAccuracy) %>% 
-  arrange(MeanDecreaseAccuracy) %>% 
-  mutate(order = 1:n()) %>% 
-  mutate(Variable = gsub("\\.", "_", Variable))
-
-p <- ggplot(imp_tbl) + 
-  geom_point(aes(MeanDecreaseAccuracy, factor(order))) + 
-  scale_y_discrete(labels = toupper(imp_tbl$Variable)) + 
-  ylab("Variable") + xlab("Mean Decrease in Accuracy") + 
-  theme_linedraw() + 
-  theme(axis.text = element_text(size = 7), 
-        axis.title = element_text(size = 7))
+raintot <- calc(chirpsz, fun = sum)
+rain <- cellStats(raintot, range)
+rain_3 <- cbind(c(floor(rain[1]), 50, 100),
+                 c(50, 100, ceiling(rain[2])), 1:3)
+raincat <- reclassify(raintot, rain_3, include.lowest = TRUE)
 ```
+
+
+
 
 ---
+## Exercises
 
-```{r, eval=FALSE, echo=FALSE}
-pred_stack <- "external/data/rststack_1016-1063.tif"
-r <- terra::rast(pred_stack)
-r <- terra::crop(r, terra::ext(r) * 0.2)
-writeRaster(r, "external/data/rststack_1016-1063_crop.tif")
-```
-
-
-# Map
-
-Look at Rmd file to see code use to make prediction map for crop types. 
-```{r, eval=FALSE, echo=FALSE}
-r <- terra::rast("external/data/rststack_1016-1063_crop.tif")
-
-# pred_stack
-predvars <- rownames(mod$importance)
-# pred_stack <- "external/data/rststack_1016-1063.tif"
-rtemp <- r[[1]]
-v <- values(r)
-v_tb <- as_tibble(v) %>% 
-  mutate(
-    ndvi_1 = (B8_1 - B4_1) / (B8_1 + B4_1),
-    ndvi_2 = (B8_2 - B4_2) / (B8_2 + B4_2),
-    rg1_ndvi_1 = (B8_1 - B5_1) / (B8_1 + B5_1),
-    rg1_ndvi_2 = (B8_2 - B5_2) / (B8_2 + B5_2),
-    rg2_ndvi_1 = (B8_1 - B6_1) / (B8_1 + B6_1),
-    rg2_ndvi_2 = (B8_2 - B6_2) / (B8_2 + B6_2),
-    
-    gcvi_1 = (B8_1 / (B3_1 + 0.00001)) - 1,
-    gcvi_2 = (B8_2 / (B3_2 + 0.00001)) - 1,
-    rg1_gcvi_1 = (B8_1 / (B5_1 + 0.00001)) - 1,
-    rg1_gcvi_2 = (B8_2 / (B5_2 + 0.00001)) - 1,
-    rg2_gcvi_1 = (B8_1 / (B6_1 + 0.00001)) - 1,
-    rg2_gcvi_2 = (B8_2 / (B6_2 + 0.00001)) - 1,
-    
-    mtci_1 = (B8_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
-    mtci_2 = (B8_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
-    mtci2_1 = (B6_1 - B5_1) / (B5_1 - B4_1 + 0.00001),
-    mtci2_2 = (B6_2 - B5_2) / (B5_2 - B4_2 + 0.00001),
-    
-    reip_1 = 700 + 40 * ((B4_1 + B7_1) / 2 - B5_1) / (B7_1 - B5_1),
-    reip_2 = 700 + 40 * ((B4_2 + B7_2) / 2 - B5_2) / (B7_2 - B5_2),
-    
-    nbr1_1 = (B8_1 - B11_1) / (B8_1 + B11_1),
-    nbr1_2 = (B8_2 - B11_2) / (B8_2 + B11_2),
-    nbr2_1 = (B8_1 - B12_1) / (B8_1 + B12_1),
-    nbr2_2 = (B8_2 - B12_2) / (B8_2 + B12_2),
-    
-    ndti_1 = (B11_1 - B12_1) / (B11_1 + B12_1),
-    ndti_2 = (B11_2 - B12_2) / (B11_2 + B12_2),
-    
-    crc_1 = (B11_1 - B3_1) / (B11_1 + B3_1),
-    crc_2 = (B11_2 - B3_2) / (B11_2 + B3_2),
-    
-    sti_1 = B11_1 / (B12_1 + 0.00001),
-    sti_2 = B11_2 / (B12_2 + 0.00001)
-  ) %>% dplyr::select(all_of(predvars))
-
-# clean up NA and Inf
-v_tb <- v_tb %>% 
-  mutate_all(function(x) ifelse(is.infinite(x), NA, x)) %>% 
-  mutate_at(vars(predvars), zoo::na.aggregate)  # replace NA with mean
-
-# predict probabilities of each class
-pred <- predict(mod, v_tb, type = "prob")
-
-# create probability stack
-pred_stack <- do.call(c, lapply(1:ncol(pred), function(y) {
-  predr <- rtemp
-  values(predr) <- pred[, y]
-  predr
-}))
-names(pred_stack) <- c("Maize", "Rice", "Other Crops", "Non crop")
-
-png(filename = here::here("docs/figures/crop_probs.png"), width = 4.5, height = 4, 
-    units = "in", res = 300)
-terra::plot(pred_stack, axes = FALSE, range = c(0, 1), plg = list(inset = -1))
-dev.off()
-
-```
-
-```{r, echo=FALSE, out.width="60%", fig.align='center'}
-knitr::include_graphics("figures/crop_probs.png")
-```
-
-
-
-
-
-
-
-
-
-
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall > 10 mm
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
 
 
 
