@@ -82,5 +82,6 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 18 slides](class18.html)
   - [Class 19 slides](class19.html)
 - Week 11
+  - [Class 20 slides](class20.html)
 - Week 12-15
 
