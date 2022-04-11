@@ -192,13 +192,13 @@
     <div id="toc">
       <ul>
       <li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
-      <li><a href="#project-overview-assignment"><span class="toc-section-number">2</span> Project Overview Assignment</a>
+      <li><a href="#project-overview-assignment"><span class="toc-section-number">2</span> Project overview assignment</a>
       <ul>
       <li><a href="#set-up"><span class="toc-section-number">2.1</span> Set-up</a></li>
       <li><a href="#tasks"><span class="toc-section-number">2.2</span> Tasks</a></li>
       <li><a href="#an-additional-note-for-teams"><span class="toc-section-number">2.3</span> An additional note for teams</a></li>
       </ul></li>
-      <li><a href="#final-project"><span class="toc-section-number">3</span> Final Project</a>
+      <li><a href="#final-project"><span class="toc-section-number">3</span> Final project</a>
       <ul>
       <li><a href="#overall-scope"><span class="toc-section-number">3.1</span> Overall scope</a></li>
       <li><a href="#structure-and-content"><span class="toc-section-number">3.2</span> Structure and content</a></li>
@@ -212,12 +212,13 @@
       </ul></li>
       <li><a href="#project-list"><span class="toc-section-number">4</span> Potential project list</a>
       <ul>
-      <li><a href="#usf-projects"><span class="toc-section-number">4.1</span> USF projects</a></li>
-      <li><a href="#analyzing-ghanaian-croplands"><span class="toc-section-number">4.2</span> Analyzing Ghanaian croplands</a>
+      <li><a href="#usf-projects"><span class="toc-section-number">4.1</span> USF projects</a>
       <ul>
-      <li><a href="#evaluating-field-characteristics"><span class="toc-section-number">4.2.1</span> Evaluating field characteristics</a></li>
-      <li><a href="#vector-refining"><span class="toc-section-number">4.2.2</span> Vector refining</a></li>
+      <li><a href="#identifying-potential-risky-locations-for-san-francisco-property-crime"><span class="toc-section-number">4.1.1</span> Identifying potential risky locations for San Francisco property crime</a></li>
+      <li><a href="#temporal-analysis-of-crime-for-san-francisco."><span class="toc-section-number">4.1.2</span> Temporal analysis of crime for San Francisco.</a></li>
+      <li><a href="#can-surveillance-floodlighting-be-detected-using-viirs-nightlights"><span class="toc-section-number">4.1.3</span> Can surveillance floodlighting be detected using VIIRS nightlights?</a></li>
       </ul></li>
+      <li><a href="#analyzing-ghanaian-croplands"><span class="toc-section-number">4.2</span> Analyzing Ghanaian croplands</a></li>
       <li><a href="#analyzing-agro-climatological-data"><span class="toc-section-number">4.3</span> Analyzing agro-climatological data</a>
       <ul>
       <li><a href="#over-zambia"><span class="toc-section-number">4.3.1</span> Over Zambia</a></li>
@@ -231,7 +232,7 @@
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
                   <p class="author"><span class="glyphicon glyphicon-user"></span> Lyndon Estes</p>
-                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-01-17 <a href="index.html">Back to home</a></p>
+                        <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-04-11 <a href="index.html">Back to home</a></p>
           </div>
    </div>
      
@@ -247,7 +248,7 @@
 <p>There are two parts to the final project: 1) the project overview; 2) the final project itself.</p>
 </div>
 <div id="project-overview-assignment" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Project Overview Assignment</h1>
+<h1><span class="header-section-number">2</span> Project overview assignment</h1>
 <p>As the first step in the first assignment purpose of this assignment is to provide a plan for your semester final project.</p>
 <div id="set-up" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Set-up</h2>
@@ -276,7 +277,7 @@ For this last assignment, it doesn’t make sense that team members do separate 
 </div>
 </div>
 <div id="final-project" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Final Project</h1>
+<h1><span class="header-section-number">3</span> Final project</h1>
 <p>The following are the requirements and assessment approach for the final project:</p>
 <div id="overall-scope" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Overall scope</h2>
@@ -328,54 +329,52 @@ For this last assignment, it doesn’t make sense that team members do separate 
 <h1><span class="header-section-number">4</span> Potential project list</h1>
 <div id="usf-projects" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> USF projects</h2>
-<p>The following projects were undertaken in Fall, 2021, and can be built upon this semester:</p>
+<p>The following projects build upon data developed for an ongoing project funded by the Urban Studies Foundation, which is found in the <a href="https://github.com/agroimpacts/USF"><code>USF</code> repo</a>:</p>
+<div id="identifying-potential-risky-locations-for-san-francisco-property-crime" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Identifying potential risky locations for San Francisco property crime</h3>
+<p>The <code>USF</code> package has information on historic crime and land use data for San Francisco, for the years 2007 and 2019. The purpose of this assignment is to critically assess what leads the police to surveil some spaces more than others. An analysis of what type of locations are deemed risky will shed some light on the factors that bias police activity by questioning the assumption that some spaces attract more crime than others. For this assignment, clean up the crime dataset and create a variable for property crime (as defined by to the <a href="https://nij.ojp.gov/topics/crime/property-crimes">National Institute of Justice</a>) for both years. With historical land use data, identify what these locations might be (<code>property_class_code_definition</code> for specifics on land use and <code>use_definition</code> to group by categories). A socioeconomic analysis (census data) would add more layers to the analysis.</p>
+</div>
+<div id="temporal-analysis-of-crime-for-san-francisco." class="section level3" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Temporal analysis of crime for San Francisco.</h3>
+<p>With the <code>USF</code> crime data for the years 2007 and 2019, this project would identifying which areas of San Francisco are riskier at what times of the day/season. How is the temporal distribution of crime in 2007 different from 2019, for either property crime or general crime. This analysis could be based on police districts, while a socioeconomic analysis (census income, population data) that goes with the temporal analysis would add context to the areas that appear to be “risky”.</p>
+</div>
+<div id="can-surveillance-floodlighting-be-detected-using-viirs-nightlights" class="section level3" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> Can surveillance floodlighting be detected using VIIRS nightlights?</h3>
+<p>Using known <a href="https://due-parsons.github.io/methods3-fall2017/projects/comparative-location-data-of-nypd-lighting-in-harlem/">locations and dates</a> of floodlight deployments from Harlem:</p>
 <ol style="list-style-type: decimal">
-<li>Mapping the sources/destinations/flows of budget revenues for police departments, from federal/state/municipal sources.</li>
-<li>Changes in property valuation versus police activity and/or budgets (linked to #1)</li>
-<li>Spatio-temporal patterns and associations of police misconduct</li>
-<li>Spatio-temporal patterns of surveillance (e.g. CCTV)</li>
-<li>Mapping #blacklivesmatter social media</li>
+<li><p>Part 1</p>
+<ul>
+<li>Collect time series of VIIRS night light data from Google Earth Engine (using <code>rgee</code>) over those points on a long-ish time series on either side of the deployment dates</li>
+<li>Calculate the size of the night light anomalies for those points for date intervals covering the deployments</li>
+</ul></li>
+<li><p>Part 2</p>
+<ul>
+<li>Collect night lights over locations and around and through dates of known Black Lives Matters protests.</li>
+<li>Repeating the part 1 analysis, are nightlight anomalies visible around those locations and dates</li>
+</ul></li>
+<li><p>Part 3</p>
+<ul>
+<li>Collect night lights over public housing projects and neighborhoods of similar structure and population density</li>
+<li>Is there a difference in night light intensities between the two groups?</li>
+</ul></li>
 </ol>
+</div>
 </div>
 <div id="analyzing-ghanaian-croplands" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Analyzing Ghanaian croplands</h2>
-<p>The <a href="http://mappingafrica.io">Mapping Africa</a> project has recently used an integrated crowdsourcing/machine learning platform to map Ghana’s croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05<span class="math inline">\(^\circ\)</span> tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are:</p>
-<div id="evaluating-field-characteristics" class="section level3" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Evaluating field characteristics</h3>
-<p>Use the vector data to examine field size class distributions in different agro-ecosystems. Is there a link between these and any socio-economic datasets (e.g. World Bank LSMS data)? Use the cropland probability images and input satellite imagery to identify whether the degree of certainty in probability images is informative about the status of fields (e.g. fallow versus active).</p>
-</div>
-<div id="vector-refining" class="section level3" number="4.2.2">
-<h3><span class="header-section-number">4.2.2</span> Vector refining</h3>
-<p>With many vector data come many data processing challenges. Can you code up methods for merging adjacent polygons from neighboring tiles, or simplifying polygons in a way that preserves adjacency? There are <code>R</code>-based solutions for these.</p>
-</div>
+<p>The <a href="http://mappingafrica.io">Mapping Africa</a> project has recently used an integrated crowdsourcing/machine learning platform to map Ghana’s croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05<span class="math inline">\(^\circ\)</span> tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: ### Evaluating field characteristics over three years Use three years (2018, 2020, and 2021) of field boundary data in Central Ghana to assess the average size of fields (is there any change over time?) and how much fields shift from year to year.</p>
 </div>
 <div id="analyzing-agro-climatological-data" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Analyzing agro-climatological data</h2>
 <div id="over-zambia" class="section level3" number="4.3.1">
 <h3><span class="header-section-number">4.3.1</span> Over Zambia</h3>
-<div id="develop-a-rainfall-onset-metric" class="section level4" number="4.3.1.1">
-<h4><span class="header-section-number">4.3.1.1</span> Develop a rainfall onset metric</h4>
-<p>Apply and evaluate various objective rainfall onset metrics, using data from the sensors, the SMS survey, and gridded rainfall products. Can a measure applied just to farmer SMS survey responses (e.g. change point detection) produce a similar answer date compared to a metric derived from continuous rainfall measurements from the sensors or gridded rainfall products (e.g. first three consecutive days of rain)?</p>
+<div id="quantify-zambias-maize-planting-season" class="section level4" number="4.3.1.1">
+<h4><span class="header-section-number">4.3.1.1</span> Quantify Zambia’s maize planting season</h4>
+<p>Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. Do the same using vegetation index curves over known cropland locations, extracted from GEE using the <code>rgee</code> packaged, with start and end of season identified using percentiles relative to peak and other metrics. How well do SMS and VI-based planting date estimates correspond? How long was the season from planting to harvest? What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?</p>
 </div>
-<div id="quantify-the-spatial-variability-of-rainfall" class="section level4" number="4.3.1.2">
-<h4><span class="header-section-number">4.3.1.2</span> Quantify the spatial variability of rainfall</h4>
-<p>Use geostatistics to see what the farmers’ SMS survey rainfall responses and 2016-2017 sensor data can tell us about the spatial variability of rainfall, at weekly and daily timesteps. How much does rainfall vary between two (or more) different points at a 5, 10, or 25 km scale (the typical pixel size of the gridded rainfall products we use)?</p>
-</div>
-<div id="develop-a-mid-season-agricultural-drought-metric" class="section level4" number="4.3.1.3">
-<h4><span class="header-section-number">4.3.1.3</span> Develop a mid-season agricultural drought metric</h4>
-<p>Use the SMS survey and co-located sensor rainfall data to identify mid-season dry-spells of potential agricultural significance. For example, two or more consecutive rainless weeks close to maize flowering or grain-filling times. Can you detect a signficant drop in farmers’ anticipated harvest amounts around such events (we might expect a sudden drop in expected harvest amounts)? How about a significant change in the rate of reduction in farmers’ reported maize storage levels fall (if farmers are concerned about crop loss, they might slow their rate of consumption of stored food)?</p>
-</div>
-<div id="evaluate-the-skill-of-gridded-weather-products" class="section level4" number="4.3.1.4">
-<h4><span class="header-section-number">4.3.1.4</span> Evaluate the skill of gridded weather products</h4>
+<div id="evaluate-the-skill-of-gridded-weather-products" class="section level4" number="4.3.1.2">
+<h4><span class="header-section-number">4.3.1.2</span> Evaluate the skill of gridded weather products</h4>
 <p>Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS’s Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors’ incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?</p>
-</div>
-<div id="quantify-zambias-maize-planting-season" class="section level4" number="4.3.1.5">
-<h4><span class="header-section-number">4.3.1.5</span> Quantify Zambia’s maize planting season</h4>
-<p>Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. How long was the season from planting to harvest? What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?</p>
-</div>
-<div id="predicting-farmers-reported-yields" class="section level4" number="4.3.1.6">
-<h4><span class="header-section-number">4.3.1.6</span> Predicting farmers’ reported yields</h4>
-<p>The farmers’ report their harvests at the end of the SMS survey. Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields? If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields.</p>
 </div>
 </div>
 <div id="do-farming-communities-vary-their-planting-dates-to-adapt-to-rainfall-uncertainty" class="section level3" number="4.3.2">
@@ -386,7 +385,7 @@ For this last assignment, it doesn’t make sense that team members do separate 
 </div>
 <div id="in-sutton-ma" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> In Sutton, MA</h2>
-<p>Continuing analyses of UAS, satellite, and sensor datasets collected during the past two summers in Sutton MA.</p>
+<p>Continuing analyses of UAS, satellite, and sensor datasets collected during the past four summers in Sutton MA.</p>
 <p>Among possible ideas are Shiny dashboards for: 1) displaying pod data over time; 2) displaying “cones of uncertainty” from projected crop yield simulations.</p>
 </div>
 <div id="using-uas-to-detect-the-spread-of-a-crop-disease" class="section level2" number="4.5">

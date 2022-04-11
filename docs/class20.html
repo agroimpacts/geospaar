@@ -111,7 +111,9 @@ plot(distsr)
 
 # Download DEM
 data(dem)
+
 # dem &lt;- getData(name = "alt", country = "ZMB", path = tempdir())
+dem &lt;- getData(name = "worldclim", var = 'tmean', res = 2.5,  path = tempdir())
 
 # calculate slope
 slope &lt;- terrain(x = dem, opt = 'slope', unit = 'degrees')

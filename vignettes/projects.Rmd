@@ -24,7 +24,7 @@ Each student will undertake an R-based final project for this class. This projec
 
 There are two parts to the final project: 1) the project overview; 2) the final project itself. 
 
-# Project Overview Assignment 
+# Project overview assignment 
 
 As the first step in the first assignment purpose of this assignment is to provide a plan for your semester final project.
 
@@ -57,7 +57,7 @@ For this last assignment, it doesn't make sense that team members do separate wo
 </center>
 ***
 
-# Final Project
+# Final project
 The following are the requirements and assessment approach for the final project:
 
 ## Overall scope
@@ -121,43 +121,49 @@ This list is currently in thumbnail form, and will fill out during the next few 
 
 # Potential project list{#project-list}
 ## USF projects
-The following projects were undertaken in Fall, 2021, and can be built upon this semester:
+The following projects build upon data developed for an ongoing project funded by the Urban Studies Foundation, which is found in the [`USF` repo](https://github.com/agroimpacts/USF):
 
-1. Mapping the sources/destinations/flows of budget revenues for police departments, from federal/state/municipal sources. 
-2. Changes in property valuation versus police activity and/or budgets (linked to #1)
-3. Spatio-temporal patterns and associations of police misconduct
-4. Spatio-temporal patterns of surveillance (e.g. CCTV)
-5. Mapping #blacklivesmatter social media
+### Identifying potential risky locations for San Francisco property crime
+
+The `USF` package has information on historic crime and land use data for San Francisco, for the years 2007 and 2019. The purpose of this assignment is to critically assess what leads the police to surveil some spaces more than others. An analysis of what type of locations are deemed risky will shed some light on the factors that bias police activity by questioning the assumption that some spaces attract more crime than others. For this assignment, clean up the crime dataset and create a variable for property crime (as defined by to the [National Institute of Justice](https://nij.ojp.gov/topics/crime/property-crimes)) for both years. With historical land use data, identify what these locations might be (`property_class_code_definition` for specifics on land use and `use_definition` to group by categories). A socioeconomic analysis (census data) would add more layers to the analysis.
+
+### Temporal analysis of crime for San Francisco. 
+
+With the `USF` crime data for the years 2007 and 2019, this project would identifying which areas of San Francisco are riskier at what times of the day/season. How is the temporal distribution of crime in 2007 different from 2019, for either property crime or general crime. This analysis could be based on police districts, while a socioeconomic analysis (census income, population data) that goes with the temporal analysis would add context to the areas that appear to be "risky".
+
+### Can surveillance floodlighting be detected using VIIRS nightlights?
+Using known [locations and dates](https://due-parsons.github.io/methods3-fall2017/projects/comparative-location-data-of-nypd-lighting-in-harlem/) of floodlight deployments from Harlem: 
+
+1. Part 1
+
+    - Collect time series of VIIRS night light data from Google Earth Engine (using `rgee`) over those points on a long-ish time series on either side of the deployment dates
+    - Calculate the size of the night light anomalies for those points for date intervals covering the deployments
+
+
+2. Part 2
+
+    - Collect night lights over locations and around and through dates of known Black Lives Matters protests. 
+    - Repeating the part 1 analysis, are nightlight anomalies visible around those locations and dates
+
+
+3. Part 3
+
+    - Collect night lights over public housing projects and neighborhoods of similar structure and population density
+    - Is there a difference in night light intensities between the two groups?
 
 
 ## Analyzing Ghanaian croplands 
 The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05$^\circ$ tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: 
-
-### Evaluating field characteristics
-Use the vector data to examine field size class distributions in different agro-ecosystems. Is there a link between these and any socio-economic datasets (e.g. World Bank LSMS data)? Use the cropland probability images and input satellite imagery to identify whether the degree of certainty in probability images is informative about the status of fields (e.g. fallow versus active).  
-
-### Vector refining
-With many vector data come many data processing challenges. Can you code up methods for merging adjacent polygons from neighboring tiles, or simplifying polygons in a way that preserves adjacency? There are `R`-based solutions for these. 
+### Evaluating field characteristics over three years
+Use three years (2018, 2020, and 2021) of field boundary data in Central Ghana to assess the average size of fields (is there any change over time?) and how much fields shift from year to year.
 
 ## Analyzing agro-climatological data 
 ### Over Zambia
-#### Develop a rainfall onset metric
-Apply and evaluate various objective rainfall onset metrics, using data from the sensors, the SMS survey, and gridded rainfall products. Can a measure applied just to farmer SMS survey responses (e.g. change point detection) produce a similar answer date compared to a metric derived from continuous rainfall measurements from the sensors or gridded rainfall products (e.g. first three consecutive days of rain)?
-
-#### Quantify the spatial variability of rainfall
-Use geostatistics to see what the farmers' SMS survey rainfall responses and 2016-2017 sensor data can tell us about the spatial variability of rainfall, at weekly and daily timesteps. How much does rainfall vary between two (or more) different points at a 5, 10, or 25 km scale (the typical pixel size of the gridded rainfall products we use)?
-
-#### Develop a mid-season agricultural drought metric
-Use the SMS survey and co-located sensor rainfall data to identify mid-season dry-spells of potential agricultural significance. For example, two or more consecutive rainless weeks close to maize flowering or grain-filling times. Can you detect a signficant drop in farmers' anticipated harvest amounts around such events (we might expect a sudden drop in expected harvest amounts)? How about a significant change in the rate of reduction in farmers' reported maize storage levels fall (if farmers are concerned about crop loss, they might slow their rate of consumption of stored food)? 
+#### Quantify Zambia's maize planting season
+Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. Do the same using vegetation index curves over known cropland locations, extracted from GEE using the `rgee` packaged, with start and end of season identified using percentiles relative to peak and other metrics. How well do SMS and VI-based planting date estimates correspond? How long was the season from planting to harvest?  What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?
 
 #### Evaluate the skill of gridded weather products
 Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS's Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors' incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?  
-
-#### Quantify Zambia's maize planting season
-Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. How long was the season from planting to harvest?  What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?
-
-#### Predicting farmers' reported yields
-The farmers' report their harvests at the end of the SMS survey.  Can we use their own reports of rainfall, and other more quantitative estimates of rainfall (and other weather variables), to predict those yields?  If we can model that with some skill, and if the variables that are the strongest predictors of yields are variables from earlier in the season, then we might be able to use that information to forecast yields. 
 
 ### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
 Put another way, do farming communities in areas with higher rainfall variability show higher variability between farmers in terms of when crops are planted?  We hypothesize that this might be the case, as it might be a community-level adaptive response for dealing with climatic uncertainty.  
@@ -165,7 +171,7 @@ Put another way, do farming communities in areas with higher rainfall variabilit
 This analysis would be undertaken using remotely sensed datasets: NDVI time series, gridded rainfall datasets, and a cropland mask. The NDVI time series are processed into values that identify the date of green-up over ~18 years. The rainfall data should be used to calculate the coefficient of variation (CV) of rainfall in the first 2 months of the growing season, and the long-term mean rainfall. Comparing croplands from areas of similar mean rainfall, see if there is a relationship between CV of rainfall and CV of green-up date. 
 
 ## In Sutton, MA
-Continuing analyses of UAS, satellite, and sensor datasets collected during the past two summers in Sutton MA. 
+Continuing analyses of UAS, satellite, and sensor datasets collected during the past four summers in Sutton MA. 
 
 Among possible ideas are Shiny dashboards for: 1) displaying pod data over time; 2) displaying "cones of uncertainty" from projected crop yield simulations.
 
