@@ -200,7 +200,7 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 This is a big topic, but here are a few links to get started. Lately the two seem to be converging in terms of usage (i.e. there is a trend towards using both together, read the latest news from Rstudio--see the first link)
 
-- [*Posit – Why RStudio Is Changing Its Name*][https://appsilon.com/posit-rstudio-rebrands/]
+- [*Posit – Why RStudio Is Changing Its Name*](https://appsilon.com/posit-rstudio-rebrands/)
 - [*R Vs Python: What’s the Difference?*](https://www.guru99.com/r-vs-python.html)
 - [*R vs. Python: Which is a better programming language for data science?*](https://www.techrepublic.com/article/r-vs-python-which-is-a-better-programming-language-for-data-science/)
 - [*Why I'll stick with R*](https://md.ekstrandom.net/blog/2016/04/using-r/)
