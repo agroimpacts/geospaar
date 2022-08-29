@@ -23,14 +23,14 @@ library(knitr)
 Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
 
 ## Meeting Time/Place
-- Class: ASEC 304, MW 1200-1315
-- Drop-in lab/enhanced office hours: JC 103, F 1325-1440
+- Class: ASEC 303, MW 1615-1730
+- Drop-in lab/enhanced office hours: JC 105, R 1815-2005
 
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
 Lyndon Estes   | Jefferson 201C (**Virtual appointments only**) | Tuesday 1300-1500 
-Anna Bebbington | **Virtual**  | Monday 1600-1800
+Sitian Xiong | JK Wright  | Friday 1400-1700
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also introduces additional skills and concepts related to ___reproducible___ research. 
@@ -198,8 +198,9 @@ The following are some helpful resources that you may wish to follow-up on as yo
 
 ### R versus python
 
-This is a big topic, but here are a few links to get started. 
+This is a big topic, but here are a few links to get started. Lately the two seem to be converging in terms of usage (i.e. there is a trend towards using both together, read the latest news from Rstudio--see the first link)
 
+- [*Posit – Why RStudio Is Changing Its Name*][https://appsilon.com/posit-rstudio-rebrands/]
 - [*R Vs Python: What’s the Difference?*](https://www.guru99.com/r-vs-python.html)
 - [*R vs. Python: Which is a better programming language for data science?*](https://www.techrepublic.com/article/r-vs-python-which-is-a-better-programming-language-for-data-science/)
 - [*Why I'll stick with R*](https://md.ekstrandom.net/blog/2016/04/using-r/)
