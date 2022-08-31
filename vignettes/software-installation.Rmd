@@ -31,7 +31,7 @@ If you have previously installed any of the software below, we recommend you  up
 Go to [Installing git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and follow the instruction to install Git for your operating system (Linux x86, Mac, Windows, etc).
 
 ## Step 2: Install R
-Go to [R page](https://www.r-project.org) and download the current stable release, R 4.1.2, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
+Go to [R page](https://www.r-project.org) and download the current stable release, R 4.2.1, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
 
 ## Step 3: Install RStudio Desktop
 Go to [RStudio page](https://rstudio.com/products/rstudio/download/#download) and download the current stable release, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
