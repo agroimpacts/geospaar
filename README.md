@@ -19,7 +19,7 @@ library(devtools)
 
 Add these ones as well, while you are at it:
 ```R  
-install.packages(c("knitr", "kableExtra", "readthedown"))
+install.packages(c("knitr", "kableExtra"))
 ```
 
 #### 3. install the `geospaar` package
@@ -27,7 +27,7 @@ install.packages(c("knitr", "kableExtra", "readthedown"))
 Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
 ```R
 library(devtools)
-install_github("agroimpacts/geospaar@fall2021", build_vignettes = TRUE)
+install_github("agroimpacts/geospaar", build_vignettes = TRUE)
 ```
 
 #### 4. Browse the course materials
