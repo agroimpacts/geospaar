@@ -3,7 +3,7 @@
 
 ## Fall 2022
 
-Updated on: 2022-08-31
+Updated on: 2022-09-03
 
 <center>
 

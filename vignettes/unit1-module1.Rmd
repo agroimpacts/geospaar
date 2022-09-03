@@ -395,7 +395,7 @@ In reality, that might be too small of a change to make a whole branch for, but 
 
 ## Best practices
 
-There is a lot written on this, but for now please read the ones provided [here](http://r-pkgs.had.co.nz/git.html#commit-best-practices) in Hadley Wickham's [R packages book](http://r-pkgs.had.co.nz/). The main idea is that commits should be frequent and cover a particular problem, rather than sprawling and involving many files. 
+There is a lot written on this, but for now please read the ones provided [here](https://bookdown.netlify.app/hadley/r-pkgs/git.html#commit-best-practices) in Hadley Wickham's [R packages book](https://bookdown.netlify.app/hadley/r-pkgs/). The main idea is that commits should be frequent and cover a particular problem, rather than sprawling and involving many files. 
 
 # Building an R package
 
