@@ -65,5 +65,5 @@ The class materials were designed by Lyndon Estes and Lei Song.
 -   Week 10
     -   Assignment 5 due
 -   Week 11
-    -   Project overview due
+    -   Project overview assignment due
 -   Week 12-15
