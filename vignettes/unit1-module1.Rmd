@@ -440,7 +440,7 @@ If you had to repeat this analysis multiple times throughout the course of the l
 my_number_checker <- function(x) {
   if(x < 5) {
     print("Too low!") 
-  } else if(x > 5 & x < 10) {
+  } else if(x >= 5 & x < 10) {
     print("Just right!!! :)")
   } else {
     print("Too high!")
