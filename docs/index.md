@@ -53,6 +53,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 3 slides](class3.html)
     -   Assignment 1 due
 -   Week 3
+    -   [Class 4 slides](class4.html)
 -   Week 4
     -   Assignment 2 due
 -   Week 5
