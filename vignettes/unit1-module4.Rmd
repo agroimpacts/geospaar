@@ -661,7 +661,7 @@ q1 <- function(x) quantile(x, 0.25)
 q3 <- function(x) quantile(x, 0.75)
 crop_ylds %>% select(crop, country, harv_area, prod) %>% 
   group_by(crop, country) %>% rename(ha = harv_area, p = prod) %>% 
-  summarise_all(funs(min, q1, med = median, mu = mean, q3, max))
+  summarise_all(list(min, q1, med = median, mu = mean, q3, max))
 ```
 
 The above is somewhat more complex. We want to calculate `summary` stats for *prod* and *harv_area* by *crop* and *country*, but `dplyr` can't easily produce the tabular output for each groups. Therefore, we separately calculate each statistic in `summary`, and use `summarise_all()` (which applies the summarizing functions to each selected variable), using `funs` to pass each function in to `summarise_all()`. In the first two lines, we specify two custom functions, the first calculates the first quartile (25th percentile), the next calculates the third quartile (75th percentile).  In the pipeline, we also do some renaming gymnastics, changing *harv_area* to *ha* and *prod* to *p*, and then we specify in `funs` some shorter names for the output from `median` and `mean`. These renamings are in service of narrowing the width of output columns.  

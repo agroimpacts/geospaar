@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,8 +13,12 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 4
+]
 
 ---
 
@@ -29,6 +33,7 @@ data("chirps")
 library(rasterVis)
 library(lubridate)
 library(RColorBrewer)
+library(raster)
 zam &lt;- getData("GADM", country = "ZMB", level = 1)
 
 dates &lt;- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
@@ -50,7 +55,7 @@ p &lt;- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
                main = list("Weekly Rainfall (mm)", col = "White"), 
                colorkey = list(axis.line = list(col = "white"), 
                                axis.text = list(col = "white")))
-p2 &lt;- p + layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
+p2 &lt;- p + latticeExtra::layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
 p2
 dev.off()
 ```
@@ -67,7 +72,7 @@ dev.off()
       - `git` work: syncing, commit, push, pull, branching, merging
 
 ---
-# What we should know by now
+# So far...
 
 - We should know:
   - Key concepts/tools of reproducibility and why we use them
@@ -76,11 +81,11 @@ dev.off()
   - Where your library lives
   - *What the key ingredients in a package are*
   - *How to keep project synced between local and remote repos*
+  - *How to document functions*
 
 --
 
 - What we might not know (about packages):
-  - How to document functions
   - data folder and lazy loads
   - inst folder and how to get at it
 
@@ -160,7 +165,7 @@ library(geospaar)
 ```
 
 ```
-## Linking to GEOS 3.8.1, GDAL 3.2.1, PROJ 7.2.1; sf_use_s2() is TRUE
+## Linking to GEOS 3.10.2, GDAL 3.4.2, PROJ 8.2.1; sf_use_s2() is TRUE
 ```
 
 ```
@@ -168,22 +173,16 @@ library(geospaar)
 ```
 
 ```
-## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
-```
-
-```
-## ✓ ggplot2 3.3.5     ✓ purrr   0.3.4
-## ✓ tibble  3.1.6     ✓ dplyr   1.0.7
-## ✓ tidyr   1.1.4     ✓ stringr 1.4.0
-## ✓ readr   2.1.1     ✓ forcats 0.5.1
-```
-
-```
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.3.6           ✔ purrr   0.3.4      
+## ✔ tibble  3.1.8           ✔ dplyr   1.0.99.9000
+## ✔ tidyr   1.2.1           ✔ stringr 1.4.1      
+## ✔ readr   2.1.2           ✔ forcats 0.5.2      
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## x tidyr::extract() masks raster::extract()
-## x dplyr::filter()  masks stats::filter()
-## x dplyr::lag()     masks stats::lag()
-## x dplyr::select()  masks raster::select()
+## ✖ tidyr::extract() masks raster::extract()
+## ✖ dplyr::filter()  masks stats::filter()
+## ✖ dplyr::lag()     masks stats::lag()
+## ✖ dplyr::select()  masks raster::select()
 ```
 
 ```r
@@ -231,7 +230,7 @@ system.file("extdata", package = "geospaar")
 ```
 
 ```
-## [1] "/Library/Frameworks/R.framework/Versions/4.1/Resources/library/geospaar/extdata"
+## [1] "/Library/Frameworks/R.framework/Versions/4.2/Resources/library/geospaar/extdata"
 ```
 
 ```r
@@ -239,10 +238,11 @@ dir(system.file("extdata", package = "geospaar"))
 ```
 
 ```
-##  [1] "districts.dbf"       "districts.prj"       "districts.shp"      
-##  [4] "districts.shx"       "FAOSTAT_maize.csv"   "FAOSTAT_sorghum.csv"
-##  [7] "FAOSTAT_wheat.csv"   "farmer_spatial.csv"  "roads.dbf"          
-## [10] "roads.prj"           "roads.shp"           "roads.shx"
+##  [1] "chirps.tif"          "covid19_daily.csv"   "districts.dbf"      
+##  [4] "districts.prj"       "districts.shp"       "districts.shx"      
+##  [7] "dummy_raster.tif"    "FAOSTAT_maize.csv"   "FAOSTAT_sorghum.csv"
+## [10] "FAOSTAT_wheat.csv"   "farmer_spatial.csv"  "roads.dbf"          
+## [13] "roads.prj"           "roads.shp"           "roads.shx"
 ```
 
 ```r
@@ -352,6 +352,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

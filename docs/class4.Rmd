@@ -22,6 +22,7 @@ data("chirps")
 library(rasterVis)
 library(lubridate)
 library(RColorBrewer)
+library(raster)
 zam <- getData("GADM", country = "ZMB", level = 1)
 
 dates <- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
@@ -43,7 +44,7 @@ p <- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
                main = list("Weekly Rainfall (mm)", col = "White"), 
                colorkey = list(axis.line = list(col = "white"), 
                                axis.text = list(col = "white")))
-p2 <- p + layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
+p2 <- p + latticeExtra::layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
 p2
 dev.off()
 ```
@@ -60,7 +61,7 @@ dev.off()
       - `git` work: syncing, commit, push, pull, branching, merging
 
 ---
-# What we should know by now
+# So far...
 
 - We should know:
   - Key concepts/tools of reproducibility and why we use them
@@ -69,11 +70,11 @@ dev.off()
   - Where your library lives
   - *What the key ingredients in a package are*
   - *How to keep project synced between local and remote repos*
+  - *How to document functions*
 
 --
 
 - What we might not know (about packages):
-  - How to document functions
   - data folder and lazy loads
   - inst folder and how to get at it
 
