@@ -27,29 +27,8 @@ dev.off()
 
 # Today
 
-- Assignment schedule
 - The `R` Ecosystem
 - Coding practice
-
----
-
-```{r, message=FALSE, warning=FALSE}
-library(lubridate)
-library(dplyr)
-
-wks <- seq(ymd('2022-01-18'), ymd('2022-05-02'), by = 'day')
-assns <- tibble(assn = NA, wks) %>% 
-  mutate(day = weekdays(wks), wkno = week(wks))
-assns %>% filter(day == "Friday") %>% 
-  mutate(assn = case_when(
-    wkno == 5 ~ 1, 
-    wkno == 7 ~ 2,
-    wkno == 9 ~ 3,
-    wkno == 12 ~ 4,
-    wkno == 14 ~ 5, 
-    wkno == 15 ~ 6
-)) 
-```
 
 ---
 # The R Ecosystem
@@ -57,6 +36,62 @@ assns %>% filter(day == "Friday") %>%
 ```{r, out.width = "70%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/class5_u1m2.png")
 ```
+
+
+---
+## The R Ecosystem
+### Common objects
+
+```{r, echo=FALSE, fig.align='center', out.width = "80%", fig.cap='Credit: L. Song'}
+knitr::include_graphics("figures/class2_objects.png")
+```
+
+---
+## The R Ecosystem
+### Data types
+There are 6 atomic data types:
+- character
+  e.g. `'hello world'`, `'abc'`
+- double (real or decimal)
+  e.g. `10`, `3.14`, `1e10`
+- integer
+  e.g. `1L`
+- logical
+  e.g. `TRUE`, `FALSE`, `T`, `F`
+- complex
+  e.g. `1 + 3i` (not commonly used by us)
+- *raw* (rarely used by us)
+
+---
+## The R Ecosystem
+### Special data types
+
+- `NULL`: Does not exist
+- Missing data: `NA`. A special logical type that converts into the type it is associated with.
+- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
+- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+
+---
+## The R Ecosystem
+### Special data types
+
+- Date: `as.Date('1970-1-5')`
+- Time: `as.POSIXct('1970-1-5')`
+- Factor: factors are integers with associated labels. 
+
+---
+## The R Ecosystem
+### Checking data type
+
+- `typeof(x)`
+- `is.xxx(x)`: 
+
+  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
+  
+  * `is.numeric(x)` 
+  
+  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
+
 
 ---
 ## The R Ecosystem
@@ -197,6 +232,7 @@ knitr::include_graphics("figures/class3_env_nsp.png")
 ---
 
 ```{r}
+library(dplyr)
 detach(package:dplyr)
 library(raster)
 library(dplyr)

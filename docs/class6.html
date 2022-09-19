@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,8 +13,12 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 6
+]
 
 ---
 
@@ -36,56 +40,70 @@ dev.off()
 
 # Today
 
-- Assignment schedule
 - The `R` Ecosystem
 - Coding practice
-
----
-
-
-```r
-library(lubridate)
-library(dplyr)
-
-wks &lt;- seq(ymd('2022-01-18'), ymd('2022-05-02'), by = 'day')
-assns &lt;- tibble(assn = NA, wks) %&gt;% 
-  mutate(day = weekdays(wks), wkno = week(wks))
-assns %&gt;% filter(day == "Friday") %&gt;% 
-  mutate(assn = case_when(
-    wkno == 5 ~ 1, 
-    wkno == 7 ~ 2,
-    wkno == 9 ~ 3,
-    wkno == 12 ~ 4,
-    wkno == 14 ~ 5, 
-    wkno == 15 ~ 6
-)) 
-```
-
-```
-## # A tibble: 15 × 4
-##     assn wks        day     wkno
-##    &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;  &lt;dbl&gt;
-##  1    NA 2022-01-21 Friday     3
-##  2    NA 2022-01-28 Friday     4
-##  3     1 2022-02-04 Friday     5
-##  4    NA 2022-02-11 Friday     6
-##  5     2 2022-02-18 Friday     7
-##  6    NA 2022-02-25 Friday     8
-##  7     3 2022-03-04 Friday     9
-##  8    NA 2022-03-11 Friday    10
-##  9    NA 2022-03-18 Friday    11
-## 10     4 2022-03-25 Friday    12
-## 11    NA 2022-04-01 Friday    13
-## 12     5 2022-04-08 Friday    14
-## 13     6 2022-04-15 Friday    15
-## 14    NA 2022-04-22 Friday    16
-## 15    NA 2022-04-29 Friday    17
-```
 
 ---
 # The R Ecosystem
 
 &lt;img src="figures/class5_u1m2.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+## The R Ecosystem
+### Common objects
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class2_objects.png" alt="Credit: L. Song" width="80%" /&gt;
+&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## The R Ecosystem
+### Data types
+There are 6 atomic data types:
+- character
+  e.g. `'hello world'`, `'abc'`
+- double (real or decimal)
+  e.g. `10`, `3.14`, `1e10`
+- integer
+  e.g. `1L`
+- logical
+  e.g. `TRUE`, `FALSE`, `T`, `F`
+- complex
+  e.g. `1 + 3i` (not commonly used by us)
+- *raw* (rarely used by us)
+
+---
+## The R Ecosystem
+### Special data types
+
+- `NULL`: Does not exist
+- Missing data: `NA`. A special logical type that converts into the type it is associated with.
+- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
+- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+
+---
+## The R Ecosystem
+### Special data types
+
+- Date: `as.Date('1970-1-5')`
+- Time: `as.POSIXct('1970-1-5')`
+- Factor: factors are integers with associated labels. 
+
+---
+## The R Ecosystem
+### Checking data type
+
+- `typeof(x)`
+- `is.xxx(x)`: 
+
+  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
+  
+  * `is.numeric(x)` 
+  
+  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
+
 
 ---
 ## The R Ecosystem
@@ -395,6 +413,27 @@ str(x)
 
 
 ```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 detach(package:dplyr)
 library(raster)
 ```
@@ -436,10 +475,9 @@ search()
 
 ```
 ##  [1] ".GlobalEnv"        "package:dplyr"     "package:raster"   
-##  [4] "package:sp"        "package:lubridate" "package:stats"    
-##  [7] "package:graphics"  "package:grDevices" "package:utils"    
-## [10] "package:datasets"  "package:methods"   "Autoloads"        
-## [13] "package:base"
+##  [4] "package:sp"        "package:stats"     "package:graphics" 
+##  [7] "package:grDevices" "package:utils"     "package:datasets" 
+## [10] "package:methods"   "Autoloads"         "package:base"
 ```
 
 
@@ -491,7 +529,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7fc7ea433350&gt;
+## &lt;environment: 0x7fe0c031acf8&gt;
 ```
 
 ```
@@ -503,7 +541,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7fc7ea495d98&gt;
+## &lt;environment: 0x7fe0c026c860&gt;
 ```
 
 ```
@@ -590,6 +628,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
