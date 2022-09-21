@@ -27,8 +27,63 @@ dev.off()
 
 # Today
 
-- R ecosystem continued: environments wrap-up
+- R ecosystem continued: OO and environments
 - Indexing and subsetting
+
+---
+
+## Functions
+### Components
+
+```{r, eval=FALSE}
+function_name <- function(arg1, arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. 
+
+---
+
+## OO
+
+- Procedural versus object-oriented (OO) programming
+- OO bundles together data and functions into an object
+- Class defines type/structure of object and what methods (functions) are used with it
+- 3+ types of OO in R
+
+---
+
+## OO - Base system? 
+```{r}
+x <- 1:10
+!is.object(x)  # if TRUE, base object. 
+str(x)
+```
+---
+## 00 - S3 system?
+```{r}
+x <- lm(x ~ rev(x))
+!is.object(x)  # if TRUE, base object. 
+!isS4(x)  # it’s S3
+str(x)
+```
+
+---
+## OO - S4 system? 
+```{r}
+x <- raster::raster(nrow = 10, ncol = 10)
+!is.object(x)  # if TRUE, base object. 
+!isS4(x)  # it’s S3
+!is(x, "refClass") # it’s S4; otherwise it’s RC.
+str(x)
+```
 
 ---
 
@@ -43,7 +98,7 @@ knitr::include_graphics("figures/class5_envs.png")
 - Package environment
     - external interface to package - how we find functions 
 - Namespace environment
-    - internal interface to packge - how functions find variables
+    - internal interface to package - how functions find variables
 - Function environment (see http://adv-r.had.co.nz/Environments.html#function-envs)
   - Enclosing environment
   - Binding environment
@@ -132,6 +187,8 @@ tibble(a = 1:10, b = 1:10) %>%
 # restart R
 library(dplyr)
 library(raster)
+tibble(a = 1:10, b = 1:10) %>% 
+  select(a)
 tibble(a = 1:10, b = 1:10) %>% 
   dplyr::select(a)
 ```
