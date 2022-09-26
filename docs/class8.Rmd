@@ -32,8 +32,6 @@ ggsave(here::here("external/slides/figures/africa_capitals.png"),
 
 ---
 
-A question from last class. 
-
 ```{r, eval=FALSE}
 library(stars)
 tif <- system.file("tif/L7_ETMs.tif", package = "stars")

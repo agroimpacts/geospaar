@@ -121,6 +121,7 @@ myfun <- function() {
 }
 x1 <- myfun()
 x
+x1
 
 myfun <- function(x) {
   x <- x * 10
@@ -164,12 +165,14 @@ for(i in 1:10) {
 i <- 0
 sapply(1:10, function(x) {
   i <- i + x
+  print(environment())
   return(i)
 })
 
 i <- 0
 for(x in 1:10) {
   i <- i + x 
+  print(environment())
   print(i)
 }
 ```
