@@ -44,14 +44,12 @@ ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"),
 
 # Today
 
-- Finish up `data.frame` indexing
 - Control structures/looping
 - Reading in data
 - Reshaping
 
 ---
 ## `data.frame` indexing
-
 
 ```{r}
 set.seed(10)
