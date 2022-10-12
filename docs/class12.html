@@ -3,128 +3,73 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
-    <link rel="stylesheet" href="themes/class4plus.css" type="text/css" />
+    <link rel="stylesheet" href="themes/class14plus.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 12
+]
 
 ---
 
 
-### Today
 
-- Homework
+```r
+library(leaflet)
+library(sf)
+library(dplyr)
+districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+bb &lt;- unname(st_bbox(districts))
+xy &lt;- st_centroid(districts) %&gt;% st_coordinates() %&gt;% 
+  bind_cols(name = districts$distName, .)
+slist &lt;- list("color" = "white")
+label_opts &lt;- labelOptions(noHide = TRUE, style = slist, direction = 'center',
+                           textOnly = TRUE, textsize = "5px")
+
+m &lt;- leaflet() %&gt;% 
+  addProviderTiles("Esri.WorldImagery") %&gt;% 
+  fitBounds(bb[1], bb[2], bb[3], bb[4]) %&gt;% 
+  addPolygons(data = districts, fill = FALSE, color = "white", 
+              group = "Districts", weight = 1) %&gt;% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
+                      labelOptions = label_opts) %&gt;%
+  addLayersControl(overlayGroups = c("Districts", "Names"),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
+```
+
+
+
+---
+
+&lt;iframe seamless src="figures/zambialeaflet.html" width="100%" 
+height="500"&gt;&lt;/iframe&gt;
+
+
+---
+
+## Today
+
 - More practice with reshaping/analysis/plotting 
-
-
----
-### Data 
-
-
-```r
-library(tidyverse)
-set.seed(1)
-price_weight_long &lt;- tibble(
-  year = 1951:2000, 
-  price = runif(n = length(year), 20, 50),
-  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
-) %&gt;% pivot_longer(
-  cols = price:weight, names_to = "element", values_to = "value"
-) %&gt;% arrange(element)
-```
-
-
----
-### Homework
-
-
-```r
-price_weight_long %&gt;% 
-  group_by(element) %&gt;% 
-  summarize(mean = mean(value), sd = sd(value))
-
-do.call(rbind, lapply(unique(price_weight_long$element), function(x){
-  dat &lt;- price_weight_long[price_weight_long$element == x, ]
-  data.frame(element = x, mean = mean(dat$value), stdev = sd(dat$value))
-}))
-```
-
----
-### A few more plots
-
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis
-
-
-```r
-price_weight_long %&gt;%
-  pivot_wider(names_from = element, values_from = value) %&gt;%
-  mutate(wt_price = weight / price) %&gt;%
-  ggplot() + geom_point(aes(x = price, y = weight))
-```
-
-&lt;img src="class12_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+- Towards spatial
+  - Non-spatial to spatial
+  - Read and write spatial
+  - CRS
+  - Make data from scratch
+  - Spatial properties
 
 ---
 
-- Let's plot a line graph of Price (y axis) against year (x axis)
-
-
-```r
-price_weight_long %&gt;%
-  pivot_wider(names_from = element, values_from = value) %&gt;%
-  mutate(wt_price = weight / price) %&gt;%
-  ggplot() + geom_line(aes(x = year, y = price))
-```
-
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="class12_files/figure-html/unnamed-chunk-4-1.png" alt="Demo line plot" width="55%" /&gt;
-&lt;p class="caption"&gt;Demo line plot&lt;/p&gt;
-&lt;/div&gt;
-
----
-
-- Let's calculate a histogram of wt_price
-&lt;img src="class12_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
----
-### Dataset
-
-
-```r
-set.seed(1)
-price_weight2 &lt;- tibble(
-  year = rep(1951:2000, 2), 
-  group = rep(sample(letters[1:5], 50, replace = TRUE), 2), 
-  value = runif(n = 100, min = 50, max = 100),
-  element = c(rep("Price", 50), rep("Weight", 50))
-)
-```
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis, with one series for each year
-
-&lt;img src="class12_files/figure-html/unnamed-chunk-7-1.png" width="60%" style="display: block; margin: auto;" /&gt;
-
----
-- Let's plot a line graph of Price (y axis) against year (x axis)
-
-&lt;img src="class12_files/figure-html/unnamed-chunk-8-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-- Let's calculate a histogram of wt_price
-&lt;img src="class12_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /&gt;
----
-- Do the same, but let's make a histogram for each group.
-&lt;img src="class12_files/figure-html/unnamed-chunk-10-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
-
----
 
 ## More practice
 ### Part 1
@@ -182,9 +127,9 @@ Should see...
 
 
 ```r
-crops_df &lt;- do.call(rbind, lapply(crops, function(x) {
+crops_df &lt;- do.call(rbind, lapply(crops, function(j) {
   x %&gt;% select(Item, Area, Element, Year, Value) %&gt;% 
-    pivot_wider(names = Element, values = Value) %&gt;% 
+    pivot_widr(names = Element, values = Value) %&gt;% 
     rename(crop = Item, country = Area, year = Year, 
            harv_area = Area harvested, prod = Production)
 }))
@@ -232,7 +177,7 @@ dat &lt;- readr::read_csv(fs) %&gt;%
 Using `crops_df`:
 - Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
 - Use `ggplot2` to make three side-by-side line plots of production per year for all three crops by country (red for Zambia, blue South Africa). You need `facet_grid` for this. Do the same for yield (you will need to a new column *yield*)
-- Plot the linear regression fit between year wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate series and fit for South African and Zambian yields.
+- Plot the linear regression fit between year for wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate series and fit for South African and Zambian yields.
 
 ---
 - Use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this.
@@ -243,6 +188,88 @@ ggplot(crops_df) +
   geom_line(aes(x = year, y = prod, color = country)) +
   facet_grid(crop)
 ```
+
+---
+
+- Adapt the code from the pipeline example to calculate mean wheat yields for Zambia and South Africa. 
+
+---
+
+### Non-spatial to spatial
+
+- Read in farmer data
+
+```r
+library(tidyverse)
+library(sf)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() 
+farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+- Write and read the spatial data
+
+```r
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
+farmers_sf &lt;- read_sf("external/notebooks/data/farmers_spatial.geojson")
+districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+---
+  
+### Wrangle spatial data
+
+```r
+farmers %&gt;% filter(uuid == "009a8424")
+farmers_sf %&gt;% filter(uuid == "009a8424")
+farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
+  arrange(n) %&gt;% st_geometry %&gt;% plot(pch = 16, cex = 0.5)
+farmers_sf %&gt;% arrange(uuid)
+class(farmers_sf)
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
+  st_join(., districts, left = FALSE)
+plot(st_geometry(districts))
+farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% st_geometry %&gt;% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %&gt;% st_geometry %&gt;% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+```
+
+---
+### Make spatial data
+
+
+```r
+pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
+  cbind(ID = 1:nrow(.), .)
+pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+```
+
+---
+### Spatial properties
+
+```r
+pol %&gt;% st_area
+pol %&gt;% st_sf(crs = 4326) %&gt;% st_area
+sline %&gt;% st_sf(crs = 4326) %&gt;% st_length
+```
+
+---
+### Spatial transforms
+
+```r
+pol %&gt;% st_sf(crs = 4326) %&gt;% st_transform(., st_crs(roads)) %&gt;% st_area
+```
+
+
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
@@ -291,6 +318,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
