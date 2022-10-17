@@ -70,147 +70,243 @@ cong %>%
 ---
 
 ## Today
-- Pipeline and plotting exercises (in small groups)
-
+- Spatial
+  - Non-spatial to spatial
+  - Read and write spatial
+  - CRS
+  - Make data from scratch
+  - Spatial properties
+  - joins, subsets, intersections...
+  
 ---
 
-## Data reading and pipelines
 
-```{r, eval=FALSE}
-library(geospaar)
-fs <- dir(system.file("extdata", package = "geospaar"), 
-          pattern = "FAOSTAT", full.names = TRUE)
-crops <- lapply(fs, readr::read_csv)
-```
 
----
 
-```{r, eval=FALSE}
-crops_df <- do.call(rbind, lapply(crops, function(x) {
-  x %>% select(Item, Area, Element, Year, Value) %>% 
-    pivot_wider(names_from = Element, values_from = Value) %>% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production)
-}))
-crops_df
-```
+### Non-spatial to spatial
 
----
-
-#### Analysis example 
-
-Average maize yield by country
-```{r, eval=FALSE}
-crops_df %>% 
-  filter(crop == "Maize") %>% 
-  mutate(yield = prod / harv_area) %>% 
-  group_by(country) %>% 
-  summarize(yield = mean(yield))
-```
-
----
-
-#### Pipeline example 1
-
-Mean and standard deviation of maize yield by country
+- Read in farmer data
 ```{r, eval = FALSE}
-fs <- dir(system.file("extdata", package = "geospaar"), 
-          pattern = "maize", full.names = TRUE)
-dat <- readr::read_csv(fs) %>% 
-  dplyr::select(Item, Area, Element, Year, Value) %>% 
-  pivot_wider(names_from = Element, values_from = Value) %>% 
-  rename(harv_area = `Area harvested`, prod = Production, country = Area) %>% 
-  mutate(yield = prod / harv_area) %>% 
-  dplyr::select(country, harv_area, prod, yield) %>% 
-  group_by(country) %>% 
-  summarise_all(list(mu = mean, sdev = sd))
+library(tidyverse)
+library(sf)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() 
+farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
 ```
 
----
-#### Pipeline example 2
-
-Creating `crops_df` in one step
+- Write and read the spatial data
 ```{r, eval=FALSE}
-library(geospaar)
-fs <- dir(system.file("extdata", package = "geospaar"), 
-          pattern = "FAOSTAT", full.names = TRUE)
-crops_df <- do.call(rbind, lapply(fs, function(x) {
-  readr::read_csv(x) %>% 
-    select(Item, Area, Element, Year, Value) %>% 
-    pivot_wider(names_from = Element, values_from = Value) %>% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production)
-}))
-
+write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
+farmers_sf <- read_sf("external/notebooks/data/farmers_spatial.geojson")
+districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
 ```
 
 ---
-
-```{r}
-dir(system.file("extdata", package = "geospaar"), 
-    pattern = "FAOSTAT", full.names = TRUE) %>% 
-  lapply(., function(x) {
-  readr::read_csv(x) %>% 
-    select(Item, Area, Element, Year, Value) %>% 
-    pivot_wider(names_from = Element, values_from = Value) %>% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = `Area harvested`, prod = Production)
-}) %>% do.call(rbind, .) -> crops_df2
-
-all(crops_df == crops_df2)
+  
+### Wrangle spatial data
+```{r, eval = FALSE}
+farmers %>% filter(uuid == "009a8424")
+farmers_sf %>% filter(uuid == "009a8424")
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  arrange(n) %>% st_geometry %>% plot(pch = 16, cex = 0.5)
+farmers_sf %>% arrange(uuid)
+class(farmers_sf)
+# intersection with st_join and left = FALSE to remove plots outside of Zambia
+farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
+  st_join(., districts, left = FALSE)
+plot(st_geometry(districts))
+farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, cex = 1)
+farmers_sf_trim %>% st_geometry %>% 
+  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
 ```
 
+---
+### Make spatial data
 
+```{r, eval = FALSE}
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
+  cbind(ID = 1:nrow(.), .)
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
+```
 
 ---
-#### Exercises 
-
-##### 1. Adapt the code from the Analysis example to calculate mean wheat yields for Zambia and South Africa. 
-
-##### 2. Adapt the code from the Analysis example to calculate mean yields of each of the three crops for each country. 
-
-##### 3. Adapt the code from Pipeline example 2 so that the resulting `crops_df` includes a yield variable. The relevant code you need to do this is found in Pipeline example 1. 
-
-
----
-### Plotting exercises
-
-Using `crops_df`:
-- Using `ggplot2`, make a line plot of the annual maize production by country. Challenge: make Zambia's line red and South Africa's blue
-
-Starter code:
+### Spatial properties
 ```{r, eval=FALSE}
-ggplot(crops_df) + 
-  geom_line(aes(x = , y = , ))
+pol %>% st_area
+pol %>% st_sf(crs = 4326) %>% st_area
+sline %>% st_sf(crs = 4326) %>% st_length
 ```
 
 ---
-
-- Use `ggplot2` to make three side-by-side line plots of yield per year for all three crops by country (red for Zambia, blue South Africa). You need `facet_wrap` or `facet_grid` for this. 
-
-Starter code
+### Spatial transforms
 ```{r, eval=FALSE}
-crops_df %>% 
-  mutate() %>% 
-ggplot() + 
-  geom_line(aes(x = ??, y = ??, color = ??)) + ??
+pol %>% st_sf(crs = 4326) %>% st_transform(., st_crs(roads)) %>% st_area
 ```
 
 ---
+### Adding to data
 
-- Plot the linear regression fit between year wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate point series and fit for South African and Zambian yields.
-
-Starter code
-
+Add some categories
 ```{r, eval=FALSE}
-crops_df %>%
-  mutate(?) %>% 
-  ? %>% 
-ggplot() + 
-  geom_??(aes(x = , y = , ?)) + 
-  geom_smooth(aes(x = , y = , ?), ?)
-
+set.seed(2)
+districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
+  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
+  mutate(yld_cat = ifelse(yield > 4.5, "high", "other"), 
+         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
+         yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
+  dplyr::select(distName, X, Y, yield, yld_cat)
 ```
+---
+
+## Analyses
+```{r, eval=FALSE}
+# districts2 %>% dplyr::select(yield) %>% summarize_all(funs(mean, sd))
+# districts2 %>% summarize(mean(yield), sd(yield))
+districts2 %>% group_by(yld_cat) %>% 
+  summarize(yield = mean(yield)) %>% 
+  ggplot() + geom_sf(aes(fill = yield))
+  # geom_sf(aes(fill = yld_cat))
+```
+
+---
+### Spatial joins
+```{r, eval=FALSE}
+p <- ggplot(districts2) + geom_sf(fill = "grey")
+# farmer_ct <- farmers %>% group_by(uuid) %>% count()
+# st_crs(farmer_ct) <- st_crs(districts)
+farmer_ct <- farmers %>% group_by(uuid) %>% count() %>% 
+  st_set_crs(st_crs(districts))
+
+farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
+p + geom_sf(data = farmers_districts, aes(color = n)) + 
+  scale_color_viridis_c()
+
+# lapply(farmers_per_dist$distName, function(x) {
+#   farmers_per_dist %>% filter(distName == x) %>% st_cast("POINT")
+# }) %>% do.call(rbind, .)
+# farmers_per_dist %>% st_cast("POINT") %>% plot()
+farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
+p + geom_sf(data = farmers_per_dist) + 
+  geom_sf(data = farmers_per_dist %>% st_centroid(), col = "blue")
+```
+
+---
+### Spatial-non-spatial join
+```{r, eval=FALSE}
+districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
+  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n))
+
+p + geom_sf(data = districts3, aes(fill = log10(n))) +
+  scale_fill_brewer(palette = "RdBu")
+  # scale_fill_viridis_c()
+# p + geom_sf(data = districts3, aes(fill = n))
+```
+
+---
+### Subsetting
+
+By count
+```{r, eval = FALSE}
+p + districts3 %>% filter(n > 15) %>% geom_sf(data = ., fill = "red") + 
+  districts3 %>% filter(between(n, 1, 15)) %>% geom_sf(data = ., fill = "blue")
+p + geom_sf(data = districts3 %>% filter(n > 15), fill = "red") + 
+  geom_sf(data = districts3 %>% filter(between(n, 1, 15)), fill = "blue")
+```
+
+By area
+```{r, eval = FALSE}
+dmed <- districts3 %>% #mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %>% 
+  filter(area == quantile(area, probs = 0.5, type = 1)) 
+p2 <- p + geom_sf(data = dmed, fill = "red")
+
+dmax <- districts3 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
+  # arrange(area) %>% slice(nrow(.)) %>% 
+  arrange(desc(area)) %>% slice(1) 
+  # slice_max(order_by = area) #
+p2 + geom_sf(data = dmax, fill = "blue")
+
+districts3 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  arrange(area) %>% pull(distName)
+```
+
+---
+## Various
+
+Dataset
+```{r, eval=FALSE}
+pols <- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
+                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
+                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
+                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
+                                          1))))
+pols <- pols %>% st_geometry %>% st_cast("POLYGON") %>% 
+  st_as_sf(crs = 4326) %>%   
+  mutate(ID = 1:nrow(.)) %>% #as.data.frame() %>%
+  dplyr::select(ID)
+
+p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
+  geom_sf(data = st_union(pols), 
+          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
+```
+
+---
+### Intersects
+```{r, eval=FALSE}
+# which(st_intersects(districts2, st_union(pols), sparse = FALSE))
+int_dists <- districts2 %>% 
+  slice(which(st_intersects(., st_union(pols), sparse = FALSE)))
+p + geom_sf(data = int_dists, fill = "red") + 
+  geom_sf(data = pols, fill = "transparent", col = "blue")
+```
+
+---
+### Intersection
+```{r, eval=FALSE}
+districts_pol <- st_intersection(districts2, st_union(pols))
+ggplot(districts_pol) + geom_sf(aes(fill = distName))
+p + geom_sf(data = districts_pol, aes(fill = distName))
+```
+
+---
+### On your own
+
+- Select the smallest district in Zambia from `districts3`, and convert that
+to centroid
+```{r, eval = FALSE}
+smallest_centroid <- districts3 %>% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
+  filter
+```
+
+- Create a buffer of width 0.5 around that
+```{r, eval = FALSE}
+smallest_buffer <- smallest_centroid %>% st_buf...
+```
+
+- Use the buffer to select the districts from `districts3` that intersect with it
+```{r, eval = FALSE}
+dists_in_buff <- districts3 %>% 
+  filter(st_intersects(., smallest_buffer...
+```
+
+
+---
+- Use the buffer to do an intersection with `districts3`
+```{r, eval=FALSE}
+buff_int_dists <- st_intersection(...
+# p + geom_sf(data = buff_int_dists, aes(fill = distName))
+```
+
+
+- Calculate the area of the intersection
 
 
 
