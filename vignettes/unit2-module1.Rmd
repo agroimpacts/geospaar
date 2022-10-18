@@ -974,6 +974,9 @@ There are no package functions to create for this assignment. All work is to be 
 
 10. Your final task is to intersect `roads` with the buffer of the longest road in `roads_extreme_buff` (`roads_int`). Plot the buffer of the longest road in blue over the districts in grey, and then `roads_int` as red lines. Use the same dimensions as the previous two plots. Report the total distance of intersected roads in km in the vignette below the plot. 
 
+11. Additional task: do a random selection of 10 districts in `districts_alb`, using seed=1. Intersect 
+`roads` with the select districts. Calculate the road density of each district by dividing road length in the district with district area.
+
 ## Assignment output
 Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assignment-output) for submission instructions. The only differences are as follows:
 

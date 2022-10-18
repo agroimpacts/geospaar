@@ -1369,6 +1369,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - A numeric vector of length 20 (named `v3`), using the `runif` function with the minimum set to 0 and the maximum to 1. 
     - A character vector of length 20 (named `v4`), using randomly selected values from the built-in dataset `LETTERS`. You will use `v2` to select the values out of `LETTERS` (this means that you are using `v2` as an __index__). 
     - In making `v1, v2, v3`, you will use the `set.seed` function so that you can get the exact same results each time you run your code to make them. Use a seed value of 1.
+    - A date vector (named `v4`), using random sample without replacement between 2022/09/01 and 2022/12/15.
 
 2. Create a matrix `m1` from `v1` and `v2`, by binding the two vectors together as ___columns___. Create another (`m2`) from `v2` and `v3`, again by binding columns. Create a third (`m3`) by binding `v3` and `v4 `. 
 
@@ -1401,7 +1402,17 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
         - You will need to use an anonymous function (`function(x)`)
         - The interior of your function (i.e. the part between `({})` will look like this: `l[[x]] * v2`
     - Do the same but with `sapply`
-
+    
+6. A further look into the `*apply`'s returns:
+    - Make three data.frames for this experiment:
+        - `df1` using `v1` and `v2` as columns
+        - `df2` using `v2` and `v3` as columns
+        - `df3` using `v3` and `v4` as columns
+    - Combine `df1`, `df2`, and `df3` into a list `l`
+    - Write an `lapply` that does nothing but return `df1`, `df2`, and `df3` each time
+        - Hint: you will need to define an anonymous function that just returns its input
+    - Do the same but with `sapply`
+    - Compare the results from `sapply` and `lapply`
     
 ## Assignment output{#assignment-output}
 
