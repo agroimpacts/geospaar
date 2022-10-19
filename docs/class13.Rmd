@@ -24,10 +24,10 @@ newnms <- c("congress", "seats", "D", "R", "other", "delres")
 cong <- cong %>% 
   slice((which(grepl("^Republican", `Anti-Administration`))[1] + 1):nrow(.)) %>%
   filter(`Congress (Years)` != colnames(cong)[1]) %>% 
-  mutate(year = gsub("(*.*-)|(*.*–)|)|)2", "", `Congress (Years)`)) %>%
+  mutate(year = gsub("(*.*-)|(*.*–)|)|)2", "", `Congress (Years)`)) %>% 
   mutate(year = as.numeric(year) - 2) %>% 
   rename_at(vars(onms), ~newnms) %>% 
-  dplyr::select(-other, -delres) %>%
+  dplyr::select(-other, -delres) %>% 
   mutate(seats = substr(seats, 1, 3)) %>% 
   mutate_at(.vars = vars(seats, D, R), as.numeric) %>% 
   mutate(swing = (D - R) / (D + R)) 
@@ -187,6 +187,7 @@ farmer_ct <- farmers %>% group_by(uuid) %>% count() %>%
 farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
 p + geom_sf(data = farmers_districts, aes(color = n)) + 
   scale_color_viridis_c()
+plot(districts2['yld_cat'])
 
 # lapply(farmers_per_dist$distName, function(x) {
 #   farmers_per_dist %>% filter(distName == x) %>% st_cast("POINT")
