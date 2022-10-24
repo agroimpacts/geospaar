@@ -81,7 +81,9 @@ pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>%
 pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
                              y = c(-15.5, -16.5, -17, -16, -15.5))))
 pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16))) %>%
+  st_geometry() %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .) %>% 
+  rename(geometry = x)
 
 set.seed(2)
 districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
@@ -91,7 +93,8 @@ districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>%
          yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
   dplyr::select(distName, X, Y, yield, yld_cat)
 
-farmer_ct <- farmers %>% group_by(uuid) %>% count() %>% 
+farmer_ct <- farmers_sf %>% #st_as_sf(coords = c("x", "y")) %>% 
+  group_by(uuid) %>% count() %>% 
   st_set_crs(st_crs(districts))
 
 farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
@@ -112,13 +115,31 @@ p + geom_sf(data = farmers_districts, aes(color = n)) +
   scale_color_viridis_c()
 plot(districts2['yld_cat'])
 
+p + geom_sf(data = farmers_sf_trim, aes(color = n)) + 
+  scale_color_viridis_c()
+
 # lapply(farmers_per_dist$distName, function(x) {
 #   farmers_per_dist %>% filter(distName == x) %>% st_cast("POINT")
 # }) %>% do.call(rbind, .)
 # farmers_per_dist %>% st_cast("POINT") %>% plot()
 farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
 p + geom_sf(data = farmers_per_dist) + 
-  geom_sf(data = farmers_per_dist %>% st_centroid(), col = "blue")
+  geom_sf(data = farmers_per_dist %>% st_centroid(), col = "blue") + 
+  geom_sf(
+    # data = farmers_per_dist %>% st_cast("POINT") %>% st_centroid()
+    data = st_centroid(st_cast(farmers_per_dist, "POINT")), col = "red"
+  )
+lapply(1:nrow(farmers_per_dist), function(x) {
+  st_cast(farmers_per_dist[x, ], "POINT")
+}) %>% do.call(rbind, .) %>% 
+  # st_geometry %>% st_sfc() %>% 
+  # st_cast("MULTIPOINT") %>% 
+  st_centroid()
+
+farmers_per_dist %>% 
+  group_by(distName) %>% 
+  st_cast("POINT")
+st_centroid(st_cast(farmers_per_dist %>% group_by(distName), "POINT"))
 ```
 
 ---
@@ -128,8 +149,9 @@ districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>%
   left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n))
 
 p + geom_sf(data = districts3, aes(fill = log10(n))) +
-  scale_fill_brewer(palette = "RdBu")
-  # scale_fill_viridis_c()
+  # gexom_sf(data = districts3, aes(fill = n)) +
+  # scale_fill_brewer(palette = "RdBu")
+  scale_fill_viridis_c()
 # p + geom_sf(data = districts3, aes(fill = n))
 ```
 
@@ -152,9 +174,9 @@ dmed <- districts3 %>% #mutate(area = as.numeric(st_area(.)) / 10^6) %>%
 p2 <- p + geom_sf(data = dmed, fill = "red")
 
 dmax <- districts3 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  # arrange(area) %>% slice(nrow(.)) %>% 
-  arrange(desc(area)) %>% slice(1) 
-  # slice_max(order_by = area) #
+  # arrange(area) %>% slice(nrow(.)) %>%
+  # arrange(desc(area)) %>% slice(1) 
+  slice_max(order_by = area) #
 p2 + geom_sf(data = dmax, fill = "blue")
 
 districts3 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%

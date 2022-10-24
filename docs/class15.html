@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,68 +13,37 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 15
+]
 
 ---
 
 
-
-```r
-library(leaflet)
-library(sf)
-library(dplyr)
-farmersn &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
-  readr::read_csv() %&gt;% group_by(uuid) %&gt;% 
-  summarize(x = mean(x), y = mean(y), n = n()) %&gt;% 
-  st_as_sf(coords = c("x", "y"), crs = 4326)
-districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-farmersn &lt;- st_join(farmersn, districts, left = FALSE)
-bb &lt;- unname(st_bbox(districts))
-xy &lt;- st_centroid(districts) %&gt;% st_coordinates() %&gt;% 
-  bind_cols(name = districts$distName, .)
-slist &lt;- list("color" = "white")
-label_opts &lt;- labelOptions(noHide = TRUE, style = slist, direction = 'center',
-                           textOnly = TRUE, textsize = "5px")
-qpal &lt;- colorQuantile("RdYlBu", farmersn$n, n = 5)
-
-m &lt;- leaflet() %&gt;% 
-  addProviderTiles("Esri.WorldImagery") %&gt;% 
-  fitBounds(bb[1], bb[2], bb[3], bb[4]) %&gt;% 
-  addPolygons(data = districts, fill = FALSE, color = "white", 
-              group = "Districts", weight = 1) %&gt;% 
-  addCircles(data = farmersn, popup = as.character(farmersn$n), 
-             color = ~qpal(n), group = "Farmers") %&gt;% 
-  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
-                      labelOptions = label_opts) %&gt;%
-  addLayersControl(overlayGroups = c("Districts", "Names", "Farmers"),
-                   options = layersControlOptions(collapsed = FALSE,
-                                                  autoZIndex = FALSE))
-```
-
-
-
----
-
-&lt;iframe seamless src="figures/zambialeaflet2.html" width="100%" 
-height="500"&gt;&lt;/iframe&gt;
-
-
----
 
 ## Today
 
-### Intro to Spatial 2
-
-- Spatial properties
+- More vector analysis and exercises
 
 ---
 
 Data:  read in `farmers` and make into `sf`, `districts`, and `roads`
 
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
+districts &lt;- st_read(
+  system.file("extdata/districts.shp", package = "geospaar")
+)
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
 
 ---
-### Adding to data
+## Adding to data
 
 Add some categories
 
@@ -101,151 +70,121 @@ districts2 %&gt;% group_by(yld_cat) %&gt;%
 ```
 
 ---
-### Spatial joins
+## Joins
 
 ```r
-p &lt;- ggplot(districts2) + geom_sf(fill = "grey")
-# farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count()
-# st_crs(farmer_ct) &lt;- st_crs(districts)
 farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
   st_set_crs(st_crs(districts))
-
 farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
-p + geom_sf(data = farmers_districts, aes(color = n)) + 
-  scale_color_viridis_c()
-
-# lapply(farmers_per_dist$distName, function(x) {
-#   farmers_per_dist %&gt;% filter(distName == x) %&gt;% st_cast("POINT")
-# }) %&gt;% do.call(rbind, .)
-# farmers_per_dist %&gt;% st_cast("POINT") %&gt;% plot()
 farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
-p + geom_sf(data = farmers_per_dist) + 
-  geom_sf(data = farmers_per_dist %&gt;% st_centroid(), col = "blue")
-```
-
----
-### Spatial-non-spatial join
-
-```r
 districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
   left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n))
 
-p + geom_sf(data = districts3, aes(fill = log10(n))) +
-  scale_fill_brewer(palette = "RdBu")
-  # scale_fill_viridis_c()
-# p + geom_sf(data = districts3, aes(fill = n))
-```
-
----
-### Subsetting
-
-By count
-
-```r
-p + districts3 %&gt;% filter(n &gt; 15) %&gt;% geom_sf(data = ., fill = "red") + 
-  districts3 %&gt;% filter(between(n, 1, 15)) %&gt;% geom_sf(data = ., fill = "blue")
-p + geom_sf(data = districts3 %&gt;% filter(n &gt; 15), fill = "red") + 
-  geom_sf(data = districts3 %&gt;% filter(between(n, 1, 15)), fill = "blue")
-```
-
-By area
-
-```r
-dmed &lt;- districts3 %&gt;% #mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %&gt;% 
-  filter(area == quantile(area, probs = 0.5, type = 1)) 
-p2 &lt;- p + geom_sf(data = dmed, fill = "red")
-
-dmax &lt;- districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  # arrange(area) %&gt;% slice(nrow(.)) %&gt;% 
-  arrange(desc(area)) %&gt;% slice(1) 
-  # slice_max(order_by = area) #
-p2 + geom_sf(data = dmax, fill = "blue")
-
-districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  arrange(area) %&gt;% pull(distName)
-```
-
----
-## Various
-
-Dataset
-
-```r
-pols &lt;- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
-                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
-                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
-                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
-                                          1))))
-pols &lt;- pols %&gt;% st_geometry %&gt;% st_cast("POLYGON") %&gt;% 
-  st_as_sf(crs = 4326) %&gt;%   
-  mutate(ID = 1:nrow(.)) %&gt;% #as.data.frame() %&gt;%
-  dplyr::select(ID)
-
-p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
-  geom_sf(data = st_union(pols), 
-          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
-```
-
----
-### Intersects
-
-```r
-# which(st_intersects(districts2, st_union(pols), sparse = FALSE))
-int_dists &lt;- districts2 %&gt;% 
-  slice(which(st_intersects(., st_union(pols), sparse = FALSE)))
-p + geom_sf(data = int_dists, fill = "red") + 
-  geom_sf(data = pols, fill = "transparent", col = "blue")
-```
-
----
-### Intersection
-
-```r
-districts_pol &lt;- st_intersection(districts2, st_union(pols))
-ggplot(districts_pol) + geom_sf(aes(fill = distName))
-p + geom_sf(data = districts_pol, aes(fill = distName))
-```
-
----
-### On your own
-
-- Select the smallest district in Zambia from `districts3`, and convert that
-to centroid
-
-```r
 smallest_centroid &lt;- districts3 %&gt;% 
   mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  filter
+  filter(area == min(area)) %&gt;% st_centroid()
+sf_use_s2(use_s2 = FALSE)
+smallest_buffer &lt;- smallest_centroid %&gt;% st_buffer(dist = 0.5)
+buff_int_dists &lt;- st_intersection(smallest_buffer, districts3)
 ```
-
-- Create a buffer of width 0.5 around that
-
-```r
-smallest_buffer &lt;- smallest_centroid %&gt;% st_buf...
-```
-
-- Use the buffer to select the districts from `districts3` that intersect with it
-
-```r
-dists_in_buff &lt;- districts3 %&gt;% 
-  filter(st_intersects(., smallest_buffer...
-```
-
 
 ---
-- Use the buffer to do an intersection with `districts3`
+- Differencing
 
 ```r
-buff_int_dists &lt;- st_intersection(...
-# p + geom_sf(data = buff_int_dists, aes(fill = distName))
+dif &lt;- st_difference(districts3, smallest_buffer)
+ggplot(dif) + geom_sf(fill = "grey50")
+
+dif2 &lt;- st_difference(smallest_buffer, districts3)
+ggplot(dif2) + geom_sf(fill = "grey50")
 ```
 
-
-- Calculate the area of the intersection
-
+- Unioning
 
 
+```r
+uni &lt;- st_union(dif)
+ggplot(uni) + geom_sf(fill = "grey50")
+uni2 &lt;- st_union(dif, smallest_buffer)
+ggplot(uni2) + geom_sf(fill = "grey50")
+uni3 &lt;- st_union(dif, buff_int_dists)
+ggplot(uni3) + geom_sf(fill = "grey50")
+
+uni3
+```
+
+---
+- Sampling
+
+
+```r
+# simple within extent
+set.seed(1)
+sample100 &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% 
+  st_sample(size = 100, exact = TRUE)
+ggplot(districts3) + geom_sf() + 
+  geom_sf(data = districts3 %&gt;% filter(n &gt; 0), fill = "lightblue") + 
+  geom_sf(data = sample100, size = 0.5, col = "red")
+
+# stratified by polygon
+ndists &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% nrow(.)
+strat_sample &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% 
+  st_sample(size = rep(5, ndists), exact = TRUE)
+
+ggplot(districts3) + geom_sf() + 
+  geom_sf(data = districts3 %&gt;% filter(n &gt; 0), fill = "lightblue") + 
+  geom_sf(data = strat_sample, size = 0.5, col = "red")
+```
+
+---
+### Exercises
+
+#### Round 1
+- Calculate the length of roads in kilometers
+- Buffer roads &gt; 100 km by 30 kilometers, save as new object
+- Buffer roads &gt; 100 km 10 kilometers, save as new object
+- Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
+- Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
+
+
+```r
+# code to adapt
+roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;% 
+  filter(km &gt; 200) %&gt;% 
+  st_buffer(dist = 20000) %&gt;% 
+  st_transform(crs = 4326)
+st_difference(larger_object, smaller_object)
+ggplot() + geom_sf
+```
+
+---
+
+#### Round 2
+- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
+- Plot the 30 km buffer (red) the points in it (blue) over the districts
+
+
+```r
+buffered_object %&gt;% st_sample()
+```
+
+---
+### How would you solve these problems? 
+
+- Calculate the area of Zambia's districts 
+
+    - mutate on districts
+
+- **Accurately** calculate the area of Zambia's districts
+- Find the largest and smallest districts in Zambia
+- Find the longest road in Zambia
+- Find the names of the districts that Zambia's longest road runs through
+- Calculate the area of each of those districts along Zambia's longest road that lies within 10 km distance of that road
+- Create a 0.5 (E-W) X 0.25 (N-S) degree polygon centered on Zambia's smallest district
+- Count how many farmers from our sample live within 10 km of Zambian roads that are longer than 200 km
+
+---
+### Solve the problems!
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -293,6 +232,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
