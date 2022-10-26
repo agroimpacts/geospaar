@@ -54,6 +54,7 @@ districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>%
 - Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
 - Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
 
+---
 ```{r, eval=FALSE}
 roads_10 <- roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
     filter(km > 100) %>% 
@@ -90,6 +91,7 @@ ggplot(districts) + geom_sf() +
 - Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
 - Plot the 30 km buffer (red) the points in it (blue) over the districts
 
+---
 ```{r, eval=FALSE}
 set.seed(1)
 roads_sample <- roads_bufs[[2]] %>% st_sample(size = 100)
