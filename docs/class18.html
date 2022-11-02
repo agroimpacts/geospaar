@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,203 +13,47 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 18
+]
 
 ---
 
 
 ## Today
 
-- Challenge from last class
-- Raster intro
-  - classes
-  - dummy rasters
-  - reading and writing
-  - rasterize, raster to vector
+- Exercise
+- Raster intro, cont.
 
 
 ---
-&lt;img src="figures/zam_dem_raster.png" width="50%" /&gt;&lt;img src="figures/zam_dem_stars.png" width="50%" /&gt;
----
+## Exercise
 
-### Challenge response 1
+- Create a raster `r` that has the extent xmin = 25, xmax = 30, ymin = -12, ymax = -10, and a resolution of 0.1
 
 
 ```r
-library(tidyverse)
-library(sf)
-
-districts &lt;- 
-  read_sf(system.file("extdata/districts.shp", package = "geospaar")) %&gt;% 
-  st_transform(4326)
-smallest_district &lt;- districts %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  filter(area == min(area))
-smallest_centroid &lt;- smallest_district %&gt;% st_centroid()
-#smallest_centroid coordinates: 28.31101, -15.42664
-small_pol &lt;- st_polygon(list(cbind(x = c(27.81101, 28.81101, 28.81101, 27.81101,
-                                         27.81101), 
-                              y = c(-15.17664, -15.17664, -15.67664, -15.67664, 
-                                   -15.17664)))) %&gt;% 
-  st_sfc %&gt;% st_sf(ID = 1, crs = 4326)
-
-ggplot(districts) + geom_sf() +
-  geom_sf(data = smallest_district, fill = "red") +
-  geom_sf(data = small_pol, col = "blue", fill = "transparent")
+r &lt;- raster(extent(....
 ```
 
----
-### Challenge response 2
+- Populate it with randomly sampled values from between 1:100
 
 
 ```r
-smallest_dist&lt;- districts %&gt;% mutate(area=as.numeric(st_area(.))) %&gt;% 
-  filter(area == min(area))
-
-smallest_centroid &lt;-smallest %&gt;% st_centroid(.) 
-
-X &lt;- st_coordinates(small_centroid)[,1]
-Y &lt;- st_coordinates(small_centroid)[,2]
-
-pol &lt;- st_polygon(list(cbind(x = c(X-0.25, X-0.25, X+0.25, X+0.25, X-0.25), 
-                             y = c(Y-0.125, Y+0.125, Y+0.125, Y-0.125, Y-0.125))))
-
-par(mar = c(0, 0, 0, 0))
-plot(smallest_dist %&gt;% st_geometry(), col = "grey")
-plot(small_centroid%&gt;% st_geometry(), col = "red", pch = 20, add = TRUE)
-plot(pol %&gt;% st_geometry(), border = "blue", lwd = 3, add = TRUE)
+values(r) &lt;- ....
 ```
+- Create a stack `s` using r and r * 10
+- Convert `s` to a brick `b`
 
-
----
-### A quick demo of multi-panel plots
-
-```r
-p &lt;- ggplot(districts) + geom_sf() + 
-  geom_sf(data = smallest_centroid, color = "red")
-p
-p1 &lt;- p + geom_sf(data = small_pol, aes(color = as.factor(ID)),
-                  fill = "transparent") + labs(color = "ID")
-small_pol2 &lt;- pol %&gt;% st_sfc() %&gt;% st_sf(crs = 4326) %&gt;% mutate(ID = 1)
-p2 &lt;- p + geom_sf(data = small_pol2, aes(color = as.factor(ID)),  
-                  fill = "transparent") + labs(color = "ID")
-
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
-```
-
----
-### `patchwork`
-
-```r
-library(patchwork)
-
-p1 + p2 + plot_layout(guides = "collect")
-p1 + p1 / p
-```
-
-
----
-## Reading/Writing/Manipulating rasters
-
-- create
-
-```r
-r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
-            crs = "+proj=longlat +datum=WGS84")
-values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-
-par(mar = c(0, 0, 0, 0))
-plot(districts %&gt;% st_geometry)
-plot(r, add = TRUE)
-plot(r)
-
-s &lt;- stack(r, log10(r))
-names(s) &lt;- c("dummy", "log10dummy")
-plot(s)
-
-b &lt;- brick(s)
-plot(b)
-
-b2 &lt;- lapply(1:10, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %&gt;% stack %&gt;% brick
-plot(b2)
-```
-
----
-### A large brick
-
-```r
-b3 &lt;- lapply(1:10, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %&gt;% stack %&gt;% brick
-plot(b3)
-plot(b3[[1]])
-```
-
----
-
-- read and write
-
-
-```r
-writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
-# rm(r)
-r &lt;- raster(file.path(tempdir(), "mydummy.tif"))
-plot(r)
-
-brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
-brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
-brick(file.path(tempdir(), "mydumbrick.tif"))
-brick(file.path(tempdir(), "mydumbrick.grd"))
-```
-
----
-
-- plot
-
-```r
-plot(b)
-plot(b2)
-plot_noaxes(b)
-plot_noaxes(b2, main = paste("Random", 1:10))
-plot(b2, main = paste("Random", 1:10))
-plot_noaxes(b, legend = FALSE)
-plot_noaxes(b[[1]], legend = FALSE)
-legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
-       bty = "n")
-
-# plotting with larger datasets
-plot_noaxes(b3, main = paste("Random", 1:10))
-rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
-
-rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b[[1]])
-rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
-  scale_fill_viridis_c()
-ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
-  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
-  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
-stars::st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
-stars::st_as_stars(b) %&gt;% plot()
-```
 
 ---
 ## Raster to other types
 
 ```r
+plot(b)
 b[1:10]
 b[1:ncell(b)]
 as.matrix(b)
@@ -225,6 +69,7 @@ as.data.frame(b) %&gt;% as_tibble()
 aggregate(b, fact = 2) %&gt;% plot
 # aggregate(b, fun = min, fact = 2) %&gt;% plot
 # aggregate(b, fun = sd, fact = 2) %&gt;% plot
+plot(b)
 disaggregate(b, fact = 2) %&gt;% plot
 disaggregate(b, fact = 2, bilinear = TRUE) %&gt;% plot
 ```
@@ -271,6 +116,95 @@ distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
 - raster algebra
 - statistics
 - z dimension stats
+
+
+---
+## Calculations
+
+
+```r
+rf1 &lt;- chirpsz[[1]] + chirpsz[[2]]
+rf2 &lt;- chirpsz[[1]] * 5
+
+mx &lt;- cellStats(rf2, max)
+zl &lt;- c(0, mx)
+par(mfrow = c(2, 2))
+plot(chirpsz[[1]], zlim = zl)
+plot(chirpsz[[2]], zlim = zl)
+plot(rf1, zlim = zl)
+plot(rf2, zlim = zl)
+
+# dev.off()
+plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
+```
+
+- statistics
+
+```r
+# mean(c(1, 4, 10, NA), na.rm = TRUE)
+cellStats(chirpsz[[1]], stat = mean)
+cellStats(chirpsz[[1]], stat = range)
+cellStats(chirpsz, stat = mean)
+cellStats(chirpsz, stat = sum)
+cellStats(chirpsz, stat = range)
+cellStats(chirpsz, summary)
+```
+
+- z dimension stats
+
+```r
+plot(calc(chirpsz, mean))
+plot(calc(chirpsz, sum))
+plot(calc(chirpsz, range))
+```
+---
+
+- neighborhoods
+
+
+```r
+raintot &lt;- calc(chirpsz, stat = sum)
+w &lt;- matrix(1, nrow = 5, ncol = 5)
+rainwindow &lt;- focal(raintot, w = w, fun = mean, na.rm = TRUE)
+rainwindow2 &lt;- focal(raintot, w = w, fun = mean)
+rainwindow3 &lt;- focal(raintot, w = w, fun = sd)
+par(mfrow = c(2, 2), mar = rep(0, 4))
+plot_noaxes(raintot, legend = FALSE)
+plot_noaxes(rainwindow, legend = FALSE)
+plot_noaxes(rainwindow2, legend = FALSE)
+plot_noaxes(rainwindow3, legend = FALSE)
+```
+
+---
+
+- reclassify
+
+
+```r
+raincat &lt;- cut(raintot, breaks = c(0, 50, 100, 200))
+cols &lt;- c("grey70", "lightblue", "lightgreen")
+plot_noaxes(raincat, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+```
+
+
+```r
+rain &lt;- cellStats(raintot, range)
+rain_3 &lt;- cbind(c(floor(rain[1]), 50, 100),
+                 c(50, 100, ceiling(rain[2])), 1:3)
+raincat2 &lt;- reclassify(raintot, rain_3, include.lowest = TRUE)
+plot_noaxes(raincat2, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+```
+
+
 
 ---
 ## Exercises
@@ -331,6 +265,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

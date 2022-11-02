@@ -13,201 +13,29 @@ output:
 
 ## Today
 
-- Challenge from last class
-- Raster intro
-  - classes
-  - dummy rasters
-  - reading and writing
-  - rasterize, raster to vector
+- Exercise
+- Raster intro, cont.
 
 
 ---
-```{r, echo=FALSE, out.width="50%", results='hold'}
-dem1 <- "figures/zam_dem_raster.png"
-dem2 <- "figures/zam_dem_stars.png"
-knitr::include_graphics(c(dem1, dem2))
-```
----
+## Exercise
 
-### Challenge response 1
+- Create a raster `r` that has the extent xmin = 25, xmax = 30, ymin = -12, ymax = -10, and a resolution of 0.1
 
 ```{r, eval=FALSE}
-library(tidyverse)
-library(sf)
+r <- raster(extent(....
 
-districts <- 
-  read_sf(system.file("extdata/districts.shp", package = "geospaar")) %>% 
-  st_transform(4326)
-smallest_district <- districts %>% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  filter(area == min(area))
-smallest_centroid <- smallest_district %>% st_centroid()
-#smallest_centroid coordinates: 28.31101, -15.42664
-small_pol <- st_polygon(list(cbind(x = c(27.81101, 28.81101, 28.81101, 27.81101,
-                                         27.81101), 
-                              y = c(-15.17664, -15.17664, -15.67664, -15.67664, 
-                                   -15.17664)))) %>% 
-  st_sfc %>% st_sf(ID = 1, crs = 4326)
-
-ggplot(districts) + geom_sf() +
-  geom_sf(data = smallest_district, fill = "red") +
-  geom_sf(data = small_pol, col = "blue", fill = "transparent")
 ```
 
----
-### Challenge response 2
+- Populate it with randomly sampled values from between 1:100
 
 ```{r, eval=FALSE}
-smallest_dist <- districts %>% mutate(area=as.numeric(st_area(.))) %>% 
-  filter(area == min(area))
-
-smallest_centroid <- smallest_dist %>% st_centroid(.) 
-
-X <- st_coordinates(smallest_centroid)[,1]
-Y <- st_coordinates(smallest_centroid)[,2]
-
-pol <- st_polygon(list(cbind(x = c(X-0.25, X-0.25, X+0.25, X+0.25, X-0.25), 
-                             y = c(Y-0.125, Y+0.125, Y+0.125, Y-0.125, Y-0.125))))
-
-par(mar = c(0, 0, 0, 0))
-plot(districts %>% st_geometry, col = "grey")
-plot(smallest_dist %>% st_geometry(), col = "red", add = TRUE)
-plot(smallest_centroid%>% st_geometry(), col = "red", pch = 20, add = TRUE)
-plot(pol %>% st_geometry(), border = "blue", lwd = 3, add = TRUE)
-```
-
-
----
-### A quick demo of multi-panel plots
-```{r, eval = FALSE}
-p <- ggplot(districts) + geom_sf() + 
-  geom_sf(data = smallest_centroid, color = "red")
-p
-p1 <- p + geom_sf(data = small_pol, aes(color = as.factor(ID)),
-                  fill = "transparent") + labs(color = "ID")
-small_pol2 <- pol %>% st_sfc() %>% st_sf(crs = 4326) %>% mutate(ID = 1)
-p2 <- p + geom_sf(data = small_pol2, aes(color = as.factor(ID)),  
-                  fill = "transparent") + labs(color = "ID")
-
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-
-g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
-```
-
----
-### `patchwork`
-```{r, eval=FALSE}
-library(patchwork)
-
-p1 + p2 + plot_layout(guides = "collect")
-
-p1 + p1 / p
-(p1 / p) + (p2 / p)
-(p1 + p2) / (p + p)
+values(r) <- ....
 
 ```
+- Create a stack `s` using r and r * 10
+- Convert `s` to a brick `b`
 
-
----
-## Reading/Writing/Manipulating rasters
-
-- create
-```{r, eval = FALSE}
-r <- raster(extent(30, 31, -14, -13), res = 0.1, crs = 4326)
-values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-
-par(mar = c(0, 0, 0, 0))
-plot(districts %>% st_geometry)
-plot(r, add = TRUE)
-
-plot(r)
-
-s <- stack(r, log10(r))
-names(s) <- c("dummy", "log10dummy")
-plot(s)
-
-b <- brick(s)
-brick(list(r, log10(r)))
-plot(b)
-
-b2 <- lapply(1:10, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.1, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %>% stack %>% brick
-plot(b2)
-```
-
----
-### A large brick
-```{r, eval = FALSE}
-b3 <- lapply(1:10, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %>% stack %>% brick
-plot(b3)
-plot(b3[[1]])
-plot(b3[[10]])
-plot(b3[[c(1, 10)]])
-
-```
-
----
-
-- read and write
-
-```{r, eval = FALSE}
-writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
-dir(tempdir())
-# rm(r)
-r <- raster(file.path(tempdir(), "mydummy.tif"))
-plot(r)
-
-brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
-# stack(s, filename = file.path(tempdir(), "mydumbstack.tif"), overwrite = TRUE)
-brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
-brick(file.path(tempdir(), "mydumbrick.tif"))
-brick(file.path(tempdir(), "mydumbrick.grd"))
-```
-
----
-
-- plot
-```{r, eval = FALSE}
-plot(b)
-plot(b2)
-plot_noaxes(b)
-plot_noaxes(b2, main = paste("Random", 1:10))
-plot(b2, main = paste("Random", 1:10))
-plot_noaxes(b, legend = FALSE)
-
-plot_noaxes(b[[1]], legend = FALSE)
-legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
-       bty = "n")
-
-# plotting with larger datasets
-plot_noaxes(b3, main = paste("Random", 1:10))
-plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
-
-rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
-
-rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b[[1]])
-rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
-  scale_fill_viridis_c()
-ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
-  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
-  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
-stars::st_as_stars(b) %>% plot(col = viridis::viridis(10))
-stars::st_as_stars(b) %>% plot()
-```
 
 ---
 ## Raster to other types
@@ -271,6 +99,91 @@ distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
 - raster algebra
 - statistics
 - z dimension stats
+
+
+---
+## Calculations
+
+```{r, eval=FALSE}
+rf1 <- chirpsz[[1]] + chirpsz[[2]]
+rf2 <- chirpsz[[1]] * 5
+
+mx <- cellStats(rf2, max)
+zl <- c(0, mx)
+par(mfrow = c(2, 2))
+plot(chirpsz[[1]], zlim = zl)
+plot(chirpsz[[2]], zlim = zl)
+plot(rf1, zlim = zl)
+plot(rf2, zlim = zl)
+
+# dev.off()
+plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
+
+```
+
+- statistics
+```{r, eval=FALSE}
+# mean(c(1, 4, 10, NA), na.rm = TRUE)
+cellStats(chirpsz[[1]], stat = mean)
+cellStats(chirpsz[[1]], stat = range)
+cellStats(chirpsz, stat = mean)
+cellStats(chirpsz, stat = sum)
+cellStats(chirpsz, stat = range)
+cellStats(chirpsz, summary)
+```
+
+- z dimension stats
+```{r, eval=FALSE}
+plot(calc(chirpsz, mean))
+plot(calc(chirpsz, sum))
+plot(calc(chirpsz, range))
+```
+---
+
+- neighborhoods
+
+```{r, eval=FALSE}
+raintot <- calc(chirpsz, stat = sum)
+w <- matrix(1, nrow = 5, ncol = 5)
+rainwindow <- focal(raintot, w = w, fun = mean, na.rm = TRUE)
+rainwindow2 <- focal(raintot, w = w, fun = mean)
+rainwindow3 <- focal(raintot, w = w, fun = sd)
+par(mfrow = c(2, 2), mar = rep(0, 4))
+plot_noaxes(raintot, legend = FALSE)
+plot_noaxes(rainwindow, legend = FALSE)
+plot_noaxes(rainwindow2, legend = FALSE)
+plot_noaxes(rainwindow3, legend = FALSE)
+```
+
+---
+
+- reclassify
+
+```{r, eval=FALSE}
+raincat <- cut(raintot, breaks = c(0, 50, 100, 200))
+cols <- c("grey70", "lightblue", "lightgreen")
+plot_noaxes(raincat, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+```
+
+```{r, eval=FALSE}
+rain <- cellStats(raintot, range)
+rain_3 <- cbind(c(floor(rain[1]), 50, 100),
+                 c(50, 100, ceiling(rain[2])), 1:3)
+raincat2 <- reclassify(raintot, rain_3, include.lowest = TRUE)
+plot_noaxes(raincat2, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+
+```
+
+
 
 ---
 ## Exercises

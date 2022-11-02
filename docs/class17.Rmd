@@ -35,10 +35,10 @@ knitr::include_graphics(c(dem1, dem2))
 p <- ggplot(districts) + geom_sf() + 
   geom_sf(data = smallest_centroid, color = "red")
 p
-p1 <- p + geom_sf(data = small_pol, aes(color = as.factor(ID)),
+p1 <- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),
                   fill = "transparent") + labs(color = "ID")
-small_pol2 <- pol %>% st_sfc() %>% st_sf(crs = 4326) %>% mutate(ID = 1)
-p2 <- p + geom_sf(data = small_pol2, aes(color = as.factor(ID)),  
+# small_pol2 <- pol %>% st_sfc() %>% st_sf(crs = 4326) %>% mutate(ID = 1)
+p2 <- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),  
                   fill = "transparent") + labs(color = "ID")
 
 gridExtra::grid.arrange(p1, p2, ncol = 2)
@@ -46,6 +46,10 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
                          p2 + theme(legend.position = "none"))
 cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
+
+library(patchwork)
+(p1 / p2) | p2 + plot_layout(guides = "collect")
+
 ```
 
 ---
@@ -67,6 +71,7 @@ p1 + p1 / p
 
 - create
 ```{r, eval = FALSE}
+library(raster)
 r <- raster(extent(30, 31, -14, -13), res = 0.1, crs = 4326)
 values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
 
@@ -79,6 +84,7 @@ plot(r)
 s <- stack(r, log10(r))
 names(s) <- c("dummy", "log10dummy")
 plot(s)
+class(s)
 
 b <- brick(s)
 brick(list(r, log10(r)))
@@ -122,11 +128,15 @@ dir(tempdir())
 r <- raster(file.path(tempdir(), "mydummy.tif"))
 plot(r)
 
-brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
+brick(s, filename = file.path(tempdir(), "mybrick.tif"), overwrite = TRUE)
 # stack(s, filename = file.path(tempdir(), "mydumbstack.tif"), overwrite = TRUE)
-brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
-brick(file.path(tempdir(), "mydumbrick.tif"))
-brick(file.path(tempdir(), "mydumbrick.grd"))
+brick(s, filename = file.path(tempdir(), "mybrick.grd"), overwrite = TRUE)
+# brick(s, filename = file.path(tempdir(), "mybrick.rst"), overwrite = TRUE)
+brick(file.path(tempdir(), "mybrick.tif"))
+brick(file.path(tempdir(), "mybrick.grd"))
+
+raster(file.path(tempdir(), "mybrick.tif"))
+
 ```
 
 ---
@@ -148,7 +158,7 @@ legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE,
 plot_noaxes(b3, main = paste("Random", 1:10))
 plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
 
-rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b3)#, #names.attr = paste("Random", 1:10))
 
 rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
 rasterVis::levelplot(b[[1]])
