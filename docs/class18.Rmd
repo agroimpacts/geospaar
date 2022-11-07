@@ -40,11 +40,13 @@ values(r) <- ....
 ---
 ## Raster to other types
 ```{r, eval=FALSE}
+library(dplyr)
 plot(b)
 b[1:10]
 b[1:ncell(b)]
 as.matrix(b)
 as.data.frame(b) %>% as_tibble()
+as_tibble(b)
 ```
 
 
@@ -53,15 +55,18 @@ as.data.frame(b) %>% as_tibble()
 - Aggregating/disaggregating
 ```{r, eval = FALSE}
 aggregate(b, fact = 2) %>% plot
-# aggregate(b, fun = min, fact = 2) %>% plot
-# aggregate(b, fun = sd, fact = 2) %>% plot
+aggregate(b, fun = min, fact = 2) %>% plot
+aggregate(b, fun = sd, fact = 2) %>% plot
 plot(b)
 disaggregate(b, fact = 2) %>% plot
-disaggregate(b, fact = 2, bilinear = TRUE) %>% plot
+par(mar = rep(0, 4))
+disaggregate(b, fact = 2, method = "bilinear") %>% plot
 ```
 
 - Masking
 ```{r, eval = FALSE}
+library(geospaar)
+districts <- st_read(system.file("extdata/districts.shp", package = "geospaar"))
 data(chirps)
 plot_noaxes(chirps[[1]])
 chirpsz <- mask(chirps, districts)
@@ -79,17 +84,26 @@ plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0),
 - Projecting
 ```{r, eval = FALSE}
 roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+chirpsz_alb <- projectRaster(chirpsz, crs = crs(roads), res = 5000)
+# projectRaster(chirpsz, crs = crs(roads))
 chirpsz %>% projectRaster(., crs = crs(roads), res = 5000) -> chirpsz_alb
 chirpsz_alb %>% print
+plot(chirpsz_alb[[1]])
+plot(chirpsz[[1]])
 ```
 
 - Rasterize/vectorize
 ```{r, eval = FALSE}
-distsr <- districts %>% rasterize(., chirpsz)
+# distsr <- districts %>% rasterize(., chirpsz)
+# districts <- districts %>% mutate(ID = sample(1:1000, size = nrow(.)))
+distsr <- rasterize(districts, chirpsz)
+distsr2 <- rasterize(districts, chirpsz, field = "ID")
 distsr %>% plot_noaxes
+class(distsr@data@attributes[[1]])
+distsr2 %>% plot_noaxes
 # stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
 distsr_pol <- rasterToPolygons(distsr, dissolve = TRUE)
-distsr_pol %>% st_as_sf %>% st_geometry %>% plot
+distsr_pol %>% st_as_sf %>% st_geometry() %>% plot()
 distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
 ```
 

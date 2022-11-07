@@ -13,104 +13,27 @@ output:
 
 ## Today
 
-- Challenge from last class
-- Raster intro, continued
-  - rasterize, raster to vector
-  - raster stats
-  - raster math
-  - focal functions
-- Exercises
+- Challenge
+- Raster intro, cont.
 
 ---
-### Challenge example
+## Challenge
 
-```{r, eval=FALSE}
-library(tidyverse)
-library(sf)
+- Create 20 random rasters using lapply
+  - resolution of 0.1
+  - extent of Zambia
+  - convert to brick
+- crop and mask to extent of Zambia’s largest district
+- plot  
 
-districts <- read_sf(
-  system.file("extdata/districts.shp", package = "geospaar")
-) %>% st_transform(4326)
-smallest_district <- districts %>% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  filter(area == min(area))
-smallest_centroid <- smallest_district %>% st_centroid()
-xy <- st_coordinates(smallest_centroid)
-
-minus <- function(a, b) a - b
-rect_pol <- function(width, hgt, xy, crs = 4326) {
-  w <- sapply(c(minus, minus, sum, sum, minus), function(x) x(xy[1], width / 2))
-  h <- sapply(c(minus, sum, sum, minus, minus), function(x) x(xy[2], hgt / 2))
-  l <- list(cbind(w, h))
-  p <- st_polygon(l) %>% st_sfc %>% st_sf(ID = 1:length(l), crs = crs)
-  return(p)
-}  
-pol <- rect_pol(0.5, 0.25, xy)  
-
-ggplot(districts) + geom_sf() +
-  geom_sf(data = smallest_district, fill = "red") +
-  geom_sf(data = pol, col = "blue", fill = "transparent")
-```
 
 ---
-## More on rasters
+## Calculations
 
-- create
-```{r, eval = FALSE}
-library(raster)
+- raster algebra
+- statistics
+- z dimension stats
 
-r <- raster(extent(30, 31, -14, -13), res = 0.1, crs = 4326)
-values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-r2 <- raster(extent(districts[35, ]), res = 0.1, crs = 4326)
-values(r2) <- sample(1:10, size = ncell(r2), replace = TRUE)
-
-par(mar = rep(0, 4))
-plot(districts$geometry)
-plot_noaxes(r, add = TRUE, legend = FALSE)
-plot_noaxes(r2, add = TRUE, legend = FALSE)
-
-s <- stack(r, log10(r))
-names(s) <- c("dummy", "log10dummy")
-plot(s)
-
-b2 <- lapply(1:10, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.1, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %>% stack %>% brick
-```
-
----
-```{r, eval=FALSE}
-b3 <- lapply(1:10, function(x) {
-  r <- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %>% stack %>% brick
-
-data(chirps)
-chirpsz <- mask(chirps, districts)
-chirpsz %>% projectRaster(., crs = "ESRI:102022", res = 5000) -> chirpsz_alb
-plot(chirpsz[[1]])
-plot(chirpsz[["Y16299"]])
-```
-
----
-- Rasterize/vectorize
-```{r, eval = FALSE}
-distsr <- districts %>% rasterize(., chirpsz)
-distsr <- rasterize(districts, chirpsz)
-distsr <- rasterize(districts, chirpsz)
-
-distrs_pol <- rasterToPolygons(distsr, dissolve = TRUE)
-plot(distrs_pol)
-distrs_pol %>% st_as_sf %>% st_geometry %>% plot
-distrs_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
-```
 
 ---
 ## Calculations
@@ -144,6 +67,7 @@ cellStats(chirpsz, stat = range)
 cellStats(chirpsz, summary)
 ```
 
+---
 - z dimension stats
 ```{r, eval=FALSE}
 plot(calc(chirpsz, mean))
@@ -199,10 +123,73 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
 
 - Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
 - Reproject to Albers
-- Disaggregate to 0.02 degrees
+- Disaggregate to 0.02 degrees (bilinear and NGB)
 - Calculate the sum of rainfall from `chirps`
 - Identify all areas of total rainfall > 10 mm
 - Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+---
+## Terrain analysis with zonal statistics
+
+```{r, eval=FALSE}
+districts <- districts %>% mutate(ID = 1:nrow(.))
+distsr <- districts %>% rasterize(x = ., y = raintot, field = "ID") %>% print()
+plot(distsr)
+
+# Download DEM
+data(dem)
+# dem <- getData(name = "alt", country = "ZMB", path = tempdir())
+dem <- getData(name = "worldclim", var = 'tmean', res = 2.5,  path = tempdir())
+
+# calculate slope
+slope <- terrain(x = dem, opt = 'slope', unit = 'degrees')
+plot(slope)
+
+# calculate mean by district
+distsr_rs <- resample(x = distsr, y = slope, method = "ngb")
+zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean")
+hist(zoneslope[, 2])
+zoneelevation <- zonal(x = dem, z = distsr_rs, fun = "mean")
+hist(zoneelevation[, 2])
+```
+---
+
+```{r, eval=FALSE}
+# map zonal statistics
+distr_slopezone <- zoneslope %>% data.frame %>%  
+  subs(x = distsr_rs, y = ., by = "zone")
+distr_elezone <- zoneelevation %>% data.frame %>% 
+  subs(x = distsr_rs, y = ., by = "zone")
+
+# plot
+l <- list(distr_elezone, distr_slopezone)
+titles <- c("Elevation", "Slope")
+par(mfrow = c(1, 2))
+for(i in 1:length(l)) {
+  plot_noaxes(l[[i]], main = titles[i])
+}
+```
+
+---
+## Climate data summaries and zonal stats
+
+```{r, eval=FALSE}
+# rainfall <- getData(name = "worldclim", res = 10, var = 'tmax',
+#                     path = tempdir())
+# dt <- as.Date(gsub("Y", "", names(chirpsz)), format = "%y%j")
+dt <- lubridate::parse_date_time(gsub("Y", "", names(chirpsz)), orders = "yj")
+wk <- lubridate::week(dt)
+weekly_rainfall <- lapply(unique(wk), function(x) {
+  which(wk == x)
+  calc(chirpsz[[which(wk == x)]], sum)
+}) %>% stack(.)
+names(weekly_rainfall) <- paste0("wk", unique(wk))
+
+rflim <- range(cellStats(weekly_rainfall, range))
+plot(stack(weekly_rainfall), zlim = rflim)
+```
+
+
 
 
 

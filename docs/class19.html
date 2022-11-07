@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,102 +13,39 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 19
+]
 
 ---
 
 
 ## Today
 
-- Challenge from last class
-- Raster intro, continued
-  - rasterize, raster to vector
-  - raster stats
-  - raster math
-  - focal functions
-- Exercises
+- Challenge
+- Raster intro, cont.
 
 ---
-### Challenge example
+## Challenge
 
+- Create 20 random rasters using lapply
+  - resolution of 0.1
+  - extent of Zambia
+  - convert to brick
+- crop and mask to extent of Zambia’s largest district
+- plot  
 
-```r
-library(tidyverse)
-library(sf)
-
-districts &lt;- read_sf(
-  system.file("extdata/districts.shp", package = "geospaar")
-) %&gt;% st_transform(4326)
-smallest_district &lt;- districts %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  filter(area == min(area))
-smallest_centroid &lt;- smallest_district %&gt;% st_centroid()
-xy &lt;- st_coordinates(smallest_centroid)
-
-minus &lt;- function(a, b) a - b
-rect_pol &lt;- function(width, hgt, xy, crs = 4326) {
-  w &lt;- sapply(c(minus, minus, sum, sum, minus), function(x) x(xy[1], width / 2))
-  h &lt;- sapply(c(minus, sum, sum, minus, minus), function(x) x(xy[2], hgt / 2))
-  l &lt;- list(cbind(w, h))
-  p &lt;- st_polygon(l) %&gt;% st_sfc %&gt;% st_sf(ID = 1:length(l), crs = crs)
-  return(p)
-}  
-pol &lt;- rect_pol(0.5, 0.25, xy)  
-
-ggplot(districts) + geom_sf() +
-  geom_sf(data = smallest_district, fill = "red") +
-  geom_sf(data = pol, col = "blue", fill = "transparent")
-```
 
 ---
-## More on rasters
+## Calculations
 
-- create
+- raster algebra
+- statistics
+- z dimension stats
 
-```r
-library(raster)
-r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, crs = 4326)
-values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-
-s &lt;- stack(r, log10(r))
-names(s) &lt;- c("dummy", "log10dummy")
-plot(s)
-
-b2 &lt;- lapply(1:10, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %&gt;% stack %&gt;% brick
-```
-
----
-
-```r
-b3 &lt;- lapply(1:10, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.001, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %&gt;% stack %&gt;% brick
-
-data(chirps)
-chirpsz &lt;- mask(chirps, districts)
-chirpsz %&gt;% projectRaster(., crs = "ESRI:102022", res = 5000) -&gt; chirpsz_alb
-```
-
----
-- Rasterize/vectorize
-
-```r
-distsr &lt;- districts %&gt;% rasterize(., chirpsz)
-distsr %&gt;% plot_noaxes
-distsr_pol %&gt;% st_as_sf %&gt;% st_geometry %&gt;% plot
-distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
-```
 
 ---
 ## Calculations
@@ -116,20 +53,34 @@ distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
 
 ```r
 rf1 &lt;- chirpsz[[1]] + chirpsz[[2]]
-plot(rf1)
+rf2 &lt;- chirpsz[[1]] * 5
+
+mx &lt;- cellStats(rf2, max)
+zl &lt;- c(0, mx)
+par(mfrow = c(2, 2))
+plot(chirpsz[[1]], zlim = zl)
+plot(chirpsz[[2]], zlim = zl)
+plot(rf1, zlim = zl)
+plot(rf2, zlim = zl)
+
+# dev.off()
 plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
 ```
 
 - statistics
 
 ```r
+# mean(c(1, 4, 10, NA), na.rm = TRUE)
 cellStats(chirpsz[[1]], stat = mean)
 cellStats(chirpsz[[1]], stat = range)
 cellStats(chirpsz, stat = mean)
 cellStats(chirpsz, stat = sum)
 cellStats(chirpsz, stat = range)
+cellStats(chirpsz, summary)
 ```
 
+---
 - z dimension stats
 
 ```r
@@ -143,8 +94,16 @@ plot(calc(chirpsz, range))
 
 
 ```r
+raintot &lt;- calc(chirpsz, stat = sum)
 w &lt;- matrix(1, nrow = 5, ncol = 5)
 rainwindow &lt;- focal(raintot, w = w, fun = mean, na.rm = TRUE)
+rainwindow2 &lt;- focal(raintot, w = w, fun = mean)
+rainwindow3 &lt;- focal(raintot, w = w, fun = sd)
+par(mfrow = c(2, 2), mar = rep(0, 4))
+plot_noaxes(raintot, legend = FALSE)
+plot_noaxes(rainwindow, legend = FALSE)
+plot_noaxes(rainwindow2, legend = FALSE)
+plot_noaxes(rainwindow3, legend = FALSE)
 ```
 
 ---
@@ -153,7 +112,7 @@ rainwindow &lt;- focal(raintot, w = w, fun = mean, na.rm = TRUE)
 
 
 ```r
-raincat &lt;- cut(calc(chirpsz, sum), breaks = c(0, 50, 100, 200))
+raincat &lt;- cut(raintot, breaks = c(0, 50, 100, 200))
 cols &lt;- c("grey70", "lightblue", "lightgreen")
 plot_noaxes(raincat, col = cols,
             legend = FALSE,  main = "Total Rainfall",
@@ -164,15 +123,16 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
 
 
 ```r
-raintot &lt;- calc(chirpsz, fun = sum)
 rain &lt;- cellStats(raintot, range)
 rain_3 &lt;- cbind(c(floor(rain[1]), 50, 100),
                  c(50, 100, ceiling(rain[2])), 1:3)
-raincat &lt;- reclassify(raintot, rain_3, include.lowest = TRUE)
+raincat2 &lt;- reclassify(raintot, rain_3, include.lowest = TRUE)
+plot_noaxes(raincat2, col = cols,
+            legend = FALSE,  main = "Total Rainfall",
+            mar = c(0, 0, 1, 0))
+legend(x = "bottomright", legend = c("high", "medium", "low"),
+       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
-
-
-
 
 ---
 ## Exercises
@@ -183,6 +143,72 @@ raincat &lt;- reclassify(raintot, rain_3, include.lowest = TRUE)
 - Calculate the sum of rainfall from `chirps`
 - Identify all areas of total rainfall &gt; 10 mm
 - Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+---
+## Terrain analysis with zonal statistics
+
+
+```r
+districts &lt;- districts %&gt;% mutate(ID = 1:nrow(.))
+distsr &lt;- districts %&gt;% rasterize(x = ., y = raintot, field = "ID") %&gt;% print()
+plot(distsr)
+
+# Download DEM
+data(dem)
+# dem &lt;- getData(name = "alt", country = "ZMB", path = tempdir())
+dem &lt;- getData(name = "worldclim", var = 'tmean', res = 2.5,  path = tempdir())
+
+# calculate slope
+slope &lt;- terrain(x = dem, opt = 'slope', unit = 'degrees')
+plot(slope)
+
+# calculate mean by district
+distsr_rs &lt;- resample(x = distsr, y = slope, method = "ngb")
+zoneslope &lt;- zonal(x = slope, z = distsr_rs, fun = "mean")
+hist(zoneslope[, 2])
+zoneelevation &lt;- zonal(x = dem, z = distsr_rs, fun = "mean")
+hist(zoneelevation[, 2])
+```
+---
+
+
+```r
+# map zonal statistics
+distr_slopezone &lt;- zoneslope %&gt;% data.frame %&gt;%  
+  subs(x = distsr_rs, y = ., by = "zone")
+distr_elezone &lt;- zoneelevation %&gt;% data.frame %&gt;% 
+  subs(x = distsr_rs, y = ., by = "zone")
+
+# plot
+l &lt;- list(distr_elezone, distr_slopezone)
+titles &lt;- c("Elevation", "Slope")
+par(mfrow = c(1, 2))
+for(i in 1:length(l)) {
+  plot_noaxes(l[[i]], main = titles[i])
+}
+```
+
+---
+## Climate data summaries and zonal stats
+
+
+```r
+# rainfall &lt;- getData(name = "worldclim", res = 10, var = 'tmax',
+#                     path = tempdir())
+# dt &lt;- as.Date(gsub("Y", "", names(chirpsz)), format = "%y%j")
+dt &lt;- lubridate::parse_date_time(gsub("Y", "", names(chirpsz)), orders = "yj")
+wk &lt;- lubridate::week(dt)
+weekly_rainfall &lt;- lapply(unique(wk), function(x) {
+  which(wk == x)
+  calc(chirpsz[[which(wk == x)]], sum)
+}) %&gt;% stack(.)
+names(weekly_rainfall) &lt;- paste0("wk", unique(wk))
+
+rflim &lt;- range(cellStats(weekly_rainfall, range))
+plot(stack(weekly_rainfall), zlim = rflim)
+```
+
+
 
 
 
@@ -233,6 +259,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

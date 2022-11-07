@@ -3,7 +3,7 @@
 
 ## Fall 2022
 
-Updated on: 2022-11-02
+Updated on: 2022-11-07
 
 <center>
 
@@ -79,6 +79,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 17 slides](class17.html)
     -   [Class 18 slides](class18.html)
 -   Week 11
+    -   [Class 19 slides](class19.html)
     -   Assignment 5 due
 -   Week 12
     -   Project overview assignment due
