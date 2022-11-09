@@ -39,6 +39,7 @@ output:
 ## Calculations
 
 ```{r, eval=FALSE}
+library(geospaar)
 rf1 <- chirpsz[[1]] + chirpsz[[2]]
 rf2 <- chirpsz[[1]] * 5
 
@@ -49,11 +50,12 @@ plot(chirpsz[[1]], zlim = zl)
 plot(chirpsz[[2]], zlim = zl)
 plot(rf1, zlim = zl)
 plot(rf2, zlim = zl)
+plot(stack(rf1, rf2))
+plot(stack(rf1, rf2), zlim = zl)
 
 # dev.off()
 plot(rf1 / 1000)
 plot(((log10(rf1 + 1) * 10) / 5)^2)
-
 ```
 
 - statistics
@@ -73,13 +75,18 @@ cellStats(chirpsz, summary)
 plot(calc(chirpsz, mean))
 plot(calc(chirpsz, sum))
 plot(calc(chirpsz, range))
+?modal
+plot(calc(round(chirpsz, 0), modal))
+plot(calc(chirpsz, modal))
+v <- values(calc(chirpsz, modal))
+table(v[!is.na(v)])
 ```
 ---
 
 - neighborhoods
 
 ```{r, eval=FALSE}
-raintot <- calc(chirpsz, stat = sum)
+raintot <- calc(chirpsz, sum)
 w <- matrix(1, nrow = 5, ncol = 5)
 rainwindow <- focal(raintot, w = w, fun = mean, na.rm = TRUE)
 rainwindow2 <- focal(raintot, w = w, fun = mean)
