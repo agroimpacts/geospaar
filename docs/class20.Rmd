@@ -40,12 +40,14 @@ r <- raster(extent(districts[49, ]), res = 0.1, crs = 4326)
 set.seed(1)
 values(r) <- sample(1:100, size = ncell(r), replace = TRUE)
 plot_noaxes(r)
+plot(districts[49, ]$geometry, add = TRUE)
 ```
 
 - Reproject to Albers
 ```{r, eval=FALSE}
 ralb <- projectRaster(r, crs = "ESRI:102022", 
                       res = c(13000, 11000), method = "ngb")
+ralb <- projectRaster(r, crs = "ESRI:102022", res = c(13000, 13000))
 par(mfrow = c(1, 2))
 plot_noaxes(r)
 plot_noaxes(ralb)
@@ -77,12 +79,12 @@ plot(rains, main = c("Rain > 10mm", "Rain > 50mm", "Rain > 100mm"))
 ```
 - Calculate the mean rainfall in Zambia for the 15th day in `chirps`
 ```{r, eval=FALSE}
-# rainmean <- calc(chirpsz[[15]], mean)
+rainmean <- calc(chirpsz, mean)
 cellStats(chirpsz[[15]], mean)
 hist(chirpsz[[15]], breaks = seq(0, 12, 2))
 freq(chirpsz[[15]])
 plot(rainmean)
-plot(rainmean)
+# plot(rainmean)
 ```
 
 ---
@@ -91,22 +93,26 @@ plot(rainmean)
 ```{r, eval=FALSE}
 districts <- districts %>% mutate(ID = 1:nrow(.))
 distsr <- districts %>% rasterize(x = ., y = raintot, field = "ID") %>% print()
+(distrs <- rasterize(x = districts, y = raintot, field = "ID"))
 plot(distsr)
+# rm(distrs)
 
 # Download DEM
 data(dem)
 
-# dem <- getData(name = "alt", country = "ZMB", path = tempdir())
-dem <- getData(name = "worldclim", var = 'tmean', res = 2.5,  path = tempdir())
+dem <- getData(name = "alt", country = "ZMB", path = tempdir())
+tmean <- getData(name = "worldclim", var = 'tmean', res = 2.5,  path = tempdir())
+plot(tmean)
 
 # calculate slope
 slope <- terrain(x = dem, opt = 'slope', unit = 'degrees')
-plot(slope)
+plot(stack(dem, slope))
 
 # calculate mean by district
 distsr_rs <- resample(x = distsr, y = slope, method = "ngb")
-zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean")
+(zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean"))
 hist(zoneslope[, 2])
+
 zoneelevation <- zonal(x = dem, z = distsr_rs, fun = "mean")
 hist(zoneelevation[, 2])
 
@@ -134,8 +140,8 @@ for(i in 1:length(l)) {
 # dt <- as.Date(gsub("Y", "", names(chirpsz)), format = "%y%j")
 dt <- lubridate::parse_date_time(gsub("Y", "", names(chirpsz)), orders = "yj")
 wk <- lubridate::week(dt)
-weekly_rainfall <- lapply(unique(wk), function(x) {
-  which(wk == x)
+weekly_rainfall <- lapply(unique(wk), function(x) {  # x <- 45
+  # which(wk == x)
   calc(chirpsz[[which(wk == x)]], sum)
 }) %>% stack(.)
 names(weekly_rainfall) <- paste0("wk", unique(wk))
@@ -189,10 +195,53 @@ system.time(b2 <- lapply(1:2000, function(x) {
 
 ## Exercises
 
-- Use the terrain function to calculate the terrain aspect in Zambia. 
+- Use the terrain function to calculate the terrain aspect in Zambia.
+
+```{r}
+asp <- terrain(dem, opt = "aspect", unit = "degrees")
+plot(asp)
+```
+
 - Reclassify the aspect into North, South, East, West (classes 1:4)
+
+```{r}
+# version 1
+aspclass <- stack(
+  list(
+    asp > 45 & asp <= 135, 
+    asp > 135 & asp <= 225, 
+    asp > 225 & asp <= 315, 
+    asp > 315 | asp <= 45 
+  )
+)
+
+plot(calc(stack(aspclass) * 1:4, sum))
+
+# version 2
+rcl <- cbind(
+  c(45, 135, 225, 315, 0), 
+  c(135, 225, 315, 360, 45), 
+  c(2:4, 1, 1)
+)
+
+# reclassify
+plot(reclassify(asp, rcl = rcl))
+
+```
+
 - Calculate the most frequently occurring aspect in each district (use the `modal`) function
+
+```{r}
+zonal(.., distrs)
+```
+
 - Calculate the average total rainfall (from `raintot`) in each aspect class
+
+```{r}
+
+```
+
+
 - Bonus: Calculate the mean of rainfall for all pixels in Chirps (day 15) where rainfall is greater than 0.
 
 

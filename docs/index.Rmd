@@ -88,6 +88,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 20 slides](class20.html)  
   - Assignment 5 due
 - Week 12
+  - [Class 21 slides](class21.html)  
   - Project overview assignment due
 - Week 13-15
 
