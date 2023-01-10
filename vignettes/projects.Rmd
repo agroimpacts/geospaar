@@ -51,6 +51,7 @@ For this assignment, you should write a single vignette called "overview.Rmd", w
 
 ## An additional note for teams
 For this last assignment, it doesn't make sense that team members do separate work in different branches of the repo, with the exception of cases where data fetching and wrangling tasks needed to describe and visualize the data are partitioned between members. In this case, team members should have separate vignettes in their respective branches describing the data gathering and processing steps to date. Otherwise, the expectation is that this assignment is presented as a jointly written vignette that builds with the package in the master branch. Please put your initials next to sections that you were responsible for writing. If you want to get really advanced, you can each jointly work on a version of overview in your own branches, and then do a merge and reconcile of your differing version in the master branch. 
+
 ***
 <center>
 [Back to home](index.html)
@@ -121,54 +122,45 @@ This list is currently in thumbnail form, and will fill out during the next few 
 
 # Potential project list{#project-list}
 ## USF projects
-The following projects build upon data developed for an ongoing project funded by the Urban Studies Foundation, which is found in the [`USF` repo](https://github.com/agroimpacts/USF):
 
-### Identifying potential risky locations for San Francisco property crime
+### Are neighborhoods with public housing more brightly lit than those without? 
 
-The `USF` package has information on historic crime and land use data for San Francisco, for the years 2007 and 2019. The purpose of this assignment is to critically assess what leads the police to surveil some spaces more than others. An analysis of what type of locations are deemed risky will shed some light on the factors that bias police activity by questioning the assumption that some spaces attract more crime than others. For this assignment, clean up the crime dataset and create a variable for property crime (as defined by to the [National Institute of Justice](https://nij.ojp.gov/topics/crime/property-crimes)) for both years. With historical land use data, identify what these locations might be (`property_class_code_definition` for specifics on land use and `use_definition` to group by categories). A socioeconomic analysis (census data) would add more layers to the analysis.
+Following up on the previous semester's [work](https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md) (and processed further for the Urban Studies Foundation summer institute) that used VIIRS nightlights data to show that New York neighborhoods with public housing are more brightly lit than comparable neighborhoods without, we want to extend this analysis to other cities. 
 
-### Temporal analysis of crime for San Francisco. 
-
-With the `USF` crime data for the years 2007 and 2019, this project would identifying which areas of San Francisco are riskier at what times of the day/season. How is the temporal distribution of crime in 2007 different from 2019, for either property crime or general crime. This analysis could be based on police districts, while a socioeconomic analysis (census income, population data) that goes with the temporal analysis would add context to the areas that appear to be "risky".
-
-### Can surveillance floodlighting be detected using VIIRS nightlights?
-Using known [locations and dates](https://due-parsons.github.io/methods3-fall2017/projects/comparative-location-data-of-nypd-lighting-in-harlem/) of floodlight deployments from Harlem: 
-
-1. Part 1
-
-    - Collect time series of VIIRS night light data from Google Earth Engine (using `rgee`) over those points on a long-ish time series on either side of the deployment dates
-    - Calculate the size of the night light anomalies for those points for date intervals covering the deployments
-
-
-2. Part 2
-
-    - Collect night lights over locations and around and through dates of known Black Lives Matters protests. 
-    - Repeating the part 1 analysis, are nightlight anomalies visible around those locations and dates
-
-
-3. Part 3
-
-    - Collect night lights over public housing projects and neighborhoods of similar structure and population density
-    - Is there a difference in night light intensities between the two groups?
+This will entail collecting data on public housing projects and building footpoints from other US cities, and then collecting and analyzing the nightlights data following the steps in the previous project. 
 
 
 ## Analyzing Ghanaian croplands 
-The [Mapping Africa](http://mappingafrica.io) project has recently used an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. The resulting outputs include vector representations of field boundaries, as well as 3 m cropland probabilities, divided into ~8,000 0.05$^\circ$ tiles. This is a large and rich dataset, and there are a number of possible projects that can be made from this. Among the potential projects are: 
-### Evaluating field characteristics over three years
-Use three years (2018, 2020, and 2021) of field boundary data in Central Ghana to assess the average size of fields (is there any change over time?) and how much fields shift from year to year.
 
-## Analyzing agro-climatological data 
-### Over Zambia
-#### Quantify Zambia's maize planting season
-Use the SMS data to analyze the start and end of the maize planting season and how that varies across Zambia, for the 2016-2017 growing season. Do the same using vegetation index curves over known cropland locations, extracted from GEE using the `rgee` packaged, with start and end of season identified using percentiles relative to peak and other metrics. How well do SMS and VI-based planting date estimates correspond? How long was the season from planting to harvest?  What was the average start date, and how did it vary throughout the country? What was the average harvest date, and how did it vary throughout the country?
+The Agricultural Impacts Research Group has undertaken several projects focussed on Ghainaian croplands over the past several years. These include the [Mapping Africa](http://mappingafrica.io) project, which has applied an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. Another project involves work with [Farmerline](https://farmerline.co/), a farmer services provider, for the Enabling Crop Analytics at Scale (ECAAS) project, to [develop innovative methods](https://cropanalytics.net/cropland-mapping/) for collecting ground truth on crop types and using these to map crop types. 
 
-#### Evaluate the skill of gridded weather products
-Compare the incoming shortwave solar radiation, temperature, and other variables measured by our new sensor pod network to comparable remotely sensed datasets. How well do the various temperature measures correlate with MODIS's Land Surface Temperature (LST)? Is MODIS LST good enough for measuring daily air temperatures at fine scales? How well do the sensors' incoming shortwave radiation correlate with gridded solar radiation datasets (e.g. NASA Power)?  
+There are several possible projects available from these projects. 
 
-### Do farming communities vary their planting dates to adapt to rainfall uncertainty? 
-Put another way, do farming communities in areas with higher rainfall variability show higher variability between farmers in terms of when crops are planted?  We hypothesize that this might be the case, as it might be a community-level adaptive response for dealing with climatic uncertainty.  
+From the Mapping Africa data:
 
-This analysis would be undertaken using remotely sensed datasets: NDVI time series, gridded rainfall datasets, and a cropland mask. The NDVI time series are processed into values that identify the date of green-up over ~18 years. The rainfall data should be used to calculate the coefficient of variation (CV) of rainfall in the first 2 months of the growing season, and the long-term mean rainfall. Comparing croplands from areas of similar mean rainfall, see if there is a relationship between CV of rainfall and CV of green-up date. 
+### Assess field size and shape through Ghana
+Working with a set of cropland predictions at 3 m resolution throughout Ghana, convert the predictions to individual field boundaries using python scripts plus R, and then estimate field sizes throughout the region. Can this dataset be used to identify center pivot irrigation?  
+
+From the ECAAS project:
+
+### Map crop types using Class 3 labels
+Building on an analysis that was already, we want to recreate a crop type map for Northern Ghana using a pure R implementation of a 2-step Random Forests analysis: 
+
+- Step 1: Train and test a Random Forests model
+- Step 2: Use the trained model to map predictions throughout Northern Ghana
+- Step 3: Identify highest likelihood predictions, and convert these to new training labels
+- Step 4: Retrain models, map predictions, and assess change between first and second map. 
+
+The code for this is complex but has already been worked out, so this a good example of adapting existing code to perform an analysis. 
+
+### Filter updated crop type predictions through field boundaries
+Use a cropland layers from the Mapping Africa project to filter that predicted crop type map so that the predictions are confined to known fields.  
+
+### Compare crop type predictions to drone labels
+
+Working with an extensive set of manually digitized labels captured in from drone imagery over two areas of Ghana, compare the crop type predictions from the Random Forests model to the drone labels.  Calculate model performance metrics, and map the correspondence. 
+
+
 
 ## In Sutton, MA
 Continuing analyses of UAS, satellite, and sensor datasets collected during the past four summers in Sutton MA. 
