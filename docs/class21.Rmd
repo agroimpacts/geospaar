@@ -33,9 +33,9 @@ output:
 ```{r, eval=FALSE}
 library(geospaar)
 data(chirps)
-chirpsz <- mask(chirps, districts)
 districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"), 
                      crs = 4326) %>% mutate(ID = 1:nrow(.))
+chirpsz <- mask(chirps, districts)
 distsr <- districts %>% rasterize(x = ., y = chirpsz, field = "ID") 
 data(dem)
 ```
@@ -57,14 +57,17 @@ nesw <- stack(
     W = (aspect > 225 & aspect <= 315) * 4
   )
 )
-plot(nesw - cut(aspect, c(0, 45, 135, 225, 315)))
+# plot(calc(nesw, sum))
+# plot(nesw - cut(aspect, c(0, 45, 135, 225, 315)))
 m <- cbind(
   c(0, 45, 135, 225, 315),
   c(45, 135, 225, 315, 360), 
   c(1:4, 1)
 )
-plot(nesw - reclassify(aspect, rcl = m, include.lowest = TRUE))
 nesw <- calc(nesw, sum)
+par(mar = rep(0, 4))
+plot(nesw - reclassify(aspect, rcl = m, include.lowest = TRUE))
+
 names(nesw) <- "NESW"
 plot(stack(aspect, nesw))
 ```
@@ -91,6 +94,7 @@ zonal(x = calc(chirpsz, sum), z = nesw_rs, fun = "mean")
 - Bonus: Calculate the mean of rainfall for all pixels in Chirps (day 15) where rainfall is greater than 0.
 
 ```{r, eval=FALSE}
+# plot(mask(chirpsz[[15]], chirpsz[[15]] > 0, maskvalue = 0))
 cellStats(mask(chirpsz[[15]], chirpsz[[15]] > 0, maskvalue = 0), mean)
 rf_day15 <- chirpsz[[15]]
 rf_day15[rf_day15 == 0] <- NA
@@ -149,7 +153,8 @@ library(mapview)
 mapview(districts)
 viewRGB(x = chirpsz[[1:3]])
 # mapView(districts, alpha.regions = 1, legend = FALSE)
-mapView(districts, alpha.regions = 0, legend = FALSE) + mapview(raintot) 
+mapView(districts, alpha.regions = 0, legend = FALSE) + 
+  mapview(raintot) 
 
 kili_data <- system.file("extdata", "kiliNDVI.tif", package = "mapview") %>%
   raster::stack(.)
@@ -162,7 +167,8 @@ mapview(kili_data[[c(1, 10, 23)]])
 library(tmap)
 data(World)
 # tmaptools::palette_explorer()
-tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
+tm_shape(raintot) + 
+  tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
   tm_shape(districts) + tm_borders() + 
   tm_layout(bg.color = "grey", inner.margins = 0.1) # +
   # tm_shape(World) + tm_borders()
@@ -252,7 +258,7 @@ ggplot() + geom_sf(data = nc, aes(fill = AREA))
 nc_3857 <- sf::st_transform(nc, "+init=epsg:3857")
 p2 <- ggplot() +
   geom_sf(data = nc) +
-  geom_sf(data = nc_3857, colour = "red", fill = NA)
+  geom_sf(data = nc_3857, colour = "red")#, aes(fill = AREA))
 ggplotly(p2)
 ```
 
@@ -318,6 +324,7 @@ summary(mod)
 # Evaluation
 pred <- predict(mod, newdata = test %>% dplyr::select(-c(crop)))
 cm <- table(test$crop, pred)
+# sum(diag(cm)) / sum(cm)
 
 rf_results <- list("train" = train, "test" = test, "mod" = mod, "pred" = pred,
                    "error_mat" = cm)
