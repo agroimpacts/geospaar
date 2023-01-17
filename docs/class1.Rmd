@@ -36,6 +36,7 @@ dev.off()
 
 - COVID preparedness (revised)
 - Zoom considerations
+- 
 
 ---
 
@@ -81,12 +82,15 @@ knitr::include_graphics("figures/class1_2.png")
 
 ## Getting Set Up/Homework
 
-- Get yourself a GitHub account, if you haven't
-- Send us your GitHub name (**!!**)
-- Install all necessary software on your local computer(s).
-- Set up your [personal access token](https://agroimpacts.github.io/geospaar/git-github.html)
-- Go to our GitHub group page [agroimpacts](https://github.com/agroimpacts) and get yourself familiar with it (Repositories, People, Teams, etc.)
-- **Read** Unit1-Module 1 before section 3.2.1, section 1.7 Style in Syllabus, and cheatsheet of RStudio and R markdown.
+- [Github](https://github.com/)
+  - Get yourself a GitHub account, if you haven't
+  - Send us your GitHub name (**!!**)
+  - Set up your [personal access token](https://agroimpacts.github.io/geospaar/git-github.html)
+  - Go to our GitHub group page [agroimpacts](https://github.com/agroimpacts) and get yourself familiar with it (Repositories, People, Teams, etc.)
+- [Install](software-installation.html)
+  - Install all necessary software on your local computer(s).
+- **Read** 
+  - Unit1-Module 1 before section 3.2.1, section 1.7 Style in Syllabus, and cheatsheet of RStudio and R markdown.
 
 
 

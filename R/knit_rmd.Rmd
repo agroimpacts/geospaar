@@ -17,7 +17,9 @@ That gets the two core pieces of the website. Now have to write vignettes into t
 rmds <- dir(here::here("vignettes"), pattern = "Rmd", full.names = TRUE)
 
 for(i in 1:length(rmds)) {
+  print(i)
   ifile <- rmds[i]
+  print(ifile)
   ohtml <- here::here("docs", 
                       paste0(gsub("\\.Rmd", "", basename(ifile)), ".html"))
   # print(glue::glue("Writing {basename(ohtml)}"))
@@ -43,7 +45,7 @@ ifile <- rmds[grep("syllabus", rmds)]
 # ifile <- rmds[grep("unit2-module2a", rmds)]
 # ifile <- rmds[grep("unit2-module2b", rmds)]
 # ifile <- rmds[grep("unit1-module4", rmds)]
-ifile <- rmds[grep("projects", rmds)]
+#ifile <- rmds[grep("projects", rmds)]
 # ifile <- rmds[grep("syllabus", rmds)]
 ohtml <- here::here("docs",
                     paste0(gsub("\\.Rmd", "", basename(ifile)), ".html"))

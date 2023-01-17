@@ -28,7 +28,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
-Lyndon Estes   | EORS Lab (**Virtual appointments only**) | Tuesday 1300-1500 
+Michael Cecil   | EORS Lab (**Virtual appointments only**) | Tuesday 1300-1500 
 Arman Bajracharya | Location TBD  | Hours TBD
 
 ## Philosophy
@@ -77,7 +77,7 @@ Your progress in this class will be assessed as follows:
 # a <- c(20, 30, 40)
 # a / sum(a)
 mat <- rbind(c("Practical assignments (n=5)", "60% of grade", "50% of grade"), 
-             c("Partcipiation)", "5% of grade", "5% of grade"),
+             c("Partcipiation", "5% of grade", "5% of grade"),
             c("Overview for final semester project", "10% of grade", 
               "15% of grade"),
             c("Final report on semester project", "25% of grade", 
