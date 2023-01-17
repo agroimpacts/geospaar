@@ -23,14 +23,13 @@ library(knitr)
 Originally developed for statistics, free and open source R is now one of the most widely used programming languages in both industry and academia. Among its many applications, R is increasingly used for geospatial analyses, as evidenced by its growing ecosystem of spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), the evolution of classes for representing spatial data, its expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL) and GIS (e.g. GRASS, QGIS, PostGIS, SAGA).  Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for R, which facilitate the creation, presentation, and reproducibility of analyses. R has therefore very close to being a one-stop shop for the modern GIScientist. This course will provide students with the skills they need to use R as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop R libraries, development of presentations and reports using Rmarkdown, and using version control with github. Students will learn and apply R skills by working on a specific research problem. 
 
 ## Meeting Time/Place
-- Class: ASEC 303, MW 1615-1730
-- Drop-in lab/enhanced office hours: JC 105, R 1815-2005
+- Class: ASEC 304, MW 1615-1730
 
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
-Lyndon Estes   | Jefferson 201C (**Virtual appointments only**) | Tuesday 1300-1500 
-Sitian Xiong | JK Wright  | Friday 1400-1700
+Lyndon Estes   | EORS Lab (**Virtual appointments only**) | Tuesday 1300-1500 
+Arman Bajracharya | Location TBD  | Hours TBD
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also introduces additional skills and concepts related to ___reproducible___ research. 
@@ -61,7 +60,7 @@ There is no required textbook for this course. There is a huge amount of well-de
 
 __Readings and assignments__ should be completed ___before___ the class they are listed under. This is key to learning the language, ***as it is difficult to learn programming by just listening to lectures.*** 
 
-___Practical assignments___. During the first two units, there will be a total of 5 assignments (see links within the individual modules). The sixth assignment is your project proposal. The week assignments are due is listed on the syllabus, to be submitted by midnight on the Friday of that week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join [GitHub](http://github.com) (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
+___Practical assignments___. During the first two units, there will be a total of 5 assignments (see links within the individual modules). The sixth assignment is your project overview. The week assignments are due is listed on the syllabus, to be submitted by midnight on the Friday of that week. You will undertake and submit your work through github repositories that exist under the Agricultural Impacts Research Group's github [organization](https://github.com/agroimpacts), where there is a [team](https://github.com/orgs/agroimpacts/teams/geog246346) setup for this class. You will need to join [GitHub](http://github.com) (it's free!) to be able to submit assignments, as we will need your github name to add you to the team. You will manage your individual assignments under private personal repositories that will be listed under your own individual sub-team.   
 
 __Projects__ Each student will be required to undertake a final project. Please see the [projects](projects.html) page for more detail.
 
@@ -78,8 +77,9 @@ Your progress in this class will be assessed as follows:
 # a <- c(20, 30, 40)
 # a / sum(a)
 mat <- rbind(c("Practical assignments (n=5)", "60% of grade", "50% of grade"), 
-            c("Overview of final semester project", "15% of grade", 
-              "20% of grade"),
+             c("Partcipiation)", "5% of grade", "5% of grade"),
+            c("Overview for final semester project", "10% of grade", 
+              "15% of grade"),
             c("Final report on semester project", "25% of grade", 
               "30% of grade"))
 colnames(mat) <- c("Component", "GEOG246", "GEOG346")
@@ -114,6 +114,14 @@ We will follow the University's policies on plagiarism and cheating. Please fami
 
 ### Communications
 We will conduct class communications via a Slack channel that you should already be invited to. ***Please don't send emails as they will go unanswered***. Class-wide discussions will be conducted in the #fall2021 channel. Individual and restricted group messaging will be conducted via Slack direct messaging, e.g. grade reporting, confidential questions.  
+
+## Title IX
+
+Clark University and its faculty are committed to creating a safe and open learning environment for all students. Clark University encourages all members of the community to seek support and report incidents of sexual harassment to the Title IX office (titleix@clarku.edu). If you or someone you know has experienced any sexual harassment, including sexual assault, dating or domestic violence, or stalking, help and support is available.
+
+Please be aware that all Clark University faculty and teaching assistants are considered responsible employees, which means that if you tell me about a situation involving the aforementioned offenses, I must share that information with the Title IX Coordinator, Brittany Rende (titleix@clarku.edu). Although I have to make that notification, you will, for the most part, control how your case will be handled, including whether or not you wish to pursue a formal complaint. Our goal is to make sure you are aware of the range of options available to you and have access to the resources you need.
+
+If you wish to speak to a confidential resource who does not have this reporting responsibility, you can contact Clark’s Center for Counseling and Professional Growth (508-793-7678), Clark’s Health Center (508-793-7467), or confidential resource providers on campus: Prof. Stewart (als.confidential@clarku.edu), Prof. Palm Reed (kpr.confidential@clarku.edu), and Prof. Cordova (jvc.confidential@clarku.edu).
 
 # Course Structure{#structure}
 The following is an overview of the course structure, broken down by Unit, with a listing of the material to be covered each week, including the week in which unit assignments are due (assignments are due by midnight on Friday during the indicated week).
@@ -150,14 +158,14 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 
 ### Week 9. - Working with raster data
 
-### Week 10. - Raster data continued
+### Week 10-11. - Raster data continued
 - Unit 2 Module 2 assignment (#5) due
 
 ## Unit 3. Projects
-### Week 11 - Project selection
+### Week 12 - Project selection
 - Final project overview due
 
-### Weeks 12-15 - Project work
+### Weeks 13-15 - Project work
 Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. 
 
 The class periods in this week can be used for continued project work. **The final project will be submitted during the exam week.** 
