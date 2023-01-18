@@ -126,8 +126,6 @@ knitr::include_graphics("figures/class1_zam_shiny_app.png")
 
 ---
 
----
-
 ## Tips
 - Command line code 
   - Terminal (for Mac). Press Command + Space
