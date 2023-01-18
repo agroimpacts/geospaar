@@ -121,6 +121,23 @@ Alternatively, you can choose to undertake one of the projects listed below.
 This list is currently in thumbnail form, and will fill out during the next few weeks. 
 
 # Potential project list{#project-list}
+
+
+## Data viz/applications
+### COVID policy impact
+Create shiny app to examine trends relating COVID cases and different policies implemented (masking, vaccine requirements, social distancing). Can be at state or country level. 
+
+### Urban tree health tracking
+Create shiny app that provides platform for monitoring tree health in cities as part of HERO project.
+
+### Modeling climate change
+Use climate data from GEE ``ee.ImageCollection("NASA/NEX-DCP30")`` to estimate impacts on heat stress, drought and precipitation. Use the ``rgee`` library to create a Shiny app. [rgee link](https://r-spatial.github.io/rgee/reference/rgee-package.html)
+
+## Remote Sensing
+### Identifying management practices using smallholder field data
+
+Use smallholder crop survey data in Kenya and Zambia together with satellite image time-series to estimate when farmers plant, and what type of cultivar maturity they use. 
+
 ## USF projects
 
 ### Are neighborhoods with public housing more brightly lit than those without? 

@@ -60,4 +60,6 @@ rmarkdown::render(input = here::here('docs/index.Rmd'),
                   output_file = here::here('docs/index.md'))
 rmarkdown::render(input = here::here('docs/index.Rmd'),
                   output_file = here::here('docs/index.html'))
+rmarkdown::render(input = here::here('docs/index_detailed.Rmd'),
+                  output_file = here::here('docs/index_detailed.html'))
 ```
