@@ -39,13 +39,13 @@ rmds <- dir(here::here("vignettes"), pattern = "Rmd", full.names = TRUE)
 # ifile <- rmds[grep("unit2.Rmd", rmds)]
 # ifile <- rmds[grep("unit1-module2.Rmd", rmds)]
 # ifile <- rmds[grep("cheatsheet", rmds)]
-ifile <- rmds[grep("syllabus", rmds)]
+#ifile <- rmds[grep("syllabus", rmds)]
 # ifile <- rmds[grep("unit1-module1", rmds)]
 # ifile <- rmds[grep("unit2-module1", rmds)]
 # ifile <- rmds[grep("unit2-module2a", rmds)]
 # ifile <- rmds[grep("unit2-module2b", rmds)]
 # ifile <- rmds[grep("unit1-module4", rmds)]
-#ifile <- rmds[grep("projects", rmds)]
+ifile <- rmds[grep("projects", rmds)]
 # ifile <- rmds[grep("syllabus", rmds)]
 ohtml <- here::here("docs",
                     paste0(gsub("\\.Rmd", "", basename(ifile)), ".html"))

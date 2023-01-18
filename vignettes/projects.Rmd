@@ -127,18 +127,49 @@ This list is currently in thumbnail form, and will fill out during the next few 
 ### COVID policy impact
 Create shiny app to examine trends relating COVID cases and different policies implemented (masking, vaccine requirements, social distancing). Can be at state or country level. 
 
-### Urban tree health tracking
-Create shiny app that provides platform for monitoring tree health in cities as part of HERO project.
+[COVID tracking](https://covid.cdc.gov/covid-data-tracker/#datatracker-home)
+
+### Redistricting effects
+Congressional maps were redrawn in 2022 after the 2020 Census. Where were the largest changes seen? Ideally you would have a background in political science/demographics.
+
+[Redistricting Data Hub](https://redistrictingdatahub.org/)
+
+
 
 ### Modeling climate change
 Use climate data from GEE ``ee.ImageCollection("NASA/NEX-DCP30")`` to estimate impacts on heat stress, drought and precipitation. Use the ``rgee`` library to create a Shiny app. [rgee link](https://r-spatial.github.io/rgee/reference/rgee-package.html)
 
+[rgee sample app](https://github.com/MVanDenburg92/RGEE_Shiny)
+
+### HERO 
+Develop a Shiny app identifying locations of HERO trees and their health. Project details to be developed pending data availability.
+
+[HERO Research](https://www.clarku.edu/departments/hero-program/research/)
+
 ## Remote Sensing
+
 ### Identifying management practices using smallholder field data
 
 Use smallholder crop survey data in Kenya and Zambia together with satellite image time-series to estimate when farmers plant, and what type of cultivar maturity they use. 
 
-## USF projects
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("fig/smallholder_mgmt_curves.png")
+```
+
+### Tracking CAFO installation in Yucatan peninsula
+We have a data set of vector polygons identifying Concentrated Animal Feeding Operations (CAFOs) in Yucatan Peninsula Mexico. This project will develop a classification model for identifying CAFO locations, and use historical remote sensing imagery to estimate when CAFO's were built.
+
+[Storymap](https://storymaps.arcgis.com/collections/3e7203cf44cf417c9b5fe1db7a182293)
+
+## Sound sensing
+
+### Ecological sensing in MA via in-situ sound sensors
+Building on data from Prof. Sangermano's work on sound sensing, this project would create an interactive map that displays sensing data, and allows users to scan over time. 
+
+[Podcast with Flor](https://clarknow.clarku.edu/captivate-podcast/professor-florencia-sangermano-and-the-soundscapes-of-central-massachusetts/)
+
+## USF projects (build on previous work)
 
 ### Are neighborhoods with public housing more brightly lit than those without? 
 
@@ -147,7 +178,7 @@ Following up on the previous semester's [work](https://github.com/agroimpacts/US
 This will entail collecting data on public housing projects and building footpoints from other US cities, and then collecting and analyzing the nightlights data following the steps in the previous project. 
 
 
-## Analyzing Ghanaian croplands 
+## Analyzing Ghanaian croplands (build on previous work)
 
 The Agricultural Impacts Research Group has undertaken several projects focussed on Ghainaian croplands over the past several years. These include the [Mapping Africa](http://mappingafrica.io) project, which has applied an integrated crowdsourcing/machine learning platform to map Ghana's croplands at high resolution. Another project involves work with [Farmerline](https://farmerline.co/), a farmer services provider, for the Enabling Crop Analytics at Scale (ECAAS) project, to [develop innovative methods](https://cropanalytics.net/cropland-mapping/) for collecting ground truth on crop types and using these to map crop types. 
 
@@ -177,17 +208,6 @@ Use a cropland layers from the Mapping Africa project to filter that predicted c
 
 Working with an extensive set of manually digitized labels captured in from drone imagery over two areas of Ghana, compare the crop type predictions from the Random Forests model to the drone labels.  Calculate model performance metrics, and map the correspondence. 
 
-
-
-## In Sutton, MA
-Continuing analyses of UAS, satellite, and sensor datasets collected during the past four summers in Sutton MA. 
-
-Among possible ideas are Shiny dashboards for: 1) displaying pod data over time; 2) displaying "cones of uncertainty" from projected crop yield simulations.
-
-## Using UAS to detect the spread of a crop disease
-
-Use R-implemented machine learning techniques to classify fungal blight in UAS time series collected over cranberry bogs in New Jersey. Projects during previous semesters developed deep learning models in `R` for this purpose. These can be built upon and improved during this semester. 
-
-## Map visualization
-Come up with `shiny` solution for presenting and analyzing map data, for any of these projects. 
+## Student research
+Use R to improve the analysis and visualization of your current research. 
 
