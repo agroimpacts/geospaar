@@ -1,5 +1,5 @@
 ---
-title: "Cheatsheets"
+title: "Helpful links"
 subtitle: "GEOG246-346"
 date: "`r Sys.Date()` [Back to home](index.html)"
 output:
@@ -14,6 +14,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# Textbooks
+- [Hadley Wickham R Packages](https://r-pkgs.org/)
+- [Hadley Wickham Advanced R](https://adv-r.hadley.nz/)
+
+# Examples
+- [R Markdown Gallery](https://rmarkdown.rstudio.com/gallery.html)
+
+# Cheatsheets
 - [RStudio IDE](https://raw.githubusercontent.com/rstudio/cheatsheets/master/rstudio-ide.pdf)
 - [R markdown](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
 - [Base R](https://raw.githubusercontent.com/rstudio/cheatsheets/master/base-r.pdf)

@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,8 +13,12 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 2
+]
 
 ---
 
@@ -121,6 +125,56 @@ Common parts of a package.
 - Code syntax
 - [Posting guide](https://www.r-project.org/posting-guide.html)
 
+---
+
+# Creating your own package
+
+- Instructions start Unit 1 Module 1 (3.3)
+- Step 1: Install git, R, Rstudio
+- Step 2: Install devtools
+- Step 3: Create new project
+- Step 4: Configure Global and Project options
+
+---
+
+# Creating your own package
+
+- Step 5: Configure git through Git Bash in Rstudio
+- Step 6: Track file changes with git
+- Step 7: Sync with Github
+  - 7a: Get SSH key
+  - 7b: Create private repo on Github
+  - 7c: Sync local repo with Github using Terminal
+  - 7d: Add team members on Github
+  - 7e: Push changes from local repo to Github
+  
+---
+# Other git actions
+
+- Cloning remote repo 
+- Branching
+
+---
+# Building an R package
+- Adding function
+- Create manual with `devtools`
+- Create RMarkdown vignette with `usethis`
+- Build package with `Build` tab in Rstudio
+---
+
+## Getting Set Up/Homework
+
+- **Github**
+  - Send Arman and Mike your GitHub name on Slack (**!!**)
+- **Read** 
+  - Unit1-Module 1 Part 4-6
+  - Sections on [R packages](https://r-pkgs.org/structure.html#package), [Description](https://r-pkgs.org/description.html#description)
+  - [Writing an R package from Scratch](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)
+  - [R Markdown overview](https://rmarkdown.rstudio.com/lesson-1.html). Read all sections, Introduction - Cheatsheets.
+- Assignment 1 due Friday
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -168,6 +222,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable

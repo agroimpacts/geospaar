@@ -121,3 +121,53 @@ knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/installation.png")
 - Code syntax
 - [Posting guide](https://www.r-project.org/posting-guide.html)
 
+---
+
+# Creating your own package
+
+- Instructions start Unit 1 Module 1 (3.3)
+- Step 1: Install git, R, Rstudio
+- Step 2: Install devtools
+- Step 3: Create new project
+- Step 4: Configure Global and Project options
+
+---
+
+# Creating your own package
+
+- Step 5: Configure git through Git Bash in Rstudio
+- Step 6: Track file changes with git
+- Step 7: Sync with Github
+  - 7a: Get SSH key
+  - 7b: Create private repo on Github
+  - 7c: Sync local repo with Github using Terminal
+  - 7d: Add team members on Github
+  - 7e: Push changes from local repo to Github
+  
+---
+# Other git actions
+
+- Cloning remote repo 
+- Branching
+
+---
+# Building an R package
+- Adding function
+- Create manual with `devtools`
+- Create RMarkdown vignette with `usethis`
+- Build package with `Build` tab in Rstudio
+---
+
+## Getting Set Up/Homework
+
+- **Github**
+  - Send Arman and Mike your GitHub name on Slack (**!!**)
+- **Read** 
+  - Unit1-Module 1 (Part 4-6)
+  - Sections on [R packages](https://r-pkgs.org/structure.html#package), [Description](https://r-pkgs.org/description.html#description)
+  - [Writing an R package from Scratch](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/)
+  - [R Markdown overview](https://rmarkdown.rstudio.com/lesson-1.html). Read all sections.
+- Assignment 1 due Friday
+
+
+

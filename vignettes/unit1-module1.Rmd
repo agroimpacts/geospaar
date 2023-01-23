@@ -100,7 +100,7 @@ include_graphics("fig/u1m1-tweet.png")
 ### Packages{#packages}
 
 Packages are another tool of reproducibility that we will learn to use in this class. Packages are bundles of code and documentation that provide a specific functionality for a particular language. Both `python` and `R` make extensive use of packages, as the utility of both languages depends heavily on user-contributed code. Code contributions are made through packages, which standardize and formalize the user-developed functions so that they work properly within the language, and can be easily used by the broader community. 
-Packages are also useful even if you don't intend to contribute code to the community, as they have a particular structure that can be useful for helping to organize and formalize your thinking, data analysis, and reporting. They can also save you time as they make it much easier to access functions that you have developed for one project and apply them to another. I learned these ideas from reading Hillary Parker's [blog post on personal R packages](https://hilaryparker.com/2013/04/03/personal-r-packages/), as well as Karl Broman's [R package primer](http://kbroman.org/pkg_primer/pages/why.html), and of course Hadley Wickham's [introduction](http://r-pkgs.had.co.nz/intro.html) to his *R packages* book (please read all aforementioned links).
+Packages are also useful even if you don't intend to contribute code to the community, as they have a particular structure that can be useful for helping to organize and formalize your thinking, data analysis, and reporting. They can also save you time as they make it much easier to access functions that you have developed for one project and apply them to another. I learned these ideas from reading Hillary Parker's [blog post on personal R packages](https://hilaryparker.com/2013/04/03/personal-r-packages/), as well as Karl Broman's [R package primer](http://kbroman.org/pkg_primer/pages/why.html), and of course Hadley Wickham's [introduction](https://r-pkgs.org/introduction.html) to his *R packages* book (please read all aforementioned links).
 
 I have adopted the package structure for organizing the analyses and writing of each of my papers. For example, two of my most recent papers are structured as `R` packages that can be installed from their GitHub repositories (which can be found [here](https://github.com/agroimpacts/ecoscales) and [here](https://github.com/agroimpacts/croplandbias)). These contain all the code used to do the analyses, create the figures, and full (non-journal formatted) versions of the manuscripts. And (as you may have noticed by now), this class is also structured as an `R` package.
 
@@ -198,6 +198,8 @@ include_graphics("fig/u1m1-7.png")
 
 You will also notice the `git` tab in lower left of the image, which has a listing of the same files with yellow boxes with question marks in them under the status section.  This is Rstudio's GUI interface to `git`. You can get the same information by going to Rstudio's terminal tab (upper right), and typing at the prompt in there: `git status`, which gives this output:
 
+<span style="color:red">If you don't see the `git` tab, go to Tools -> Project Options -> Git/SVN and select Git. Click yes to create a new Git repo.</span>
+
 ```bash
 $ git status
 On branch master
@@ -284,9 +286,12 @@ First, you will need to create an SSH private-public key pair on your computer, 
 
 ```{r, eval = FALSE}
 file.exists("~/.ssh/id_rsa.pub")
+file.exists("~/.ssh/id_ed25519.pub")
 ```
 
-If the answer is "False", then you will need to create a new SSH key.  The easiest way to do that is to go into RStudio Tools > Global Options > Git/SVN and click "Create RSA key". Leave the passphrase empty, and click through. Press the View public key button above the SSH RSA Key dialog, and copy the text of the key.  Then follow steps 2-8 [in this GitHub document](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/#platform-mac) to add the SSH key to your GitHub account. 
+If the answer to both is "False", then you will need to create a new SSH key.  The easiest way to do that is to go into RStudio Tools > Global Options > Git/SVN and click "Create SSH key". Leave the passphrase empty, and click through. Keep the `ED25519` key type. (See [here](https://goteleport.com/blog/comparing-ssh-keys/) for more information on ED25519 vs RSA key types)
+
+Press the View public key button above the SSH RSA Key dialog, and copy the text of the key.  Then follow steps under "Adding a new SSH key to your account" [in this GitHub document](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/#platform-mac) to add the SSH key to your GitHub account. 
 
 If you already have an existing SSH key, then I suggest [following these instructions](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) here to get it. 
 
@@ -294,9 +299,9 @@ Once you have that set up, test your SSH connection following [steps 1-4 here](h
 
 ### Create new private repo on GitHub
 
-For class assignments, we want to take use private GitHub repositories for assignments, to make them viewable only by select people (you and the course instructore). That means we will have to work through a GitHub organization account. You should already have received an invitation to the agroimpacts organization--if you haven't, ask me for an invite. 
+For class assignments, we want to take use private GitHub repositories for assignments, to make them viewable only by select people (you and the course instructors). That means we will have to work through a GitHub organization account. You should already have received an invitation to the agroimpacts organization--if you haven't, ask me for an invite. 
 
-Once you have received your invite, log into GitHub. Find the dropdown box on the left that shows your user name, click on it, and then select the agroimpacts organization. Once in the organization, click on "Create Repository". You will see a dialog that looks like this (except the "Repository name" field will at first be empty):
+Once you have received your invite, log into GitHub. Find the dropdown box on the left that shows your user name, click on it, and then select the agroimpacts organization. Select View Organization -> Repositories -> New Repository. You will see a dialog that looks like this (except the "Repository name" field will at first be empty):
 
 ```{r out.width = "60%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-9.png") 
@@ -305,15 +310,16 @@ include_graphics("fig/u1m1-9.png")
 Add the repository that matches the name of your local one (i.e. the name of your RStudio project folder), and then leave the rest of the fields as they look in this image, then click "Create Repository". That will bring up another page where you will see your new repository name at the top, followed by "Give access to the people you work with", and then three packages of commands. You want the middle one below the text "…or push an existing repository from the command line". Copy those two commands and paste them into RStudio's terminal (make sure RStudio is opened in your project though).
 
 ```bash
-git remote add origin https://github.com/agroimpacts/lde346.git
-git push -u origin master
+git remote add origin https://github.com/agroimpacts/mjc346.3.git
+git branch -M main
+git push -u origin main
 ```
 
 Note that if you have just set up your SSH keys in RStudio, you might be prompted to enter your GitHub user name and password after the second command.
 
 Now, go back to the GitHub repository, and refresh the page, and you will see your committed files in there. 
 
-We are nearly done with setup. The last thing we will do is add this repository to a secret team that only you and course instructors have access to. To that end, within your new repo, click the "Settings" tab at the top, followed by the "Collaborators and Teams" link at the left, then "Create New Team", name it with your name, add a description ("GEOG246346 assignments"), and set it to secret. That will take you into the page for the new team. Add members besides yourself (course instructors), send them the invites, and then click on the Repositories tab at the top right, click the green "Add repository button", search for it by name, and add it to the team. Change the team permissions to "Write". 
+We are nearly done with setup. The last thing we will do is add this repository to a secret team that only you and course instructors have access to. To that end, within your new repo, click the "Settings" tab at the top, followed by the "Collaborators and Teams" link at the left, then "Create team", name it with your name, add a description ("GEOG246346 assignments"), and set it to secret. That will take you into the page for the new team. Add members besides yourself (course instructors), send them the invites, and then click on the Repositories tab at the top right, click the green "Add repository button", search for it by name, and add it to the team. Change the team permissions to "Write". 
 
 That now makes your repo (and any others you might add to it) secret to just you and the course instructors.
 
@@ -409,7 +415,7 @@ include_graphics("fig/u1m1-10.png")
 
 The one folder (R) and two of the files (DESCRIPTION and NAMESPACE) are critical to building an `R` package. The DESCRIPTION file provides the package's metadata, which is described in detail [here](http://r-pkgs.had.co.nz/description.html#description) (read this section). The NAMESPACE is described in detail [here](http://r-pkgs.had.co.nz/description.html#description), but as that section said, it is a complicated topic, so we won't touch on it now. The approach we are using to building packages updates NAMESPACE automatically (you shouldn't mess with it), so we will leave for now and come back to it later on. The R folder is the place where your core package functions live, along with their documentation. There are a few other folders that are important for `R` packages (to the extent that we use them in this class), which are "data", "inst", "man", "vignettes". Those have not yet been made, so we will revisit them to discuss what they do as they appear in our package-making workflow.  
 
-You can create your first `R` package quite easily, as the folder is currently structured. If you look right next to the `git` tab in your RStudio interface, you will see a "Build" tab. Click on that, and then click on the "Install and restart" button. That will build the package. You can confirm the package was built and installed if you browse in the "Packages" tab (in the lower right pane in our current setup), and browse down and find your package named listed alphabetically. Click on that. You will see the contents of the help pages for your package. Since you have no functions in your R folder, and no documentation for those functions, you have no help pages. Let's remedy that. 
+You can create your first `R` package quite easily, as the folder is currently structured. If you look right next to the `git` tab in your RStudio interface, you will see a "Build" tab. Click on that, and then click on the "Install" button. That will build the package. You can confirm the package was built and installed if you browse in the "Packages" tab (in the lower right pane in our current setup), and browse down and find your package named listed alphabetically. Click on that. You will see the contents of the help pages for your package. Since you have no functions in your R folder, and no documentation for those functions, you have no help pages. Let's remedy that. 
 
 ```{r out.width = "90%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-11.png") 
@@ -489,7 +495,7 @@ As opposed to
 lde346::my_number_checker(1)
 ```
 
-If you don't specify `@export`. The `@examples` show examples of how to use the function. Also, note the `#'` at the beginning of the line--this is a comment marker that is unique to `R` function documentation compiled by `roxygen2`, and is different from the normal `#` that `R` (as well as `python` and some other languages) use for commenting code--that is, for adding text into scripts that are ignored by the program when executing. In this case, the `roxygen2` package reads these lines and converts them into .Rd files, which contain the text of the package help pages. Let's create those now, but going to Build > Install and Restart.  That is all you need to do to build the package.  You could also execute these commands in the R console: 
+If you don't specify `@export`. The `@examples` show examples of how to use the function. Also, note the `#'` at the beginning of the line--this is a comment marker that is unique to `R` function documentation compiled by `roxygen2`, and is different from the normal `#` that `R` (as well as `python` and some other languages) use for commenting code--that is, for adding text into scripts that are ignored by the program when executing. In this case, the `roxygen2` package reads these lines and converts them into .Rd files, which contain the text of the package help pages. Let's create those now, by going to Build > Install .  That is all you need to do to build the package.  You could also execute these commands in the R console: 
 
 ```{r, eval = FALSE}
 devtools::document()
@@ -538,7 +544,7 @@ We are going to do one more thing before wrapping up this section, which is to c
 browseVignettes("roxygen2")
 ```
 
-Vignettes are also useful for connecting R packages to the broader pursuit of reproducibility. For example, you can use them to document the entire analytical workflow for a peer-reviewed paper (as shown in the two examples [above](#packages) I provided above). Or they can be used to deliver the materials for an `R` course, as we are doing here. 
+Vignettes are also useful for connecting R packages to the broader pursuit of reproducibility. For example, you can use them to document the entire analytical workflow for a peer-reviewed paper (as shown in the two examples [above](#packages) ). Or they can be used to deliver the materials for an `R` course, as we are doing here. 
 
 In this class, you will learn to use vignettes to document your assignments, including any code that you write that does not need to be reused (and therefore converted into an assignment). 
 

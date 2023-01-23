@@ -3,7 +3,7 @@
 
 ## Spring 2023
 
-Updated on: 2023-01-18
+Updated on: 2023-01-23
 
 <center>
 
@@ -20,8 +20,11 @@ Updated on: 2023-01-18
 -   [Assessment Criteria](assessment.html)
 -   [Software installation](software-installation.html)
 -   [Git/GitHub](git-github.html)
--   [Cheatsheets and examples](cheatsheets.html)
 -   [Known bugs and fixes](bugs-fixes.html)
+
+## Links
+
+-   [Helpful Links](cheatsheets.html)
 
 ## Course materials
 
@@ -50,6 +53,8 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   Setup
     -   [Class 1 slides](class1.html)
 -   Week 2 (Jan 23, 25)
+    -   Using git and Github; R packages; RMarkdown
+    -   [Class 2 slides](class2.html)
     -   Assignment 1 due (Unit 1 Module 1)
 -   Week 3 (Jan 30, Feb 1)
 -   Week 4 (Feb 6, 8)
