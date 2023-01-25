@@ -92,7 +92,12 @@ knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
 ```{r, out.width = "70%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/class3_1.png")
 ```
-
+---
+## Merging branches
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_branch_merge.png")
+```
+- [Source](https://stackabuse.com/git-merge-branch-into-master/)
 ---
 
 # Tips and tricks
