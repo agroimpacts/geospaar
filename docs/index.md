@@ -3,7 +3,7 @@
 
 ## Spring 2023
 
-Updated on: 2023-01-23
+Updated on: 2023-01-25
 
 <center>
 
@@ -55,6 +55,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 -   Week 2 (Jan 23, 25)
     -   Using git and Github; R packages; RMarkdown
     -   [Class 2 slides](class2.html)
+    -   [Class 3 slides](class3.html)
     -   Assignment 1 due (Unit 1 Module 1)
 -   Week 3 (Jan 30, Feb 1)
 -   Week 4 (Feb 6, 8)

@@ -20,6 +20,7 @@ vignette: >
 
 # Examples
 - [R Markdown Gallery](https://rmarkdown.rstudio.com/gallery.html)
+- [R Style Guide](http://adv-r.had.co.nz/Style.html)
 
 # Cheatsheets
 - [RStudio IDE](https://raw.githubusercontent.com/rstudio/cheatsheets/master/rstudio-ide.pdf)

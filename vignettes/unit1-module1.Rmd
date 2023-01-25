@@ -282,7 +282,7 @@ So, that's how changes are tracked and committed in a local `git` repo. You can 
 Now that you know the basics of `git` commits on your local machine, you'll want to push your project repo to a remote repo hosted on GitHub, and then keep it synchronized with GitHub. There are a few steps we will have to go through to do that. 
 
 ### SSH keys
-First, you will need to create an SSH private-public key pair on your computer, if you don't have one already, and then add that key to GitHub (you will need to do this for each computer you want to connect to GitHub).  The most direct set of instructions, which revolve around RStudio, are found [here](http://r-pkgs.had.co.nz/git.html#git) (and this is generally a greeat resource covering how to work with `git`, GitHub, and `R`/Rstudio) here. To wit, use the following command in the R console:
+First, you will need to create an SSH private-public key pair on your computer, if you don't have one already, and then add that key to GitHub (you will need to do this for each computer you want to connect to GitHub).  The most direct set of instructions, which revolve around RStudio, are found [here](http://r-pkgs.had.co.nz/git.html#git) (and this is generally a great resource covering how to work with `git`, GitHub, and `R`/Rstudio) here. To wit, use the following command in the R console:
 
 ```{r, eval = FALSE}
 file.exists("~/.ssh/id_rsa.pub")
@@ -291,7 +291,7 @@ file.exists("~/.ssh/id_ed25519.pub")
 
 If the answer to both is "False", then you will need to create a new SSH key.  The easiest way to do that is to go into RStudio Tools > Global Options > Git/SVN and click "Create SSH key". Leave the passphrase empty, and click through. Keep the `ED25519` key type. (See [here](https://goteleport.com/blog/comparing-ssh-keys/) for more information on ED25519 vs RSA key types)
 
-Press the View public key button above the SSH RSA Key dialog, and copy the text of the key.  Then follow steps under "Adding a new SSH key to your account" [in this GitHub document](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/#platform-mac) to add the SSH key to your GitHub account. 
+Press the View public key button above the SSH RSA Key dialog, and copy the text of the key.  Then follow steps under "Adding a new SSH key to your account" [in this GitHub document](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/#platform-mac) to add the SSH key to your GitHub account. You can find your public SSH key by going to Tools -> Global Options -> Git/SVN -> View Public Key.
 
 If you already have an existing SSH key, then I suggest [following these instructions](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) here to get it. 
 
