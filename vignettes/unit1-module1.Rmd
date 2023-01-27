@@ -349,7 +349,7 @@ In cases where your local repo is behind your remote repo, you can use the Pull 
 Instead, let's look at how we can use RStudio to create a new project from your remote repo, which you can use to have the project on both your home and lab computer, so you can make changes from either location.  This is quite simple.  
 
 - On the new machine, which I am assuming already has RStudio set up, complete with `git` and ssh keys connected to your GitHub account, you would simply go to File > New Project > Version Control > Git, 
-- Copy into the "Repository name" dialog at the top the full repo path, which you get by going to the repo's main page on GitHub and pressing the big green "Clone or Download" dialog, and copying the resulting URL string. Note you choose to clone using either HTTPs or SSH, which each give slightly different links. You might have to trial and error to get the one that works, but try SSH to start. 
+- Copy into the "Repository name" dialog at the top the full repo path, which you get by going to the repo's main page on GitHub and pressing the big green "Code" dialog, and copying the resulting URL string. Note you choose to clone using either HTTPs or SSH, which each give slightly different links. You might have to trial and error to get the one that works, but try SSH to start. 
 - In the second box (directory name), use the same name as the repo (e.g. lde346), and then choose the directory where you want it live. 
 - Check open project in new session, and then voila, you have a local version of the repo fully set up.   
 
