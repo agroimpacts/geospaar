@@ -26,4 +26,4 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/agroimpacts/geospaar
-RoxygenNote: 7.0.2
+RoxygenNote: 7.2.3

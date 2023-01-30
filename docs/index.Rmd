@@ -58,11 +58,13 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - Setup
   - [Class 1 slides](class1.html)
 - Week 2 (Jan 23, 25)
-  - Using git and Github; R packages; RMarkdown
+  - Using git and Github; R packages; 
   - [Class 2 slides](class2.html)
   - [Class 3 slides](class3.html)
   - Assignment 1 due (Unit 1 Module 1)
 - Week 3 (Jan 30, Feb 1)
+  - Continued setup work, RMarkdown, R ecosystem
+  - [Class 4 slides](class4.html)
 - Week 4 (Feb 6, 8)
   - Assignment 2 due (Unit 1 Modules 2-3)
 - Week 5 (Feb 13, 15)

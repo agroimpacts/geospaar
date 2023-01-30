@@ -134,6 +134,32 @@ knitr::include_graphics("figures/class4_gitmerge.png")
 - Update the Description file in the `main` branch by pasting the text you saved. Save and commit. 
 ---
 
+## Cloning `geospaar`
+- Follow steps in [Unit 1 Module 1 (4.3.4)](https://agroimpacts.github.io/geospaar/unit1-module1.html#syncing-your-repo-using-github)
+- Clone `geospaar` instead of your personal repo.
+
+---
+## Package functions
+- `install.packages` : installs binary packages from CRAN
+- `devtools::install_github`: installs from Github
+-  `devtools::install("C:/Users/micha/Documents/geospaar/")` to install locally 
+
+
+---
+## Types of packages
+
+```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="http://r-pkgs.had.co.nz/package.html"}
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
+```
+
+---
+## Installing packages
+
+```{r out.width = "90%", fig.align='center', echo=FALSE, fig.cap="http://r-pkgs.had.co.nz/package.html"}
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/installation.png") 
+```
+---
+
 ## Data in packages
 
 ```{r, out.width = "80%", echo=FALSE, fig.align='center'}
@@ -182,6 +208,10 @@ head(read.csv(f))
 ```
 
 ---
+## Other package folders
+- See [Chap 9 of "R Packages"](https://r-pkgs.org/misc.html) for more examples of R packages folders.
+
+---
 # A look at RMarkdown
 
 Chunk options
@@ -194,12 +224,14 @@ knitr::include_graphics("figures/class4_3.png")
 
 
 ---
-## Practical work
-- Projects and package set-up
-  - Basic function and documentation
-  - Structuring your project directory
-- `git` work: syncing, commit, push, pull, branching, merging
-
+## RMarkdown exercises
+- In your personal R project, Create new RMarkdown file using `usethis::use_vignette(name = "example_vignette")`
+- Create chunks for the following:
+  - Load the `geospaar` package
+  - Load the `chirps` data and print its structure using `str(chirps)`
+  - Plot `chirps` data using `raster::plot(chirps)`. Above this chunk, include a text description for the CHIRPS data using different text formatting (bold, italics, etc). You can see information on the `CHIRPS` data in the `man` folder.
+  - Include a chunk with an obvious error, like `5 + "string"`
+  - Try knitting this RMD using different [chunk options](https://rmarkdown.rstudio.com/lesson-3.html)
 
 
 ---
@@ -207,9 +239,8 @@ knitr::include_graphics("figures/class4_3.png")
 ## Homework
 
 - Finish reading Unit1-Module 2 (all)
-- Review 
-- QUIZ WEDNESDAY
-  - Stack Overflow How to Ask [Part 1](https://stackoverflow.com/help/minimal-reproducible-example), [Part 2](https://stackoverflow.com/help/how-to-ask)
-- Read/work through [RMarkdown example](https://gist.github.com/jeromyanglim/2716336)
+- Review [R Markdown overview](https://rmarkdown.rstudio.com/lesson-1.html). Read all sections, especially Chunk Options.
+- Review [R Package overview](https://r-pkgs.org/structure.html)
+- QUIZ WEDNESDAY!!
 
 
