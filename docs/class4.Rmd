@@ -78,6 +78,60 @@ dev.off()
   - data folder and lazy loads
   - inst folder and how to get at it
 
+
+---
+
+## Git/GitHub 
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "kevintshoemaker.github.io/StatsChats/GIT_tutorial"}
+knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT1.png")
+```
+---
+```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "kevintshoemaker.github.io/StatsChats/GIT_tutorial"}
+knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT2.png")
+```
+---
+```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "stackoverflow.com/questions/7212740/why-git-is-called-a-distributed-source-control-system"}
+knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
+```
+---
+## Our Branching Model
+
+```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_1.png")
+```
+
+---
+## Merging
+
+```{r, out.width = "50%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_gitmerge.png")
+```
+
+---
+## Git exercises (1)
+- Open your personal R repo (e.g. `mjc346` in RStudio)
+- Copy and paste the text in your Description file to a separate file. 
+- Create a new branch, `test_merge`. You can create this branch in the Git tab, or in Terminal, using `git checkout -b test_merge`
+- With the new branch active, create a new file `test_function` within the R folder. Create a simple function that takes a number `x` as an input, and prints "`x` is my favorite number!". Save and commit this file in the new branch.
+- Switch back to the `main` branch. You should see a pop-up message. What happens to the `test_function.R` file? Can you see it in your file explorer?
+- merge the new file to the main branch using the command `git merge test_merge` in Terminal. What happens?
+- The `merge` command automatically merges and commits changes to the main branch
+
+---
+## Git exercises (2)
+- In the `test_merge` branch, open the Description file. Update the version to 0.0.2. Save and commit.
+- Switch to the `main` branch. Add a second author in the Author line. Save and commit.
+- Now test merging the change from `test_merge` to `main` using `git merge test_merge`. Does this work?
+
+---
+## Git exercises (3)
+- In the `test_merge` branch, add a third fictional author. Save and commit.
+- Switch to the `main` branch. Again add a third author, but use a different author than in the `test_merge` branch.
+- Now test merging the change from `test_merge` to `main` using `git merge test_merge`. Does this work?
+- Open the Description file. What does it look like?
+- After you are done, delete the branch using `git branch -D test_merge`
+- Update the Description file in the `main` branch by pasting the text you saved. Save and commit. 
 ---
 
 ## Data in packages
@@ -138,34 +192,6 @@ knitr::include_graphics("figures/class4_3.png")
 
 [Rmarkdown demo](rmarkdown_demo.html) by Lei Song
 
----
-
-## Git/GitHub 
-
-```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "kevintshoemaker.github.io/StatsChats/GIT_tutorial"}
-knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT1.png")
-```
----
-```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "kevintshoemaker.github.io/StatsChats/GIT_tutorial"}
-knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT2.png")
-```
----
-```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap= "stackoverflow.com/questions/7212740/why-git-is-called-a-distributed-source-control-system"}
-knitr::include_graphics("https://i.stack.imgur.com/yof9f.png")
-```
----
-## Our Branching Model
-
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class3_1.png")
-```
-
----
-## Merging
-
-```{r, out.width = "50%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/class4_gitmerge.png")
-```
 
 ---
 ## Practical work
@@ -173,5 +199,17 @@ knitr::include_graphics("figures/class4_gitmerge.png")
   - Basic function and documentation
   - Structuring your project directory
 - `git` work: syncing, commit, push, pull, branching, merging
- d
+
+
+
+---
+
+## Homework
+
+- Finish reading Unit1-Module 2 (all)
+- Review 
+- QUIZ WEDNESDAY
+  - Stack Overflow How to Ask [Part 1](https://stackoverflow.com/help/minimal-reproducible-example), [Part 2](https://stackoverflow.com/help/how-to-ask)
+- Read/work through [RMarkdown example](https://gist.github.com/jeromyanglim/2716336)
+
 

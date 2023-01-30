@@ -18,7 +18,7 @@ output:
 ```{r, eval = FALSE}
 library(raster)
 library(ggplot2)
-library(rasterVis)
+library(rasterVis) 
 library(gstat)
 
 # dummy grids, with spatial autocorrelation, normalized
