@@ -47,10 +47,34 @@ dev.off()
 ---
 # Today
 
-- A bit more on projects/repos/branches
+- RMarkdown
 - The `R` ecosystem
+- Building blocks of R: data types, functions, etc
 
 ---
+# A look at RMarkdown
+
+Chunk options
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_3.png")
+```
+
+[Rmarkdown demo](rmarkdown_demo.html) by Lei Song
+[RMarkdown gallery](https://rmarkdown.rstudio.com/lesson-1.html)
+
+---
+
+## RMarkdown exercises
+- In your personal R project, Create new RMarkdown file using `usethis::use_vignette(name = "example_vignette")`
+- Create chunks for the following:
+  - Load the `geospaar` package
+  - Load the `chirps` data and print its structure using `str(chirps)`
+  - Plot `chirps` data using `raster::plot(chirps)`. Above this chunk, include a text description for the CHIRPS data using different text formatting (bold, italics, etc). You can see information on the `CHIRPS` data in the `man` folder.
+  - Include a chunk with an obvious error, like `5 + "string"`
+  - Try knitting this RMD using different [chunk options](https://rmarkdown.rstudio.com/lesson-3.html)
+---
+
 # The R Ecosystem
 
 ```{r, out.width = "60%", echo=FALSE, fig.align='center'}
@@ -151,81 +175,255 @@ knitr::include_graphics("figures/class2_vector.png")
 ## Let's create some data
 
 - `vector`
+- `matrix`
 - `data.frame`
 - `list`
+---
+## Creating a vector
+```{r}
+v1 <- c(1,2,3,4,5)
+v2 <- 6:10
+print(v1)
+print(v2)
+```
 
 ---
-## Functions
-- Primitives
-- Operators
-- Control structures
-- Package functions
-- Generic functions
+## Combining vectors
+
+```{r}
+v1 <- c(1,2,3,4,5)
+v2 <- 6:10
+v3 <- c(v1, v2)
+print(v3)
+print(class(v3))
+```
 ---
+## Combining vectors
+What happens when you combine data types in a vector?
 
-## Functions
-### Components
+```{r}
+v4 <- c(v1, "test")
+print(v4)
+print(class(v4))
+```
+---
+## Vectorized operations
+```{r}
+v1 <- 1:9
+print(v1)
+print(v1 + 5) ## addition applied to each element in vector
+print(v1 * 3) ## multiplication applied to each element in vector
+```
 
-```{r, eval=F}
-function_name <- function(arg1, 
-                          arg2 = 1:10, 
-                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
-  body
+---
+## Accessing elements in vector
+```{r}
+v1 <- (1:9)*3 
+print(v1)
+print(v1[4])
+```
+
+```{r}
+v1 <- letters[1:7]
+print(paste0("This letter is ", v1)) # paste0 concatenates strings
+```
+
+Question: How would you say "Letter 1 is a", "Letter 2 is b", etc. 
+---
+## Creating a matrix
+```{r}
+v1 <- 1:9
+m1 <- matrix(v1, nrow = 3, byrow = T)
+m2 <- cbind(v1 = 1:3, v2 = 1:3, v3 = 0:0)
+print(m1)
+print(m2)
+```
+---
+## Accessing elements in a matrix
+```{r}
+m2 <- cbind(v1 = 1:3, v2 = 1:3, v3 = 0:0)
+print(m2)
+print("first row:")
+print(m2[1, ])
+print("second column")
+print(m2[, 2])
+print("access by column name")
+print(m2[, "v2"])
+```
+
+Question: Create a 3 row, 4 column matrix, where the first column is (1, 2, 3), second column is (4, 5, 6 ) etc. 
+
+---
+## Lists
+Lists can mix object of different types. 
+
+```{r}
+l <- list("a", 1, 0.5, TRUE)
+print(l)
+print(str(l)) # structure of l
+```
+
+---
+## Lists
+Lists can also be nested.
+```{r}
+l1 <- list("a", 1, 0.5, TRUE)
+l2 <- list(l1, "test", matrix(1:9, nrow = 3)) ## first element of l2 is a list.
+print(l2)
+```
+Question: what is the length of l1? what is the length of each element of l1? (use `length` function)
+---
+## Accessing elements in lists
+Use double brackets `[[  ]]` to access elements in lists. 
+```{r}
+l1 <- list("a", 1, 0.5, TRUE)
+l2 <- list(l1, "test", matrix(1:9, nrow = 3)) ## first element of l2 is a list.
+print(l2[[1]])
+print(l2[[2]])
+print(l2[[3]])
+```
+
+Question: The first element of l2 is a list. Access this first element from l2, then the 4th element from l1. 
+
+---
+## Data frames
+We will use data frames A LOT. Data frames are really tables, but they are stored in R as lists, with the following conditions.
+- Each element in the list represents a column.
+- Each element in the list is an atomic vector.
+- The length of each vector is the same (the number of rows)
+
+```{r}
+m1 <- cbind(1:3, letters[1:3])
+print(m1) # a matrix cannot hold multiple data types. 
+print(class(m1))
+```
+```{r}
+df <- data.frame(numbers = 1:3, abc = letters[1:3])
+print(df) # a data frame CAN hold multiple data types. 
+print(class(df))
+```
+
+---
+## Useful functions
+- `print`
+- You can print just about anything, but as a generic function, `print` works differently for different types of objects.
+```{r}
+a <- "test"
+df <- data.frame(numbers = 1:3, abc = letters[1:3])
+print(a) # a data frame CAN hold multiple data types. 
+print(df)
+```
+```{r}
+methods(print) ## all the different ways to print...
+```
+---
+## Examining objects
+- `ls`, `class`, `str
+```{r}
+a <- "test"
+df <- data.frame(numbers = 1:3, abc = letters[1:3])
+ls() ## list objects in global environemtn
+```
+```{r}
+class(df) ## class
+```
+
+```{r}
+str(df) ## structure
+```
+
+---
+## Sampling
+
+```{r}
+set.seed(1234) ## set a random seed
+v <- 1:100
+s <- sample(v, 50)
+print(s)
+print(sort(s))
+```
+
+Sample with replacement
+```{r}
+s2 <- sample(v, 50, replace = T)
+print(sort(s2))
+```
+---
+## Sampling
+
+## Does S2 have duplicates?
+```{r}
+s2_unique <- unique(s2)
+print(length(s2))
+print(length(s2_unique))
+
+print(length(s2) == length(s2_unique))
+```
+---
+## BIRTHDAY PROBLEM
+
+We want to use R to answer the birthday problem. If you have n people in a room with random birthdays, do any two people share the same birthday?
+
+Some assumptions.
+- No Feb 29 birthdays
+- All birthdays are equally likely.
+
+Questions
+- How can we represent all birthdays as a numeric vector?
+- How can we use sampling to represent birthdays of different people?
+
+---
+## BIRTHDAY PROBLEM
+
+- Build a function that randomly generates birthdays for n people. The function should return `TRUE` if two people share a birthday, and `FALSE` otherwise.
+```{r}
+birthday_function <- function(no_people){
+  ......
+  if(....){
+    return(TRUE) ## TRUE means that at least two people have the same birthday
+  } else {
+    return(FALSE) ## FALSE means that no people have the same birthday
+  }
+}
+```
+---
+## BIRTHDAY PROBLEM
+
+- Use the `birthday_function` to create a logical vector v of length 100. 
+
+Each value of v should represent 1 run of the `birthday_function`. So v[10] is a test of the birthday_function on 10 people, v[25] represents a test of `birthday_function` on 25 people, etc.
+
+Create a plot of number of people (x-axis) vs v (y-axis). It might look something like below.
+```{r}
+number_people <- 1:10
+v <- c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE)
+plot(number_people, v)
+```
+
+---
+## BIRTHDAY PROBLEM (CHALLENGE)
+
+- Build a function that runs many simulations of the birthday function. The function should return the percent of time that two people have the same birthday.
+
+For example, you want to run the function for 25 people, and 10,000 simulations. The function should return the percent of simulations in which 2 of the 25 people share a birthday.
+
+You can use `mean` on a logical vector.
+
+```{r}
+mean(c(TRUE, TRUE, FALSE, TRUE))
+```
+```{r}
+birthday_sims <- function(no_people, no_simulations){
+  ......
+  return(mean(....))
 }
 ```
 
-Three components of a function:
-- `formals()`: arguments
-- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
-- `environment()`, function finds the values
-
-Unnamed functions are **anonymous** functions. 
-
----
-## OO
-
-- Procedural versus object-oriented (OO) programming
-- OO bundles together data and functions into an object
-- Class defines type/structure of object and what methods (functions) are used with it
-- 3+ types of OO in R
-
----
-## OO
-
-### Base system? 
-
-```{r}
-# names(methods:::.BasicFunsList) # list of base functions
-x <- 1:10
-!is.object(x)  # if TRUE, base object. 
-```
-
-### S3 system?
-```{r}
-x <- lm(x ~ rev(x))
-!is.object(x)  # if TRUE, base object. 
-!isS4(x)  # it’s S3
-```
-
----
-## OO
-
-### S4 system? 
-```{r}
-x <- raster::raster(nrow = 10, ncol = 10)
-!is.object(x)  # if TRUE, base object. 
-!isS4(x)  # it’s S3
-!is(x, "refClass") # it’s S4; otherwise it’s RC.
-```
-
 ---
 
-## Environments
-```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap="http://adv-r.had.co.nz/Environments.html"}
-knitr::include_graphics("figures/class5_envs.png")
-```
 
+## Homework
 
-
-
+- Read Unit1-Module 3, Parts 1-3 (all)
+- Work on Exercises. Post questions if you have them!
 

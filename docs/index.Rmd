@@ -65,6 +65,8 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 3 (Jan 30, Feb 1)
   - Continued setup work, RMarkdown, R ecosystem
   - [Class 4 slides](class4.html)
+  - [Class 5 slides](class5.html)
+
 - Week 4 (Feb 6, 8)
   - Assignment 2 due (Unit 1 Modules 2-3)
 - Week 5 (Feb 13, 15)
