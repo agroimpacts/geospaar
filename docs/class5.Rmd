@@ -1,5 +1,5 @@
 ---
-title: "Geospatial Analysis with R"
+title: "Geospatial Analysis with R" 
 subtitle: Class 5
 output:
   xaringan::moon_reader:
@@ -318,7 +318,7 @@ methods(print) ## all the different ways to print...
 ```
 ---
 ## Examining objects
-- `ls`, `class`, `str
+- `ls`, `class`, `str`
 ```{r}
 a <- "test"
 df <- data.frame(numbers = 1:3, abc = letters[1:3])
@@ -334,7 +334,7 @@ str(df) ## structure
 
 ---
 ## Sampling
-
+- Sample without replacement
 ```{r}
 set.seed(1234) ## set a random seed
 v <- 1:100
@@ -343,14 +343,16 @@ print(s)
 print(sort(s))
 ```
 
-Sample with replacement
+- Sample with replacement
 ```{r}
 s2 <- sample(v, 50, replace = T)
 print(sort(s2))
 ```
----
-## Sampling
 
+---
+### Sampling
+
+---
 ## Does S2 have duplicates?
 ```{r}
 s2_unique <- unique(s2)
@@ -393,7 +395,10 @@ birthday_function <- function(no_people){
 
 Each value of v should represent 1 run of the `birthday_function`. So v[10] is a test of the birthday_function on 10 people, v[25] represents a test of `birthday_function` on 25 people, etc.
 
-Create a plot of number of people (x-axis) vs v (y-axis). It might look something like below.
+Create a plot of number of people (x-axis) vs v (y-axis). It might look something like what's on the next slide.
+
+---
+## BIRTHDAY PROBLEM
 ```{r}
 number_people <- 1:10
 v <- c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE)
