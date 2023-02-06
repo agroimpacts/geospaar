@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -40,7 +40,10 @@ dev.off()
 
 # Today
 
-- The `R` Ecosystem
+- Review of birthday problem
+- Object oriented (OO) programming
+- Environments in R
+- Indexing
 - Coding practice
 
 ---
@@ -50,150 +53,82 @@ dev.off()
 
 
 ---
-## The R Ecosystem
-### Common objects
+## BIRTHDAY PROBLEM
 
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="figures/class2_objects.png" alt="Credit: L. Song" width="80%" /&gt;
-&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
-&lt;/div&gt;
+We want to use R to answer the birthday problem. If you have n people in a room with random birthdays, do any two people share the same birthday?
 
----
-## The R Ecosystem
-### Data types
-There are 6 atomic data types:
-- character
-  e.g. `'hello world'`, `'abc'`
-- double (real or decimal)
-  e.g. `10`, `3.14`, `1e10`
-- integer
-  e.g. `1L`
-- logical
-  e.g. `TRUE`, `FALSE`, `T`, `F`
-- complex
-  e.g. `1 + 3i` (not commonly used by us)
-- *raw* (rarely used by us)
+Some assumptions.
+- No Feb 29 birthdays
+- All birthdays are equally likely.
+
+Questions
+- How can we represent all birthdays as a numeric vector?
+- How can we use sampling to represent birthdays of different people?
 
 ---
-## The R Ecosystem
-### Special data types
+## BIRTHDAY PROBLEM
 
-- `NULL`: Does not exist
-- Missing data: `NA`. A special logical type that converts into the type it is associated with.
-- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
-- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+- Build a function that randomly generates birthdays for n people. The function should return `TRUE` if two people share a birthday, and `FALSE` otherwise.
+
+```r
+birthday_function &lt;- function(no_people){
+  ......
+  if(....){
+    return(TRUE) ## TRUE means that at least two people have the same birthday
+  } else {
+    return(FALSE) ## FALSE means that no people have the same birthday
+  }
+}
+```
+---
+## BIRTHDAY PROBLEM
+
+- Use the `birthday_function` to create a logical vector v of length 100. 
+
+Each value of v should represent 1 run of the `birthday_function`. So v[10] is a test of the birthday_function on 10 people, v[25] represents a test of `birthday_function` on 25 people, etc.
+
+Create a plot of number of people (x-axis) vs v (y-axis). It might look something like what's on the next slide.
 
 ---
-## The R Ecosystem
-### Special data types
+## BIRTHDAY PROBLEM
 
-- Date: `as.Date('1970-1-5')`
-- Time: `as.POSIXct('1970-1-5')`
-- Factor: factors are integers with associated labels. 
+```r
+number_people &lt;- 1:10
+v &lt;- c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE)
+plot(number_people, v)
+```
 
----
-## The R Ecosystem
-### Checking data type
-
-- `typeof(x)`
-- `is.xxx(x)`: 
-
-  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
-  
-  * `is.numeric(x)` 
-  
-  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
-
+![](class6_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
 
 ---
-## The R Ecosystem
-### Converting data type
+## BIRTHDAY PROBLEM (CHALLENGE)
 
-- `as.xxx(x)`:
+- Build a function that runs many simulations of the birthday function. The function should return the percent of time that two people have the same birthday.
 
-  * e.g. `as.numeric(x)`, `as.double(x)`, `as.character(x)`, `as.integer(x)`, `as.logical(x)`, `as.complex(x)`, `as.raw(x)`, `as.factor(x)`, `as.Date(x)`, `as.POSIXct(x)`.
-  
-- logical &lt; integer &lt; double &lt; character
+For example, you want to run the function for 25 people, and 10,000 simulations. The function should return the percent of simulations in which 2 of the 25 people share a birthday.
 
----
-## The R Ecosystem
-### Data structures
-- Atomic vectors (most commonly thought of kind):
-
-  * A sequence of objects of the **same class**.
-  * Arrays and matrices are vectors with more than one dimension.
-  
-      - Matrices have 2 dimensions.
-      - Arrays could have higher dimensions.
-
-- Lists
-
-  * Lists can contain objects of **different classes**.
-  * Lists can be converted list-matrix or list-array by defining dimensions.
-  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
-
----
-## The R Ecosystem
-### Data structures
-- 1d
-- 2d
-- 3d
-
----
-
-## The R Ecosystem
-### Vectors
-
-&lt;div class="figure" style="text-align: center"&gt;
-&lt;img src="figures/class2_vector.png" alt="Credit: L. Song" width="1921" /&gt;
-&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
-&lt;/div&gt;
-
----
-## Let's create some data
-
-- `vector`
-- `data.frame`
-- `list`
-
----
-## Functions
-- Primitives
-- Operators
-- Control structures
-- Package functions
-- Generic functions
----
-
-## Functions
-### Components
+You can use `mean` on a logical vector.
 
 
 ```r
-function_name &lt;- function(arg1, 
-                          arg2 = 1:10, 
-                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
-  body
+mean(c(TRUE, TRUE, FALSE, TRUE))
+```
+
+```
+## [1] 0.75
+```
+
+```r
+birthday_sims &lt;- function(no_people, no_simulations){
+  ......
+  return(mean(....))
 }
 ```
 
-Three components of a function:
-- `formals()`: arguments
-- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
-- `environment()`, function finds the values
-
-Unnamed functions are **anonymous** functions. 
-
----
-## Functions
-- Primitives
-- Operators
-- Control structures
-- Package functions
-- Generic functions
 ---
 
-## OO
+
+## OO (Object oriented programming)
 
 - Procedural versus object-oriented (OO) programming
 - OO bundles together data and functions into an object
@@ -203,6 +138,8 @@ Unnamed functions are **anonymous** functions.
 ---
 
 ## OO - Base system? 
+
+A vector is a base object.
 
 ```r
 x &lt;- 1:10
@@ -220,11 +157,66 @@ str(x)
 ```
 ##  int [1:10] 1 2 3 4 5 6 7 8 9 10
 ```
----
-## 00 - S3 system?
+
+A data frame is not a base object.
 
 ```r
-x &lt;- lm(x ~ rev(x))
+DF &lt;- data.frame(v1  = c(1,2,3), v2 = c(4,5,6))
+!is.object(DF)  # if TRUE, base object. 
+```
+
+```
+## [1] FALSE
+```
+
+```r
+str(DF)
+```
+
+```
+## 'data.frame':	3 obs. of  2 variables:
+##  $ v1: num  1 2 3
+##  $ v2: num  4 5 6
+```
+
+---
+## 00 - S3 system?
+A data frame is S3 object.
+
+```r
+DF &lt;- data.frame(v1  = c(1,2,3), v2 = c(4,5,6))
+!is.object(DF)  # if TRUE, base object. 
+```
+
+```
+## [1] FALSE
+```
+
+```r
+!isS4(DF)  # it’s S3
+```
+
+```
+## [1] TRUE
+```
+
+```r
+str(DF)
+```
+
+```
+## 'data.frame':	3 obs. of  2 variables:
+##  $ v1: num  1 2 3
+##  $ v2: num  4 5 6
+```
+
+---
+## 00 - S3 system?
+A lm (linear model) is S3 object.
+
+```r
+a &lt;- 1:10
+x &lt;- lm(a ~ rev(a))
 !is.object(x)  # if TRUE, base object. 
 ```
 
@@ -247,11 +239,11 @@ str(x)
 ```
 ## List of 12
 ##  $ coefficients : Named num [1:2] 11 -1
-##   ..- attr(*, "names")= chr [1:2] "(Intercept)" "rev(x)"
+##   ..- attr(*, "names")= chr [1:2] "(Intercept)" "rev(a)"
 ##  $ residuals    : Named num [1:10] 3.13e-15 -3.46e-15 -2.13e-16 -1.80e-16 -3.55e-17 ...
 ##   ..- attr(*, "names")= chr [1:10] "1" "2" "3" "4" ...
 ##  $ effects      : Named num [1:10] -1.74e+01 9.08 -4.44e-16 -7.77e-16 -9.99e-16 ...
-##   ..- attr(*, "names")= chr [1:10] "(Intercept)" "rev(x)" "" "" ...
+##   ..- attr(*, "names")= chr [1:10] "(Intercept)" "rev(a)" "" "" ...
 ##  $ rank         : int 2
 ##  $ fitted.values: Named num [1:10] 1 2 3 4 5 ...
 ##   ..- attr(*, "names")= chr [1:10] "1" "2" "3" "4" ...
@@ -260,7 +252,7 @@ str(x)
 ##   ..$ qr   : num [1:10, 1:2] -3.162 0.316 0.316 0.316 0.316 ...
 ##   .. ..- attr(*, "dimnames")=List of 2
 ##   .. .. ..$ : chr [1:10] "1" "2" "3" "4" ...
-##   .. .. ..$ : chr [1:2] "(Intercept)" "rev(x)"
+##   .. .. ..$ : chr [1:2] "(Intercept)" "rev(a)"
 ##   .. ..- attr(*, "assign")= int [1:2] 0 1
 ##   ..$ qraux: num [1:2] 1.32 1.27
 ##   ..$ pivot: int [1:2] 1 2
@@ -269,39 +261,98 @@ str(x)
 ##   ..- attr(*, "class")= chr "qr"
 ##  $ df.residual  : int 8
 ##  $ xlevels      : Named list()
-##  $ call         : language lm(formula = x ~ rev(x))
-##  $ terms        :Classes 'terms', 'formula'  language x ~ rev(x)
-##   .. ..- attr(*, "variables")= language list(x, rev(x))
+##  $ call         : language lm(formula = a ~ rev(a))
+##  $ terms        :Classes 'terms', 'formula'  language a ~ rev(a)
+##   .. ..- attr(*, "variables")= language list(a, rev(a))
 ##   .. ..- attr(*, "factors")= int [1:2, 1] 0 1
 ##   .. .. ..- attr(*, "dimnames")=List of 2
-##   .. .. .. ..$ : chr [1:2] "x" "rev(x)"
-##   .. .. .. ..$ : chr "rev(x)"
-##   .. ..- attr(*, "term.labels")= chr "rev(x)"
+##   .. .. .. ..$ : chr [1:2] "a" "rev(a)"
+##   .. .. .. ..$ : chr "rev(a)"
+##   .. ..- attr(*, "term.labels")= chr "rev(a)"
 ##   .. ..- attr(*, "order")= int 1
 ##   .. ..- attr(*, "intercept")= int 1
 ##   .. ..- attr(*, "response")= int 1
 ##   .. ..- attr(*, ".Environment")=&lt;environment: R_GlobalEnv&gt; 
-##   .. ..- attr(*, "predvars")= language list(x, rev(x))
+##   .. ..- attr(*, "predvars")= language list(a, rev(a))
 ##   .. ..- attr(*, "dataClasses")= Named chr [1:2] "numeric" "numeric"
-##   .. .. ..- attr(*, "names")= chr [1:2] "x" "rev(x)"
+##   .. .. ..- attr(*, "names")= chr [1:2] "a" "rev(a)"
 ##  $ model        :'data.frame':	10 obs. of  2 variables:
-##   ..$ x     : int [1:10] 1 2 3 4 5 6 7 8 9 10
-##   ..$ rev(x): int [1:10] 10 9 8 7 6 5 4 3 2 1
-##   ..- attr(*, "terms")=Classes 'terms', 'formula'  language x ~ rev(x)
-##   .. .. ..- attr(*, "variables")= language list(x, rev(x))
+##   ..$ a     : int [1:10] 1 2 3 4 5 6 7 8 9 10
+##   ..$ rev(a): int [1:10] 10 9 8 7 6 5 4 3 2 1
+##   ..- attr(*, "terms")=Classes 'terms', 'formula'  language a ~ rev(a)
+##   .. .. ..- attr(*, "variables")= language list(a, rev(a))
 ##   .. .. ..- attr(*, "factors")= int [1:2, 1] 0 1
 ##   .. .. .. ..- attr(*, "dimnames")=List of 2
-##   .. .. .. .. ..$ : chr [1:2] "x" "rev(x)"
-##   .. .. .. .. ..$ : chr "rev(x)"
-##   .. .. ..- attr(*, "term.labels")= chr "rev(x)"
+##   .. .. .. .. ..$ : chr [1:2] "a" "rev(a)"
+##   .. .. .. .. ..$ : chr "rev(a)"
+##   .. .. ..- attr(*, "term.labels")= chr "rev(a)"
 ##   .. .. ..- attr(*, "order")= int 1
 ##   .. .. ..- attr(*, "intercept")= int 1
 ##   .. .. ..- attr(*, "response")= int 1
 ##   .. .. ..- attr(*, ".Environment")=&lt;environment: R_GlobalEnv&gt; 
-##   .. .. ..- attr(*, "predvars")= language list(x, rev(x))
+##   .. .. ..- attr(*, "predvars")= language list(a, rev(a))
 ##   .. .. ..- attr(*, "dataClasses")= Named chr [1:2] "numeric" "numeric"
-##   .. .. .. ..- attr(*, "names")= chr [1:2] "x" "rev(x)"
+##   .. .. .. ..- attr(*, "names")= chr [1:2] "a" "rev(a)"
 ##  - attr(*, "class")= chr "lm"
+```
+
+---
+## Accessing data in S3 objects.
+
+- Access by name using $
+
+```r
+a &lt;- 1:10
+x &lt;- lm(a ~ rev(a))
+print(names(x))
+```
+
+```
+##  [1] "coefficients"  "residuals"     "effects"       "rank"         
+##  [5] "fitted.values" "assign"        "qr"            "df.residual"  
+##  [9] "xlevels"       "call"          "terms"         "model"
+```
+
+```r
+print(x$coefficients)
+```
+
+```
+## (Intercept)      rev(a) 
+##          11          -1
+```
+
+```r
+(x$residuals)
+```
+
+```
+##             1             2             3             4             5 
+##  3.125393e-15 -3.461222e-15 -2.128087e-16 -1.796631e-16 -3.549525e-17 
+##             6             7             8             9            10 
+##  2.196949e-16  3.638628e-16  2.859861e-16 -2.359798e-16  1.302327e-16
+```
+
+---
+## Accessing data in S3 objects.
+
+- Access by name or index using `[[ ]]`
+
+```r
+DF &lt;- data.frame(v1  = c(1,2,3), v2 = c(4,5,6))
+print(DF$v2) # prints column named "v2"
+```
+
+```
+## [1] 4 5 6
+```
+
+```r
+print(DF[[2]]) # prints second column
+```
+
+```
+## [1] 4 5 6
 ```
 
 ---
@@ -325,7 +376,7 @@ x &lt;- raster::raster(nrow = 10, ncol = 10)
 ```
 
 ```r
-!is(x, "refClass") # it’s S4; otherwise it’s RC.
+!is(x, "refClass") # if TRUE it’s S4; otherwise it’s RC.
 ```
 
 ```
@@ -337,7 +388,7 @@ str(x)
 ```
 
 ```
-## Formal class 'RasterLayer' [package "raster"] with 12 slots
+## Formal class 'RasterLayer' [package "raster"] with 13 slots
 ##   ..@ file    :Formal class '.RasterFile' [package "raster"] with 13 slots
 ##   .. .. ..@ name        : chr ""
 ##   .. .. ..@ datanotation: chr "FLT4S"
@@ -387,10 +438,228 @@ str(x)
 ##   ..@ crs     :Formal class 'CRS' [package "sp"] with 1 slot
 ##   .. .. ..@ projargs: chr "+proj=longlat +datum=WGS84 +no_defs"
 ##   .. .. ..$ comment: chr "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.25722"| __truncated__
+##   ..@ srs     : chr "GEOGCRS[\"unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.25722"| __truncated__
 ##   ..@ history : list()
 ##   ..@ z       : list()
 ```
 
+---
+
+## Accessing data in S4 objects.
+
+- Print slots using `slotNames()`
+- Access slots using `@`
+
+```r
+library(raster)
+```
+
+```
+## Loading required package: sp
+```
+
+```r
+x &lt;- raster::raster(nrow = 10, ncol = 10, vals = 3)
+print(slotNames(x))
+```
+
+```
+##  [1] "file"     "data"     "legend"   "title"    "extent"   "rotated" 
+##  [7] "rotation" "ncols"    "nrows"    "crs"      "srs"      "history" 
+## [13] "z"
+```
+
+```r
+print(x@ncols)
+```
+
+```
+## [1] 10
+```
+
+---
+
+## Accessing data in S4 objects.
+- Generally you want to use designed methods to set new values in slots. 
+
+
+```r
+print("old values")
+```
+
+```
+## [1] "old values"
+```
+
+```r
+print( x@data@values)
+```
+
+```
+##   [1] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+##  [38] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+##  [75] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+```
+
+```r
+x &lt;- setValues(x, sample(1:100, size = 100, replace = T))## set values of raster
+print("new values")
+```
+
+```
+## [1] "new values"
+```
+
+```r
+print( x@data@values)
+```
+
+```
+##   [1]  76  25   6  88  16  20   8  46   3  58  61  46  68  39  10  16  83  20
+##  [19]   4   5  19  25  34  42  72  41  18   5   9  17   7  51  90  97  11  90
+##  [37]  41  57  77  33  85   7  96  52  35  18  37  86  24  71  23  78  83  44
+##  [55]  34  55  13   9  41  11  80  48 100  64  81  13  52  50  35 100  16  85
+##  [73]  56  22  20  82  68  94  84  22   5  52  56  45  38  99  79  95  84   2
+##  [91]  19  54  39  84  33   7   4  80  71  56
+```
+
+---
+## Functions
+- Primitives (e.g. `c`)
+- Operators (e.g. +, -)
+- Control structures (e.g. `for`, `if`, `apply`)
+- Package functions (e.g. `dplyr::select`)
+- Generic functions
+
+---
+
+## Functions
+### Components
+
+
+```r
+function_name &lt;- function(arg1, 
+                          arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. 
+
+
+---
+## Primitive functions
+List primitive functions
+
+```r
+names(methods:::.BasicFunsList)
+```
+
+```
+##   [1] "$"                    "$&lt;-"                  "["                   
+##   [4] "[&lt;-"                  "[["                   "[[&lt;-"                
+##   [7] "%*%"                  "xtfrm"                "c"                   
+##  [10] "all"                  "any"                  "sum"                 
+##  [13] "prod"                 "max"                  "min"                 
+##  [16] "range"                "is.matrix"            "&gt;="                  
+##  [19] "cosh"                 "cummax"               "dimnames&lt;-"          
+##  [22] "as.raw"               "log2"                 "tan"                 
+##  [25] "dim"                  "as.logical"           "^"                   
+##  [28] "is.finite"            "sinh"                 "log10"               
+##  [31] "as.numeric"           "dim&lt;-"                "is.array"            
+##  [34] "tanpi"                "gamma"                "atan"                
+##  [37] "as.integer"           "Arg"                  "signif"              
+##  [40] "cumprod"              "cos"                  "length"              
+##  [43] "!="                   "digamma"              "exp"                 
+##  [46] "floor"                "acos"                 "seq.int"             
+##  [49] "abs"                  "length&lt;-"             "sqrt"                
+##  [52] "!"                    "acosh"                "is.nan"              
+##  [55] "Re"                   "tanh"                 "names"               
+##  [58] "cospi"                "&amp;"                    "anyNA"               
+##  [61] "trunc"                "cummin"               "levels&lt;-"            
+##  [64] "*"                    "Mod"                  "|"                   
+##  [67] "names&lt;-"              "+"                    "log"                 
+##  [70] "lgamma"               "as.complex"           "asinh"               
+##  [73] "-"                    "sin"                  "/"                   
+##  [76] "as.environment"       "&lt;="                   "as.double"           
+##  [79] "is.infinite"          "is.numeric"           "rep"                 
+##  [82] "round"                "sinpi"                "dimnames"            
+##  [85] "asin"                 "as.character"         "%/%"                 
+##  [88] "is.na"                "&lt;"                    "&gt;"                   
+##  [91] "Im"                   "%%"                   "trigamma"            
+##  [94] "=="                   "cumsum"               "atanh"               
+##  [97] "sign"                 "ceiling"              "Conj"                
+## [100] "as.call"              "log1p"                "expm1"               
+## [103] "("                    ":"                    "="                   
+## [106] "@"                    "{"                    "~"                   
+## [109] "&amp;&amp;"                   ".C"                   "baseenv"             
+## [112] "quote"                "::"                   "&lt;-"                  
+## [115] "is.name"              "if"                   "||"                  
+## [118] "attr&lt;-"               "untracemem"           ".cache_class"        
+## [121] "substitute"           "interactive"          "is.call"             
+## [124] "switch"               "function"             "is.single"           
+## [127] "is.null"              "is.language"          "is.pairlist"         
+## [130] ".External.graphics"   "globalenv"            "class&lt;-"             
+## [133] ".Primitive"           "is.logical"           "enc2utf8"            
+## [136] "UseMethod"            ".subset"              "proc.time"           
+## [139] "enc2native"           "repeat"               ":::"                 
+## [142] "&lt;&lt;-"                  "@&lt;-"                  "missing"             
+## [145] "nargs"                "isS4"                 ".isMethodsDispatchOn"
+## [148] "forceAndCall"         ".primTrace"           "storage.mode&lt;-"      
+## [151] ".Call"                "unclass"              "gc.time"             
+## [154] ".subset2"             "environment&lt;-"        "emptyenv"            
+## [157] "seq_len"              ".External2"           "is.symbol"           
+## [160] "class"                "on.exit"              "is.raw"              
+## [163] "for"                  "is.complex"           "list"                
+## [166] "invisible"            "is.character"         "oldClass&lt;-"          
+## [169] "is.environment"       "attributes"           "break"               
+## [172] "return"               "attr"                 "tracemem"            
+## [175] "next"                 ".Call.graphics"       "standardGeneric"     
+## [178] "is.atomic"            "retracemem"           "expression"          
+## [181] "is.expression"        "call"                 "is.object"           
+## [184] "pos.to.env"           "attributes&lt;-"         ".primUntrace"        
+## [187] "...length"            ".External"            "oldClass"            
+## [190] ".Internal"            ".Fortran"             "browser"             
+## [193] "is.double"            ".class2"              "while"               
+## [196] "nzchar"               "is.list"              "lazyLoadDBfetch"     
+## [199] "...elt"               "...names"             "is.integer"          
+## [202] "is.function"          "is.recursive"         "seq_along"           
+## [205] "unlist"               "as.vector"            "lengths"
+```
+
+---
+## Package functions
+
+List all objects in package (data + functions)
+
+```r
+library(geospaar)
+print(ls("package:geospaar"))
+```
+
+```
+##  [1] "chirps"      "chirpsz"     "dem"         "distsrfarm"  "farmers_env"
+##  [6] "plot_noaxes" "rain_stack"  "raintot"     "raintotalb"  "zamprec"    
+## [11] "zonemu"
+```
+
+
+
+List functions in package
+
+```r
+lsf.str("package:geospaar")
+```
+
+```
+## plot_noaxes : function (x, axes = FALSE, box = FALSE, mar = c(0, 0, 1, 4), ...)
+```
 ---
 
 ## Environments
@@ -399,8 +668,17 @@ str(x)
 &lt;p class="caption"&gt;http://adv-r.had.co.nz/Environments.html&lt;/p&gt;
 &lt;/div&gt;
 ---
-- [Function environment](https://agroimpacts.github.io/geospaar/unit1-module2.html#the-function-environment)
-- Execution environment
+
+## Environments
+- Global environment
+- Package environment
+    - external interface to package - how we find functions 
+- Namespace environment
+    - internal interface to package - how functions find variables
+- Function environment (see http://adv-r.had.co.nz/Environments.html#function-envs)
+  - Enclosing environment
+  - Binding environment
+  - Execution environment
 
 ---
 
@@ -411,38 +689,12 @@ str(x)
 
 ---
 
+`search()` shows the current environments in order. So if a function `select` is called, it first looks in the GlobalEnv, then each package environent.
 
 ```r
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 detach(package:dplyr)
 library(raster)
-```
-
-```
-## Loading required package: sp
-```
-
-```r
 library(dplyr)
 ```
 
@@ -474,14 +726,22 @@ search()
 ```
 
 ```
-##  [1] ".GlobalEnv"        "package:dplyr"     "package:raster"   
-##  [4] "package:sp"        "package:stats"     "package:graphics" 
-##  [7] "package:grDevices" "package:utils"     "package:datasets" 
-## [10] "package:methods"   "Autoloads"         "package:base"
+##  [1] ".GlobalEnv"        "package:dplyr"     "package:geospaar" 
+##  [4] "package:forcats"   "package:stringr"   "package:purrr"    
+##  [7] "package:readr"     "package:tidyr"     "package:tibble"   
+## [10] "package:ggplot2"   "package:tidyverse" "package:sf"       
+## [13] "package:raster"    "package:sp"        "package:stats"    
+## [16] "package:graphics"  "package:grDevices" "package:utils"    
+## [19] "package:datasets"  "package:methods"   "Autoloads"        
+## [22] "package:base"
 ```
+---
 
+You can also see the environments (and their objects) in Rstudio
+&lt;img src="figures/class6_rstudio_env.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
+Using `x` in a function does not change its global value.
 
 ```r
 x &lt;- 1:10
@@ -517,7 +777,7 @@ x
 ```
 
 ---
-
+Each time you run `myfun`, a new function environment is created.
 
 ```r
 myfun &lt;- function(x) {
@@ -529,7 +789,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7fd8bd142748&gt;
+## &lt;environment: 0x0000020c4953ac80&gt;
 ```
 
 ```
@@ -541,11 +801,281 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7fd8bd097ac0&gt;
+## &lt;environment: 0x0000020c494b4500&gt;
 ```
 
 ```
 ## [1] 100
+```
+
+---
+## Global assignment.
+Use `&lt;&lt;-` to change value of global variable within a function.
+
+
+
+```r
+a &lt;- 10
+myfun &lt;- function(x) {
+  a &lt;&lt;- x * 10   ## note &lt;&lt;- instead of &lt;- 
+  return(a)
+}
+myfun(5)
+```
+
+```
+## [1] 50
+```
+
+```r
+print(a)
+```
+
+```
+## [1] 50
+```
+
+
+
+---
+## The R Ecosystem
+### Data structures
+- Atomic vectors (most commonly thought of kind):
+
+  * A sequence of objects of the **same class**.
+  * Arrays and matrices are vectors with more than one dimension.
+  
+      - Matrices have 2 dimensions.
+      - Arrays could have higher dimensions.
+
+- Lists
+
+  * Lists can contain objects of **different classes**.
+  * Lists can be converted list-matrix or list-array by defining dimensions.
+  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
+
+---
+## The R Ecosystem
+### Data structures
+- 1d
+- 2d
+- 3d
+
+
+
+---
+## Indexing vectors
+
+Accessing elements in a vector
+
+```r
+v &lt;- 1:10 + 5
+print(v)
+```
+
+```
+##  [1]  6  7  8  9 10 11 12 13 14 15
+```
+
+```r
+print(v[1:3])
+```
+
+```
+## [1] 6 7 8
+```
+
+```r
+print(v[c(4,5,8)])
+```
+
+```
+## [1]  9 10 13
+```
+---
+
+Only odd elements
+
+
+```r
+v &lt;- 1:10 + 5
+print(v %% 2 == 1) ## check if each element is odd
+```
+
+```
+##  [1] FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE  TRUE
+```
+
+Subset to only odd elements
+
+```r
+v_odd &lt;- v[v %% 2 ==1] # use brackets to subset based on condition
+v_odd
+```
+
+```
+## [1]  7  9 11 13 15
+```
+
+Set even elements to NA
+
+
+```r
+v[v %% 2 == 0] &lt;- NA 
+v
+```
+
+```
+##  [1] NA  7 NA  9 NA 11 NA 13 NA 15
+```
+
+---
+## Indexing lists
+
+
+```r
+v1 &lt;- 1:3
+v2 &lt;- 4:6
+v3 &lt;- 7:9
+l &lt;- list(a = v1, b = v2, c = v3)
+print(l)
+```
+
+```
+## $a
+## [1] 1 2 3
+## 
+## $b
+## [1] 4 5 6
+## 
+## $c
+## [1] 7 8 9
+```
+
+```r
+print(names(l))
+```
+
+```
+## [1] "a" "b" "c"
+```
+
+---
+Access lists using `$` or `[[ ]]`
+
+```r
+print(l$a)
+```
+
+```
+## [1] 1 2 3
+```
+
+```r
+print(l$a[3]) # 3rd element of object a
+```
+
+```
+## [1] 3
+```
+
+```r
+print(l[[2]])
+```
+
+```
+## [1] 4 5 6
+```
+
+```r
+print(l[[2]][3]) # 3rd element of 2nd object
+```
+
+```
+## [1] 6
+```
+
+---
+## Indexing Matrices
+
+```r
+m &lt;- cbind(a = 1:5, b = 6:10)
+print(class(m))
+```
+
+```
+## [1] "matrix" "array"
+```
+
+```r
+print(m)
+```
+
+```
+##      a  b
+## [1,] 1  6
+## [2,] 2  7
+## [3,] 3  8
+## [4,] 4  9
+## [5,] 5 10
+```
+
+Access 2nd row
+
+```r
+m[2,]
+```
+
+```
+## a b 
+## 2 7
+```
+Access 2nd column
+
+```r
+m[ , 2]
+```
+
+```
+## [1]  6  7  8  9 10
+```
+
+Access column named 'a'
+
+```r
+m[ , 'a']
+```
+
+```
+## [1] 1 2 3 4 5
+```
+
+---
+Access 3rd row, 2nd column
+
+```r
+m[3 , 2]
+```
+
+```
+## b 
+## 8
+```
+
+Set row names
+
+```r
+rownames(m) &lt;- LETTERS[10:14]
+print(m)
+```
+
+```
+##   a  b
+## J 1  6
+## K 2  7
+## L 3  8
+## M 4  9
+## N 5 10
 ```
 
 
@@ -562,6 +1092,7 @@ myfun(x)
       - Create the identical vector of names using the `paste` function.
   - `b`: Using `a` as an index to select from `letters`
   - `d`: Use `rnorm` with a mean = 100 and an sd of 20
+    - Use `?rnorm` to see the help guide.
   - Why did I skip `c`? 
   - Create a list `l` from `a`, `b`, `d`. 
     - Assign the names of the vectors in `l` to the `l`'s elements
@@ -579,7 +1110,11 @@ myfun(x)
   - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
     - `V4` is a random selection of the letters A-E
 
-
+---
+## Homework
+- Work on exercises
+- Finish reading 1.3
+- Read on [tidyr, (12.1 - 12.2)](https://r4ds.had.co.nz/tidy-data.html)
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
