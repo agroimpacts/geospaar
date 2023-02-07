@@ -1343,7 +1343,7 @@ src: url(data:application/font-sfnt;base64,AAEAAAARAQAABAAQR0RFRgs+Cz8AAjwQAAAAQ
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2023-01-25
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2023-02-07
 <a href="index.html">Back to home</a></p>
           </div>
    </div>
@@ -1496,17 +1496,25 @@ categorical groups defined in “a”.</p>
 <code>dplyr</code>, which provides the functions designed to work with
 this.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>d_tb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(a) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="fu">mean</span>(b))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 x 2</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   a     `mean(b)`</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;dbl&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a         10.0 </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 b          9.72</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 c          8.48</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 d          9.33</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 e         10.2 </span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 f         10.2 </span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 g         10.2</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>d_tb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(a) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="fu">mean</span>(b))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 2</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   a     `mean(b)`</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a         10.0 </span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 b          9.72</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 c          8.48</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 d          9.33</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 e         10.2 </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 f         10.2 </span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 g         10.2</span></span></code></pre></div>
 <p>And finally the <code>data.table</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d_dt[, <span class="fu">mean</span>(b), by <span class="ot">=</span> a][<span class="fu">order</span>(a)]</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    a        V1</span></span>
@@ -1533,9 +1541,7 @@ of the functionality of <code>data.table</code> is provided within the
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>d[, <span class="fu">mean</span>(b), by <span class="ot">=</span> a][<span class="fu">order</span>(a)]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `[.data.frame`(d, , mean(b), by = a): unused argument (by = a)</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>d_tb[, <span class="fu">mean</span>(b), by <span class="ot">=</span> a][<span class="fu">order</span>(a)]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `d_tb[, mean(b), by = a]`:</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! Can&#39;t subset columns with `mean(b)`.</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x Can&#39;t convert from `j` &lt;double&gt; to &lt;integer&gt; due to loss of precision.</span></span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in mean(b): object &#39;b&#39; not found</span></span></code></pre></div>
 <p><code>data.table</code> is extremely powerful, and is the tool of
 choice for working with extremely large tabular datasets (it seems to
 have heavy uptake in quantitative finance, for example), and by some <a href="https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping">measures</a>
@@ -1568,7 +1574,7 @@ but delete the code in it, as a starting point for code</li>
 Put practice code inside the <code>R</code> code chunks. Remember, you
 can execute code line by line within chunks to test it out, execute a
 single chunk, or knit the code all at once (note: when you knit, the
-code is executed in a new environment environment than the one you use
+code is executed in a new different environment than the one you use
 when executing line by line)</li>
 </ul>
 </div>
@@ -2014,8 +2020,8 @@ use to ask others for help.</p>
 <span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
 <span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="co"># #6</span></span>
 <span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>b[<span class="fu">length</span>(b) <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>  </span>
-<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in b[length(b) - 1] &lt;- 0:10: number of items to replace is not a multiple of replacement</span></span>
-<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; length</span></span></code></pre></div>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in b[length(b) - 1] &lt;- 0:10: number of items to replace is not a multiple of</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; replacement length</span></span></code></pre></div>
 <p>Looking at the above, we are indexing the same way we did in the
 previous section, but in this case we are assigning new values to
 overwrite the existing ones in those index positions. Note that the
@@ -2840,8 +2846,8 @@ as a calculator</a>.</p>
 operators and functions that allow this:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(a)  <span class="co"># natural log</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379 1.7917595 1.9459101 2.0794415 2.1972246</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] 2.3025851</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379 1.7917595 1.9459101 2.0794415</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] 2.1972246 2.3025851</span></span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">log</span>(a))  <span class="co"># inverse of natural log</span></span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</span></span>
 <span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span><span class="sc">^</span>a  <span class="co"># exponents</span></span>
@@ -2851,10 +2857,11 @@ operators and functions that allow this:</p>
 <span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>(a <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%%</span> <span class="dv">3</span>  <span class="co"># modulo (https://en.wikipedia.org/wiki/Modulo_operation)</span></span>
 <span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1 2 0 1 2 0 1 2 0 1</span></span>
 <span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(a)  <span class="co"># square root</span></span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751 2.828427 3.000000 3.162278</span></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>pi <span class="sc">*</span> a<span class="sc">^</span><span class="dv">2</span>  <span class="co"># areas with built in pi constant</span></span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]   3.141593  12.566371  28.274334  50.265482  78.539816 113.097336 153.938040 201.061930</span></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] 254.469005 314.159265</span></span></code></pre></div>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751 2.828427 3.000000</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] 3.162278</span></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>pi <span class="sc">*</span> a<span class="sc">^</span><span class="dv">2</span>  <span class="co"># areas with built in pi constant</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]   3.141593  12.566371  28.274334  50.265482  78.539816 113.097336 153.938040</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8] 201.061930 254.469005 314.159265</span></span></code></pre></div>
 <p>Let’s look at it though for calculations on different kinds of
 objects:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chunk 19</span></span>
@@ -3572,7 +3579,7 @@ comments:</p>
 <span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   399   655  1054 </span></span>
 <span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb54-26"><a href="#cb54-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [[4]]</span></span>
-<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Operation not valid for a standardGeneric&quot;</span></span></code></pre></div>
+<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Operation not valid for a function&quot;</span></span></code></pre></div>
 <p>In this example, we create a new list by concatenating a function to
 the existing <code>dat_list</code> list (yes, <code>c()</code> works for
 adding elements to lists). We then use <code>lapply</code> to iterate
@@ -3699,8 +3706,8 @@ structures.</p>
 <span id="cb57-22"><a href="#cb57-22" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb57-23"><a href="#cb57-23" aria-hidden="true" tabindex="-1"></a><span class="co"># #5</span></span>
 <span id="cb57-24"><a href="#cb57-24" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x) <span class="sc">/</span> <span class="fu">sum</span>(dat))</span>
-<span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753 0.02209647 0.02263541 0.02317435</span></span>
-<span id="cb57-26"><a href="#cb57-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] 0.02371328 0.02425222</span></span></code></pre></div>
+<span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753 0.02209647 0.02263541</span></span>
+<span id="cb57-26"><a href="#cb57-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8] 0.02317435 0.02371328 0.02425222</span></span></code></pre></div>
 <p>We start by extracting one <code>data.frame</code> from
 <code>dat_list</code>, and then use various flavors of
 <code>apply</code> on that. In #1 and #2, we use the argument names for
@@ -3925,7 +3932,7 @@ list <code>l</code></li>
 <li>Write an <code>lapply</code> that applies <code>sum</code> to
 <code>l</code>. This one does not need an anonymous function</li>
 <li>Now write an <code>lapply</code> that iterates over the elements of
-<code>l</code>, and uses your <code>myfunc</code> to multiply each
+<code>l</code>, and uses your <code>mycalc</code> to multiply each
 element of <code>l</code> by <code>v2</code></li>
 <li>Hints:
 <ul>

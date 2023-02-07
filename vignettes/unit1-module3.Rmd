@@ -150,7 +150,7 @@ In this module, you will be asked to answer questions and practice coding along 
 
 - Create a new folder called "notebooks" in your class Rstudio project, as a top level folder. 
 - Open a new Rmarkdown file. Save it into the notebooks folder, calling it `geog246346_unit1module3_practice.Rmd`. Adjust the title as needed, and delete the text and chunks below. Keep one chunk, but delete the code in it, as a starting point for code
-- Type answers to questions, take notes, etc, outside the code chunks. Put practice code inside the `R` code chunks. Remember, you can execute code line by line within chunks to test it out, execute a single chunk, or knit the code all at once (note: when you knit, the code is executed in a new environment environment than the one you use when executing line by line)
+- Type answers to questions, take notes, etc, outside the code chunks. Put practice code inside the `R` code chunks. Remember, you can execute code line by line within chunks to test it out, execute a single chunk, or knit the code all at once (note: when you knit, the code is executed in a new different environment than the one you use when executing line by line)
 
 
 # Indexing
@@ -1396,7 +1396,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
 5. Demonstrate the use of `*apply`:
     - Combine `v1`, `m1`, and `m2` into a list `l`
     - Write an `lapply` that applies `sum` to `l`. This one does not need an anonymous function 
-    - Now write an `lapply` that iterates over the elements of `l`, and uses your `myfunc` to multiply each element of `l` by `v2`
+    - Now write an `lapply` that iterates over the elements of `l`, and uses your `mycalc` to multiply each element of `l` by `v2`
     - Hints:
         - You will need to use an anonymous function (`function(x)`)
         - The interior of your function (i.e. the part between `({})` will look like this: `l[[x]] * v2`
