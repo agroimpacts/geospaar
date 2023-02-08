@@ -3,7 +3,7 @@
 
 ## Spring 2023
 
-Updated on: 2023-02-06
+Updated on: 2023-02-08
 
 <center>
 
@@ -64,6 +64,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 -   Week 4 (Feb 6, 8)
     -   R data structures, OOP, Environments, Control flow
     -   [Class 6 slides](class6.html)
+    -   [Class 7 slides](class7.html)
     -   Assignment 2 due (Unit 1 Modules 2-3)
 -   Week 5 (Feb 13, 15)
 -   Week 6 (Feb 20, 22)

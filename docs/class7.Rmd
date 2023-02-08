@@ -27,177 +27,12 @@ dev.off()
 
 # Today
 
-- R ecosystem continued: OO and environments
+- Useful functions
 - Indexing and subsetting
+- Control structures
 
 ---
-
-## Functions
-### Components
-
-```{r, eval=FALSE}
-function_name <- function(arg1, arg2 = 1:10, 
-                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
-  body
-}
-```
-
-Three components of a function:
-- `formals()`: arguments
-- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
-- `environment()`, function finds the values
-
-Unnamed functions are **anonymous** functions. 
-
----
-
-## OO
-
-- Procedural versus object-oriented (OO) programming
-- OO bundles together data and functions into an object
-- Class defines type/structure of object and what methods (functions) are used with it
-- 3+ types of OO in R
-
----
-
-## OO - Base system? 
-```{r}
-x <- 1:10
-!is.object(x)  # if TRUE, base object. 
-str(x)
-```
----
-## 00 - S3 system?
-```{r}
-x <- lm(x ~ rev(x))
-!is.object(x)  # if TRUE, base object. 
-!isS4(x)  # it’s S3
-str(x)
-```
-
----
-## OO - S4 system? 
-```{r}
-x <- raster::raster(nrow = 10, ncol = 10)
-!is.object(x)  # if TRUE, base object. 
-!isS4(x)  # it’s S3
-!is(x, "refClass") # it’s S4; otherwise it’s RC.
-str(x)
-```
-
----
-
-## Environments
-```{r, out.width = "70%", echo=FALSE, fig.align='center', fig.cap="http://adv-r.had.co.nz/Environments.html"}
-knitr::include_graphics("figures/class5_envs.png")
-```
-
----
-## Environments
-- Global environment
-- Package environment
-    - external interface to package - how we find functions 
-- Namespace environment
-    - internal interface to package - how functions find variables
-- Function environment (see http://adv-r.had.co.nz/Environments.html#function-envs)
-  - Enclosing environment
-  - Binding environment
-  - Execution environment
-
----
-###  Execution environments
-
-```{r}
-x <- 1:10
-myfun <- function() {
-  x * 10
-}
-myfun()
-
-myfun <- function() {
-  x <- x * 10
-  # return(x)
-  # print(x)
-}
-x1 <- myfun()
-x
-x1
-
-myfun <- function(x) {
-  x <- x * 10
-  return(x)
-}
-x <- 10
-myfun(x = 20)
-x
-
-
-```
-
----
-
-```{r}
-myfun <- function(x) {
-  x <- x * 10
-  print(environment())
-  return(x)
-}
-myfun(x)
-myfun(x)
-```
-
----
-```{r}
-i <- 0
-lapply(1:10, function(x) {
-  print(environment())
-  return(x)
-})
-
-i <- 0
-for(i in 1:10) {
-  print(environment())
-}
-```
-
----
-```{r}
-i <- 0
-sapply(1:10, function(x) {
-  i <- i + x
-  print(environment())
-  return(i)
-})
-
-i <- 0
-for(x in 1:10) {
-  i <- i + x 
-  print(environment())
-  print(i)
-}
-```
-
----
-```{r}
-# restart r
-search()
-library(raster)
-library(dplyr)
-
-tibble(a = 1:10, b = 1:10) %>% 
-  select(a)
-
-# restart R
-library(dplyr)
-library(raster)
-tibble(a = 1:10, b = 1:10) %>% 
-  select(a)
-tibble(a = 1:10, b = 1:10) %>% 
-  dplyr::select(a)
-```
-
----
-## Create your own data
+## Exercise Review
 
 - Create the following:
   - `a`: a random vector of integers with 10 elements drawn from 1-20:
@@ -207,6 +42,7 @@ tibble(a = 1:10, b = 1:10) %>%
       - Create the identical vector of names using the `paste` function.
   - `b`: Using `a` as an index to select from `letters`
   - `d`: Use `rnorm` with a mean = 100 and an sd of 20
+    - Use `?rnorm` to see the help guide.
   - Why did I skip `c`? 
   - Create a list `l` from `a`, `b`, `d`. 
     - Assign the names of the vectors in `l` to the `l`'s elements
@@ -225,35 +61,374 @@ tibble(a = 1:10, b = 1:10) %>%
     - `V4` is a random selection of the letters A-E
 
 ---
-## 1-d Indexing/subsetting/replacing 
-- Select the 1st, 2nd, and 10th elements from `a`
-- Select the elements of `a` named V1, V2, V3 (use the names)
-- Replace the second to last value of `a` with the word "sasquatch"
-  - Use code to find the index value, not the actual integer value of the index
-- Select from `b` the values "c", "d", "e"
-- Identify the index position in `b` of values "c", "d", "e"
-- Select the first 5 values of `d` and the last 5 values of `c` into two separate vectors and multiply them. 
-- Select from `d` all values > 100:
-  - How many values are there?
-- Select from `d` all values between 95 and 105, and replace them with 100
-- Repeat steps 1, 3, 4, and 8 above, but do it by accessing `a`, `b`, and `d` from `l` 
+
+## Functions
+### Components
+
+```{r, eval=FALSE}
+function_name <- function(arg1, arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. (Used in `*apply`)
 
 ---
-## 2-d Indexing/subsetting/replacing
-- Select the first 10 values from `m`, using a single vector and no row or column information
-- Use a single vector to select the last row, column value from `m`
-- Replace the value selected in 2 above with -99
-- Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10 
-- Do the same, but select the columns by their name, and reset the new values by dividing by 10
-- Select from `dat` the values of V3, and square them. Do it using index notation, column name in `[]`, and `$`
-- Subset the first two rows and columns of `dat` into a new data.frame `datss`. 
-- Replace `dat` rows 1:2, column 1:2 with the values -1:-4
-- Reset the part of `dat` you just changed with the values in `datss`
+Using `x` in a function does not change its global value.
+```{r}
+x <- 1:10
+myfun <- function() {
+  x * 10
+}
+myfun()
+
+myfun <- function(x) {
+  x <- x * 10
+  return(x)
+}
+x <- 10
+myfun(x = 20)
+x
+```
+
+---
+Each time you run `myfun`, a new function environment is created.
+```{r}
+myfun <- function(x) {
+  x <- x * 10
+  print(environment())
+  return(x)
+}
+myfun(x)
+myfun(x)
+```
+
+---
+## Global assignment.
+Use `<<-` to change value of global variable within a function.
+
+
+```{r, message=FALSE}
+a <- 10
+myfun <- function(x) {
+  a <<- x * 10   ## note <<- instead of <- 
+  return(a)
+}
+myfun(5)
+print(a)
+```
+---
+## Useful functions
+
+- `which` finds indices where a condition is true.
+
+```{r, message=FALSE}
+v <- 10:15
+print(v)
+a <- which(v %% 3 == 0) ## subset to elements divisible by 3
+print(a) ## shows indices where condition is true.
+```
+
+---
+## Useful functions
+- `which.min` finds index of min value
+
+```{r, message=FALSE}
+v <- sample(1:20, 10)
+print(v)
+print(which.min(v)) # index of min value
+print(which.max(v)) # index of max value
+```
+
+
+
+---
+## data.frame vs data.table vs. tibble
+- all 2D structures.
+- data.frame = Base R
+- tibble = `tidyverse`
+- data.table = fast.
+
+For now, we'll stick to data.frame
 ---
 
-## Summarizing datasets
-- Calculate the row and column sums of both `m` and `dat`. 
-- Calculate the overall means and sums of all values in each dataset
-- From `dat`, use both the base `aggregate` function and `dplyr` function to calculate the group mean, using `V4` as the grouping variable. 
+## data.frame indexing
+
+- `data.frame` uses the following to subset: `[*row conditions, *column conditions]`
+
+```{r, message=FALSE}
+df <- data.frame(v1 = 1:5, v2 = 6:10)
+rownames(df) <- LETTERS[1:5]
+print(df)
+```
+
+---
+
+## data.frame indexing
+
+- Index using names. 
+- Empty index `[  ,  'v2]` means "keep all rows"
+```{r, message=FALSE}
+df[,'v2'] ## column indexing
+df[c("A", "B", "D"), ] ## row indexing
+```
+---
+## data.frame subset
+
+- Logical subset 
+```{r, message=FALSE}
+df[ df$v1 > 3   ,    ] ## get observations (rows) where first column is larger than 3
+```
+
+---
+## Control structures
+### Branching
+
+- Pay attention to `{ }` placement
+```{r}
+a <- 5
+if(a > 10) {
+  print("Greater than 10!")
+} else {
+  print("Less than or equal to 10")
+}
+```
+
+---
+### Looping
+```{r}
+b <- 1:3
+for(i in b) print(i)
+```
+
+```{r}
+b <- 1:5
+a <- 2
+for(i in b){
+  a <- 2 * a
+  print(a)
+}
+```
+---
+
+### *apply
+- A special form of looping
+- Intended for *applying* a function to data. Uses *anonymous* function.
+- 3 main kinds: `sapply`, `lapply`, `apply`
+
+
+---
+### `sapply`
+- `sapply` iterates over input and returns a vector.
+```{r}
+v <- 1:10
+sapply(v, function(x) x + 10) ## adds 10 to each element in v.
+```
+Use `{ }` for more complicated functions. BUT be careful with order of `{ }`, `( )`
+```{r}
+v1 <- 1:10
+v2 <- sapply(v1, function(x){
+  y <- x^2 
+  return(y)
+}) #
+print(v2)
+```
+---
+### `sapply`
+If you don't specify `return`, the last object created will be returned.
+```{r}
+v1 <- 1:10
+v2 <- sapply(v1, function(x){
+  y <- x^2  ## y will be returned
+}) #
+print(v2)
+```
+---
+
+### `lapply`
+- Similar to `sapply`, except final object is returned as `list`.
+- Useful if you need to store more complex objects (data.frame, plot, raster etc.)
+
+```{r}
+v1 <- 1:10
+v2 <- lapply(v1, function(x){
+  y <- x^2  ## y will be returned
+}) #
+print(v2)
+```
+---
+
+### `apply`
+- `apply` works well for 2D data, when you want to apply function over a row or column. 
+
+```{r}
+v1 <- sample(1:100, 10)
+v2 <- sample(1:100, 10)
+DF <- data.frame(v1, v2) ## data frame columns will take names of vectors
+DF
+```
+---
+
+Use `apply` to get column max value. The index 2 means "apply function to columns".
+
+```{r}
+colMax <- apply(DF, 2, FUN = max)
+colMax
+```
+
+---
+
+Use `apply` to get row max value. The index 1 means "apply function to rows".
+
+```{r}
+rowMax <- apply(DF, 1, FUN = max)
+rowMax
+```
+
+We can use `apply` or `sapply` to create a new column in a data frame. 
+```{r}
+DF$rowMax <- apply(DF, 1, FUN = max)
+DF
+```
+---
+## [Let's - a -go](https://www.youtube.com/watch?v=UiIRlg4Xr5w)
+
+
+---
+## MarioKart 
+
+We will examine data from sample MarioKart races. First, let's generate results for 10 races and 4 drivers.
+
+Setup: Create an empty data-frame with 4 columns as follows.
+```{r}
+DF <- data.frame(mario = integer(),
+                luigi = integer(),
+                bowser = integer(),
+                yoshi = integer())
+```
+
+---
+## for loop
+
+Use a for loop to fill in the rows 1:10 with the finishing position of each racer. So you should used `sample` to determine finishing order with 4 racers.
+
+Setup: Create an empty data-frame with 4 columns as follows.
+```{r, eval = FALSE}
+for(k in 1:10){
+  DF[k, ] <-         ## fill in code here for the kth row
+  
+}
+DF
+```
+
+Add row names "race 1", "race 2" etc. Use `paste0`
+```{r, eval = FALSE}
+rownames(DF) <-         ## add code here
+```
+---
+## apply work
+
+Calculate the average finishing place of each racer using `apply`. Which dimension will you use? (1 = column, 2 = row).
+
+Which racer had the best average finish?
+
+```{r, eval = FALSE}
+average_finish <- apply(...) ## fill in code for apply
+```
+
+---
+## apply work
+
+Calculate the average finishing place of each racer using `apply`. Which dimension will you use? (1 = column, 2 = row).
+
+Which racer had the best average finish?
+
+```{r, eval = FALSE}
+average_finish <- apply(...) ## fill in code for apply
+```
+
+---
+## apply work
+
+Now create a new column, `first_place_name` that lists which racer finished first.
+
+You will want to do this in two steps. First use `apply` to get the index of the first place finisher in each row. (hint: you'll want to use one of the `which` functions)
+
+```{r, eval = FALSE}
+DF$first_place <- apply() ## fill in code
+```
+
+Then create the `first_place_name` column that uses the racer names. 
+
+```{r, eval = FALSE}
+racer_names <- colnames(DF)[1:4]
+DF$first_place_names <- racer_names[DF$first_place]
+```
+
+
+---
+## Scenario 2.
+
+We will create a new data frame, `DF2`, with one column for each racer. Instead of using `sample` to get the final place, use `runif` to draw each racer's final time from a uniform distribution between 20 and 30 seconds.  
+
+```{r, eval = FALSE}
+DF <- data.frame(mario = integer(),
+                luigi = integer(),
+                bowser = integer(),
+                yoshi = integer())
+
+for(k in 1:10){
+  DF[k, ] <-  runif(...)       ## fill in code here for the kth row
+  
+}
+```
+
+Again create a column `first_place_name` for the first_place finisher.
+
+Also, create a column `close_race` that is TRUE if the first and last place finishers are within 5 seconds of each other. 
+
+---
+## CHALLENGE
+
+Use `rnorm` to determine each racer's times. You will need to fill in the times by column, instead of by row. 
+Assume each racer has an average time of 25 seconds, but with different standard deviations. 
+
+Generate data for 1000 races. How often did each driver win?
+
+
+---
+
+## Homework
+- Read Unit 1 Module 4, Parts 1-2
+- Work through `swirl` lesson on sapply and lapply (see Unit 1, Module 3, 4.3.5)
+- Assignment 2 due Tuesday (work this weekend and ask questions Monday)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
