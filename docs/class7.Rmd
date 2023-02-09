@@ -297,7 +297,7 @@ DF$rowMax <- apply(DF, 1, FUN = max)
 DF
 ```
 ---
-## [Let's - a -go](https://www.youtube.com/watch?v=UiIRlg4Xr5w)
+## Let's - a -go
 
 
 ---
@@ -321,7 +321,7 @@ Use a for loop to fill in the rows 1:10 with the finishing position of each race
 Setup: Create an empty data-frame with 4 columns as follows.
 ```{r, eval = FALSE}
 for(k in 1:10){
-  DF[k, ] <-         ## fill in code here for the kth row
+  DF[k, ] <-  sample(1:4, 4)       ## fill in code here for the kth row
   
 }
 DF
@@ -329,7 +329,7 @@ DF
 
 Add row names "race 1", "race 2" etc. Use `paste0`
 ```{r, eval = FALSE}
-rownames(DF) <-         ## add code here
+rownames(DF) <-  paste0("race ", 1:10)       ## add code here
 ```
 ---
 ## apply work
@@ -339,19 +339,9 @@ Calculate the average finishing place of each racer using `apply`. Which dimensi
 Which racer had the best average finish?
 
 ```{r, eval = FALSE}
-average_finish <- apply(...) ## fill in code for apply
+average_finish <- apply(DF, 2, FUN = mean) ## fill in code for apply
 ```
 
----
-## apply work
-
-Calculate the average finishing place of each racer using `apply`. Which dimension will you use? (1 = column, 2 = row).
-
-Which racer had the best average finish?
-
-```{r, eval = FALSE}
-average_finish <- apply(...) ## fill in code for apply
-```
 
 ---
 ## apply work
@@ -361,7 +351,7 @@ Now create a new column, `first_place_name` that lists which racer finished firs
 You will want to do this in two steps. First use `apply` to get the index of the first place finisher in each row. (hint: you'll want to use one of the `which` functions)
 
 ```{r, eval = FALSE}
-DF$first_place <- apply() ## fill in code
+DF$first_place <- apply(DF, 1, which.min) ## fill in code
 ```
 
 Then create the `first_place_name` column that uses the racer names. 
