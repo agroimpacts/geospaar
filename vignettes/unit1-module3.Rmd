@@ -1398,7 +1398,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Now write an `lapply` that iterates over the elements of `l`, and uses your `mycalc` to multiply each element of `l` by `v2`
     - Hints:
         - You will need to use an anonymous function (`function(x)`)
-        - The interior of your function (i.e. the part between `({})` will look like this: `l[[x]] * v2`
+        - The interior of your function (i.e. the part between `({})` use the `mycalc` function. 
     - Do the same but with `sapply`
 
     
