@@ -1,5 +1,5 @@
 
-patterns = c("unit1-module3.Rmd", "unit1-module2.Rmd" )
+patterns = c("unit1-module3.Rmd" )
 
 rmds <- dir(here::here("vignettes"), pattern = "Rmd", full.names = TRUE)
 for (pattern in patterns){

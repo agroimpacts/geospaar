@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -63,6 +63,115 @@ plot(p[, , , 1:3])
 See [here](https://r-spatial.github.io/stars/articles/stars1.html) for more details.
 
 ---
+## Let's - a -go
+
+
+---
+## MarioKart 
+
+We will examine data from sample MarioKart races. First, let's generate results for 10 races and 4 drivers.
+
+Setup: Create an empty data-frame with 4 columns as follows.
+
+```r
+DF &lt;- data.frame(mario = integer(),
+                luigi = integer(),
+                bowser = integer(),
+                yoshi = integer())
+```
+
+---
+## for loop
+
+Use a for loop to fill in the rows 1:10 with the finishing position of each racer. So you should used `sample` to determine finishing order with 4 racers.
+
+Setup: Create an empty data-frame with 4 columns as follows.
+
+```r
+for(k in 1:10){
+  DF[k, ] &lt;-  sample(1:4, 4)       ## fill in code here for the kth row
+  
+}
+DF
+```
+
+Add row names "race 1", "race 2" etc. Use `paste0`
+
+```r
+rownames(DF) &lt;-  paste0("race ", 1:10)       ## add code here
+```
+---
+## apply work
+
+Calculate the average finishing place of each racer using `apply`. Which dimension will you use? (1 = column, 2 = row).
+
+Which racer had the best average finish?
+
+
+```r
+average_finish &lt;- apply(DF, 2, FUN = mean) ## fill in code for apply
+```
+
+
+---
+## apply work
+
+Now create a new column, `first_place_name` that lists which racer finished first.
+
+You will want to do this in two steps. First use `apply` to get the index of the first place finisher in each row. (hint: you'll want to use one of the `which` functions)
+
+
+```r
+DF$first_place &lt;- apply(DF, 1, which.min) ## fill in code
+```
+
+Then create the `first_place_name` column that uses the racer names. 
+
+
+```r
+racer_names &lt;- colnames(DF)[1:4]
+DF$first_place_names &lt;- racer_names[DF$first_place]
+```
+
+
+---
+## Scenario 2.
+
+We will create a new data frame, `DF2`, with one column for each racer. Instead of using `sample` to get the final place, use `runif` to draw each racer's final time from a uniform distribution between 20 and 30 seconds.  
+
+
+```r
+DF &lt;- data.frame(mario = integer(),
+                luigi = integer(),
+                bowser = integer(),
+                yoshi = integer())
+
+for(k in 1:10){
+  DF[k, ] &lt;-  runif(...)       ## fill in code here for the kth row
+  
+}
+```
+
+Again create a column `first_place_name` for the first_place finisher.
+
+Also, create a column `close_race` that is TRUE if the first and last place finishers are within 5 seconds of each other. 
+
+---
+## CHALLENGE
+
+Use `rnorm` to determine each racer's times. You will need to fill in the times by column, instead of by row. 
+Assume each racer has an average time of 25 seconds, but with different standard deviations. 
+
+Generate data for 1000 races. How often did each driver win?
+
+
+---
+## Assignment 2
+- Some small changes made. Be sure to check for updates by reloading website. 
+
+
+
+---
 # Programming tip
 
 - Whenever possible, let the computer do your counting for you:
@@ -95,207 +204,341 @@ b[length(b)]
 ```
 ## [1] 1017
 ```
+
+---
+## Error message
+- `Error: attempt to use zero-length variable name` message
+- This occurs in RMD when you have an R chunk immediately followed by a page break `---`
+- Add an extra line between R chunk and page break.
+
+
 ---
 
 
 # Today
 
-- Indexing practice
-- A little bit of summarizing
-- Control structures (maybe)
+- `tidyverse` and `dplyr`
+- Reading and writing non-spatial data
+- Data preparation/shaping
 
 ---
 
 ## Next module
-- Reading and writing non-spatial data
-- Data preparation/shaping
 - Basic analyses
 - Visualization (non-spatial)
 
 ---
-## Create your own data
 
-- Create the following 1-D structures
-  - `a`: a random vector of integers with 10 elements drawn from 1-20:
-    - Use the `sample` function with `set.seed(10)`
-    - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
-      - Use the `paste0` function to create those names.
-      - Create the identical vector of names using the `paste` function.
-  - `b`: Using `a` as an index to select from `letters`
-  - `d`: Use `rnorm` with a mean = 100 and an sd of 20
-    - Why did I skip `c`? 
-  - Create a list `l` from `a`, `b`, `d`. 
-    - Assign the names of the vectors in `l` to the `l`'s elements
-
+## data.frame vs. tibble vs data.table
+- [good overview](https://jtr13.github.io/cc21fall2/comparison-among-base-r-tidyverse-and-datatable.html)
+- Today we will compare `data.frame` and `tibble`
+- `data.table` is fast, but its syntax is quite different so we will not use it.
 
 ---
-## Create your own data
-
-- Create the following 2-d structures
-  - `m`: a matrix with three integer columns named "V1", "V2", "V3"
-    - Create each column first as its own vector, then combine
-    - `V1` = 1:10
-    - `V2` is a random sample between 1:100
-    - `V3` is drawn from a random uniform distribution between 0 and 50     
-    - Use `set.seed(10)`
-    - Inspect the `str` and `class` of `m`
-  - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
-    - `V4` is a random selection of the letters A-E
-    
+## [Advantages of tibble](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
+- Doesn't change input data type (i.e. doesn't convert strings to factors)
+- No row names (rationale: if row name contain important information, they should be placed in a variable)
+- Works well with tidy data
 
 ---
-
-## 2-d Indexing/subsetting/replacing
-- Select the first 10 values from `m`, using a single vector and no row or column information
-- Use a single vector to select the last row, column value from `m`
-- Replace the value selected in 2 above with -99
-- Now select row 3, columns 1:2 from `m`, and replace them with their values multiplied by 10 
-- Do the same, but select the columns by their name, and reset the new values by dividing by 10
-- Extract V3 from `dat` and square it. Using the column name and both `[]` (there are three ways) and `$` to do the subsetting.
-- Subset the first two rows and columns of `dat` into a new data.frame `datss`.
-- Replace `dat` rows 1:2, column 1:2 with the values -1:-4
-- Reset the part of `dat` you just changed with the values in `datss`
-
----
-## Control structures
-### Branching
-
-```r
-a &lt;- 5
-if(a &gt; 10) {
-  print("Greater than 10!")
-} else {
-  print("Less than or equal to 10")
-}
-```
-
-```
-## [1] "Less than or equal to 10"
-```
-
-### Looping
-
-```r
-b &lt;- 1:3
-for(i in b) print(i)
-```
-
-```
-## [1] 1
-## [1] 2
-## [1] 3
-```
-
----
-
-### *apply
-- A special form of looping
-- Intended for *applying* a function to data
-
-
-```r
-l &lt;- list(dat$V1, dat$V2, dat$V3)
-l
-```
-
-```
-## [[1]]
-##  [1]  1  2  3  4  5  6  7  8  9 10
-## 
-## [[2]]
-##  [1]  9 74 76 55 72 54 39 83 88 15
-## 
-## [[3]]
-##  [1] 29.796265 17.902499 21.440471  2.595166 13.208883 19.939537 41.806707
-##  [8] 43.236061 30.767621 38.755495
-```
-
-```r
-lapply(l, mean)
-```
-
-```
-## [[1]]
-## [1] 5.5
-## 
-## [[2]]
-## [1] 56.5
-## 
-## [[3]]
-## [1] 25.94487
-```
-
----
-### *apply
-
-- Key uses: 
-  - Return results of loop directly into object
-  - Use with anonymous functions to pass an iterator, often into more complex procedures
+## What is tidy data?
+- In tidy data:
+  - Each variable forms a column.
+  - Each observation forms a row.
+  - Each type of observational unit forms a table.
   
+---
+## What is tidy data?
+- The `tidyverse` packages (`dplyr`, `ggplot2`) are designed to work with tidy data.
+- Messy data is any other arrangement of the data.
+
+---
+## `dplyr` syntax
+- [Style guide](https://style.tidyverse.org/pipes.html). Please read.
+- Pipe operator ` %&gt;% ` is used often with `dplyr`.
+- ` %&gt;% ` works left to right, evaluating first function, and sending it as input to next function.
+
+Example. What is this code doing?
 
 ```r
-# Simple
-o &lt;- lapply(1:2, function(x) l[[x]])
-o
+library(dplyr)
+b &lt;- sample(1:100, 10)
+print(b)
 ```
 
 ```
-## [[1]]
-##  [1]  1  2  3  4  5  6  7  8  9 10
-## 
-## [[2]]
-##  [1]  9 74 76 55 72 54 39 83 88 15
+##  [1] 68 39  1 34 87 43 14 82 59 51
+```
+
+```r
+a &lt;- b %&gt;% max() %&gt;% sqrt()
+a
+```
+
+```
+## [1] 9.327379
 ```
 
 ---
+## `dplyr` syntax
 
 ```r
-# More complex
-o2 &lt;- lapply(1:5, function(x) {
-  l[[1]][x] - l[[2]][x]
-})
-o2
+data_tib &lt;- readr::read_csv("~/geospaar/inst/extdata/cdf_corn.csv")
+site_summary &lt;- data_tib %&gt;% group_by(site_id) %&gt;% summarise(maxNDVI = max(NDVI))
+print(site_summary)
 ```
 
 ```
-## [[1]]
-## [1] -8
-## 
-## [[2]]
-## [1] -72
-## 
-## [[3]]
-## [1] -73
-## 
-## [[4]]
-## [1] -51
-## 
-## [[5]]
-## [1] -67
+## # A tibble: 38 × 2
+##    site_id         maxNDVI
+##    &lt;chr&gt;             &lt;dbl&gt;
+##  1 UNLEN_CSP1_IMZ1  NA    
+##  2 UNLEN_CSP1_IMZ2   0.891
+##  3 UNLEN_CSP1_IMZ3   0.909
+##  4 UNLEN_CSP1_IMZ5   0.933
+##  5 UNLEN_CSP1_IMZ6   0.892
+##  6 UNLTAPS_SDI_01a   0.897
+##  7 UNLTAPS_SDI_01b   0.906
+##  8 UNLTAPS_SDI_02a   0.912
+##  9 UNLTAPS_SDI_02b   0.897
+## 10 UNLTAPS_SDI_03b   0.910
+## # … with 28 more rows
 ```
 
 ---
-## Looping practice
+## Ground sensor data
+- We'll look at ground sensor data for sites in Nebraska and California.
+- These sensors measure surface reflectance in specific bands. 
 
-- Write a `for` loop that iterates through the vector 1:10 and prints the iterator `i` multiplied by 10
+&lt;img src="figures/class8_MarkSensor.png" width="40%" height="40%" style="display: block; margin: auto;" /&gt;
+
+---
+## Reading data
+Base R
 
 
 ```r
-for(i in 10) i
+data_df &lt;- read.csv("~/geospaar/inst/extdata/cdf_corn.csv")
+data_df
 ```
 
-- Do the same, but instead of print `i * 10`, catch the result in a predefined empty list `o`
+Tidyr
 
 ```r
-for(i in c(1, 10)) {
-  o &lt;- i * 10
-}
+data_tib &lt;- readr::read_csv("~/geospaar/inst/extdata/cdf_corn.csv")
+data_tib
 ```
 
-- Do the same as above, but use an `lapply` that assigns output to `o`
-- Do the same as above, but use `sapply` instead of `lapply`
-- Let's use `sapply` to find which elements of `l` are `matrix`
-- Let's use `lapply` to calculate the `colMeans` of matrices and `data.frame`s in `l`
+---
+## Selecting data (rows)
+
+Select rows from site "UNLEN_CSP1_IMZ1" 
+
+Base R 
+
+```r
+data_df[data_df$site_id == "UNLEN_CSP1_IMZ1", ]
+```
+
+Tidyr
+
+
+```r
+data_tib %&gt;% filter(site_id == "UNLEN_CSP1_IMZ1")
+```
+
+Q: How to get observations at site "UNLEN_CSP1_IMZ1" where NDVI is higher than 0.8?
+
+---
+## Selecting data (columns)
+
+Select rows from site "UNLEN_CSP1_IMZ1". Only include columns for "local", "lat", "long", "NDVI". 
+
+Base R 
+
+```r
+data_df[data_df$site_id == "UNLEN_CSP1_IMZ1", c("local", "lat", "long", "NDVI")]
+```
+
+Tidyr
+
+
+```r
+data_tib %&gt;% filter(site_id == "UNLEN_CSP1_IMZ1") %&gt;% select(local, lat, long, NDVI)
+```
+
+What differences do you observe?
+
+---
+## Renaming data
+
+Rename "local" to "time", and "site_id" to "site"
+
+Base R- CLUNKY, prone to error
+
+```r
+colnames(data_df)[colnames(data_df) %in% c("local", "site_id")] =c("time", "site")
+```
+
+Tidyr - must store in object to make changes permanent.
+
+
+```r
+data_tib %&gt;% rename(time = local, site = site_id)   ## new name = old_name
+data_tib ## name change is not permanent
+```
+
+
+```r
+data_tib &lt;- data_tib %&gt;% rename(time = local, site = site_id)   ## new name = old_name
+data_tib ## name change IS permanent
+```
+
+---
+## Creating a new column
+
+The band correspondence for Mark sensor data is [here](https://www.arable.com/wp-content/uploads/2021/10/Arable-Mark-2-w_-Solar-Product-Specifications-20_10.pdf)
+
+We'd like to create a column for the simple ratio = NIR/red. Let's use the NIR1 band for near-infrared reflectance. 
+
+Base R
+
+```r
+data_df$SR &lt;- data_df$b6r/data_df$b4r
+```
+
+Tidyr
+
+```r
+data_tib &lt;- data_tib %&gt;% mutate(SR = b6r/b4r)
+```
+
+---
+## Grouping data into another tible 
+
+Create a tibble summarizing data. 
+
+TidyR
+
+```r
+data_tib %&gt;% group_by(site) %&gt;%  summarize(count = n(),
+                                          max_ndvi = max(NDVI, na.rm = T)
+                                          ) 
+```
+
+```
+## # A tibble: 38 × 3
+##    site            count max_ndvi
+##    &lt;chr&gt;           &lt;int&gt;    &lt;dbl&gt;
+##  1 UNLEN_CSP1_IMZ1    24    0.863
+##  2 UNLEN_CSP1_IMZ2   100    0.891
+##  3 UNLEN_CSP1_IMZ3    99    0.909
+##  4 UNLEN_CSP1_IMZ5   336    0.933
+##  5 UNLEN_CSP1_IMZ6   100    0.892
+##  6 UNLTAPS_SDI_01a   142    0.897
+##  7 UNLTAPS_SDI_01b   142    0.906
+##  8 UNLTAPS_SDI_02a   145    0.912
+##  9 UNLTAPS_SDI_02b    40    0.897
+## 10 UNLTAPS_SDI_03b   562    0.910
+## # … with 28 more rows
+```
+
+Q: What does `n()` do? what about `na.rm`?
+
+---
+## More complex column calculations
+
+Finding date of max NDVI
+
+
+```r
+site_data &lt;- data_tib %&gt;% group_by(site) %&gt;%  summarize(count = n(),
+                                          max_ndvi = max(NDVI, na.rm = T),
+                                          max_ndvi_date = time[which.max(NDVI)]
+                                          ) 
+site_data
+```
+
+```
+## # A tibble: 38 × 4
+##    site            count max_ndvi max_ndvi_date      
+##    &lt;chr&gt;           &lt;int&gt;    &lt;dbl&gt; &lt;dttm&gt;             
+##  1 UNLEN_CSP1_IMZ1    24    0.863 2020-06-26 15:00:00
+##  2 UNLEN_CSP1_IMZ2   100    0.891 2020-07-08 15:00:00
+##  3 UNLEN_CSP1_IMZ3    99    0.909 2020-07-08 15:00:00
+##  4 UNLEN_CSP1_IMZ5   336    0.933 2020-08-10 15:00:00
+##  5 UNLEN_CSP1_IMZ6   100    0.892 2020-07-08 15:00:00
+##  6 UNLTAPS_SDI_01a   142    0.897 2020-07-03 15:00:00
+##  7 UNLTAPS_SDI_01b   142    0.906 2020-07-13 15:00:00
+##  8 UNLTAPS_SDI_02a   145    0.912 2020-07-13 15:00:00
+##  9 UNLTAPS_SDI_02b    40    0.897 2020-07-13 15:00:00
+## 10 UNLTAPS_SDI_03b   562    0.910 2020-07-13 15:00:00
+## # … with 28 more rows
+```
+
+---
+## Sorting
+
+Base R - CLUNKY
+
+```r
+site_data[order(site_data$count ,decreasing=TRUE),]
+```
+tidyr
+
+```r
+site_data %&gt;% arrange(count) ## arrange ascending
+site_data %&gt;% arrange(-count) ## arrange descending
+```
+
+
+---
+## Dplyr functions
+- There are MANY `dplyr` functions. We have just looked at a handful.
+- See `dplyr` [cheatsheet](https://www.rstudio.com/wp-content%2Fuploads%2F2015%2F02%2Fdata-wrangling-cheatsheet.pdf%2F)
+- Common `dplyr` [functions](https://dplyr.tidyverse.org/reference/index.html)
+
+
+---
+## Practice (1)
+
+Create a short script that does the following.
+- Loads `dplyr` library
+- Uses `readr::read_csv` to read in sensor data into a tibble `data_tib`
+- Uses `mutate` to create new column for GCVI index.
+  - Sensor bands are [here](https://www.arable.com/wp-content/uploads/2021/10/Arable-Mark-2-w_-Solar-Product-Specifications-20_10.pdf). Use band 6 as the NIR band.
+  - Google formula for GCVI (Green Chlorophyll Veg Index). 
+  
+---
+## Practice (2)
+- Install the `lubridate` package, and load it.
+- Apply the `as_date` function to the column `local`. Use this to create a new column `date`, that stores the date as a `Date` object.
+- [Lubridate cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/lubridate.pdf)
+
+
+
+---
+## Practice (3)
+
+- As in the example above, create a new tibble, `site_data`, using `group_by` and `summarize`.
+- Use `site` as the grouping variable, and include columns for the following:
+  - Median lat and median long (why is `median` better than `mean`)
+  - Max NDVI and max GCVI
+  - Date of max NDVI and date of max GCVI
+- `Lubridate` allows us to subtract dates and find their difference in days. Use this to create a new column `date_diff` in `site_data`. This column should show how many days later (or earlier) the NDVI peak occurred compared to the GCVI peak. 
+
+- CHALLENGE: include the `PlantingDate` column in `site_data`. Use `as_date` with the argument `format = format = "%m/%d/%Y"` to convert the planting date to a `date` data type. Determine how many days after the planting the peak NDVI occurred. 
+
+
+
+---
+
+## Homework
+- Assignment 2 due Tuesday 2/14
+- Read Unit 1 Module 4, Part 3
+- Read tidy data [overview](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html). Link to full paper [here](https://vita.had.co.nz/papers/tidy-data.pdf).
+- Read [tibbles overview](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

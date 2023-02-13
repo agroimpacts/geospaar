@@ -3,7 +3,7 @@
 
 ## Spring 2023
 
-Updated on: 2023-02-08
+Updated on: 2023-02-13
 
 <center>
 
@@ -67,7 +67,10 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 7 slides](class7.html)
     -   Assignment 2 due (Unit 1 Modules 2-3)
 -   Week 5 (Feb 13, 15)
+    -   tidyr universe, data analysis
+    -   [Class 8 slides](class8.html)
 -   Week 6 (Feb 20, 22)
+    -   plotting, useful libraries
     -   Assignment 3 due (Unit 1 Module 4)
 -   Week 7 (Feb 27, Mar 1)
 -   Spring Break
