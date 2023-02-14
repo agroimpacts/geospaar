@@ -1,5 +1,7 @@
 
-patterns = c("unit1-module3.Rmd" )
+## in vignettes folder
+
+patterns = c("unit1-module3.Rmd", "syllabus.Rmd" )
 
 rmds <- dir(here::here("vignettes"), pattern = "Rmd", full.names = TRUE)
 for (pattern in patterns){

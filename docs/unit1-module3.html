@@ -1343,7 +1343,7 @@ src: url(data:application/font-sfnt;base64,AAEAAAARAQAABAAQR0RFRgs+Cz8AAjwQAAAAQ
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2023-02-10
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2023-02-13
 <a href="index.html">Back to home</a></p>
           </div>
    </div>
@@ -1496,25 +1496,17 @@ categorical groups defined in “a”.</p>
 <code>dplyr</code>, which provides the functions designed to work with
 this.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>d_tb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(a) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="fu">mean</span>(b))</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 2</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   a     `mean(b)`</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;dbl&gt;</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a         10.0 </span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 b          9.72</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 c          8.48</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 d          9.33</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 e         10.2 </span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 f         10.2 </span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 g         10.2</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>d_tb <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(a) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="fu">mean</span>(b))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7 × 2</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   a     `mean(b)`</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 a         10.0 </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 b          9.72</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 c          8.48</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 d          9.33</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 e         10.2 </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 f         10.2 </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 g         10.2</span></span></code></pre></div>
 <p>And finally the <code>data.table</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d_dt[, <span class="fu">mean</span>(b), by <span class="ot">=</span> a][<span class="fu">order</span>(a)]</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    a        V1</span></span>
@@ -2015,13 +2007,15 @@ use to ask others for help.</p>
 <span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  a  b  c  d  e  f  g  h  i  j </span></span>
 <span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 67 38  0 33 86 42 13 81 58 50</span></span>
 <span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a>b</span>
-<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       a       b       c       d       e       f       g       h       i       j </span></span>
-<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &quot;-99&quot;  &quot;9999&quot;    &quot;-1&quot;    &quot;-2&quot; &quot;10000&quot; &quot;10001&quot; &quot;10000&quot; &quot;10001&quot; &quot;10000&quot; &quot;10001&quot;</span></span>
-<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="co"># #6</span></span>
-<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>b[<span class="fu">length</span>(b) <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>  </span>
-<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in b[length(b) - 1] &lt;- 0:10: number of items to replace is not a multiple of</span></span>
-<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; replacement length</span></span></code></pre></div>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       a       b       c       d       e       f       g       h       i </span></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &quot;-99&quot;  &quot;9999&quot;    &quot;-1&quot;    &quot;-2&quot; &quot;10000&quot; &quot;10001&quot; &quot;10000&quot; &quot;10001&quot; &quot;10000&quot; </span></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       j </span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &quot;10001&quot;</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a><span class="co"># #6</span></span>
+<span id="cb17-47"><a href="#cb17-47" aria-hidden="true" tabindex="-1"></a>b[<span class="fu">length</span>(b) <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>  </span>
+<span id="cb17-48"><a href="#cb17-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in b[length(b) - 1] &lt;- 0:10: number of items to replace is not a</span></span>
+<span id="cb17-49"><a href="#cb17-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; multiple of replacement length</span></span></code></pre></div>
 <p>Looking at the above, we are indexing the same way we did in the
 previous section, but in this case we are assigning new values to
 overwrite the existing ones in those index positions. Note that the
@@ -2846,8 +2840,8 @@ as a calculator</a>.</p>
 operators and functions that allow this:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(a)  <span class="co"># natural log</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379 1.7917595 1.9459101 2.0794415</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] 2.1972246 2.3025851</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379 1.7917595 1.9459101</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8] 2.0794415 2.1972246 2.3025851</span></span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">log</span>(a))  <span class="co"># inverse of natural log</span></span>
 <span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</span></span>
 <span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span><span class="sc">^</span>a  <span class="co"># exponents</span></span>
@@ -2857,11 +2851,11 @@ operators and functions that allow this:</p>
 <span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>(a <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%%</span> <span class="dv">3</span>  <span class="co"># modulo (https://en.wikipedia.org/wiki/Modulo_operation)</span></span>
 <span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1 2 0 1 2 0 1 2 0 1</span></span>
 <span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(a)  <span class="co"># square root</span></span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751 2.828427 3.000000</span></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] 3.162278</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8] 2.828427 3.000000 3.162278</span></span>
 <span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>pi <span class="sc">*</span> a<span class="sc">^</span><span class="dv">2</span>  <span class="co"># areas with built in pi constant</span></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]   3.141593  12.566371  28.274334  50.265482  78.539816 113.097336 153.938040</span></span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8] 201.061930 254.469005 314.159265</span></span></code></pre></div>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]   3.141593  12.566371  28.274334  50.265482  78.539816 113.097336</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] 153.938040 201.061930 254.469005 314.159265</span></span></code></pre></div>
 <p>Let’s look at it though for calculations on different kinds of
 objects:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chunk 19</span></span>
@@ -2970,8 +2964,9 @@ objects:</p>
 <span id="cb36-104"><a href="#cb36-104" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb36-105"><a href="#cb36-105" aria-hidden="true" tabindex="-1"></a><span class="co"># 11</span></span>
 <span id="cb36-106"><a href="#cb36-106" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>v1 <span class="sc">*</span> m2</span>
-<span id="cb36-107"><a href="#cb36-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in d$v1 * m2: longer object length is not a multiple of shorter object length</span></span>
-<span id="cb36-108"><a href="#cb36-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in eval(expr, envir, enclos): dims [product 4] do not match the length of object [5]</span></span></code></pre></div>
+<span id="cb36-107"><a href="#cb36-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in d$v1 * m2: longer object length is not a multiple of shorter</span></span>
+<span id="cb36-108"><a href="#cb36-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object length</span></span>
+<span id="cb36-109"><a href="#cb36-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in eval(expr, envir, enclos): dims [product 4] do not match the length of object [5]</span></span></code></pre></div>
 <p>In Chunk 19 above we define a vector <code>b</code> (5 elements),
 matrices <code>m</code> (5 rows, 2 columns) and <code>m2</code> (2 rows,
 2 columns), and <code>d</code>, a <code>data.frame</code> (5 rows, 3
@@ -3141,8 +3136,10 @@ We then have to use <code>print</code> to see the resulting statement
 see the result).</p>
 <p>Note that we could actually have vectorized this operation:</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>], <span class="st">&quot; is the &quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, sscript, <span class="st">&quot; letter in the alphabet&quot;</span>)</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;a is the 1st letter in the alphabet&quot; &quot;b is the 2nd letter in the alphabet&quot;</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;c is the 3rd letter in the alphabet&quot; &quot;d is the 4th letter in the alphabet&quot;</span></span></code></pre></div>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;a is the 1st letter in the alphabet&quot;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] &quot;b is the 2nd letter in the alphabet&quot;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] &quot;c is the 3rd letter in the alphabet&quot;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] &quot;d is the 4th letter in the alphabet&quot;</span></span></code></pre></div>
 <p>But there might be cases in which you wouldn’t to, say if you wanted
 to construct a unique title for each plot in a multi-panel plot:</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chunk 22</span></span>
@@ -3706,8 +3703,8 @@ structures.</p>
 <span id="cb57-22"><a href="#cb57-22" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb57-23"><a href="#cb57-23" aria-hidden="true" tabindex="-1"></a><span class="co"># #5</span></span>
 <span id="cb57-24"><a href="#cb57-24" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(dat, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x) <span class="sc">/</span> <span class="fu">sum</span>(dat))</span>
-<span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753 0.02209647 0.02263541</span></span>
-<span id="cb57-26"><a href="#cb57-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8] 0.02317435 0.02371328 0.02425222</span></span></code></pre></div>
+<span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0.28024791 0.28051738 0.28078685 0.02101859 0.02155753 0.02209647</span></span>
+<span id="cb57-26"><a href="#cb57-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] 0.02263541 0.02317435 0.02371328 0.02425222</span></span></code></pre></div>
 <p>We start by extracting one <code>data.frame</code> from
 <code>dat_list</code>, and then use various flavors of
 <code>apply</code> on that. In #1 and #2, we use the argument names for
@@ -3909,8 +3906,8 @@ objects:
 <li><code>m1</code>, <code>m2</code></li>
 </ul></li>
 <li>Capture the output of each operation in objects <code>d1</code>
-through <code>d6</code> for the divisions, and <code>s1</code> through
-<code>s6</code> for the sums.</li>
+through <code>d5</code> for the divisions, and <code>s1</code> through
+<code>s5</code> for the sums.</li>
 <li>Using <code>mycalc</code> with <code>DF</code>:
 <ul>
 <li>Multiply row1, column1 by row1, column2</li>

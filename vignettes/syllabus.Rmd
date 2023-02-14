@@ -28,7 +28,7 @@ Originally developed for statistics, free and open source R is now one of the mo
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
-Michael Cecil   | EORS Lab (**Virtual appointments only**) | Tuesday 1300-1500 
+Michael Cecil   | EORS Lab | Tuesday 1300-1500 
 Arman Bajracharya | TA Alley, 105A GEOG building  | Thursday 1400-1600
 
 ## Philosophy
