@@ -103,6 +103,8 @@ for(current_site in sites){
 ---
 ## Exercises (1) final code
 ```{r, eval=FALSE}
+output_folder_path <- "C:/Users/micha/Documents/geospaar/external/"
+
 for(current_site in sites){
   print(current_site)
   # filter observations
@@ -111,7 +113,7 @@ for(current_site in sites){
 
   # write to csv
   csv_name <- paste0(current_site, ".csv") ## create a file name
-  write.csv(site_obs, file = csv_name)
+  write.csv(site_obs, file = paste0(output_folder_path, csv_name))
 }
 
 ```
@@ -137,7 +139,7 @@ for(current_site in sites){
 - what object will you return? (for loop doesn't have this)
 
 ```{r, eval=FALSE}
-lapply(iterator, function(item){
+l <- lapply(iterator, function(item){
   ## do stuff
   return(something)
 })
@@ -157,7 +159,9 @@ lapply(iterator, function(item){
 
 ```{r, eval=FALSE}
 l <- lapply(sites, function(current_site){
+ # print(current_site)
   ## filter observations by site
+  filtered_obs <- data_obs %>% filter(site_id == current_site)
   return(filtered_obs)
 })
 ```
@@ -204,9 +208,10 @@ data_obs
 - what other columns will you summarize? how?
 
 ```{r, eval=FALSE}
-grouped_obs <- starting_data %>% 
-  group_by(some column) %>% 
-  summarise(new_column = some_function(old_columns))
+grouped_obs <- data_obs %>% 
+  group_by(site_id) %>% 
+  summarise(mean_SAVI = mean(SAVI, na.rm = T))
+grouped_obs
 ```
 
 ---
@@ -268,39 +273,16 @@ grouped_obs
 ---
 ## Package steps
 
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+```{r, out.width = "100%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/package_steps_1.png")
 ```
 
 ---
 ## Package steps
 
-```{r, out.width = "70%", echo=FALSE, fig.align='center'}
+```{r, out.width = "100%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("figures/package_steps_2.png")
 ```
-
----
-## Reshaping data
-
-Going from long to wide and back again
-```{r, eval=FALSE}
-library(dplyr)
-library(tidyr)
-
-# d1 <- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
-d1 <- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
-d2 <- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
-DF <- rbind(d1, d2)
-
-df_wide <- DF %>% pivot_wider(names_from = grp, values_from = a)
-df_long <- df_wide %>% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
-df_long %>% select(i, a, grp) %>% arrange(grp)
-
-```
-
-- Reorder columns and sort by grp
-
 
 ---
 ## do.call, rbind, cbind
@@ -390,9 +372,12 @@ data_obs <- data_obs %>% mutate(GCVI = (b6r/b3r) - 1)
   - GCVI = (NIR/green) - 1
   
 ```{r}
-cor_table <- data_obs %>% select(NDVI, GCVI, SAVI) %>% cor(., use = "complete.obs")
+cor_table <- data_obs %>% 
+  select(NDVI, GCVI, SAVI) %>% 
+  cor(., use = "complete.obs")
 cor_table
 ```
+
 ---
 ## Correlations (with pvalues)
 - the `Hmisc` package has the function `rcorr()`, which produces a nice matrix of p-values
@@ -422,169 +407,6 @@ lm
 summary(lm)
 ```
 
-
-
----
-## PRACTICE
-
----
-## New dataset
-```{r, message=FALSE, warning=FALSE, out.width="40%", fig.align='center'}
-set.seed(1)
-price_weight <- tibble(
-  year = 1951:2000, 
-  price = runif(n = length(year), 20, 50),
-  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
-)
-plot(price_weight$price, price_weight$weight)
-```
-
----
-## Practice
-### Reshaping
-- Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%>%`, `pivot_longer`. Name it `price_weight_long`.
-- Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
-
-```{r, eval=FALSE}
-price_weight_long <- price_weight %>% 
-  pivot_longer(cols = price:weight, names_to = "element", values_to = "value")
-
-price_weight_wide <- price_weight_long %>% 
-  pivot_wider(names_from = element, values_from = value)
-```
-
----
-
-## Data
-```{r, eval=FALSE}
-set.seed(100)
-dat <- data.frame(
-  V1 = 1:10,
-  V2 = sample(1:100, size = 10),
-  V3 = runif(n = 10, min = 0, max = 50),
-  V4 = sample(LETTERS[1:5], size = 10, replace = TRUE)
-)
-m <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
-           V3 = rnorm(n = 20, mean = 500, sd = 100))
-```
-
----
-## Looping
-
-### Create a list of matrices
-- Create the matrices `m1`, `m2`, `m3` using an `lapply`: 
-- Ingredients:
-  - vector to iterate over: `c(100, 200, 300)`
-  - output object: `l`
-  - anonymous function to create each matrix: 
-  
-```{r, eval = FALSE}
-function(x) {
-  m <- cbind(...)  
-}
-```
-
-```{r, eval=FALSE}
-l <- lapply(put your iterator here, function(x) {
-  m <- grab the statement from the m1 and drop in here
-})
-```
-
-
----
-## Looping 2
-### Create list of data.frames
-- Create a list `l2` with three data.frames, having the same variables `V1:V3` as in m, but with a 4th variable `GRP` that is sampled from the first 5 values of `LETTERS`
-- Ingredients:
-  - Same code used to make `l`
-  - Within the anonymous function, make a fourth variable `v` using `sample` below the code to make `m`
-  - Combine `m` and `v` (naming it `GRP`) using `data.frame`
-
-
----
-## Reading/writing and looping
-
-- Let's write `l2` out using a `for` loop to create three output csv files
-```{r, eval=FALSE}
-for(i in 1:length(l2)) {
-  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"))
-}
-```
-
-- And read those back into a list: use `lapply` to capture data in list `l3`
-- Ingredients:
-  - Iterate over `1:3`
-  - Have `read.csv` in anonymous function body
-  - Reuse the `paste0` from code chunk above
-  
----
-## Reshaping data
-
-Going from long to wide and back again
-```{r, eval=FALSE}
-library(dplyr)
-library(tidyr)
-
-# d1 <- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
-d1 <- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
-d2 <- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
-DF <- rbind(d1, d2)
-
-df_wide <- DF %>% pivot_wider(names_from = grp, values_from = a)
-df_long <- df_wide %>% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
-df_long %>% select(i, a, grp) %>% arrange(grp)
-
-```
-
-- Reorder columns and sort by grp
-
----
-
-## Looping practice continued
-### First let's create some new data
-```{r, eval=FALSE}
-set.seed(100)
-m1 <- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
-            V3 = rnorm(n = 20, mean = 500, sd = 100))
-```
-
-- Create an `m2` and `m3` with the same settings, but use a seed of 200 for `m2` and 300 for `m3`.  
-
----
-
-## Looping
-### Create a list of matrices
-- Create the matrices `m1`, `m2`, `m3` using an `lapply`: 
-- Ingredients:
-  - vector to iterate over: `c(100, 200, 300)`
-  - output object: `l`
-  - anonymous function to create each matrix: 
-  
-```{r, eval = FALSE}
-function(x) {
-  m <- cbind(...)  
-}
-```
-
-
-
-
-```{r, eval=FALSE}
-l <- lapply(put your iterator here, function(x) {
-  m <- grab the statement from the m1 and drop in here
-})
-```
-
-
----
-## Looping 2
-### Create list of data.frames
-- Create a list `l2` with three data.frames, having the same variables `V1:V3` as in m, but with a 4th variable `GRP` that is sampled from the first 5 values of `LETTERS`
-- Ingredients:
-  - Same code used to make `l`
-  - Within the anonymous function, make a fourth variable `v` using `sample` below the code to make `m`
-  - Combine `m` and `v` (naming it `GRP`) using `data.frame`
 
 ---
 ## Homework

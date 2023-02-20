@@ -130,6 +130,8 @@ for(current_site in sites){
 ## Exercises (1) final code
 
 ```r
+output_folder_path &lt;- "C:/Users/micha/Documents/geospaar/external/"
+
 for(current_site in sites){
   print(current_site)
   # filter observations
@@ -138,7 +140,7 @@ for(current_site in sites){
 
   # write to csv
   csv_name &lt;- paste0(current_site, ".csv") ## create a file name
-  write.csv(site_obs, file = csv_name)
+  write.csv(site_obs, file = paste0(output_folder_path, csv_name))
 }
 ```
 
@@ -164,7 +166,7 @@ for(current_site in sites){
 
 
 ```r
-lapply(iterator, function(item){
+l &lt;- lapply(iterator, function(item){
   ## do stuff
   return(something)
 })
@@ -185,7 +187,9 @@ lapply(iterator, function(item){
 
 ```r
 l &lt;- lapply(sites, function(current_site){
+ # print(current_site)
   ## filter observations by site
+  filtered_obs &lt;- data_obs %&gt;% filter(site_id == current_site)
   return(filtered_obs)
 })
 ```
@@ -19287,9 +19291,10 @@ data_obs
 
 
 ```r
-grouped_obs &lt;- starting_data %&gt;% 
-  group_by(some column) %&gt;% 
-  summarise(new_column = some_function(old_columns))
+grouped_obs &lt;- data_obs %&gt;% 
+  group_by(site_id) %&gt;% 
+  summarise(mean_SAVI = mean(SAVI, na.rm = T))
+grouped_obs
 ```
 
 ---
@@ -19437,35 +19442,12 @@ grouped_obs
 ---
 ## Package steps
 
-&lt;img src="figures/package_steps_1.png" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="figures/package_steps_1.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 ## Package steps
 
-&lt;img src="figures/package_steps_2.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-## Reshaping data
-
-Going from long to wide and back again
-
-```r
-library(dplyr)
-library(tidyr)
-
-# d1 &lt;- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
-d1 &lt;- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
-d2 &lt;- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
-DF &lt;- rbind(d1, d2)
-
-df_wide &lt;- DF %&gt;% pivot_wider(names_from = grp, values_from = a)
-df_long &lt;- df_wide %&gt;% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
-df_long %&gt;% select(i, a, grp) %&gt;% arrange(grp)
-```
-
-- Reorder columns and sort by grp
-
+&lt;img src="figures/package_steps_2.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 ## do.call, rbind, cbind
@@ -19483,21 +19465,21 @@ DF_combined
 
 ```
 ##    v1 v2
-## 1   1 99
-## 2   2 29
-## 3   3 34
-## 4   4 12
-## 5   5 21
-## 6   6 45
-## 7   7 74
-## 8   8 60
-## 9   9 47
-## 10 10 91
-## 11 11 58
-## 12 12 33
-## 13 13 31
-## 14 14 36
-## 15 15 99
+## 1   1 40
+## 2   2  7
+## 3   3 31
+## 4   4 85
+## 5   5 24
+## 6   6  7
+## 7   7  1
+## 8   8 18
+## 9   9 56
+## 10 10 44
+## 11 11 44
+## 12 12 43
+## 13 13 36
+## 14 14 14
+## 15 15 98
 ```
 
 ---
@@ -19517,26 +19499,26 @@ DF
 
 ```
 ##     i count      grp
-## 1   1    92    alums
-## 2   2     5    alums
-## 3   3    22    alums
-## 4   4     8    alums
-## 5   5    63    alums
-## 6   6    82    alums
-## 7   7    89    alums
-## 8   8    52    alums
-## 9   9    13    alums
-## 10 10    86    alums
-## 11  1    96 students
-## 12  2    26 students
-## 13  3    25 students
-## 14  4    80 students
-## 15  5    23 students
-## 16  6    36 students
-## 17  7    45 students
-## 18  8    68 students
-## 19  9     5 students
-## 20 10    75 students
+## 1   1    89    alums
+## 2   2    13    alums
+## 3   3     8    alums
+## 4   4    30    alums
+## 5   5    42    alums
+## 6   6    37    alums
+## 7   7    69    alums
+## 8   8   100    alums
+## 9   9    34    alums
+## 10 10    72    alums
+## 11  1     3 students
+## 12  2    69 students
+## 13  3     7 students
+## 14  4    16 students
+## 15  5     2 students
+## 16  6    48 students
+## 17  7    70 students
+## 18  8    79 students
+## 19  9    40 students
+## 20 10     5 students
 ```
 
 ---
@@ -19553,16 +19535,16 @@ df_wide
 ## # A tibble: 10 × 3
 ##        i alums students
 ##    &lt;int&gt; &lt;int&gt;    &lt;int&gt;
-##  1     1    92       96
-##  2     2     5       26
-##  3     3    22       25
-##  4     4     8       80
-##  5     5    63       23
-##  6     6    82       36
-##  7     7    89       45
-##  8     8    52       68
-##  9     9    13        5
-## 10    10    86       75
+##  1     1    89        3
+##  2     2    13       69
+##  3     3     8        7
+##  4     4    30       16
+##  5     5    42        2
+##  6     6    37       48
+##  7     7    69       70
+##  8     8   100       79
+##  9     9    34       40
+## 10    10    72        5
 ```
 
 ---
@@ -19584,26 +19566,26 @@ df_long
 ## # A tibble: 20 × 3
 ##        i     a grp     
 ##    &lt;int&gt; &lt;int&gt; &lt;chr&gt;   
-##  1     1    92 alums   
-##  2     2     5 alums   
-##  3     3    22 alums   
-##  4     4     8 alums   
-##  5     5    63 alums   
-##  6     6    82 alums   
-##  7     7    89 alums   
-##  8     8    52 alums   
-##  9     9    13 alums   
-## 10    10    86 alums   
-## 11     1    96 students
-## 12     2    26 students
-## 13     3    25 students
-## 14     4    80 students
-## 15     5    23 students
-## 16     6    36 students
-## 17     7    45 students
-## 18     8    68 students
-## 19     9     5 students
-## 20    10    75 students
+##  1     1    89 alums   
+##  2     2    13 alums   
+##  3     3     8 alums   
+##  4     4    30 alums   
+##  5     5    42 alums   
+##  6     6    37 alums   
+##  7     7    69 alums   
+##  8     8   100 alums   
+##  9     9    34 alums   
+## 10    10    72 alums   
+## 11     1     3 students
+## 12     2    69 students
+## 13     3     7 students
+## 14     4    16 students
+## 15     5     2 students
+## 16     6    48 students
+## 17     7    70 students
+## 18     8    79 students
+## 19     9    40 students
+## 20    10     5 students
 ```
 
 ---
@@ -19669,7 +19651,9 @@ data_obs &lt;- data_obs %&gt;% mutate(GCVI = (b6r/b3r) - 1)
   
 
 ```r
-cor_table &lt;- data_obs %&gt;% select(NDVI, GCVI, SAVI) %&gt;% cor(., use = "complete.obs")
+cor_table &lt;- data_obs %&gt;% 
+  select(NDVI, GCVI, SAVI) %&gt;% 
+  cor(., use = "complete.obs")
 cor_table
 ```
 
@@ -19679,6 +19663,7 @@ cor_table
 ## GCVI 0.8539204 1.0000000 0.8234107
 ## SAVI 0.9715429 0.8234107 1.0000000
 ```
+
 ---
 ## Correlations (with pvalues)
 - the `Hmisc` package has the function `rcorr()`, which produces a nice matrix of p-values
@@ -19760,180 +19745,6 @@ summary(lm)
 ## F-statistic:  8098 on 2 and 5994 DF,  p-value: &lt; 2.2e-16
 ```
 
-
-
----
-## PRACTICE
-
----
-## New dataset
-
-```r
-set.seed(1)
-price_weight &lt;- tibble(
-  year = 1951:2000, 
-  price = runif(n = length(year), 20, 50),
-  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
-)
-plot(price_weight$price, price_weight$weight)
-```
-
-&lt;img src="class10_files/figure-html/unnamed-chunk-29-1.png" width="40%" style="display: block; margin: auto;" /&gt;
-
----
-## Practice
-### Reshaping
-- Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%&gt;%`, `pivot_longer`. Name it `price_weight_long`.
-- Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
-
-
-```r
-price_weight_long &lt;- price_weight %&gt;% 
-  pivot_longer(cols = price:weight, names_to = "element", values_to = "value")
-
-price_weight_wide &lt;- price_weight_long %&gt;% 
-  pivot_wider(names_from = element, values_from = value)
-```
-
----
-
-## Data
-
-```r
-set.seed(100)
-dat &lt;- data.frame(
-  V1 = 1:10,
-  V2 = sample(1:100, size = 10),
-  V3 = runif(n = 10, min = 0, max = 50),
-  V4 = sample(LETTERS[1:5], size = 10, replace = TRUE)
-)
-m &lt;- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
-           V3 = rnorm(n = 20, mean = 500, sd = 100))
-```
-
----
-## Looping
-
-### Create a list of matrices
-- Create the matrices `m1`, `m2`, `m3` using an `lapply`: 
-- Ingredients:
-  - vector to iterate over: `c(100, 200, 300)`
-  - output object: `l`
-  - anonymous function to create each matrix: 
-  
-
-```r
-function(x) {
-  m &lt;- cbind(...)  
-}
-```
-
-
-```r
-l &lt;- lapply(put your iterator here, function(x) {
-  m &lt;- grab the statement from the m1 and drop in here
-})
-```
-
-
----
-## Looping 2
-### Create list of data.frames
-- Create a list `l2` with three data.frames, having the same variables `V1:V3` as in m, but with a 4th variable `GRP` that is sampled from the first 5 values of `LETTERS`
-- Ingredients:
-  - Same code used to make `l`
-  - Within the anonymous function, make a fourth variable `v` using `sample` below the code to make `m`
-  - Combine `m` and `v` (naming it `GRP`) using `data.frame`
-
-
----
-## Reading/writing and looping
-
-- Let's write `l2` out using a `for` loop to create three output csv files
-
-```r
-for(i in 1:length(l2)) {
-  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"))
-}
-```
-
-- And read those back into a list: use `lapply` to capture data in list `l3`
-- Ingredients:
-  - Iterate over `1:3`
-  - Have `read.csv` in anonymous function body
-  - Reuse the `paste0` from code chunk above
-  
----
-## Reshaping data
-
-Going from long to wide and back again
-
-```r
-library(dplyr)
-library(tidyr)
-
-# d1 &lt;- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
-d1 &lt;- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
-d2 &lt;- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
-DF &lt;- rbind(d1, d2)
-
-df_wide &lt;- DF %&gt;% pivot_wider(names_from = grp, values_from = a)
-df_long &lt;- df_wide %&gt;% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
-df_long %&gt;% select(i, a, grp) %&gt;% arrange(grp)
-```
-
-- Reorder columns and sort by grp
-
----
-
-## Looping practice continued
-### First let's create some new data
-
-```r
-set.seed(100)
-m1 &lt;- cbind(V1 = 1:20, V2 = sample(1:100, size = 20, replace = TRUE), 
-            V3 = rnorm(n = 20, mean = 500, sd = 100))
-```
-
-- Create an `m2` and `m3` with the same settings, but use a seed of 200 for `m2` and 300 for `m3`.  
-
----
-
-## Looping
-### Create a list of matrices
-- Create the matrices `m1`, `m2`, `m3` using an `lapply`: 
-- Ingredients:
-  - vector to iterate over: `c(100, 200, 300)`
-  - output object: `l`
-  - anonymous function to create each matrix: 
-  
-
-```r
-function(x) {
-  m &lt;- cbind(...)  
-}
-```
-
-
-
-
-
-```r
-l &lt;- lapply(put your iterator here, function(x) {
-  m &lt;- grab the statement from the m1 and drop in here
-})
-```
-
-
----
-## Looping 2
-### Create list of data.frames
-- Create a list `l2` with three data.frames, having the same variables `V1:V3` as in m, but with a 4th variable `GRP` that is sampled from the first 5 values of `LETTERS`
-- Ingredients:
-  - Same code used to make `l`
-  - Within the anonymous function, make a fourth variable `v` using `sample` below the code to make `m`
-  - Combine `m` and `v` (naming it `GRP`) using `data.frame`
 
 ---
 ## Homework
