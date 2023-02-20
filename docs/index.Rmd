@@ -21,7 +21,6 @@ Teaching assistant Arman Bajracharya
 ------------------ ------------------------------------------------------
 </center>
 
-
 ## Resources
 - [Syllabus](syllabus.html)
 - [Assessment Criteria](assessment.html)
@@ -30,8 +29,8 @@ Teaching assistant Arman Bajracharya
 - [Known bugs and fixes](bugs-fixes.html)
 
 ## Links
-
-- [Helpful Links](cheatsheets.html)
+- [Helpful functions](helpful_functions.html)
+- [Cheatsheets](cheatsheets.html)
 
 ## Course materials
 
@@ -76,6 +75,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 8 slides](class8.html)
   - [Class 9 slides](class9.html)
 - Week 6 (Feb 20, 22)
+  - [Class 10 slides](class10.html)
   - regression, plotting
   - Assignment 3 due (Unit 1 Module 4)
 - Week 7 (Feb 27, Mar 1)

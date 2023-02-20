@@ -1,0 +1,448 @@
+---
+title: "Helpful functions"
+subtitle: "GEOG246-346"
+date: "`r Sys.Date()` [Back to home](index.html)"
+output:
+  rmdformats::readthedown:
+    highlight: pygments
+    number_sections: yes
+    toc_depth: 3
+    css: unit.css
+vignette: >
+  %\VignetteIndexEntry{helpful functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.align = "center",
+  comment = "#>"
+)
+library(knitr)
+```
+
+
+# strings{#strings}
+ 
+## paste, paste0{#paste}
+Concatenate strings. `paste` includes the option to add a specific separator, like a space or hyphen.
+```{r}
+paste("a", "b", "c", sep = " ")
+paste("a", "b", "c", sep = "-")
+```
+
+`paste0` assumes there is no separator.
+```{r}
+paste0("a", "b", "c")
+```
+
+## str_replace{#str_replace}
+
+From `stringr` package. Use to replace strings
+```{r}
+library(stringr)
+v <- "king phillip came over for good soup"
+print(v)
+w <- stringr::str_replace(v, "soup", "spaghetti" )
+print(w)
+```
+
+## str_replace_all{#str_replace_all}
+
+Similar to `str_replace`, but `str_replace_all` replaces  
+```{r}
+library(stringr)
+v <- "it was the best of times it was the worst of times"
+print(v)
+w <- stringr::str_replace(v, "times", "spaghetti" )
+print(w) ## only first "times" replaced
+x <- stringr::str_replace_all(v, "times", "spaghetti" ) 
+print(x) ## all "times" replaced
+```
+
+## str_sub{#str_sub}
+
+Create substrings based on character index
+```{r}
+library(stringr)
+v <- "it was the best of times it was the worst of times"
+print(v)
+w <- stringr::str_sub(v, 1, 10)
+print(w)
+x <- stringr::str_sub(v, 11, 20)
+print(x)
+```
+
+# dates{#dates}
+## as_date{#as_date}
+From `lubridate` package. Converts from character to date.
+
+Dates in "YYYY-MM-DD" format don't need additional information.
+```{r}
+library(lubridate)
+a <- as_date("2020-11-01")
+print(a)
+```
+
+Dates in other formats may need the `format` parameter. See different format options [here](https://epirhandbook.com/en/working-with-dates.html) or run `?strptime`.
+
+
+```{r}
+date2 <- as_date("3/1/22", format = "%m/%d/%y" )
+date2
+```
+
+Can also convert from date to character.
+
+```{r}
+date2_char <- as.character(date2, format = "%A %B %d, %Y")
+date2_char
+```
+
+## as_datetime{#as_datetime}
+Similar to `as_date`, except you can include a time.
+
+```{r}
+date3 <- as_datetime("2000-05-09 10:00:00", tz = "EST")
+date3
+```
+
+
+
+# dplyr{#dplyr}
+
+```{r}
+library(dplyr)
+```
+
+## pipe operator ( %>% ){#pipe}
+Use pipe operator to chain commands. 
+
+```{r}
+a <- c(9, 16, 25)
+b <- a %>% sqrt()
+b
+```
+Commonly used with tibbles. Note that in `dplyr`, you don't need to use quotes for column names.
+
+Example below groups by "site_id" and summarizes the mean NDVI.
+```{r}
+library(geospaar)
+f <- system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
+maize <- read.csv(f)
+site_summary <- maize %>% 
+  filter(Element == "Production") %>% 
+  group_by(Area) %>% 
+  summarise(Value)
+site_summary
+```
+
+You can use `.` to specify in which argument the ` %>% ` should go to.
+Let's say you want to take a sample of size 50 from the numbers 1:100.
+```{r}
+sample_size <- 50
+samples <- sample_size %>% sample(1:100, ., replace = F)
+```
+
+## mutate{#mutate}
+Creates a new column based on calculations you define.
+```{r}
+set.seed(1)
+tib <- tibble(a = 1:10, b = sample(1:100, 10))
+tib <- tib %>% mutate(product = a * b) ## new column is product of columns a, b
+tib
+```
+
+
+
+## dplyr::select{#dplyr::select}
+```{r}
+set.seed(1)
+tib <- tibble(a = 1:10, b = sample(1:100, 10))
+tib <- tib %>% mutate(product = a * b) ## new column is product of columns a, b
+tib
+```
+
+## arrange{#arrange}
+Sorts by a column. Default is ascending order. You can also arrange multiple columns.
+```{r}
+set.seed(1)
+tib <- tibble(a = 1:10, b = sample(1:100, 10))
+tib <- tib %>% mutate(product = a * b) ## new column is product of columns a, b
+## sort tib by product column
+tib_sorted <- tib %>% arrange(product)
+tib_sorted
+```
+Use `-` for descending order
+```{r}
+tib_sorted <- tib %>% arrange(-product)
+tib_sorted
+```
+
+
+
+# control structures{#string-functions}
+## for loops{#for_loops}
+
+In for loop, you perform the operations once for each item in the iterator. So if the loop starts `for(k in items)` then `items` is the iterator.
+```{r}
+set.seed(2)
+items <- sample (1:100, 5)
+for(k in items){
+  print(k)
+  print(paste0("This value is ", k))
+}
+```
+
+## if-else{#if_else}
+```{r}
+items <- sample(LETTERS, 10)
+
+for(k in items){
+  print(k)
+  if(k %in% c("A", "E", "I", "O", "U")){
+    print("vowel")
+  } else {
+    print("consonant")
+  }
+}
+```
+
+## lapply{#lapply}
+`lapply` returns objects in a list.
+```{r}
+v1 <- 1:5
+v2 <- lapply(v1, function(x){
+  y <- x^2  ## y will be returned
+}) #
+print(v2)
+```
+
+## sapply{#sapply}
+`sapply` returns elements in a vector (when possible)
+```{r}
+v1 <- 1:5
+v2 <- sapply(v1, function(x){
+  y <- x^2  ## y will be returned
+}) #
+print(v2)
+```
+
+## apply{#apply}
+`apply` works well fro 2D objects.
+```{r}
+set.seed(3)
+v1 <- sample(1:100, 5)
+v2 <- sample(1:100, 5)
+DF <- data.frame(v1, v2) ## data frame columns will take names of vectors
+DF
+```
+
+Use index 1 for rows.
+```{r}
+## index 1 for rows
+rowMax <- apply(DF, 1, FUN = max)
+rowMax
+```
+
+Use index 2 for columns
+```{r}
+## index 2 for columns
+colMax <- apply(DF, 2, FUN = max)
+colMax
+```
+
+
+# sampling{#sampling}
+## sample{#sample}
+`sample` is used for picking samples from a discrete object, like a vector.
+```{r}
+v1 <- sample(1:100, 5)
+v2 <- sample(letters, 5)
+print(v1)
+print(v2)
+```
+
+## runif{#runif}
+`runif` samples from a uniform distribution (equal probability for all values in the defined interval)
+
+The example below picks 5 values from a uniform distribution between 0 and 2.
+```{r}
+set.seed(4)
+v <- runif(5, min = 0, max = 2)
+v
+```
+
+## rnorm{#rnorm}
+`rnorm` uses a normal distribution. You can define the mean and standard deviation.
+```{r}
+set.seed(4)
+v <- rnorm(5, mean = 10, sd = 3)
+v
+```
+
+
+# read/write{#read_write}
+## read/write csv's{#csv}
+You can use Base R `read.csv()`, or readr `read_csv()`
+```{r}
+f <- system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
+maize <- read.csv(f)
+print(class(maize))
+```
+```{r}
+maize2 <- readr::read_csv(f)
+print(class(maize2))
+maize2
+```
+
+## save/load{#save_load}
+Saving and loading is used for `RData` objects. Use extension `.rda`.
+You can save any R object in this way (data frames, tibbles, lists, rasters etc)
+
+```{r}
+f <- system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
+maize <- read.csv(f)
+save(maize, file = "~/maize.rda") ## save to your user home
+```
+
+When you load data, it will retain the variable name it had.
+```{r}
+maize <- NULL
+load(file = "~/maize.rda") ## data will be loaded into "maize" variable
+```
+
+
+# table indexes{#indexing}
+## Base R{#index_base_R}
+Use `[ , ]` notation. 
+Row conditions (filtering) are to the left of comma. 
+Column conditions (dplyr::selecting columns) are to the right.
+```{r}
+DF <- data.frame(v1 = 1:5, v2 = 6:10)
+rownames(DF) <- LETTERS[1:5]
+DF
+```
+```{r}
+DF[,'v2'] ## column indexing
+```
+
+```{r}
+DF[c("A", "B", "D"), ] ## row indexing
+```
+
+Subsetting data.
+```{r}
+DF[ DF$v1 > 3   ,    ] ## get observations (rows) where first column is larger than 3
+```
+
+## dplyr{#index_dplyr}
+Use `filter` for row conditions and `dplyr::select` to dplyr::select columns.
+
+```{r}
+DF <- tibble(v1 = 1:5, v2 = 6:10)
+rownames(DF) <- LETTERS[1:5]
+DF
+```
+
+Filter to rows where v1 is greater than 3.
+```{r}
+DF_filt <- DF %>% filter(v1 > 3)
+DF_filt
+```
+
+Same as above but only show column v2.
+
+```{r}
+DF_filt <- DF %>% filter(v1 > 3) %>% dplyr::select(v2)
+DF_filt
+```
+
+## slice{#slice}
+`slice` is a `dplyr` function to dplyr::select rows by number.
+
+dplyr::select second and third rows.
+```{r}
+DF_filt <- DF %>% slice(2:3)
+DF_filt
+```
+
+## head, tail{#head_tail}
+`head` dplyr::selects the first n rows in a data frame or tibble. `tail` dplyr::selects the last n rows.
+
+```{r}
+DF_head <- DF %>% head(2)
+DF_head
+```
+
+```{r}
+DF_tail <- DF %>% tail(2)
+DF_tail
+```
+
+
+# table functions{#tables}
+## cbind, rbind{#cbind_rbind}
+## joins{#joins}
+## pivot_longer{#pivot_longer}
+## pivot_wider{#pivot_wider}
+
+
+
+# Other{#other}
+## which{#which}
+Returns indices (position in vector) where a condition is true.
+```{r}
+set.seed(1)
+a <- sample(1:100, 20)
+print(a)
+print(which(a > 80)) ## shows indices of elements greater than 80. 
+```
+
+## which.min{#which_min}
+Finds index of minimum value. Only returns first location of min, even if multiple values exist.
+```{r}
+v <- c(5, 1, 10, 3, 10, 8, 1)
+which.min(v) ## only returns index 2, even though 
+```
+
+## which.max{#which_max}
+Finds index of maximum value. Only returns first location of max, even if multiple values exist.
+```{r}
+v <- c(5, 1, 10, 3, 10, 8, 1)
+which.max(v) ## only returns index 3
+```
+## unique{#unique}
+
+`unique` filters an object to unique values
+```{r}
+set.seed(2)
+birthdays <- sample(1:365, 50, replace = T) ## sample 100 birthdays
+print(birthdays)
+```
+```{r}
+distinct_birthdays <- (unique(birthdays))
+print(distinct_birthdays)
+print(paste0(length(distinct_birthdays), " distinct birthdays"))
+```
+
+
+
+# getting help{#help}
+## ?{#help_function}
+Use `?` to load help for a function
+```{r}
+#?dplyr::mutate
+#?strptime
+```
+
+
+
+
+***
+<center>
+[Back to home](index.html)
+</center>
+***
