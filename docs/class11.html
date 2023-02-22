@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -13,8 +13,12 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
+.title[
 # Geospatial Analysis with R
+]
+.subtitle[
 ## Class 11
+]
 
 ---
 
@@ -50,277 +54,679 @@ ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4,
        width = 7, units = "in", dpi = 300)  
 ```
 
----
-## Issue from last class
 
-```r
-library(geospaar)
-topo &lt;- lapply(c("TRI", "flowdir"), function(x) terrain(dem, x))
-par(mfrow = c(1, 2), mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
-plot(topo[[1]], main = "TRI", axes = FALSE, box = FALSE)
-plot(topo[[2]], main = "Flow Direction", axes = FALSE, box = FALSE)
-```
-
-
----
-## Where we ended up
-### Reading/writing and looping
-
-
-
-- Let's write `l2` out using a `for` loop to create three output csv files
-
-```r
-for(i in 1:length(l2)) {
-  write.csv(l2[[i]], file = paste0("~/Desktop/demo/dummy_data", i, ".csv"))
-}
-```
-- And read those back into a list: use `lapply` to capture data in list `l3`
-- Ingredients:
-  - Iterate over `1:3`
-  - Have `read.csv` in anonymous function body
-  - Reuse the `paste0` from code chunk above
-  
-
-```r
-mlist3 &lt;- lapply(1:3, function(x) {
-  # read.csv(paste0(here::here("external/data/"), "dummy_data", x, ".csv"))
-  readr::read_csv(paste0(here::here("external/data/"), "dummy_data", x, ".csv"))
-})
-```
-
----
-## Reshaping data
-
-Going from long to wide and back again
-
-```r
-library(dplyr)
-library(tidyr)
-
-# d1 &lt;- data.frame(a = 1:10, grp1 = rep("a", 10), grp2 = rep("b", 10))
-d1 &lt;- data.frame(i = 1:10, a = 1:10, grp = rep("a", 10))
-d2 &lt;- data.frame(i = 1:10, a = 11:20, grp = rep("b", 10))
-DF &lt;- rbind(d1, d2)
-
-df_wide &lt;- DF %&gt;% pivot_wider(names_from = grp, values_from = a)
-df_long &lt;- df_wide %&gt;% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a")
-df_long %&gt;% select(i, a, grp) %&gt;% arrange(grp)
-```
-
-- Reorder columns and sort by grp
-
-
----
-## New dataset
-
-
-```r
-set.seed(1)
-price_weight &lt;- tibble(
-  year = 1951:2000, 
-  price = runif(n = length(year), 20, 50),
-  weight = (price * 10) * runif(n = length(year), 0.8, 1.2)
-)
-plot(price_weight$price, price_weight$weight)
-```
-
-&lt;img src="class11_files/figure-html/unnamed-chunk-8-1.png" width="40%" style="display: block; margin: auto;" /&gt;
 
 
 
 ---
-## Practice
-### Reshaping
-- Reshape `price_weight` to make it *long*, using `pivot_longer`, to put the variables "price" and "weight" into a single variable "value" and the names price and weight into a variable named "element". Necessary functions: `%&gt;%`, `pivot_longer`. Name it `price_weight_long`.
-- Use pivot_wider to reshape `price_weight_long` to its original wide format. Call it `price_weight_wide`
+# Today
 
-
-```r
-price_weight_long &lt;- price_weight %&gt;% 
-  pivot_longer(cols = &lt;column values&gt;, &lt;missing_arg&gt;, values_to = "value")
-
-price_weight_wide &lt;- price_weight_long %&gt;% 
-  pivot_wider(names_from = element, &lt;missing_arg&gt;)
-```
-
----
-## Demo
-### Split-Apply-Combine
-
-#### tidyverse
-
-```r
-df_long &lt;- df_wide %&gt;% 
-  pivot_longer(cols = a:b, names_to = "grp", values_to = "a") %&gt;% 
-  select(i, a, grp) %&gt;% arrange(grp)
-
-df_long %&gt;% 
-  group_by(grp) %&gt;% 
-  summarize(mean = mean(a), stdev = sd(a))
-```
-
-#### Old school
-
-```r
-do.call(rbind, lapply(unique(df_long$grp), function(x) {
-  # df_long %&gt;% 
-  #   filter(grp == x) %&gt;% 
-  #   summarize(mean = mean(a), stdev = sd(a)) %&gt;% 
-  #   mutate(grp = x) %&gt;% select(grp, mean, stdev)
-  dat &lt;- df_long[df_long$grp == x, ]
-  data.frame(grp = x, mean = mean(dat$a), stdev = sd(dat$a))
-}))
-```
-
----
-## Practice
-- Use `dplyr` on `price_weight_long` to calculate the mean and standard deviation of "value" by the "element" variable
-
-
-- Do the same, but with `lapply`
+- rbind, cbind, do.call
+- summarise
+- Plotting
 
 
 ---
+## do.call, rbind, cbind
+- `do.call` takes many inputs and applies a function to them successively.
+- often used with `rbind` to combine tables by rows.
+
+
+```r
+DF1 &lt;- data.frame(v1 = 1:5, v2 = sample(1:100, 5))
+DF2 &lt;- data.frame(v1 = 6:10, v2 = sample(1:100, 5))
+DF3 &lt;- data.frame(v1 = 11:15, v2 = sample(1:100, 5))
+DF_combined &lt;- do.call('rbind', list(DF1, DF2, DF3)) ## combines DF1, DF2, DF3 by row
+DF_combined
+```
+
+```
+##    v1  v2
+## 1   1  60
+## 2   2  80
+## 3   3  22
+## 4   4  18
+## 5   5  66
+## 6   6  51
+## 7   7  53
+## 8   8  29
+## 9   9  48
+## 10 10  61
+## 11 11  71
+## 12 12  81
+## 13 13  22
+## 14 14 100
+## 15 15  88
+```
+
+---
+## summary()
+- provides standard statistics for all columns
+
+```r
+summary(DF_combined)
+```
+
+```
+##        v1             v2        
+##  Min.   : 1.0   Min.   : 18.00  
+##  1st Qu.: 4.5   1st Qu.: 38.50  
+##  Median : 8.0   Median : 60.00  
+##  Mean   : 8.0   Mean   : 56.67  
+##  3rd Qu.:11.5   3rd Qu.: 75.50  
+##  Max.   :15.0   Max.   :100.00
+```
+
+- select (subset) columns if needed
+
+```r
+summary(DF_combined %&gt;% select(v2))
+```
+
+```
+##        v2        
+##  Min.   : 18.00  
+##  1st Qu.: 38.50  
+##  Median : 60.00  
+##  Mean   : 56.67  
+##  3rd Qu.: 75.50  
+##  Max.   :100.00
+```
+
+---
+## summarise_all()
+
+- `summarise_all` is a dplyr method
+- you can define which functions (i.e. statistics) to summarize
+- put functions in a named list
+
+
+
+```r
+q10 &lt;- function(x) quantile(x, 0.10) # find 10th percentile
+q90 &lt;- function(x) quantile(x, 0.90) # find 90th percentile
+DF_combined %&gt;% summarise_all(list("median "= median, 
+                                   "10th percentile" = q10,
+                                   "90th percentile"= q90))
+```
+
+```
+##   v1_median  v2_median  v1_10th percentile v2_10th percentile
+## 1          8         60                2.4                 22
+##   v1_90th percentile v2_90th percentile
+## 1               13.6               85.2
+```
+
+
+---
+
 ## Plotting
+- Graphics (Base R) vs ggplot (dplyr)
+- With `graphics`, you can directly map vectors
 
-- Plot values by groups, the base way
-
-
-```r
-plot(value ~ year, col = "red", pch = 16, 
-     ylim = range(price_weight_long$value),
-     data = price_weight_long[price_weight_long$element == "price", ])
-points(value ~ year, col = "blue", pch = 16, 
-       data = price_weight_long[price_weight_long$element == "weight", ])
-```
-
-&lt;img src="class11_files/figure-html/unnamed-chunk-15-1.png" width="40%" style="display: block; margin: auto;" /&gt;
-
----
-
-- Plot values by groups, `ggplot` version
-
-
-```r
-p &lt;- price_weight_long %&gt;% 
-  ggplot() + geom_point(aes(x = year, y = value, color = element)) +
-  xlab("Year") + ylab("value") + 
-  ggtitle("Relation between year and value") + 
-  theme(
-    text = element_text(size = 20),
-    panel.background = element_rect(fill = "white"),
-    plot.title = element_text(hjust = 0.5),
-  ) 
-p
-```
-
-&lt;img src="class11_files/figure-html/unnamed-chunk-16-1.png" width="40%" style="display: block; margin: auto;" /&gt;
-
----
-- Let's do a scatter plot, with Price on the x axis and weight on the y axis
-
-&lt;img src="class11_files/figure-html/unnamed-chunk-17-1.png" width="60%" style="display: block; margin: auto;" /&gt;
-
----
-
-- Let's plot a line graph of Price (y axis) against year (x axis)
-
-&lt;img src="class11_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
-- Calculate the mean Weight and Price by year, and plot as an XY scatter
-
-&lt;img src="class11_files/figure-html/unnamed-chunk-19-1.png" width="70%" style="display: block; margin: auto;" /&gt;
----
-
-- Let's calculate a histogram of wt_price
-&lt;img src="class11_files/figure-html/unnamed-chunk-20-1.png" width="70%" style="display: block; margin: auto;" /&gt;
----
-
-## More practice
-### New data
-
-```r
-library(tidyverse)
-```
-
-```
-## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
-```
-
-```
-## ✓ tibble  3.1.6     ✓ stringr 1.4.0
-## ✓ readr   2.1.1     ✓ forcats 0.5.1
-## ✓ purrr   0.3.4
-```
-
-```
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()
-```
 
 ```r
 set.seed(1)
-tb_df &lt;- tibble(year = rep(1951:2000, 2),
-                group = rep(sample(letters[1:5], 50, replace = TRUE), 2),
-                value = runif(n = 100, min = 50, max = 100),
-                element = c(rep("Price", 50), rep("Weight", 50)))
+a &lt;- sample(1:100, 20) ## sample of size 20
+
+graphics::plot(1:20, a)
 ```
 
-- Use `readr::write_csv` to write out `tb_df` to your `~/Desktop` to a csv file named `dummy_data2.csv`.
-
-
+![](class11_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
 ---
-## Data shaping
 
-- Use `readr::read_csv` to read `dummy_data2.csv` into `tb_df`
-- Determine the unique (distinct) values in the *group* and *element* columns
-- Closely related example:
+## Plotting
+- Graphics (Base R) vs ggplot (dplyr)
+- With `ggplot2`, you must first put vectors in a dataframe/tibble
 
 
 ```r
-price_weight_long %&gt;% distinct(element)
+library(ggplot2)
+set.seed(1)
+a &lt;- sample(1:100, 20) ## sample of size 20
+DF &lt;- data.frame(index = 1:20, value = a)
+
+ggplot(DF) +
+  geom_point(aes(x = index, y = value), col = 'red')
 ```
 
-```
-## # A tibble: 2 × 1
-##   element
-##   &lt;chr&gt;  
-## 1 price  
-## 2 weight
-```
-
+![](class11_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
 
 
 ---
-
-- Spread `tb_df` so that "Price" and "Element" have their own columns
-- `pivot_wider` is your friend
-- Related:
+## Whittier Farms data
+- Three ground sensors at sites called "down", "mid", "up"
+- 4 years of data: 2018-2021
 
 
 ```r
-price_weight_wide &lt;- price_weight_long %&gt;%
-  pivot_wider(names_from = element, values_from = value)
+knitr::include_graphics("figures/whittier_pod_locations.png")
+```
+
+&lt;img src="figures/whittier_pod_locations.png" width="1292" /&gt;
+
+---
+## Load Whittier data
+
+```r
+folder_path &lt;- "../inst/extdata/"
+files &lt;- list.files(folder_path, pattern = "whittier")
+for(file in files){
+  load(paste0(folder_path, file))
+}
+
+up_data &lt;- whittier_up_d_h %&gt;% select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+mid_data &lt;- whittier_mid_d_h %&gt;% select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+down_data &lt;- whittier_down_d_h %&gt;% select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+```
+
+
+
+
+---
+## ggplot syntax
+- `ggplot()` command sets defaults
+- `aes()` sets aesthetics, based on column names
+- `+` combines components
+
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly), col = 'red')
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+## ggplot syntax
+- you can override default set in `ggplot()`
+- we add a second `geom_point` component, which uses a different table
+
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
+  geom_point(data = mid_data,
+             aes(x = date, y = ndvi_hourly), col = 'blue') 
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+## Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
+---
+## ggplot syntax (exercise)
+- add a third set of points for 'down' site, in green.
+- change y-variable to 'gcvi_hourly'
+
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
+  geom_point(data = mid_data,
+             aes(x = date, y = ndvi_hourly), col = 'blue') 
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+## Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+---
+## ggplot syntax
+- `aes()` is used when you want an aesthetic to vary by column
+  - x, y aesthetics used for position (always in `aes()`)
+  - alpha, size, col can be used inside `aes()` if you want them to vary
+
+Adjust size outside `aes()` to have constant size (hard-code)
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly), col = 'red', size = 5) 
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+
+---
+## ggplot syntax
+
+Adjust size inside `aes()` to have it vary based on column. 
+
+Here size varies based on date.
+
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly, size = date), col = 'red') 
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+## ggplot syntax (exercise)
+
+- Q1: What would happen if we used `size = ndvi` within `aes()`?
+
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly, size = ndvi), col = 'red') + 
 ```
 
 ---
+## ggplot syntax (exercise)
 
-- Spread `tb_df` so that "Price" and "Element" have their own columns, but exclude the *group* variable
+- Q2: Use `desc` to make size decrease with time 
 
----
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group*
 
----
-- Redo the `pivot_wider` that includes *group*, and then arrange by *group* and by *year*, with *year* in descending order
-
----
-- Calculate a new column that describes the weight:price ratio, name it `wt_price`
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly, size = ), col = 'red') + 
+```
 
 ---
-- Do the same as above, but calculate the average `weight`, `price`, and `wt_price` for each group
+## ggplot syntax (exercise)
+
+- other plot components
+
+
+```r
+ggplot(data = up_data) +
+  geom_point(aes(x = date, y = ndvi_hourly), col = 'red') + 
+  xlim(as_date("2020-06-01"), as_date("2020-09-01")) +
+  ylim(0.5, 0.9) +
+  xlab("Observation date") + 
+  ylab("Measured ndvi") +
+  ggtitle("2020 upslope") +
+  theme_bw()
+```
+
+
+---
+## Line plot (two vars.)
+- NDVI comparison, all three sites
+
+
+```r
+ggplot() +
+  geom_line(data = up_data, aes(x = date, y = ndvi_hourly), col = 'red') +
+  geom_line(data = mid_data, aes(x = date, y = ndvi_hourly), col = 'blue') +
+  geom_line(data = down_data, aes(x = date, y = ndvi_hourly), col = 'green')
+```
+
+```
+## Warning: Removed 1 row containing missing values (`geom_line()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+---
+## Line plots (exercise)
+- Modify code to focus only on year 2020, and compare gcvi_hourly
+
+---
+## Color by group (exercise)
+- Ideally all data should be in a single data.frame/tibble
+- Let's add a variable `site_name`, and then combine using `rbind`
+
+
+```r
+## add site_name column
+up_data$site_name &lt;- "up"
+mid_data$site_name &lt;- "mid"
+down_data$site_name &lt;- "down"
+
+## combine using rbind
+
+all_sites_data &lt;- rbind(up_data, mid_data, down_data)
+```
+
+---
+## Color by group (exercise)
+- How can we create ggplot where color varies based on column "site_name"?
+
+```r
+ggplot(all_sites_data) + 
+  geom_point(aes(x = date, y = ndvi_hourly)) 
+```
+
+```
+## Warning: Removed 13 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+
+---
+## Color by group (exercise)
+- ggplot specifies the colors
+- we can specify colors, but this is more complicated (next class)
+
+```r
+ggplot(all_sites_data) + 
+  geom_point(aes(x = date, y = ndvi_hourly, col = site_name)) 
+```
+
+```
+## Warning: Removed 13 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+
+
+
+
+
+---
+## Scatter plot (two vars.)
+- compare ndvi_hourly and gcvi_hourly of upslope  2018
+
+
+```r
+library(lubridate)
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+```
+
+```r
+ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
+  geom_point( aes(x = ndvi_hourly, y = gcvi_hourly), col = 'red') 
+```
+
+```
+## Warning: Removed 1 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+---
+## Scatter plot (exercise)
+- Create plot comparing ndvi_hourly in 2020 for midslope and upslope pod
+
+
+
+
+
+---
+## Adding a curve fit line
+- NDVI vs GCVI, upslope
+
+```r
+ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31")),
+       aes(x = ndvi_hourly, y = gcvi_hourly)) +
+  geom_point(col = 'red') +
+  geom_smooth(col = 'green')
+```
+
+```
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+```
+## Warning: Removed 1 rows containing non-finite values (`stat_smooth()`).
+```
+
+```
+## Warning: Removed 1 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+---
+## Adding a trend fit line
+- NDVI vs GCVI, upslope
+
+```r
+ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31")),
+       aes(x = ndvi_hourly, y = gcvi_hourly)) +
+  geom_point(col = 'red') +
+  geom_smooth(col = 'green', method = 'lm')
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+```
+## Warning: Removed 1 rows containing non-finite values (`stat_smooth()`).
+```
+
+```
+## Warning: Removed 1 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+
+---
+## Histogram (one var.)
+NDVI histogram by site
+
+```r
+ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
+  geom_histogram(aes(x = ndvi_hourly)) 
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+```
+## Warning: Removed 1 rows containing non-finite values (`stat_bin()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+
+---
+## Box plot (one var.)
+NDVI boxplot by site
+
+```r
+ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
+  geom_boxplot(aes(y = ndvi_hourly)) 
+```
+
+```
+## Warning: Removed 1 rows containing non-finite values (`stat_boxplot()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+
+---
+## Combine data in same plot (Base R)
+- create initial plot using `plot()`
+- add additional values using `points()` or `lines()`
+
+```r
+plot(up_data$date, up_data$ndvi_hourly, col = 'red')
+
+points(mid_data$date, mid_data$ndvi_hourly, col = 'blue')
+```
+
+![](class11_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+
+
+
+---
+## Combine data in same plot (ggplot2)
+
+```r
+ggplot(up_data) + 
+  geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
+  geom_point(data = mid_data, aes(x = date, y = ndvi_hourly), col = 'blue') 
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+## Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+
+
+---
+## Combine multiple plots
+- use `facet_grid()` in ggplot
+- `facet_grid()` uses column name ('year') to separate plots
+
+
+```r
+all_sites_data$year &lt;- lubridate::year(all_sites_data$date)
+
+all_sites_data %&gt;% 
+  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+  facet_grid(cols = vars(year)) +
+  scale_color_manual(values = c("red", "blue", "green")) + 
+  ylab("ndvi") + xlab("date")
+```
+
+```
+## Warning: Removed 13 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+
+```r
+#&gt; `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+---
+## Combine multiple plots
+- save each plot in a variable
+- use `plot_grid()` to combine
+
+
+
+```r
+library(cowplot)
+```
+
+```
+## 
+## Attaching package: 'cowplot'
+```
+
+```
+## The following object is masked from 'package:lubridate':
+## 
+##     stamp
+```
+
+```r
+plot_2020 &lt;- (all_sites_data %&gt;% filter(year == 2020)) %&gt;% 
+  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+  scale_color_manual(values = c("red", "blue", "green")) + 
+  ylab("ndvi") + xlab("date") + 
+  ggtitle("2020")
+
+plot_2019 &lt;- (all_sites_data %&gt;% filter(year == 2019)) %&gt;% 
+  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+  scale_color_manual(values = c("red", "blue", "green")) + 
+  ylab("ndvi") + xlab("date") +
+  ggtitle("2019")
+
+cowplot::plot_grid(plot_2019, plot_2020,
+                   nrow = 1,
+                   align = "vh",
+                   axis = "l")
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+## Removed 4 rows containing missing values (`geom_point()`).
+```
+
+![](class11_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+
+
+
+---
+## Common ggplot options
+- `+ xlim()`, `+ ylim()` : axis bounds
+- `+ xlab()`, `+ ylab()` : axis titles
+- `+ ggtitle()` : title
+- `+ theme_bw()`: add minimalist theme
+- and many more!
+
+
+---
+## Legends are a pain
+- We'll discuss Monday
+
+
+
+
+
+---
+## ggplot links
+- [ggplot cheatsheet](https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf)
+- [epidemiologist handbook](https://epirhandbook.com/en/ggplot-basics.html#plot-categorical-data)
+- [reference](https://ggplot2.tidyverse.org/reference/#plot-basics)
+
+---
+## Practice
+- [ggplot color manual](http://sape.inf.usi.ch/quick-reference/ggplot2/colour )
+- Create a GCVI plot for midslope pod, 2019. Pick a color from above.
+
+- Use three `geom_point` commands to plot GCVI for each site in 2019. (mid, up, down etc. ). Pick three colors.
+
+- Use `facet_grid` to create separate plots for each year. Each plot should contain all three sites.
+
+
+
+---
+## Homework
+- Read `ggplot` from [Epidemiologist handbook](https://epirhandbook.com/en/ggplot-basics.html#plot-categorical-data) (Chap 30)
+- Read about [plot_grid](https://wilkelab.org/cowplot/articles/plot_grid.html)
+- Read Unit 2 Module 1, parts 1-3
+- Unit 1 Module 4 assignment due next Tuesday (Feb 28)
 
 
 &lt;!-- --- --&gt;
@@ -430,6 +836,19 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
 (function() {
   "use strict"
   // Replace <script> tags in slides area to make them executable
