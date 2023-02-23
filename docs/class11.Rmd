@@ -63,7 +63,7 @@ ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4,
 - `do.call` takes many inputs and applies a function to them successively.
 - often used with `rbind` to combine tables by rows.
 
-```{r}
+```{r, out.width = "30%"}
 DF1 <- data.frame(v1 = 1:5, v2 = sample(1:100, 5))
 DF2 <- data.frame(v1 = 6:10, v2 = sample(1:100, 5))
 DF3 <- data.frame(v1 = 11:15, v2 = sample(1:100, 5))
@@ -74,12 +74,12 @@ DF_combined
 ---
 ## summary()
 - provides standard statistics for all columns
-```{r}
+```{r, out.width = "30%"}
 summary(DF_combined)
 ```
 
 - select (subset) columns if needed
-```{r}
+```{r, out.width = "30%"}
 summary(DF_combined %>% select(v2))
 ```
 
@@ -91,7 +91,7 @@ summary(DF_combined %>% select(v2))
 - put functions in a named list
 
 
-```{r}
+```{r, out.width = "30%"}
 q10 <- function(x) quantile(x, 0.10) # find 10th percentile
 q90 <- function(x) quantile(x, 0.90) # find 90th percentile
 DF_combined %>% summarise_all(list("median "= median, 
@@ -106,21 +106,23 @@ DF_combined %>% summarise_all(list("median "= median,
 - Graphics (Base R) vs ggplot (dplyr)
 - With `graphics`, you can directly map vectors
 
-```{r}
+```{r,  out.width = "30%"}
 set.seed(1)
 a <- sample(1:100, 20) ## sample of size 20
-
-graphics::plot(1:20, a)
+b <- 1:20 
+graphics::plot(a, b) ## pass an x and y vector 
 ```
+
 ---
 
 ## Plotting
 - Graphics (Base R) vs ggplot (dplyr)
 - With `ggplot2`, you must first put vectors in a dataframe/tibble
 
-```{r}
+```{r, out.width = "30%"}
 library(ggplot2)
 set.seed(1)
+
 a <- sample(1:100, 20) ## sample of size 20
 DF <- data.frame(index = 1:20, value = a)
 
@@ -136,13 +138,13 @@ ggplot(DF) +
 - Three ground sensors at sites called "down", "mid", "up"
 - 4 years of data: 2018-2021
 
-```{r}
+```{r, out.width = "30%"}
 knitr::include_graphics("figures/whittier_pod_locations.png")
 ```
 
 ---
 ## Load Whittier data
-```{r}
+```{r, out.width = "30%"}
 folder_path <- "../inst/extdata/"
 files <- list.files(folder_path, pattern = "whittier")
 for(file in files){
@@ -186,7 +188,7 @@ down_data <- whittier_down_d_h %>% select(date,
 - `aes()` sets aesthetics, based on column names
 - `+` combines components
 
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data) +
   geom_point(aes(x = date, y = ndvi_hourly), col = 'red')
 ```
@@ -196,7 +198,7 @@ ggplot(data = up_data) +
 - you can override default set in `ggplot()`
 - we add a second `geom_point` component, which uses a different table
 
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data) +
   geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
   geom_point(data = mid_data,
@@ -209,11 +211,14 @@ ggplot(data = up_data) +
 - add a third set of points for 'down' site, in green.
 - change y-variable to 'gcvi_hourly'
 
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data) +
-  geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
+  geom_point(aes(x = date, y = gcvi_hourly), col = 'red') +
   geom_point(data = mid_data,
-             aes(x = date, y = ndvi_hourly), col = 'blue') 
+             aes(x = date, y = gcvi_hourly), col = 'blue') +
+  geom_point(data = down_data,
+             aes(x = date, y = gcvi_hourly), col ='green') 
+
 
 ```
 
@@ -224,7 +229,7 @@ ggplot(data = up_data) +
   - alpha, size, col can be used inside `aes()` if you want them to vary
 
 Adjust size outside `aes()` to have constant size (hard-code)
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data) +
   geom_point(aes(x = date, y = ndvi_hourly), col = 'red', size = 5) 
 ```
@@ -236,7 +241,7 @@ Adjust size inside `aes()` to have it vary based on column.
 
 Here size varies based on date.
 
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data) +
   geom_point(aes(x = date, y = ndvi_hourly, size = date), col = 'red') 
 ```
@@ -248,7 +253,7 @@ ggplot(data = up_data) +
 
 ```{r, eval = F}
 ggplot(data = up_data) +
-  geom_point(aes(x = date, y = ndvi_hourly, size = ndvi), col = 'red') + 
+  geom_point(aes(x = date, y = ndvi_hourly, size = ndvi_hourly), col = 'red')  
 ```
 
 ---
@@ -258,7 +263,7 @@ ggplot(data = up_data) +
 
 ```{r, eval = F}
 ggplot(data = up_data) +
-  geom_point(aes(x = date, y = ndvi_hourly, size = ), col = 'red') + 
+  geom_point(aes(x = date, y = ndvi_hourly, col = date)) 
 ```
 
 ---
@@ -282,7 +287,7 @@ ggplot(data = up_data) +
 ## Line plot (two vars.)
 - NDVI comparison, all three sites
 
-```{r}
+```{r, out.width = "30%"}
 ggplot() +
   geom_line(data = up_data, aes(x = date, y = ndvi_hourly), col = 'red') +
   geom_line(data = mid_data, aes(x = date, y = ndvi_hourly), col = 'blue') +
@@ -293,12 +298,32 @@ ggplot() +
 ## Line plots (exercise)
 - Modify code to focus only on year 2020, and compare gcvi_hourly
 
+
+```{r, out.width = "30%"}
+library(lubridate)
+ggplot() +
+  geom_line(data = up_data %>% 
+              filter(date >= as_date("2020-06-01")) %>% 
+              filter(date <= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'red') +
+  geom_line(data = mid_data %>% 
+              filter(date >= as_date("2020-06-01")) %>% 
+              filter(date <= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'blue') +
+  geom_line(data = down_data %>% 
+              filter(date >= as_date("2020-06-01")) %>% 
+              filter(date <= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'green')
+
+```
+
+
 ---
 ## Color by group (exercise)
 - Ideally all data should be in a single data.frame/tibble
 - Let's add a variable `site_name`, and then combine using `rbind`
 
-```{r}
+```{r, out.width = "30%"}
 ## add site_name column
 up_data$site_name <- "up"
 mid_data$site_name <- "mid"
@@ -306,23 +331,23 @@ down_data$site_name <- "down"
 
 ## combine using rbind
 
-all_sites_data <- rbind(up_data, mid_data, down_data)
+all_sites_data <- do.call('rbind', list(up_data, mid_data, down_data))
 
 ```
 
 ---
 ## Color by group (exercise)
 - How can we create ggplot where color varies based on column "site_name"?
-```{r}
+```{r, out.width = "30%"}
 ggplot(all_sites_data) + 
-  geom_point(aes(x = date, y = ndvi_hourly)) 
+  geom_point(aes(x = date, y = ndvi_hourly, col = site_name)) 
 ```
 
 ---
 ## Color by group (exercise)
 - ggplot specifies the colors
 - we can specify colors, but this is more complicated (next class)
-```{r}
+```{r, out.width = "30%"}
 ggplot(all_sites_data) + 
   geom_point(aes(x = date, y = ndvi_hourly, col = site_name)) 
 ```
@@ -336,7 +361,7 @@ ggplot(all_sites_data) +
 ## Scatter plot (two vars.)
 - compare ndvi_hourly and gcvi_hourly of upslope  2018
 
-```{r}
+```{r, out.width = "30%"}
 library(lubridate)
 ggplot(data = up_data %>% filter(date <= as_date("2018-12-31"))) +
   geom_point( aes(x = ndvi_hourly, y = gcvi_hourly), col = 'red') 
@@ -345,17 +370,15 @@ ggplot(data = up_data %>% filter(date <= as_date("2018-12-31"))) +
 ---
 ## Scatter plot (exercise)
 - Create plot comparing ndvi_hourly in 2020 for midslope and upslope pod
-```{r}
+```{r, out.width = "30%"}
 
 ```
-
-
 
 
 ---
 ## Adding a curve fit line
 - NDVI vs GCVI, upslope
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data %>% filter(date <= as_date("2018-12-31")),
        aes(x = ndvi_hourly, y = gcvi_hourly)) +
   geom_point(col = 'red') +
@@ -365,25 +388,25 @@ ggplot(data = up_data %>% filter(date <= as_date("2018-12-31")),
 ---
 ## Adding a trend fit line
 - NDVI vs GCVI, upslope
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data %>% filter(date <= as_date("2018-12-31")),
        aes(x = ndvi_hourly, y = gcvi_hourly)) +
   geom_point(col = 'red') +
-  geom_smooth(col = 'green', method = 'lm')
+  geom_smooth(col = 'green', method = 'lm', se = F)
 ```
 
 ---
 ## Histogram (one var.)
 NDVI histogram by site
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data %>% filter(date <= as_date("2018-12-31"))) +
-  geom_histogram(aes(x = ndvi_hourly)) 
+  geom_histogram(aes(x = ndvi_hourly), bins =10) 
 ```
 
 ---
 ## Box plot (one var.)
 NDVI boxplot by site
-```{r}
+```{r, out.width = "30%"}
 ggplot(data = up_data %>% filter(date <= as_date("2018-12-31"))) +
   geom_boxplot(aes(y = ndvi_hourly)) 
 ```
@@ -392,17 +415,17 @@ ggplot(data = up_data %>% filter(date <= as_date("2018-12-31"))) +
 ## Combine data in same plot (Base R)
 - create initial plot using `plot()`
 - add additional values using `points()` or `lines()`
-```{r}
+```{r, out.width = "30%"}
 plot(up_data$date, up_data$ndvi_hourly, col = 'red')
 
-points(mid_data$date, mid_data$ndvi_hourly, col = 'blue')
+points(mid_data$date, mid_data$gcvi_hourly, col = 'blue')
 ```
 
 
 
 ---
 ## Combine data in same plot (ggplot2)
-```{r}
+```{r, out.width = "30%"}
 ggplot(up_data) + 
   geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
   geom_point(data = mid_data, aes(x = date, y = ndvi_hourly), col = 'blue') 
@@ -410,11 +433,11 @@ ggplot(up_data) +
 
 
 ---
-## Combine multiple plots
+## Combine multiple plots 
 - use `facet_grid()` in ggplot
 - `facet_grid()` uses column name ('year') to separate plots
 
-```{r}
+```{r, out.width = "30%"}
 all_sites_data$year <- lubridate::year(all_sites_data$date)
 
 all_sites_data %>% 
@@ -431,27 +454,28 @@ all_sites_data %>%
 - use `plot_grid()` to combine
 
 
-```{r}
+```{r, out.width = "30%"}
 library(cowplot)
-plot_2020 <- (all_sites_data %>% filter(year == 2020)) %>% 
-  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+plot_2020 <-  ggplot((all_sites_data %>% filter(year == 2020))) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
   scale_color_manual(values = c("red", "blue", "green")) + 
   ylab("ndvi") + xlab("date") + 
   ggtitle("2020")
 
-plot_2019 <- (all_sites_data %>% filter(year == 2019)) %>% 
-  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+plot_2019 <- ggplot((all_sites_data %>% filter(year == 2019)) ) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
   scale_color_manual(values = c("red", "blue", "green")) + 
   ylab("ndvi") + xlab("date") +
   ggtitle("2019")
+```
+
+---
+## Combine multiple plots
+```{r, out.width= "30%"}
 
 cowplot::plot_grid(plot_2019, plot_2020,
-                   nrow = 1,
+                   nrow = 2,
                    align = "vh",
                    axis = "l")
 ```
-
-
 
 ---
 ## Common ggplot options
@@ -475,16 +499,6 @@ cowplot::plot_grid(plot_2019, plot_2020,
 - [ggplot cheatsheet](https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf)
 - [epidemiologist handbook](https://epirhandbook.com/en/ggplot-basics.html#plot-categorical-data)
 - [reference](https://ggplot2.tidyverse.org/reference/#plot-basics)
-
----
-## Practice
-- [ggplot color manual](http://sape.inf.usi.ch/quick-reference/ggplot2/colour )
-- Create a GCVI plot for midslope pod, 2019. Pick a color from above.
-
-- Use three `geom_point` commands to plot GCVI for each site in 2019. (mid, up, down etc. ). Pick three colors.
-
-- Use `facet_grid` to create separate plots for each year. Each plot should contain all three sites.
-
 
 
 ---

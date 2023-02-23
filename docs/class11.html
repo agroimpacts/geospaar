@@ -81,22 +81,22 @@ DF_combined
 ```
 
 ```
-##    v1  v2
-## 1   1  60
-## 2   2  80
-## 3   3  22
-## 4   4  18
-## 5   5  66
-## 6   6  51
-## 7   7  53
-## 8   8  29
-## 9   9  48
-## 10 10  61
-## 11 11  71
-## 12 12  81
-## 13 13  22
-## 14 14 100
-## 15 15  88
+##    v1 v2
+## 1   1 98
+## 2   2  8
+## 3   3 23
+## 4   4 33
+## 5   5 80
+## 6   6 67
+## 7   7 30
+## 8   8 37
+## 9   9  3
+## 10 10 28
+## 11 11 45
+## 12 12 65
+## 13 13 30
+## 14 14 24
+## 15 15 31
 ```
 
 ---
@@ -108,13 +108,13 @@ summary(DF_combined)
 ```
 
 ```
-##        v1             v2        
-##  Min.   : 1.0   Min.   : 18.00  
-##  1st Qu.: 4.5   1st Qu.: 38.50  
-##  Median : 8.0   Median : 60.00  
-##  Mean   : 8.0   Mean   : 56.67  
-##  3rd Qu.:11.5   3rd Qu.: 75.50  
-##  Max.   :15.0   Max.   :100.00
+##        v1             v2       
+##  Min.   : 1.0   Min.   : 3.00  
+##  1st Qu.: 4.5   1st Qu.:26.00  
+##  Median : 8.0   Median :31.00  
+##  Mean   : 8.0   Mean   :40.13  
+##  3rd Qu.:11.5   3rd Qu.:55.00  
+##  Max.   :15.0   Max.   :98.00
 ```
 
 - select (subset) columns if needed
@@ -124,13 +124,13 @@ summary(DF_combined %&gt;% select(v2))
 ```
 
 ```
-##        v2        
-##  Min.   : 18.00  
-##  1st Qu.: 38.50  
-##  Median : 60.00  
-##  Mean   : 56.67  
-##  3rd Qu.: 75.50  
-##  Max.   :100.00
+##        v2       
+##  Min.   : 3.00  
+##  1st Qu.:26.00  
+##  Median :31.00  
+##  Mean   :40.13  
+##  3rd Qu.:55.00  
+##  Max.   :98.00
 ```
 
 ---
@@ -152,9 +152,9 @@ DF_combined %&gt;% summarise_all(list("median "= median,
 
 ```
 ##   v1_median  v2_median  v1_10th percentile v2_10th percentile
-## 1          8         60                2.4                 22
+## 1          8         31                2.4                 14
 ##   v1_90th percentile v2_90th percentile
-## 1               13.6               85.2
+## 1               13.6               74.8
 ```
 
 
@@ -168,11 +168,12 @@ DF_combined %&gt;% summarise_all(list("median "= median,
 ```r
 set.seed(1)
 a &lt;- sample(1:100, 20) ## sample of size 20
-
-graphics::plot(1:20, a)
+b &lt;- 1:20 
+graphics::plot(a, b) ## pass an x and y vector 
 ```
 
-![](class11_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-7-1.png" width="30%" /&gt;
+
 ---
 
 ## Plotting
@@ -183,6 +184,7 @@ graphics::plot(1:20, a)
 ```r
 library(ggplot2)
 set.seed(1)
+
 a &lt;- sample(1:100, 20) ## sample of size 20
 DF &lt;- data.frame(index = 1:20, value = a)
 
@@ -190,7 +192,7 @@ ggplot(DF) +
   geom_point(aes(x = index, y = value), col = 'red')
 ```
 
-![](class11_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-8-1.png" width="30%" /&gt;
 
 
 ---
@@ -203,7 +205,7 @@ ggplot(DF) +
 knitr::include_graphics("figures/whittier_pod_locations.png")
 ```
 
-&lt;img src="figures/whittier_pod_locations.png" width="1292" /&gt;
+&lt;img src="figures/whittier_pod_locations.png" width="30%" /&gt;
 
 ---
 ## Load Whittier data
@@ -262,7 +264,7 @@ ggplot(data = up_data) +
 ## Warning: Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-11-1.png" width="30%" /&gt;
 
 ---
 ## ggplot syntax
@@ -282,7 +284,7 @@ ggplot(data = up_data) +
 ## Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-12-1.png" width="30%" /&gt;
 
 ---
 ## ggplot syntax (exercise)
@@ -292,9 +294,11 @@ ggplot(data = up_data) +
 
 ```r
 ggplot(data = up_data) +
-  geom_point(aes(x = date, y = ndvi_hourly), col = 'red') +
+  geom_point(aes(x = date, y = gcvi_hourly), col = 'red') +
   geom_point(data = mid_data,
-             aes(x = date, y = ndvi_hourly), col = 'blue') 
+             aes(x = date, y = gcvi_hourly), col = 'blue') +
+  geom_point(data = down_data,
+             aes(x = date, y = gcvi_hourly), col ='green') 
 ```
 
 ```
@@ -302,7 +306,11 @@ ggplot(data = up_data) +
 ## Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+```
+## Warning: Removed 5 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-13-1.png" width="30%" /&gt;
 
 ---
 ## ggplot syntax
@@ -321,7 +329,7 @@ ggplot(data = up_data) +
 ## Warning: Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-14-1.png" width="30%" /&gt;
 
 ---
 ## ggplot syntax
@@ -340,7 +348,7 @@ ggplot(data = up_data) +
 ## Warning: Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-15-1.png" width="30%" /&gt;
 
 ---
 ## ggplot syntax (exercise)
@@ -350,7 +358,7 @@ ggplot(data = up_data) +
 
 ```r
 ggplot(data = up_data) +
-  geom_point(aes(x = date, y = ndvi_hourly, size = ndvi), col = 'red') + 
+  geom_point(aes(x = date, y = ndvi_hourly, size = ndvi_hourly), col = 'red')  
 ```
 
 ---
@@ -361,7 +369,7 @@ ggplot(data = up_data) +
 
 ```r
 ggplot(data = up_data) +
-  geom_point(aes(x = date, y = ndvi_hourly, size = ), col = 'red') + 
+  geom_point(aes(x = date, y = ndvi_hourly, col = date)) 
 ```
 
 ---
@@ -398,67 +406,11 @@ ggplot() +
 ## Warning: Removed 1 row containing missing values (`geom_line()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-19-1.png" width="30%" /&gt;
 ---
 ## Line plots (exercise)
 - Modify code to focus only on year 2020, and compare gcvi_hourly
 
----
-## Color by group (exercise)
-- Ideally all data should be in a single data.frame/tibble
-- Let's add a variable `site_name`, and then combine using `rbind`
-
-
-```r
-## add site_name column
-up_data$site_name &lt;- "up"
-mid_data$site_name &lt;- "mid"
-down_data$site_name &lt;- "down"
-
-## combine using rbind
-
-all_sites_data &lt;- rbind(up_data, mid_data, down_data)
-```
-
----
-## Color by group (exercise)
-- How can we create ggplot where color varies based on column "site_name"?
-
-```r
-ggplot(all_sites_data) + 
-  geom_point(aes(x = date, y = ndvi_hourly)) 
-```
-
-```
-## Warning: Removed 13 rows containing missing values (`geom_point()`).
-```
-
-![](class11_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
-
----
-## Color by group (exercise)
-- ggplot specifies the colors
-- we can specify colors, but this is more complicated (next class)
-
-```r
-ggplot(all_sites_data) + 
-  geom_point(aes(x = date, y = ndvi_hourly, col = site_name)) 
-```
-
-```
-## Warning: Removed 13 rows containing missing values (`geom_point()`).
-```
-
-![](class11_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
-
-
-
-
-
-
----
-## Scatter plot (two vars.)
-- compare ndvi_hourly and gcvi_hourly of upslope  2018
 
 
 ```r
@@ -477,6 +429,89 @@ library(lubridate)
 ```
 
 ```r
+ggplot() +
+  geom_line(data = up_data %&gt;% 
+              filter(date &gt;= as_date("2020-06-01")) %&gt;% 
+              filter(date &lt;= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'red') +
+  geom_line(data = mid_data %&gt;% 
+              filter(date &gt;= as_date("2020-06-01")) %&gt;% 
+              filter(date &lt;= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'blue') +
+  geom_line(data = down_data %&gt;% 
+              filter(date &gt;= as_date("2020-06-01")) %&gt;% 
+              filter(date &lt;= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'green')
+```
+
+```
+## Warning: Removed 1 row containing missing values (`geom_line()`).
+## Removed 1 row containing missing values (`geom_line()`).
+```
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-20-1.png" width="30%" /&gt;
+
+
+---
+## Color by group (exercise)
+- Ideally all data should be in a single data.frame/tibble
+- Let's add a variable `site_name`, and then combine using `rbind`
+
+
+```r
+## add site_name column
+up_data$site_name &lt;- "up"
+mid_data$site_name &lt;- "mid"
+down_data$site_name &lt;- "down"
+
+## combine using rbind
+
+all_sites_data &lt;- do.call('rbind', list(up_data, mid_data, down_data))
+```
+
+---
+## Color by group (exercise)
+- How can we create ggplot where color varies based on column "site_name"?
+
+```r
+ggplot(all_sites_data) + 
+  geom_point(aes(x = date, y = ndvi_hourly, col = site_name)) 
+```
+
+```
+## Warning: Removed 13 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-22-1.png" width="30%" /&gt;
+
+---
+## Color by group (exercise)
+- ggplot specifies the colors
+- we can specify colors, but this is more complicated (next class)
+
+```r
+ggplot(all_sites_data) + 
+  geom_point(aes(x = date, y = ndvi_hourly, col = site_name)) 
+```
+
+```
+## Warning: Removed 13 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class11_files/figure-html/unnamed-chunk-23-1.png" width="30%" /&gt;
+
+
+
+
+
+
+---
+## Scatter plot (two vars.)
+- compare ndvi_hourly and gcvi_hourly of upslope  2018
+
+
+```r
+library(lubridate)
 ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
   geom_point( aes(x = ndvi_hourly, y = gcvi_hourly), col = 'red') 
 ```
@@ -485,13 +520,11 @@ ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
 ## Warning: Removed 1 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-24-1.png" width="30%" /&gt;
 
 ---
 ## Scatter plot (exercise)
 - Create plot comparing ndvi_hourly in 2020 for midslope and upslope pod
-
-
 
 
 
@@ -518,7 +551,7 @@ ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31")),
 ## Warning: Removed 1 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-26-1.png" width="30%" /&gt;
 
 ---
 ## Adding a trend fit line
@@ -528,7 +561,7 @@ ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31")),
 ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31")),
        aes(x = ndvi_hourly, y = gcvi_hourly)) +
   geom_point(col = 'red') +
-  geom_smooth(col = 'green', method = 'lm')
+  geom_smooth(col = 'green', method = 'lm', se = F)
 ```
 
 ```
@@ -543,7 +576,7 @@ ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31")),
 ## Warning: Removed 1 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-27-1.png" width="30%" /&gt;
 
 ---
 ## Histogram (one var.)
@@ -551,18 +584,14 @@ NDVI histogram by site
 
 ```r
 ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
-  geom_histogram(aes(x = ndvi_hourly)) 
-```
-
-```
-## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+  geom_histogram(aes(x = ndvi_hourly), bins =10) 
 ```
 
 ```
 ## Warning: Removed 1 rows containing non-finite values (`stat_bin()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-28-1.png" width="30%" /&gt;
 
 ---
 ## Box plot (one var.)
@@ -577,7 +606,7 @@ ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
 ## Warning: Removed 1 rows containing non-finite values (`stat_boxplot()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-29-1.png" width="30%" /&gt;
 
 ---
 ## Combine data in same plot (Base R)
@@ -587,10 +616,10 @@ ggplot(data = up_data %&gt;% filter(date &lt;= as_date("2018-12-31"))) +
 ```r
 plot(up_data$date, up_data$ndvi_hourly, col = 'red')
 
-points(mid_data$date, mid_data$ndvi_hourly, col = 'blue')
+points(mid_data$date, mid_data$gcvi_hourly, col = 'blue')
 ```
 
-![](class11_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-30-1.png" width="30%" /&gt;
 
 
 
@@ -608,11 +637,11 @@ ggplot(up_data) +
 ## Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-31-1.png" width="30%" /&gt;
 
 
 ---
-## Combine multiple plots
+## Combine multiple plots 
 - use `facet_grid()` in ggplot
 - `facet_grid()` uses column name ('year') to separate plots
 
@@ -631,7 +660,7 @@ all_sites_data %&gt;%
 ## Warning: Removed 13 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+&lt;img src="class11_files/figure-html/unnamed-chunk-32-1.png" width="30%" /&gt;
 
 ```r
 #&gt; `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
@@ -660,20 +689,23 @@ library(cowplot)
 ```
 
 ```r
-plot_2020 &lt;- (all_sites_data %&gt;% filter(year == 2020)) %&gt;% 
-  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+plot_2020 &lt;-  ggplot((all_sites_data %&gt;% filter(year == 2020))) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
   scale_color_manual(values = c("red", "blue", "green")) + 
   ylab("ndvi") + xlab("date") + 
   ggtitle("2020")
 
-plot_2019 &lt;- (all_sites_data %&gt;% filter(year == 2019)) %&gt;% 
-  ggplot(.) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
+plot_2019 &lt;- ggplot((all_sites_data %&gt;% filter(year == 2019)) ) + geom_point(aes(x = date, y = ndvi_hourly, color = site_name)) +
   scale_color_manual(values = c("red", "blue", "green")) + 
   ylab("ndvi") + xlab("date") +
   ggtitle("2019")
+```
 
+---
+## Combine multiple plots
+
+```r
 cowplot::plot_grid(plot_2019, plot_2020,
-                   nrow = 1,
+                   nrow = 2,
                    align = "vh",
                    axis = "l")
 ```
@@ -683,9 +715,7 @@ cowplot::plot_grid(plot_2019, plot_2020,
 ## Removed 4 rows containing missing values (`geom_point()`).
 ```
 
-![](class11_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
-
-
+&lt;img src="class11_files/figure-html/unnamed-chunk-34-1.png" width="30%" /&gt;
 
 ---
 ## Common ggplot options
@@ -709,16 +739,6 @@ cowplot::plot_grid(plot_2019, plot_2020,
 - [ggplot cheatsheet](https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf)
 - [epidemiologist handbook](https://epirhandbook.com/en/ggplot-basics.html#plot-categorical-data)
 - [reference](https://ggplot2.tidyverse.org/reference/#plot-basics)
-
----
-## Practice
-- [ggplot color manual](http://sape.inf.usi.ch/quick-reference/ggplot2/colour )
-- Create a GCVI plot for midslope pod, 2019. Pick a color from above.
-
-- Use three `geom_point` commands to plot GCVI for each site in 2019. (mid, up, down etc. ). Pick three colors.
-
-- Use `facet_grid` to create separate plots for each year. Each plot should contain all three sites.
-
 
 
 ---
