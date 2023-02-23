@@ -1266,7 +1266,7 @@ There are no package functions to create for this assignment. All work is to be 
 
 2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 19, and 21 are your guides. 
 
-3. Use `dplyr` verbs to select the 5 top-ranked years for total harvested area for South African maize. Do the same for South African maize yields. To do this, you will need to use `filter`, `arrange`, and `slice`. The outputs for each test should be the 5 rows of `crop_ylds` that meet these criteria.
+3. Use `dplyr` verbs to select the 5 top-ranked years for **total harvested area** for South African maize. Do the same for South African maize **yields**. To do this, you will need to use `filter`, `arrange`, and `slice`. The outputs for each test should be the 5 rows of `crop_ylds` that meet these criteria.
 
 4. Calculate the mean of each crop's yield (across both countries) using SAC based on `dplyr`, as well as an `sapply` using base `R` syntax within the `sapply` to subset on crop (note, subsetting a tibble is a bit different, so use this syntax to do the job within the `sapply`: `mean(crop_ylds[crop_ylds$crop == x, ]$yield)`)  
 
