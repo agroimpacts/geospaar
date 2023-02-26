@@ -1,7 +1,7 @@
 
 ## in vignettes folder
 
-patterns = c("helpful_functions.Rmd" )
+patterns = c("unit1-module4.Rmd" )
 
 rmds <- dir(here::here("vignettes"), pattern = "Rmd", full.names = TRUE)
 for (pattern in patterns){
