@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -50,9 +50,10 @@ m &lt;- leaflet() %&gt;%
 
 
 
+
 ---
 
-&lt;iframe seamless src="figures/zambialeaflet.html" width="100%" 
+&lt;iframe seamless src="figures/zambialeaflet2.html" width="100%" 
 height="500"&gt;&lt;/iframe&gt;
 
 
@@ -70,206 +71,527 @@ height="500"&gt;&lt;/iframe&gt;
 
 ---
 
-
-## More practice
-### Part 1
-- read in the three `geospaar` FAO datasets into a list using `lapply`
-- Reshape each of the three datasets by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. Necessary functions: `%&gt;%`, `select`, `pivot_wider`, `rename`. 
-- Combine all these into a single data.frame `crops_df`
-- Best: combine the previous two points using `lapply` and `do.call(rbind)`
-- Okay: Do this separately for each dataset and then combine with `rbind`
+## More ggplot examples
+- [Datanovia](https://www.datanovia.com/en/blog/ggplot-examples-best-reference/)
+- [R Graph Gallery](https://r-graph-gallery.com/index.html)
+- [Legend guide](http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software)
 
 ---
+## Load Whittier data
 
-- read in the three `geospaar` FAO datasets into a list using `lapply`
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+folder_path &lt;- "../inst/extdata/"
+files &lt;- list.files(folder_path, pattern = "whittier")
+for(file in files){
+  load(paste0(folder_path, file))
+}
+
+up_data &lt;- whittier_up_d_h %&gt;% select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+mid_data &lt;- whittier_mid_d_h %&gt;% select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+down_data &lt;- whittier_down_d_h %&gt;% select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+```
+
+---
+## Group data
+- Ideally all data should be in a single data.frame/tibble
+- Let's add a variable `site_name`, and then combine using `rbind`
 
 
 ```r
-library(geospaar)
-fs &lt;- dir(system.file("extdat", package = "geospaar"), 
-          pattern = "FAOSTAT", full.names = TRUE)
-crops &lt;- lapply(fs, readr::read_csv)
+## add site_name column
+up_data$site_name &lt;- "up"
+mid_data$site_name &lt;- "mid"
+down_data$site_name &lt;- "down"
+
+## combine using rbind
+
+all_sites_data &lt;- do.call('rbind', list(up_data, mid_data, down_data))
+all_sites_data$year &lt;- lubridate::year(all_sites_data$date)
 ```
 
-Should see...
-```
-[[1]]
-# A tibble: 228 x 14
-   `Domain Code` Domain `Area Code` Area  `Element Code` Element
-   &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  
- 1 QC            Crops          202 Sout…           5312 Area h…
- 2 QC            Crops          202 Sout…           5312 Area h…
-# … with 218 more rows, and 8 more variables: `Item Code` &lt;dbl&gt;,
-...
-
-[[2]]
-# A tibble: 228 x 14
-   `Domain Code` Domain `Area Code` Area  `Element Code` Element
-   &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  
- 1 QC            Crops          202 Sout…           5312 Area h…
- 2 QC            Crops          202 Sout…           5312 Area h…
-
-...
-
-[[3]]
-# A tibble: 228 x 14
-   `Domain Code` Domain `Area Code` Area  `Element Code` Element
-   &lt;chr&gt;         &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  
- 1 QC            Crops          202 Sout…           5312 Area h…
- 2 QC            Crops          202 Sout…           5312 Area h…
-...
-```
----
-
-- Reshape each of the three datasets in `crops` by using `pivot_wider` to put harvested area into a new variable **harv_area** and production into **prod**, with the other variables being **crop**, **country**, and **year**. 
-- Combine all these into a single data.frame `crops_df`
-
-
-
-```r
-crops_df &lt;- do.call(rbind, lapply(crops, function(j) {
-  x %&gt;% select(Item, Area, Element, Year, Value) %&gt;% 
-    pivot_widr(names = Element, values = Value) %&gt;% 
-    rename(crop = Item, country = Area, year = Year, 
-           harv_area = Area harvested, prod = Production)
-}))
-crops_df
-```
-
-Should see:
-
-```
-&gt; crops_df
-# A tibble: 342 x 5
-   crop  country       year harv_area    prod
-   &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
- 1 Maize South Africa  1961   4118000 5293000
- 2 Maize South Africa  1962   4341000 6024000
- 3 Maize South Africa  1963   4339000 6127000
- 4 Maize South Africa  1964   4433000 4310000
- 5 Maize South Africa  1965   4290000 4608000
- 6 Maize South Africa  1966   4241000 5161000
- 7 Maize South Africa  1967   4589000 9802000
- 8 Maize South Africa  1968   4728000 5358000
- 9 Maize South Africa  1969   4387000 5378000
-10 Maize South Africa  1970   4418000 6179000
-# … with 332 more rows
-```
 
 ---
-#### Pipeline example
-
-```r
-fs &lt;- dir(system.file("extdata", package = "geospaar"), 
-          pattern = "maize", full.names = TRUE)
-dat &lt;- readr::read_csv(fs) %&gt;% 
-  dplyr::select(Item, Area, Element, Year, Value) %&gt;% 
-  pivot_wider(names_from = Element, values_from = Value) %&gt;% 
-  rename(harv_area = `Area harvested`, prod = Production, country = Area) %&gt;% 
-  mutate(yield = prod / harv_area) %&gt;% 
-  dplyr::select(country, harv_area, prod, yield) %&gt;% 
-  group_by(country) %&gt;% 
-  summarise_all(list(mu = mean, sdev = sd))
-```
-
----
-### Part 2 - plotting
-Using `crops_df`:
-- Using `ggplot2`, make a line plot of the annual maize production by country, using red for Zambia and blue for South Africa
-- Use `ggplot2` to make three side-by-side line plots of production per year for all three crops by country (red for Zambia, blue South Africa). You need `facet_grid` for this. Do the same for yield (you will need to a new column *yield*)
-- Plot the linear regression fit between year for wheat yields, using `ggplot` and `geom_smooth`, with `method = "lm"`. Make a separate series and fit for South African and Zambian yields.
-
----
-- Use `ggplot2` to make three side-by-side line plots of production for all three crops by country (red for Zambia, blue South Africa). Do the same but for yield. You need `facet_grid` for this.
-
-
-```r
-ggplot(crops_df) + 
-  geom_line(aes(x = year, y = prod, color = country)) +
-  facet_grid(crop)
-```
-
----
-
-- Adapt the code from the pipeline example to calculate mean wheat yields for Zambia and South Africa. 
-
----
-
-### Non-spatial to spatial
-
-- Read in farmer data
-
-```r
-library(tidyverse)
-library(sf)
-farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
-  read_csv() 
-farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
-```
-
-- Write and read the spatial data
-
-```r
-write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
-farmers_sf &lt;- read_sf("external/notebooks/data/farmers_spatial.geojson")
-districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-```
-
----
+## Legends
+- Legends must be based on aesthetic in `aes()`
+  - Color
+  - fill
+  - shape
+  - size
+  - alpha (transparency)
   
-### Wrangle spatial data
 
 ```r
-farmers %&gt;% filter(uuid == "009a8424")
-farmers_sf %&gt;% filter(uuid == "009a8424")
-farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  arrange(n) %&gt;% st_geometry %&gt;% plot(pch = 16, cex = 0.5)
-farmers_sf %&gt;% arrange(uuid)
-class(farmers_sf)
-# intersection with st_join and left = FALSE to remove plots outside of Zambia
-farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  st_join(., districts, left = FALSE)
-plot(st_geometry(districts))
-farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% st_geometry %&gt;% 
-  plot(pch = 16, add = TRUE, cex = 1)
-farmers_sf_trim %&gt;% st_geometry %&gt;% 
-  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+library(ggplot2)
+ggplot(all_sites_data %&gt;% filter(year == 2020)) +
+  geom_line(aes(x = date, y = ndvi_hourly, col = site_name))
+```
+
+```
+## Warning: Removed 2 rows containing missing values (`geom_line()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-5-1.png" width="30%" /&gt;
+
+---
+## Legends - THIS WILL WORK
+- Correct way:
+  - data in one table
+  - use `aes()` for column you want to make a legend on
+  - use `_manual` function if you want more control
+  - don't need legend for `x` and `y` (use axis labels/titles)
+
+
+```r
+# set up manual
+colors &lt;- c("up" = "orange", 
+            "mid" = "slateblue",
+            "down" = "#AAAAAA")
+
+ggplot(all_sites_data %&gt;% filter(year == 2020)) +
+  geom_line(aes(x = date, y = ndvi_hourly, col = site_name)) +
+  scale_color_manual(values = colors)
+```
+
+```
+## Warning: Removed 2 rows containing missing values (`geom_line()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-6-1.png" width="30%" /&gt;
+
+---
+## Legends - THIS WON'T work
+- Incorrect way:
+  - data is in multiple tables
+  - colors are "hard-coded" (not using aes())
+
+```r
+library(lubridate)
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+```
+
+```r
+ggplot() +
+  geom_line(data = up_data %&gt;% 
+              filter(date &gt;= as_date("2020-06-01")) %&gt;% 
+              filter(date &lt;= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'red') +
+  geom_line(data = mid_data %&gt;% 
+              filter(date &gt;= as_date("2020-06-01")) %&gt;% 
+              filter(date &lt;= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'blue') +
+  geom_line(data = down_data %&gt;% 
+              filter(date &gt;= as_date("2020-06-01")) %&gt;% 
+              filter(date &lt;= as_date("2020-09-30")),
+            aes(x = date, y = gcvi_hourly), col = 'green')
+```
+
+```
+## Warning: Removed 1 row containing missing values (`geom_line()`).
+## Removed 1 row containing missing values (`geom_line()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-7-1.png" width="30%" /&gt;
+
+
+---
+## Legends
+- If you don't provide a "manual", R will do its best to "guess"
+- Here R uses different colors and sizes for sites
+
+
+```r
+ggplot(all_sites_data %&gt;% filter(year == 2020)) +
+  geom_line(aes(x = date, y = ndvi_hourly, size = site_name, col = site_name))
+```
+
+```
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## ℹ Please use `linewidth` instead.
+```
+
+```
+## Warning: Using size for a discrete variable is not advised.
+```
+
+```
+## Warning: Removed 2 rows containing missing values (`geom_line()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-8-1.png" width="30%" /&gt;
+
+---
+## Legend manuals
+- Manuals provide great control.
+- They take time to setup, kind of like a dictionary.
+- `ggplot` [shapes]()
+
+
+```r
+colors &lt;- c("up" = "orange", 
+            "mid" = "slateblue",
+            "down" = "#AAAAAA")
+alphas &lt;- c("up" = 1, 
+            "mid" = 0.3,
+            "down" = 0.1)
+shapes &lt;- c("up" = 15, 
+            "mid" = 16,
+            "down" = 17)
 ```
 
 ---
-### Make spatial data
+## Legend manuals
 
 
 ```r
-pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
-  cbind(ID = 1:nrow(.), .)
-pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
-                             y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
-sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
-sline &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+ggplot(all_sites_data %&gt;% filter(year == 2020)) +
+  geom_point(aes(x = date, 
+                y = ndvi_hourly,
+                col = site_name,
+                alpha = site_name,
+                shape = site_name)) +
+  scale_color_manual(values = colors) + 
+  scale_alpha_manual(values = alphas) +
+  scale_shape_manual(values = shapes) +
+  theme_bw()
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-10-1.png" width="30%" /&gt;
+
+---
+## manually adjusting legend
+- [Datanovia article](https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/)
+
+Before
+
+```r
+p1 &lt;- ggplot(all_sites_data %&gt;% filter(year == 2020)) +
+  geom_point(aes(x = date, 
+                y = ndvi_hourly,
+                col = site_name)) +
+  scale_color_manual(values = colors) + theme_bw() 
+
+p1
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-11-1.png" width="30%" /&gt;
+
+
+---
+## manually adjusting legend
+- [Datanovia article](https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/)
+
+After
+
+```r
+p1 &lt;- ggplot(all_sites_data %&gt;% filter(year == 2020)) +
+  geom_point(aes(x = date, 
+                y = ndvi_hourly,
+                col = site_name)) +
+  scale_color_manual(values = colors) + theme_bw() 
+
+p1 + labs(color = "Pod location") ## changes legend title
+```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-12-1.png" width="30%" /&gt;
+
+---
+## Continuous color ramp (Exercise)
+- First we create a scatter plot of NDVI (x) vs GCVI (y)
+- Let's use the diamond shape for the down location.
+- [shapes link](http://www.sthda.com/english/wiki/ggplot2-point-shapes)
+
+
+```r
+shapes &lt;- c("up" = 15, 
+            "mid" = 16,
+            "down" = ...)
+p1 &lt;- ggplot(all_sites_data %&gt;% filter(year = 2020)) +
+  geom_point(...) +
+  scale_shape_manual(...) +
+  theme_bw()
+p1
 ```
 
 ---
-### Spatial properties
+## Continuous color ramp (Exercise)
+
+- Add color ramp using `scale_color_continuous()`
 
 ```r
-pol %&gt;% st_area
-pol %&gt;% st_sf(crs = 4326) %&gt;% st_area
-sline %&gt;% st_sf(crs = 4326) %&gt;% st_length
+shapes &lt;- c("up" = 15, 
+            "mid" = 16,
+            "down" = 18)
+p1 &lt;- ggplot(all_sites_data %&gt;% 
+               filter(year == 2020) ) +
+  geom_point(aes(x = ndvi_hourly,
+                 y = gcvi_hourly, 
+                 shape = site_name,
+                 col = date)) +
+  scale_shape_manual(values = shapes) +
+  scale_color_continuous(type = "viridis") +
+  theme_bw()
+p1
 ```
+
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-14-1.png" width="30%" /&gt;
 
 ---
-### Spatial transforms
+## Continuous color ramp (Exercise)
+
+- The date is funky, so we need to create a function to tranform the date label.
+- Don't worry about details, this is advanced!
+
 
 ```r
-pol %&gt;% st_sf(crs = 4326) %&gt;% st_transform(., st_crs(roads)) %&gt;% st_area
+Date_F &lt;- function(x){
+    as.character(x, origin = '1970-01-01',"%Y-%m-%d")
+}
+
+p1 &lt;- ggplot(all_sites_data %&gt;% 
+               filter(year == 2020) ) +
+  geom_point(aes(x = ndvi_hourly,
+                 y = gcvi_hourly, 
+                 shape = site_name,
+                 col = date)) +
+  scale_shape_manual(values = shapes) +
+  scale_color_continuous(type = "viridis", labels = Date_F) +
+  theme_bw()
+p1
 ```
 
+```
+## Warning: Removed 4 rows containing missing values (`geom_point()`).
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-15-1.png" width="30%" /&gt;
 
 
+
+---
+## Many other options (binned color etc)
+- [ggplot book](https://ggplot2-book.org/scale-colour.html))
+- Don't try to memorize all options!
+- Figure out what you want to graph, then find an example
+
+---
+## Multiple legends
+- Examples from [this guide](http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software) 
+
+
+```r
+mtcars$cyl&lt;-as.factor(mtcars$cyl)
+mtcars$gear &lt;- as.factor(mtcars$gear)
+head(mtcars)
+```
+
+```
+##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+```
+
+```r
+p &lt;- ggplot(data = mtcars, 
+    aes(x=mpg, y=wt, color=cyl, size=qsec, shape=gear))+
+    geom_point()
+# Print the plot without guide specification
+p
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-16-1.png" width="30%" /&gt;
+
+---
+## Update legend
+- change legend order
+
+
+```r
+p+guides(color = guide_legend(order=1),
+         size = guide_legend(order=2),
+         shape = guide_legend(order=3))
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-17-1.png" width="30%" /&gt;
+
+---
+## Update legend
+- remove one legend
+
+
+```r
+p+guides(color = FALSE, size = FALSE)
+```
+
+```
+## Warning: The `&lt;scale&gt;` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+## of ggplot2 3.3.4.
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-18-1.png" width="30%" /&gt;
+
+---
+## Themes
+- [ggplot book](https://ggplot2-book.org/polishing.html)
+Before
+
+```r
+base &lt;- ggplot(mpg, aes(cty, hwy, color = factor(cyl))) +
+  geom_jitter() + 
+  geom_abline(colour = "grey50", size = 2)
+base
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-19-1.png" width="30%" /&gt;
+
+---
+With labels
+
+```r
+labelled &lt;- base +
+  labs(
+    x = "City mileage/gallon",
+    y = "Highway mileage/gallon",
+    colour = "Cylinders",
+    title = "Highway and city mileage are highly correlated"
+  ) +
+  scale_colour_brewer(type = "seq", palette = "Spectral")
+labelled
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-20-1.png" width="30%" /&gt;
+
+---
+
+With labels + style
+
+```r
+styled &lt;- labelled +
+  theme_bw() + 
+  theme(
+    plot.title = element_text(face = "bold", size = 12),
+    legend.background = element_rect(fill = "white", size = 4, colour = "white"),
+    legend.justification = c(0, 1),
+    legend.position = c(0, 1),
+    axis.ticks = element_line(colour = "grey70", size = 0.2),
+    panel.grid.major = element_line(colour = "grey70", size = 0.2),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```
+## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
+## ℹ Please use the `linewidth` argument instead.
+```
+
+```
+## Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
+## ℹ Please use the `linewidth` argument instead.
+```
+
+```r
+styled
+```
+
+&lt;img src="class12_files/figure-html/unnamed-chunk-21-1.png" width="30%" /&gt;
+
+
+---
+## Exercises
+- (1) Create SAVI time-series for 2019 with different color for each site.
+- (2) Same as above, use facet_grid() to create a separate plot for each year.
+- (3) Create scatter plot of EVI vs SAVI. Use a different shape for each site, and a different color for each year.
+
+---
+## Challenge
+- Create a scatter plot that compares NDVI at the up site (x) and the mid site (y).
+- Use a different color for each year
+- Hint: you will need to reshape data
+
+
+
+---
+## Homework
+- Read Unit 2 Module 1, parts 1-3
+- Review `sf` [overview](https://r-spatial.github.io/sf/articles/sf1.html)
+- ggplot review
+  - [Legends](https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/) 
+  - [Colors](https://ggplot2-book.org/scale-colour.html)
+  - [themes](https://ggplot2-book.org/polishing.html)
+- Unit 1 Module 4 assignment due next Tuesday (Feb 28)
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

@@ -75,11 +75,13 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 8 slides](class8.html)
   - [Class 9 slides](class9.html)
 - Week 6 (Feb 20, 22)
+  - regression, plotting
   - [Class 10 slides](class10.html)
   - [Class 11 slides](class11.html)
-  - regression, plotting
   - Assignment 3 due (Unit 1 Module 4)
 - Week 7 (Feb 27, Mar 1)
+  - more ggplot, intro to vector
+  - [Class 12 slides](class12.html)
 - Spring Break
 - Week 8 (Mar 6, 8)
   - Assignment 4 due (Unit 2 Module 1)
