@@ -82,6 +82,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 7 (Feb 27, Mar 1)
   - more ggplot, intro to vector
   - [Class 12 slides](class12.html)
+  - [Class 13 slides](class13.html)
 - Spring Break
 - Week 8 (Mar 6, 8)
   - Assignment 4 due (Unit 2 Module 1)

@@ -122,52 +122,44 @@ This list is currently in thumbnail form, and will fill out during the next few 
 
 # Potential project list{#project-list}
 
-
-## Data viz/applications
-### COVID policy impact
-Create shiny app to examine trends relating COVID cases and different policies implemented (masking, vaccine requirements, social distancing). Can be at state or country level. 
-
-[COVID tracking](https://covid.cdc.gov/covid-data-tracker/#datatracker-home)
-
-### Redistricting effects
-Congressional maps were redrawn in 2022 after the 2020 Census. Where were the largest changes seen? Ideally you would have a background in political science/demographics.
-
-[Redistricting Data Hub](https://redistrictingdatahub.org/)
-
-
-
-### Modeling climate change
-Use climate data from GEE ``ee.ImageCollection("NASA/NEX-DCP30")`` to estimate impacts on heat stress, drought and precipitation. Use the ``rgee`` library to create a Shiny app. [rgee link](https://r-spatial.github.io/rgee/reference/rgee-package.html)
-
-[rgee sample app](https://github.com/MVanDenburg92/RGEE_Shiny)
-
-### HERO 
-Develop a Shiny app identifying locations of HERO trees and their health. Project details to be developed pending data availability.
+## Urban tree health (HERO)
+Develop a Shiny app identifying locations of HERO trees and their health over time. Project would potentially cover both HERO trees (across MA, RI) and trees in arboretum. 
 
 [HERO Research](https://www.clarku.edu/departments/hero-program/research/)
 
-## Remote Sensing
+## Ecological sensing in MA via in-situ sound sensors
+Building on data from Prof. Sangermano's work on sound sensing, this project would examine relationship morning bird chorus and other variables, including MODIS temperature data and forest fragmentation. 
 
-### Identifying management practices using smallholder field data
+Ideally, project would also create an interactive map that displays sensing data. 
 
-Use smallholder crop survey data in Kenya and Zambia together with satellite image time-series to estimate when farmers plant, and what type of cultivar maturity they use. 
+If interested, students can also work with sound processing libraries (seewave, soundecology).
 
+[Flor presentation](https://vimeo.com/762855200)
 
-```{r, out.width = "90%", echo=FALSE, fig.align='center'}
-knitr::include_graphics("fig/smallholder_mgmt_curves.png")
-```
-
-### Tracking CAFO installation in Yucatan peninsula
+## Tracking CAFO installation in Yucatan peninsula
 We have a data set of vector polygons identifying Concentrated Animal Feeding Operations (CAFOs) in Yucatan Peninsula Mexico. This project will develop a classification model for identifying CAFO locations, and use historical remote sensing imagery to estimate when CAFO's were built.
 
 [Storymap](https://storymaps.arcgis.com/collections/3e7203cf44cf417c9b5fe1db7a182293)
 
-## Sound sensing
+## Game Design
 
-### Ecological sensing in MA via in-situ sound sensors
-Building on data from Prof. Sangermano's work on sound sensing, this project would create an interactive map that displays sensing data, and allows users to scan over time. 
+R is not especially used for games but there are some [nice examples](https://appsilon.com/shiny-videogame-video-tutorial/#:~:text=Did%20you%20know%20you%20can,and%20easy%20to%20play%20games.). This would be an educational geospatial game (similar to "Worldle" and "Carmen SanDiego"). The game should give progressive hints that are based off of geospatial analysis (i.e. predominant climate type, percent forest etc). The user could guess the country by picking a location in the app.  
 
-[Podcast with Flor](https://clarknow.clarku.edu/captivate-podcast/professor-florencia-sangermano-and-the-soundscapes-of-central-massachusetts/)
+
+## Redistricting effects
+Congressional maps were redrawn in 2022 after the 2020 Census. Where were the largest changes seen? Ideally you would have a background in political science/demographics.
+
+[Redistricting Data Hub](https://redistrictingdatahub.org/)
+
+## COVID policy impact
+Create shiny app to examine trends relating COVID cases and different policies implemented (masking, vaccine requirements, social distancing). Can be at state or country level. 
+
+[COVID tracking](https://covid.cdc.gov/covid-data-tracker/#datatracker-home)
+
+## Modeling climate change
+Use climate data from GEE ``ee.ImageCollection("NASA/NEX-DCP30")`` to estimate impacts on heat stress, drought and precipitation. Use the ``rgee`` library to create a Shiny app. [rgee link](https://r-spatial.github.io/rgee/reference/rgee-package.html)
+
+[rgee sample app](https://github.com/MVanDenburg92/RGEE_Shiny)
 
 ## USF projects (build on previous work)
 
@@ -176,7 +168,6 @@ Building on data from Prof. Sangermano's work on sound sensing, this project wou
 Following up on the previous semester's [work](https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md) (and processed further for the Urban Studies Foundation summer institute) that used VIIRS nightlights data to show that New York neighborhoods with public housing are more brightly lit than comparable neighborhoods without, we want to extend this analysis to other cities. 
 
 This will entail collecting data on public housing projects and building footpoints from other US cities, and then collecting and analyzing the nightlights data following the steps in the previous project. 
-
 
 ## Analyzing Ghanaian croplands (build on previous work)
 

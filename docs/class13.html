@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -54,21 +54,133 @@ cong %&gt;%
   scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 2))
 ```
 ---
+## Exercises
 
+
+
+```r
+library(dplyr)
+folder_path &lt;- "../inst/extdata/"
+files &lt;- list.files(folder_path, pattern = "whittier")
+for(file in files){
+  load(paste0(folder_path, file))
+}
+
+up_data &lt;- whittier_up_d_h %&gt;% dplyr::select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+mid_data &lt;- whittier_mid_d_h %&gt;% dplyr::select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+down_data &lt;- whittier_down_d_h %&gt;% dplyr::select(date, 
+                           lat, 
+                           long,
+                           device,
+                           ndvi_hourly, 
+                           gcvi_hourly, 
+                           savi_hourly ,
+                           evi2_hourly)
+
+## add site_name column
+up_data$site_name &lt;- "up"
+mid_data$site_name &lt;- "mid"
+down_data$site_name &lt;- "down"
+
+## combine using rbind
+
+all_sites_data &lt;- do.call('rbind', list(up_data, mid_data, down_data))
+all_sites_data$year &lt;- lubridate::year(all_sites_data$date)
+```
+
+---
+
+## Exercises
+- (1) Create SAVI time-series for 2019 with different color for each site.
+
+
+```r
+ggplot(all_sites_data %&gt;% filter(year == 2019)) +
+  geom_line(aes(x = date, y = savi_hourly, col = site_name))
+```
+
+```
+## Warning: Removed 1 row containing missing values (`geom_line()`).
+```
+
+![](class13_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+
+---
+- (2) Same as above, use facet_grid() to create a separate plot for each year.
+
+```r
+ggplot(all_sites_data) +
+  geom_line(aes(x = date, y = savi_hourly, col = site_name)) + 
+  facet_grid(cols = vars(year) )
+```
+
+---
+- (3) Create scatter plot of EVI vs SAVI. Use a different shape for each site, and a different color for each year.
+
+```r
+shapes = c("up" = 15, 
+            "mid" = 16,
+            "down" = 17)
+  
+colors = c("2018" = "orange", 
+            "2019" = "slateblue",
+            "2020" = "#AAAAAA",
+           "2021" = 'grey')
+
+ggplot(all_sites_data) +
+  geom_point(aes(x = evi2_hourly,
+                 y = savi_hourly,
+                 shape = site_name,
+                 col = as.character(year))) +
+  scale_shape_manual(values = shapes) + 
+  scale_color_manual(values = colors)
+```
+
+---
+## Challenge
+- Create a scatter plot that compares NDVI at the up site (x) and the mid site (y).
+- Use a different color for each year
+- Hint: you will need to reshape data
+
+```r
+#&gt; # A tibble: 3 × 2
+```
+
+
+
+---
+## Projects
+-[Project list](https://agroimpacts.github.io/geospaar/projects.html#project-list)
+
+
+---
 ## Today
 - Spatial
   - Non-spatial to spatial
   - Read and write spatial
   - CRS
   - Make data from scratch
-  - Spatial properties
-  - joins, subsets, intersections...
-  
+  - Spatial properties (area, length)
+
 ---
-
-
-
-
 ### Non-spatial to spatial
 
 - Read in farmer data
@@ -76,244 +188,565 @@ cong %&gt;%
 ```r
 library(tidyverse)
 library(sf)
+```
+
+```
+## Linking to GEOS 3.9.3, GDAL 3.5.2, PROJ 8.2.1; sf_use_s2() is TRUE
+```
+
+```r
 farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
   read_csv() 
+```
+
+```
+## Rows: 20984 Columns: 7
+```
+
+```
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr  (1): uuid
+## dbl  (5): x, y, season, rained, planted
+## date (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
 farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
 ```
 
-- Write and read the spatial data
+
+---
+## `sf` reads/writes vector data
+- format is similar to data.frame/tibble
+- `geometry` column makes it "spatial"
+- all `dplyr` indexing works, plus spatial functions (buffer, etc.)
 
 ```r
-write_sf(farmers_sf, dsn = "external/notebooks/data/farmers_spatial.geojson")
-farmers_sf &lt;- read_sf("external/notebooks/data/farmers_spatial.geojson")
-districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+class(farmers)
+```
+
+```
+## [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
+```
+
+```r
+farmers %&gt;% slice(1:5)
+```
+
+```
+## # A tibble: 5 × 7
+##   uuid         x     y date       season rained planted
+##   &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1 009a8424  27.3 -16.9 2015-11-15      1      0       0
+## 2 00df166f  26.9 -16.5 2015-11-15      1      0       0
+## 3 02671a00  27.3 -16.9 2015-11-15      1      0       0
+## 4 03f4dcca  27.2 -16.7 2015-11-15      1      0       0
+## 5 042cf7b3  27.1 -16.8 2015-11-15      1      0       0
 ```
 
 ---
-  
-### Wrangle spatial data
+## file formats
+- .shp has many files, not convenient
+- .geojson has 1 file, preferred
+
+
+
+---
+## reading from csv (with x, y columns)
+-Nonspatial
+
 
 ```r
-farmers %&gt;% filter(uuid == "009a8424")
-farmers_sf %&gt;% filter(uuid == "009a8424")
-farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  arrange(n) %&gt;% st_geometry %&gt;% plot(pch = 16, cex = 0.5)
-farmers_sf %&gt;% arrange(uuid)
-class(farmers_sf)
-# intersection with st_join and left = FALSE to remove plots outside of Zambia
-farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  st_join(., districts, left = FALSE)
-plot(st_geometry(districts))
-farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% st_geometry %&gt;% 
-  plot(pch = 16, add = TRUE, cex = 1)
-farmers_sf_trim %&gt;% st_geometry %&gt;% 
-  plot(pch = 16, add = TRUE, col = "red", cex = 0.5)
+farmers &lt;- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"))
+```
+
+```
+## Rows: 20984 Columns: 7
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr  (1): uuid
+## dbl  (5): x, y, season, rained, planted
+## date (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+farmers
+```
+
+```
+## # A tibble: 20,984 × 7
+##    uuid         x     y date       season rained planted
+##    &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+##  1 009a8424  27.3 -16.9 2015-11-15      1      0       0
+##  2 00df166f  26.9 -16.5 2015-11-15      1      0       0
+##  3 02671a00  27.3 -16.9 2015-11-15      1      0       0
+##  4 03f4dcca  27.2 -16.7 2015-11-15      1      0       0
+##  5 042cf7b3  27.1 -16.8 2015-11-15      1      0       0
+##  6 05618404  26.9 -16.6 2015-11-15      1      0       0
+##  7 064beba0  26.8 -16.9 2015-11-15      1      1       0
+##  8 083a46a2  27.0 -16.8 2015-11-15      1      0       0
+##  9 08eb2224  26.9 -16.2 2015-11-15      1      0       0
+## 10 0ab761d6  27.1 -17.0 2015-11-15      1      0       0
+## # … with 20,974 more rows
 ```
 
 ---
-### Make spatial data
-
+## reading from csv (with x, y columns)
+-Nonspatial to spatial
 
 ```r
+farmers &lt;- st_as_sf(farmers, coords = c("x", "y"))
+farmers
+```
+
+```
+## Simple feature collection with 20984 features and 5 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 24.777 ymin: -18.222 xmax: 33.332 ymax: -8.997
+## CRS:           NA
+## # A tibble: 20,984 × 6
+##    uuid     date       season rained planted         geometry
+##    &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;POINT&gt;
+##  1 009a8424 2015-11-15      1      0       0 (27.256 -16.926)
+##  2 00df166f 2015-11-15      1      0       0 (26.942 -16.504)
+##  3 02671a00 2015-11-15      1      0       0 (27.254 -16.914)
+##  4 03f4dcca 2015-11-15      1      0       0 (27.237 -16.733)
+##  5 042cf7b3 2015-11-15      1      0       0 (27.138 -16.807)
+##  6 05618404 2015-11-15      1      0       0 (26.875 -16.611)
+##  7 064beba0 2015-11-15      1      1       0 (26.752 -16.862)
+##  8 083a46a2 2015-11-15      1      0       0 (26.977 -16.765)
+##  9 08eb2224 2015-11-15      1      0       0 (26.912 -16.248)
+## 10 0ab761d6 2015-11-15      1      0       0  (27.113 -16.95)
+## # … with 20,974 more rows
+```
+
+```r
+str(farmers)
+```
+
+```
+## sf [20,984 × 6] (S3: sf/tbl_df/tbl/data.frame)
+##  $ uuid    : chr [1:20984] "009a8424" "00df166f" "02671a00" "03f4dcca" ...
+##  $ date    : Date[1:20984], format: "2015-11-15" "2015-11-15" ...
+##  $ season  : num [1:20984] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ rained  : num [1:20984] 0 0 0 0 0 0 1 0 0 0 ...
+##  $ planted : num [1:20984] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ geometry:sfc_POINT of length 20984; first list element:  'XY' num [1:2] 27.3 -16.9
+##  - attr(*, "sf_column")= chr "geometry"
+##  - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA
+##   ..- attr(*, "names")= chr [1:5] "uuid" "date" "season" "rained" ...
+```
+
+---
+## reading from shp (with x, y columns)
+- Use `st_read()`
+- `dsn` refers to file name
+
+```r
+fnm &lt;- system.file("extdata/roads.shp", package = "geospaar")
+roads &lt;- st_read(dsn = fnm)
+```
+
+```
+## Reading layer `roads' from data source 
+##   `C:\Users\micha\AppData\Local\R\win-library\4.2\geospaar\extdata\roads.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 473 features and 1 field
+## Geometry type: MULTILINESTRING
+## Dimension:     XY
+## Bounding box:  xmin: -292996.9 ymin: -2108848 xmax: 873238.8 ymax: -1008785
+## Projected CRS: Africa_Albers_Equal_Area_Conic
+```
+
+```r
+fnm &lt;- system.file("extdata/districts.shp", package = "geospaar")
+districts &lt;- st_read(dsn = fnm)
+```
+
+```
+## Reading layer `districts' from data source 
+##   `C:\Users\micha\AppData\Local\R\win-library\4.2\geospaar\extdata\districts.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 72 features and 1 field
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  GCS_unknown
+```
+
+---
+## projections (crs)
+- use `st_crs()` to get/set crs
+- You need to set crs for features from scratch
+
+```r
+farmers %&gt;% st_crs()
+```
+
+```
+## Coordinate Reference System: NA
+```
+
+---
+## projections (crs)
+- Geographic coordinates are: `4326`
+
+```r
+st_crs(farmers) &lt;- 4326
+farmers %&gt;% st_crs()
+```
+
+```
+## Coordinate Reference System:
+##   User input: EPSG:4326 
+##   wkt:
+## GEOGCRS["WGS 84",
+##     ENSEMBLE["World Geodetic System 1984 ensemble",
+##         MEMBER["World Geodetic System 1984 (Transit)"],
+##         MEMBER["World Geodetic System 1984 (G730)"],
+##         MEMBER["World Geodetic System 1984 (G873)"],
+##         MEMBER["World Geodetic System 1984 (G1150)"],
+##         MEMBER["World Geodetic System 1984 (G1674)"],
+##         MEMBER["World Geodetic System 1984 (G1762)"],
+##         MEMBER["World Geodetic System 1984 (G2139)"],
+##         ELLIPSOID["WGS 84",6378137,298.257223563,
+##             LENGTHUNIT["metre",1]],
+##         ENSEMBLEACCURACY[2.0]],
+##     PRIMEM["Greenwich",0,
+##         ANGLEUNIT["degree",0.0174532925199433]],
+##     CS[ellipsoidal,2],
+##         AXIS["geodetic latitude (Lat)",north,
+##             ORDER[1],
+##             ANGLEUNIT["degree",0.0174532925199433]],
+##         AXIS["geodetic longitude (Lon)",east,
+##             ORDER[2],
+##             ANGLEUNIT["degree",0.0174532925199433]],
+##     USAGE[
+##         SCOPE["Horizontal component of 3D system."],
+##         AREA["World."],
+##         BBOX[-90,-180,90,180]],
+##     ID["EPSG",4326]]
+```
+
+
+---
+## projections (use existing)
+- you can set projections based on another layer
+- but the two layers MUST have the same crs (e.g. geographic)
+
+```r
+farmers &lt;- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"))
+```
+
+```
+## Rows: 20984 Columns: 7
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr  (1): uuid
+## dbl  (5): x, y, season, rained, planted
+## date (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+farmers &lt;- st_as_sf(farmers, coords = c("x", "y"))
+
+st_crs(farmers) &lt;- st_crs(districts) ## set crs
+
+farmers %&gt;% st_crs() ## print new crs
+```
+
+```
+## Coordinate Reference System:
+##   User input: GCS_unknown 
+##   wkt:
+## GEOGCRS["GCS_unknown",
+##     DATUM["World Geodetic System 1984",
+##         ELLIPSOID["WGS 84",6378137,298.257223563,
+##             LENGTHUNIT["metre",1]],
+##         ID["EPSG",6326]],
+##     PRIMEM["Greenwich",0,
+##         ANGLEUNIT["Degree",0.0174532925199433]],
+##     CS[ellipsoidal,2],
+##         AXIS["longitude",east,
+##             ORDER[1],
+##             ANGLEUNIT["Degree",0.0174532925199433]],
+##         AXIS["latitude",north,
+##             ORDER[2],
+##             ANGLEUNIT["Degree",0.0174532925199433]]]
+```
+
+---
+## bounding box
+- use `st_bbox()`
+
+```r
+sfdat &lt;- list("districts" = districts,  "roads" = roads, "farmers" = farmers)
+sapply(sfdat, function(x) st_bbox(x))
+```
+
+```
+##       districts      roads farmers
+## xmin  21.999775  -292996.9  24.777
+## ymin -18.075097 -2108847.7 -18.222
+## xmax  33.687502   873238.8  33.332
+## ymax  -8.226213 -1008785.5  -8.997
+```
+
+
+---
+## projections (transform)
+- Use `st_transform()` to project from one crs to another
+
+```r
+roads &lt;- st_transform(x = roads, crs = st_crs(districts))
+st_crs(roads)
+```
+
+```
+## Coordinate Reference System:
+##   User input: GCS_unknown 
+##   wkt:
+## GEOGCRS["GCS_unknown",
+##     DATUM["World Geodetic System 1984",
+##         ELLIPSOID["WGS 84",6378137,298.257223563,
+##             LENGTHUNIT["metre",1]],
+##         ID["EPSG",6326]],
+##     PRIMEM["Greenwich",0,
+##         ANGLEUNIT["Degree",0.0174532925199433]],
+##     CS[ellipsoidal,2],
+##         AXIS["longitude",east,
+##             ORDER[1],
+##             ANGLEUNIT["Degree",0.0174532925199433]],
+##         AXIS["latitude",north,
+##             ORDER[2],
+##             ANGLEUNIT["Degree",0.0174532925199433]]]
+```
+
+```r
+#sfdat$roads &lt;- st_transform(x = sfdat$roads, crs = st_crs(districts))
+```
+
+
+
+---
+## plotting (base)
+- Use `st_geometry` to plot
+- Use `add = TRUE` to add additional plots
+
+```r
+par(mar = c(0, 0, 0, 0))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(roads), col = "red", add = TRUE)
+plot(st_geometry(farmers), pch = 20, reset = FALSE, col = "blue", add = TRUE)
+```
+
+![](class13_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+
+---
+## plotting (ggplot)
+- Plot multiple objects in one line
+
+```r
+ggplot() + 
+  geom_sf(data = sfdat$districts) +
+  geom_sf(data = sfdat$roads, col = "red") + 
+  geom_sf(data = sfdat$farmers, col = "blue")
+```
+
+![](class13_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+## plotting (ggplot)
+- Good for plotting attributes
+
+```r
+ggplot(sfdat$districts) + geom_sf() +
+  geom_sf(data = sfdat$roads, col = "red") + 
+  geom_sf(data = sfdat$farmers, col = "blue")
+```
+
+![](class13_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+
+
+---
+## features from scratch
+
+```r
+pt &lt;- st_point(x = c(28, -14))
+pt
+```
+
+```
+## POINT (28 -14)
+```
+
+```r
+#&gt; POINT (28 -14)
+#
+# #2
 pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
-  cbind(ID = 1:nrow(.), .)
+pts
+```
+
+```
+## MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))
+```
+
+```r
+#&gt; MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))
+#
+# #3
+sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline
+```
+
+```
+## LINESTRING (27 -15, 27.5 -15.5, 28 -16)
+```
+
+```r
+#&gt; LINESTRING (27 -15, 27.5 -15.5, 28 -16)
+#
+# #4
 pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
                              y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
-sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
-sline &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
+pol
+```
+
+```
+## POLYGON ((26.5 -15.5, 27.5 -16.5, 27 -17, 26 -16, 26.5 -15.5))
 ```
 
 ---
-### Spatial properties
+## Plotting multiple objects
+
 
 ```r
-pol %&gt;% st_area
-pol %&gt;% st_sf(crs = 4326) %&gt;% st_area
-sline %&gt;% st_sf(crs = 4326) %&gt;% st_length
+par(mar = c(0, 0, 0, 0))
+plot(districts %&gt;% st_geometry(), col = "grey")
+plot(pt, add = TRUE, col = "red", pch = 20)
+plot(pts, add = TRUE, col = "blue", pch = 20)
+plot(sline, add = TRUE, col = "cyan", lwd = 2)
+plot(pol, add = TRUE, col = "orange", lwd = 2)
+```
+
+![](class13_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+---
+## Area and length
+
+```r
+dist_areas &lt;- districts %&gt;% st_area()
+dist_areas
+```
+
+```
+## Units: [m^2]
+##  [1]  2550935366 17469693572  4599663199 13478544490  3791816946  1014001877
+##  [7]  4339475638  1729519245 15512644024  6200831837  7048374145 12045315895
+## [13]  3911004624  8888864165 15764111906 14585226161  1544556596  5799390245
+## [19] 17252307329 13982957127  1037282269 23065630072 17081749634 12791445182
+## [25] 10549445663 21595457052  3916954726  9260951216 18339971197   793591581
+## [31]   735058720  3883612370   925324702 11453506960 15817396242 14083721656
+## [37]   421992832  9873166086  5926862767  9697983348  3575010630  6767089945
+## [43]  8576979139  6212291945 17710196297  9955317247  4852944584 40249723718
+## [49]  8538121537 12015199892 10040956679  1265742489 19322630011 21572196432
+## [55]  9856883262  6802189469 20870273438  4722220050  5688065867  4334582601
+## [61]   977954640 10598023896  8315144160 10068806510 15592347732 23678362272
+## [67] 29938030720 16268253746  3938300200  4791000054 30183878337 14123799828
+```
+
+```r
+dist_areas %&gt;% units::set_units("km^2")
+```
+
+```
+## Units: [km^2]
+##  [1]  2550.9354 17469.6936  4599.6632 13478.5445  3791.8169  1014.0019
+##  [7]  4339.4756  1729.5192 15512.6440  6200.8318  7048.3741 12045.3159
+## [13]  3911.0046  8888.8642 15764.1119 14585.2262  1544.5566  5799.3902
+## [19] 17252.3073 13982.9571  1037.2823 23065.6301 17081.7496 12791.4452
+## [25] 10549.4457 21595.4571  3916.9547  9260.9512 18339.9712   793.5916
+## [31]   735.0587  3883.6124   925.3247 11453.5070 15817.3962 14083.7217
+## [37]   421.9928  9873.1661  5926.8628  9697.9833  3575.0106  6767.0899
+## [43]  8576.9791  6212.2919 17710.1963  9955.3172  4852.9446 40249.7237
+## [49]  8538.1215 12015.1999 10040.9567  1265.7425 19322.6300 21572.1964
+## [55]  9856.8833  6802.1895 20870.2734  4722.2201  5688.0659  4334.5826
+## [61]   977.9546 10598.0239  8315.1442 10068.8065 15592.3477 23678.3623
+## [67] 29938.0307 16268.2537  3938.3002  4791.0001 30183.8783 14123.7998
+```
+---
+
+## add area as column
+
+```r
+districts &lt;- districts %&gt;% 
+  mutate(area = st_area(.) %&gt;% units::set_units("km^2") %&gt;% as.numeric()) 
+districts
+```
+
+```
+## Simple feature collection with 72 features and 2 fields
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  GCS_unknown
+## First 10 features:
+##         distName                       geometry      area
+## 1        Chadiza POLYGON ((32.3076 -14.3128,...  2550.935
+## 2          Chama POLYGON ((33.6875 -10.57932... 17469.694
+## 3        Chavuma POLYGON ((22.00014 -13.4776...  4599.663
+## 4       Chibombo POLYGON ((28.89229 -14.7998... 13478.544
+## 5        Chiengi POLYGON ((29.1088 -9.079298...  3791.817
+## 6  Chililabombwe POLYGON ((28.06755 -12.3526...  1014.002
+## 7        Chilubi POLYGON ((30.61853 -11.2516...  4339.476
+## 8       Chingola POLYGON ((27.51766 -12.2984...  1729.519
+## 9       Chinsali POLYGON ((32.34814 -9.74577... 15512.644
+## 10       Chipata POLYGON ((32.95348 -13.2636...  6200.832
 ```
 
 ---
-### Spatial transforms
-
-```r
-pol %&gt;% st_sf(crs = 4326) %&gt;% st_transform(., st_crs(roads)) %&gt;% st_area
-```
-
----
-### Adding to data
-
-Add some categories
-
-```r
-set.seed(2)
-districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()) %&gt;% 
-  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %&gt;%
-  mutate(yld_cat = ifelse(yield &gt; 4.5, "high", "other"), 
-         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
-         yld_cat = ifelse(yield &lt; 3.5, "low", yld_cat)) %&gt;% 
-  dplyr::select(distName, X, Y, yield, yld_cat)
-```
----
-
-## Analyses
-
-```r
-# districts2 %&gt;% dplyr::select(yield) %&gt;% summarize_all(funs(mean, sd))
-# districts2 %&gt;% summarize(mean(yield), sd(yield))
-districts2 %&gt;% group_by(yld_cat) %&gt;% 
-  summarize(yield = mean(yield)) %&gt;% 
-  ggplot() + geom_sf(aes(fill = yield))
-  # geom_sf(aes(fill = yld_cat))
-```
-
----
-### Spatial joins
-
-```r
-p &lt;- ggplot(districts2) + geom_sf(fill = "grey")
-# farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count()
-# st_crs(farmer_ct) &lt;- st_crs(districts)
-farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
-  st_set_crs(st_crs(districts))
-
-farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
-p + geom_sf(data = farmers_districts, aes(color = n)) + 
-  scale_color_viridis_c()
-
-# lapply(farmers_per_dist$distName, function(x) {
-#   farmers_per_dist %&gt;% filter(distName == x) %&gt;% st_cast("POINT")
-# }) %&gt;% do.call(rbind, .)
-# farmers_per_dist %&gt;% st_cast("POINT") %&gt;% plot()
-farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
-p + geom_sf(data = farmers_per_dist) + 
-  geom_sf(data = farmers_per_dist %&gt;% st_centroid(), col = "blue")
-```
-
----
-### Spatial-non-spatial join
-
-```r
-districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
-  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n))
-
-p + geom_sf(data = districts3, aes(fill = log10(n))) +
-  scale_fill_brewer(palette = "RdBu")
-  # scale_fill_viridis_c()
-# p + geom_sf(data = districts3, aes(fill = n))
-```
-
----
-### Subsetting
-
-By count
-
-```r
-p + districts3 %&gt;% filter(n &gt; 15) %&gt;% geom_sf(data = ., fill = "red") + 
-  districts3 %&gt;% filter(between(n, 1, 15)) %&gt;% geom_sf(data = ., fill = "blue")
-p + geom_sf(data = districts3 %&gt;% filter(n &gt; 15), fill = "red") + 
-  geom_sf(data = districts3 %&gt;% filter(between(n, 1, 15)), fill = "blue")
-```
-
-By area
-
-```r
-dmed &lt;- districts3 %&gt;% #mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %&gt;% 
-  filter(area == quantile(area, probs = 0.5, type = 1)) 
-p2 &lt;- p + geom_sf(data = dmed, fill = "red")
-
-dmax &lt;- districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  # arrange(area) %&gt;% slice(nrow(.)) %&gt;% 
-  arrange(desc(area)) %&gt;% slice(1) 
-  # slice_max(order_by = area) #
-p2 + geom_sf(data = dmax, fill = "blue")
-
-districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  arrange(area) %&gt;% pull(distName)
-```
-
----
-## Various
-
-Dataset
-
-```r
-pols &lt;- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
-                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
-                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
-                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
-                                          1))))
-pols &lt;- pols %&gt;% st_geometry %&gt;% st_cast("POLYGON") %&gt;% 
-  st_as_sf(crs = 4326) %&gt;%   
-  mutate(ID = 1:nrow(.)) %&gt;% #as.data.frame() %&gt;%
-  dplyr::select(ID)
-
-p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
-  geom_sf(data = st_union(pols), 
-          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
-```
-
----
-### Intersects
-
-```r
-# which(st_intersects(districts2, st_union(pols), sparse = FALSE))
-int_dists &lt;- districts2 %&gt;% 
-  slice(which(st_intersects(., st_union(pols), sparse = FALSE)))
-p + geom_sf(data = int_dists, fill = "red") + 
-  geom_sf(data = pols, fill = "transparent", col = "blue")
-```
-
----
-### Intersection
-
-```r
-districts_pol &lt;- st_intersection(districts2, st_union(pols))
-ggplot(districts_pol) + geom_sf(aes(fill = distName))
-p + geom_sf(data = districts_pol, aes(fill = distName))
-```
-
----
-### On your own
-
-- Select the smallest district in Zambia from `districts3`, and convert that
-to centroid
-
-```r
-smallest_centroid &lt;- districts3 %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  filter
-```
-
-- Create a buffer of width 0.5 around that
-
-```r
-smallest_buffer &lt;- smallest_centroid %&gt;% st_buf...
-```
-
-- Use the buffer to select the districts from `districts3` that intersect with it
-
-```r
-dists_in_buff &lt;- districts3 %&gt;% 
-  filter(st_intersects(., smallest_buffer...
-```
+## Plot districts (exercise)
+- Use `geom_sf()` to plot area
+- Fill districts based on area column.
+- Use `scale_fill_continuous` , with `type = 'viridis'`
 
 
 ---
-- Use the buffer to do an intersection with `districts3`
-
-```r
-buff_int_dists &lt;- st_intersection(...
-# p + geom_sf(data = buff_int_dists, aes(fill = distName))
-```
-
-
-- Calculate the area of the intersection
+## Calculate length (exercise)
+- Use `st_length()` to add colummn 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with green outline (color), and empty fill (fill = NA)
+- Then plot roads based on length
+- Use `scale_color_continuous()` 
 
 
+
+
+
+
+
+---
+## Homework
+- Read Unit 2 Module 1, parts 4-5
+- Review `sf` vignettes 
+  - [overview](https://r-spatial.github.io/sf/articles/sf1.html)
+  - [reading/writing/converting](https://r-spatial.github.io/sf/articles/sf2.html)
+  - [geometry operations](https://r-spatial.github.io/sf/articles/sf3.html)
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

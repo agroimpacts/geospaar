@@ -237,7 +237,7 @@ st_crs(districts)
 st_crs(roads)
 ```
 
-We use `st_crs`, which is `sf`'s function for checking and assigning a CRS to an `sf` object. When you run it as we have done with `st_crs(districts)`, it returns an object of class `crs` (you can verify that by running `class(st_crs(districts))`). We see that `districts` and `roads` have different values in their "proj4string" fields, which holds the projection string that contains the projection parameters of the CRS. If you want to understand the meaning of projection string parameters, please have a look at the [documentation](http://proj4.org) for the `proj.4` library, specifically the page on [parameters](http://proj4.org/parameters.html).
+We use `st_crs`, which is `sf`'s function for checking and assigning a CRS to an `sf` object. When you run it as we have done with `st_crs(districts)`, it returns an object of class `crs` (you can verify that by running `class(st_crs(districts))`). We see that `districts` and `roads` have different values in their "PROJCRS" fields, which holds the projection string that contains the projection parameters of the CRS. If you want to understand the meaning of projection string parameters, please have a look at the [documentation](http://proj4.org) for the `proj.4` library, specifically the page on [parameters](http://proj4.org/parameters.html).
 
 This one basically tells us that `districts` has a geographic (longlat) projection, and uses the WGS84 datum.  Let's check the crs for all three objects now, using our old friend `sapply`
 
@@ -383,7 +383,7 @@ First, due to recent changes in `sf`, and how it handles spherical geometries, w
 sf_use_s2(FALSE)
 ```
 
-Otherwise if we try to calculate lengths or create buffers no vectors that are in geographic coordinates systems, we get odd results. 
+Otherwise if we try to calculate lengths or create buffers of vectors that are in geographic coordinates systems, we get odd results. 
 
 ### Area
 Using polygons to calculate area is a fairly basic but important spatial vector operation. To calculate meaningful areas, generally you need your data to be  projected into a coordinate system in which area is one of the true properties. However, the function we are going to use, `sf::st_area`, will estimate area even for data in geographic coordinates. 
@@ -512,7 +512,7 @@ plot(st_geometry(farmers[sample(1:nrow(farmers), 20), ]), col = "yellow",
      pch = "+", add = TRUE)
 ```
 
-The code above makes the identical plot as in Chunk 26, so ee don't display that again, but note the indexing, as well as the lack of piping and more conventional syntax.  
+The code above makes the identical plot as in Chunk 26, so we don't display that again, but note the indexing, as well as the lack of piping and more conventional syntax.  
 
 ### Mutating and joining
 
@@ -651,6 +651,7 @@ coords <- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25),
 #
 # #2
 pol <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+pol
 
 par(mar = rep(0, 4))
 plot(st_geometry(districts), col = "grey")
@@ -695,7 +696,7 @@ plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)),
      add = TRUE)
 ```
 
-Seems pretty clear what `st_intersection` does, and how it differs from `gIntersects`: it crops the intersected districts to the boundaries of `pol`, and returns the intersected district polygons. It also spits out a warning about the attribute variable being spatially constant, as well as the usual warning about the data not being in planar coordinates. We also introduced another color function (`rainbow`) to distinguish the different intersected districts. 
+Seems pretty clear what `st_intersection` does, and how it differs from `st_intersects`: it crops the intersected districts to the boundaries of `pol`, and returns the intersected district polygons. It also spits out a warning about the attribute variable being spatially constant, as well as the usual warning about the data not being in planar coordinates. We also introduced another color function (`rainbow`) to distinguish the different intersected districts. 
 
 ## Aggregating/Dissolving
 
@@ -728,7 +729,7 @@ For a GIS person, it might be confusing to run a function called summarize when 
 pol_int_dists %>% st_union()
 ```
 
-Same result, although in this case it produces a geometry set, and, unlike `summarize`, retain information about the data values associated with the polygons. 
+Same result, although in this case it produces a geometry set, and, unlike `summarize`, `st_union` does not retain information about the data values associated with the polygons. 
 
 ## Casting
 
