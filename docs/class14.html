@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -64,317 +64,661 @@ m &lt;- leaflet() %&gt;%
 height="500"&gt;&lt;/iframe&gt;
 
 ---
+### Today
+- Projects
+- Review of `sf` 
+- Spatial Operations
 
 
-### Non-spatial to spatial
+---
+### Projects
+- [List](https://agroimpacts.github.io/geospaar/projects.html#project-list)
+- [USF Nightlights](https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md)
 
-- Read in farmer data
+"That is looking at public housing in New York. Students looked at it for Boston and San Fran last semester.  It would be great to add other cities, but maybe public housing isn’t available so other variables could be looked at instead of public housing, like demographic characteristics. Basically looking to see whether there is more brightness in similar neighborhoods that might indicate more floodlighting or other factors that make it brighter (perhaps less tree cover, etc)."
+
+
+---
+### Review
+-read/write
+-projections
+-plot
+-area/length
+
+
+---
+### Reading
+- Create spatial points from csv
 
 ```r
 library(tidyverse)
 library(sf)
+## read in csv
 farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
   read_csv() 
+
+## convert tibble to 'sf'
 farmers_sf &lt;- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+
+
+
+---
+
+### Reading
+- Reading shapefiles
+- Both `st_read` and `read_sf` work
+
+
+```r
 districts &lt;- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+roads &lt;- st_read(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+```
+## Reading layer `roads' from data source 
+##   `C:\Users\micha\AppData\Local\R\win-library\4.2\geospaar\extdata\roads.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 473 features and 1 field
+## Geometry type: MULTILINESTRING
+## Dimension:     XY
+## Bounding box:  xmin: -292996.9 ymin: -2108848 xmax: 873238.8 ymax: -1008785
+## Projected CRS: Africa_Albers_Equal_Area_Conic
 ```
 
 ---
-  
-### Wrangle spatial data
+### Writing
+- `st_write` works as expected
+- Use '.geojson' (only one file)
 
 ```r
-farmers_sf_trim &lt;- farmers_sf %&gt;% group_by(uuid) %&gt;% summarize(n = n()) %&gt;% 
-  st_join(., districts, left = FALSE)
+#st_write(districts, "districts_out.shp")
+st_write(districts, "districts.geojson")
+```
+
+
+---
+### Projections (crs)
+- Geographic coordinates are: `4326`
+
+```r
+st_crs(farmers_sf) &lt;- 4326
+farmers_sf %&gt;% st_crs()
+```
+
+```
+## Coordinate Reference System:
+##   User input: EPSG:4326 
+##   wkt:
+## GEOGCRS["WGS 84",
+##     ENSEMBLE["World Geodetic System 1984 ensemble",
+##         MEMBER["World Geodetic System 1984 (Transit)"],
+##         MEMBER["World Geodetic System 1984 (G730)"],
+##         MEMBER["World Geodetic System 1984 (G873)"],
+##         MEMBER["World Geodetic System 1984 (G1150)"],
+##         MEMBER["World Geodetic System 1984 (G1674)"],
+##         MEMBER["World Geodetic System 1984 (G1762)"],
+##         MEMBER["World Geodetic System 1984 (G2139)"],
+##         ELLIPSOID["WGS 84",6378137,298.257223563,
+##             LENGTHUNIT["metre",1]],
+##         ENSEMBLEACCURACY[2.0]],
+##     PRIMEM["Greenwich",0,
+##         ANGLEUNIT["degree",0.0174532925199433]],
+##     CS[ellipsoidal,2],
+##         AXIS["geodetic latitude (Lat)",north,
+##             ORDER[1],
+##             ANGLEUNIT["degree",0.0174532925199433]],
+##         AXIS["geodetic longitude (Lon)",east,
+##             ORDER[2],
+##             ANGLEUNIT["degree",0.0174532925199433]],
+##     USAGE[
+##         SCOPE["Horizontal component of 3D system."],
+##         AREA["World."],
+##         BBOX[-90,-180,90,180]],
+##     ID["EPSG",4326]]
+```
+
+
+---
+## projections (use existing)
+- you can set projections based on another layer
+- but the two layers MUST have the same crs (e.g. geographic)
+
+```r
+farmers &lt;- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"))
+farmers &lt;- st_as_sf(farmers, coords = c("x", "y"))
+
+st_crs(farmers) &lt;- st_crs(districts) ## set crs
+
+farmers %&gt;% st_crs() ## print new crs
+```
+
+```
+## Coordinate Reference System:
+##   User input: GCS_unknown 
+##   wkt:
+## GEOGCRS["GCS_unknown",
+##     DATUM["World Geodetic System 1984",
+##         ELLIPSOID["WGS 84",6378137,298.257223563,
+##             LENGTHUNIT["metre",1]],
+##         ID["EPSG",6326]],
+##     PRIMEM["Greenwich",0,
+##         ANGLEUNIT["Degree",0.0174532925199433]],
+##     CS[ellipsoidal,2],
+##         AXIS["longitude",east,
+##             ORDER[1],
+##             ANGLEUNIT["Degree",0.0174532925199433]],
+##         AXIS["latitude",north,
+##             ORDER[2],
+##             ANGLEUNIT["Degree",0.0174532925199433]]]
+```
+
+---
+## projections (transform)
+- Use `st_transform()` to project from one crs to another
+
+```r
+roads &lt;- st_transform(x = roads, crs = st_crs(districts))
+st_crs(roads)
+```
+
+```
+## Coordinate Reference System:
+##   User input: GCS_unknown 
+##   wkt:
+## GEOGCRS["GCS_unknown",
+##     DATUM["World Geodetic System 1984",
+##         ELLIPSOID["WGS 84",6378137,298.257223563,
+##             LENGTHUNIT["metre",1]],
+##         ID["EPSG",6326]],
+##     PRIMEM["Greenwich",0,
+##         ANGLEUNIT["Degree",0.0174532925199433]],
+##     CS[ellipsoidal,2],
+##         AXIS["longitude",east,
+##             ORDER[1],
+##             ANGLEUNIT["Degree",0.0174532925199433]],
+##         AXIS["latitude",north,
+##             ORDER[2],
+##             ANGLEUNIT["Degree",0.0174532925199433]]]
+```
+
+
+---
+## features from scratch
+
+```r
+pt &lt;- st_point(x = c(28, -14))
+pt
+#&gt; POINT (28 -14)
+#
+# #2
 pts &lt;- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts &lt;- st_geometry(pts) %&gt;% st_as_sf() %&gt;% st_cast("POINT") %&gt;% 
-  cbind(ID = 1:nrow(.), .)
+pts
+#&gt; MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))
+#
+# #3
+sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline
+#&gt; LINESTRING (27 -15, 27.5 -15.5, 28 -16)
+#
+# #4
 pol &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
                              y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol &lt;- st_geometry(pol) %&gt;% st_as_sf() %&gt;% cbind(ID = 1:nrow(.), .)
-sline &lt;- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
-
-set.seed(2)
-districts2 &lt;- cbind(districts, st_centroid(districts) %&gt;% st_coordinates()) %&gt;% 
-  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %&gt;%
-  mutate(yld_cat = ifelse(yield &gt; 4.5, "high", "other"), 
-         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
-         yld_cat = ifelse(yield &lt; 3.5, "low", yld_cat)) %&gt;% 
-  dplyr::select(distName, X, Y, yield, yld_cat)
-
-farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
-  st_set_crs(st_crs(districts))
-
-farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
-farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
+pol
 ```
 
 ---
-### Spatial joins
+### Plotting
+- Base `plot()` works with `sf`, use `add = TRUE`
 
 ```r
-p &lt;- ggplot(districts2) + geom_sf(fill = "grey")
-# farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count()
-# st_crs(farmer_ct) &lt;- st_crs(districts)
-farmer_ct &lt;- farmers %&gt;% group_by(uuid) %&gt;% count() %&gt;% 
-  st_set_crs(st_crs(districts))
-
-farmers_districts &lt;- st_join(farmer_ct, districts2, largest = TRUE)
-p + geom_sf(data = farmers_districts, aes(color = n)) + 
-  scale_color_viridis_c()
-plot(districts2['yld_cat'])
-
-# lapply(farmers_per_dist$distName, function(x) {
-#   farmers_per_dist %&gt;% filter(distName == x) %&gt;% st_cast("POINT")
-# }) %&gt;% do.call(rbind, .)
-# farmers_per_dist %&gt;% st_cast("POINT") %&gt;% plot()
-farmers_per_dist &lt;- farmers_districts %&gt;% group_by(distName) %&gt;% count()
-p + geom_sf(data = farmers_per_dist) + 
-  geom_sf(data = farmers_per_dist %&gt;% st_centroid(), col = "blue")
+par(mar = c(0, 0, 0, 0))
+plot(districts %&gt;% st_geometry(), col = "grey")
+plot(pt, add = TRUE, col = "red", pch = 20)
+plot(pts, add = TRUE, col = "blue", pch = 20)
+plot(sline, add = TRUE, col = "cyan", lwd = 2)
+plot(pol, add = TRUE, col = "orange", lwd = 2)
 ```
 
----
-### Spatial-non-spatial join
-
-```r
-districts3 &lt;- as_tibble(farmers_per_dist) %&gt;% dplyr::select(distName, n) %&gt;% 
-  left_join(districts2, .) %&gt;% mutate(n = ifelse(is.na(n), 0, n))
-
-p + geom_sf(data = districts3, aes(fill = log10(n))) +
-  scale_fill_brewer(palette = "RdBu")
-  # scale_fill_viridis_c()
-# p + geom_sf(data = districts3, aes(fill = n))
-```
-
----
-### Subsetting
-
-By count
-
-```r
-p + districts3 %&gt;% filter(n &gt; 15) %&gt;% geom_sf(data = ., fill = "red") + 
-  districts3 %&gt;% filter(between(n, 1, 15)) %&gt;% geom_sf(data = ., fill = "blue")
-p + geom_sf(data = districts3 %&gt;% filter(n &gt; 15), fill = "red") + 
-  geom_sf(data = districts3 %&gt;% filter(between(n, 1, 15)), fill = "blue")
-```
-
-By area
-
-```r
-dmed &lt;- districts3 %&gt;% #mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %&gt;% 
-  filter(area == quantile(area, probs = 0.5, type = 1)) 
-p2 &lt;- p + geom_sf(data = dmed, fill = "red")
-
-dmax &lt;- districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  # arrange(area) %&gt;% slice(nrow(.)) %&gt;% 
-  arrange(desc(area)) %&gt;% slice(1) 
-  # slice_max(order_by = area) #
-p2 + geom_sf(data = dmax, fill = "blue")
-
-districts3 %&gt;% mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;%
-  arrange(area) %&gt;% pull(distName)
-```
-
----
-## Various
-
-Dataset
-
-```r
-pols &lt;- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
-                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
-                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
-                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
-                                          1))))
-pols &lt;- pols %&gt;% st_geometry %&gt;% st_cast("POLYGON") %&gt;% 
-  st_as_sf(crs = 4326) %&gt;%   
-  mutate(ID = 1:nrow(.)) %&gt;% #as.data.frame() %&gt;%
-  dplyr::select(ID)
-
-p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
-  geom_sf(data = st_union(pols), 
-          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
-```
-
----
-### Intersects
-
-```r
-# which(st_intersects(districts2, st_union(pols), sparse = FALSE))
-int_dists &lt;- districts2 %&gt;% 
-  slice(which(st_intersects(., st_union(pols), sparse = FALSE)))
-p + geom_sf(data = int_dists, fill = "red") + 
-  geom_sf(data = pols, fill = "transparent", col = "blue")
-```
-
----
-### Intersection
-
-```r
-districts_pol &lt;- st_intersection(districts2, st_union(pols))
-ggplot(districts_pol) + geom_sf(aes(fill = distName))
-p + geom_sf(data = districts_pol, aes(fill = distName))
-```
-
----
-### On your own
-
-- Select the smallest district in Zambia from `districts3`, and convert that
-to centroid
-
-```r
-smallest_centroid &lt;- districts3 %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  filter
-```
-
-- Create a buffer of width 0.5 around that
-
-```r
-smallest_buffer &lt;- smallest_centroid %&gt;% st_buf...
-```
-
-- Use the buffer to select the districts from `districts3` that intersect with it
-
-```r
-dists_in_buff &lt;- districts3 %&gt;% 
-  filter(st_intersects(., smallest_buffer...
-```
+![](class14_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 
 ---
-- Use the buffer to do an intersection with `districts3`
+### Plotting (ggplot)
+- Use `geom_sf()`
 
 ```r
-buff_int_dists &lt;- st_intersection(...
-# p + geom_sf(data = buff_int_dists, aes(fill = distName))
+ggplot(districts) + geom_sf() +
+  geom_sf(data = roads, col = "red") + 
+  geom_sf(data = farmers_sf, col = "blue")
 ```
 
-- Calculate the area of the intersection
+![](class14_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+### Area and Length
+- `st_area()`, `st_length`. Default units are in meters
+- How many square m in a square km?
+
+```r
+dist_areas &lt;- districts %&gt;% st_area()
+dist_areas
+```
+
+```
+## Units: [m^2]
+##  [1]  2550935366 17469693572  4599663199 13478544490  3791816946  1014001877
+##  [7]  4339475638  1729519245 15512644024  6200831837  7048374145 12045315895
+## [13]  3911004624  8888864165 15764111906 14585226161  1544556596  5799390245
+## [19] 17252307329 13982957127  1037282269 23065630072 17081749634 12791445182
+## [25] 10549445663 21595457052  3916954726  9260951216 18339971197   793591581
+## [31]   735058720  3883612370   925324702 11453506960 15817396242 14083721656
+## [37]   421992832  9873166086  5926862767  9697983348  3575010630  6767089945
+## [43]  8576979139  6212291945 17710196297  9955317247  4852944584 40249723718
+## [49]  8538121537 12015199892 10040956679  1265742489 19322630011 21572196432
+## [55]  9856883262  6802189469 20870273438  4722220050  5688065867  4334582601
+## [61]   977954640 10598023896  8315144160 10068806510 15592347732 23678362272
+## [67] 29938030720 16268253746  3938300200  4791000054 30183878337 14123799828
+```
+
+```r
+dist_areas %&gt;% units::set_units("km^2")
+```
+
+```
+## Units: [km^2]
+##  [1]  2550.9354 17469.6936  4599.6632 13478.5445  3791.8169  1014.0019
+##  [7]  4339.4756  1729.5192 15512.6440  6200.8318  7048.3741 12045.3159
+## [13]  3911.0046  8888.8642 15764.1119 14585.2262  1544.5566  5799.3902
+## [19] 17252.3073 13982.9571  1037.2823 23065.6301 17081.7496 12791.4452
+## [25] 10549.4457 21595.4571  3916.9547  9260.9512 18339.9712   793.5916
+## [31]   735.0587  3883.6124   925.3247 11453.5070 15817.3962 14083.7217
+## [37]   421.9928  9873.1661  5926.8628  9697.9833  3575.0106  6767.0899
+## [43]  8576.9791  6212.2919 17710.1963  9955.3172  4852.9446 40249.7237
+## [49]  8538.1215 12015.1999 10040.9567  1265.7425 19322.6300 21572.1964
+## [55]  9856.8833  6802.1895 20870.2734  4722.2201  5688.0659  4334.5826
+## [61]   977.9546 10598.0239  8315.1442 10068.8065 15592.3477 23678.3623
+## [67] 29938.0307 16268.2537  3938.3002  4791.0001 30183.8783 14123.7998
+```
+
+---
+## add area as column
+
+```r
+districts &lt;- districts %&gt;% 
+  mutate(area = st_area(.) %&gt;% units::set_units("km^2") %&gt;% as.numeric()) 
+districts
+```
+
+```
+## Simple feature collection with 72 features and 2 fields
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  GCS_unknown
+## # A tibble: 72 × 3
+##    distName                                                      geometry   area
+##  * &lt;chr&gt;                                                    &lt;POLYGON [°]&gt;  &lt;dbl&gt;
+##  1 Chadiza       ((32.3076 -14.3128, 32.31928 -14.22275, 32.28473 -14.16…  2551.
+##  2 Chama         ((33.6875 -10.57932, 33.68479 -10.60804, 33.65166 -10.6… 17470.
+##  3 Chavuma       ((22.00014 -13.4776, 21.99978 -13.00616, 22.43356 -13.0…  4600.
+##  4 Chibombo      ((28.89229 -14.79981, 28.96829 -14.83748, 28.99061 -14.… 13479.
+##  5 Chiengi       ((29.1088 -9.079298, 29.05089 -9.1575, 29.00485 -9.1589…  3792.
+##  6 Chililabombwe ((28.06755 -12.35262, 28.08029 -12.40576, 28.06825 -12.…  1014.
+##  7 Chilubi       ((30.61853 -11.25163, 30.64427 -11.28379, 30.63371 -11.…  4339.
+##  8 Chingola      ((27.51766 -12.29848, 27.51231 -12.32162, 27.53024 -12.…  1730.
+##  9 Chinsali      ((32.34814 -9.745779, 32.39081 -9.757746, 32.44521 -9.7… 15513.
+## 10 Chipata       ((32.95348 -13.26367, 32.9231 -13.35447, 32.9156 -13.40…  6201.
+## # … with 62 more rows
+```
+
+---
+## Plot districts (exercise)
+- Use `geom_sf()` to plot area
+- Fill districts based on area column.
+- Use `scale_fill_continuous` , with `type = 'viridis'`
 
 
 ---
+## ggplot steps
+- Start with `ggplot()`. You can include data if you're only using one data set.
+- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
+- Add aesthetics in `aes()`. These are columns used for plotting. 
+- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
+- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
 
-- Select the smallest district in Zambia from `districts3`, and convert that
-to centroid
 
-```r
-smallest_centroid &lt;- districts3 %&gt;% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %&gt;% 
-  filter(area == min(area)) %&gt;% st_centroid()
-ggplot() + geom_sf(data = districts3) + 
-  geom_sf(data = smallest_centroid, col = "red", cex = 0.1)
-```
 
-- Create a buffer of width 0.5 around that
 
-```r
-# sf_use_s2(use_s2 = TRUE)
-sf_use_s2(use_s2 = FALSE)
-smallest_buffer &lt;- smallest_centroid %&gt;% st_buffer(dist = 0.5)
-ggplot() + geom_sf(data = smallest_centroid, col = "red") + 
-  geom_sf(data = smallest_buffer, col = "blue", fill = "transparent") 
-```
 
 ---
-
-- Use the buffer to select the districts from `districts3` that intersect with it
+## Answer
 
 ```r
-dists_in_buff &lt;- districts3 %&gt;% 
-  filter(st_intersects(., smallest_buffer, sparse = FALSE))
-ggplot(districts3) + geom_sf() +
-  geom_sf(data = dists_in_buff, fill = "red") + 
-  geom_sf(data = smallest_buffer, fill = "blue") 
+ggplot(districts) + 
+  geom_sf(aes(fill = area )) +
+  scale_fill_continuous(type = 'viridis')
 ```
 
+![](class14_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+
 ---
-- Use the buffer to do an intersection with `districts3`
+## Calculate length (exercise)
+- Use `st_length()` to add colummn 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
+- Then plot roads based on length (use `scale_color_continuous()` )
+- Plot roads with line width 2 (`lwd = 2`)
+- Use `theme_bw()`
+
+
+
+
+---
+## Answer
 
 ```r
-buff_int_dists &lt;- st_intersection(smallest_buffer, districts3)
-ggplot(districts3) + geom_sf() +
-  geom_sf(data = buff_int_dists, fill = "red")
+roads &lt;- roads %&gt;% 
+  mutate(road_length = st_length(.) %&gt;% units::set_units("km") %&gt;% as.numeric()) 
 ggplot() +
-  geom_sf(data = buff_int_dists, aes(fill = distName.1))
+  geom_sf(data = districts, col = 'black', fill = NA)  +
+  geom_sf(data = roads, aes(col = road_length), lwd = 2) + 
+  scale_color_continuous(type = 'viridis') + theme_bw()
+```
+
+![](class14_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+---
+
+### Spatial Operations
+Data setup
+
+```r
+coords &lt;- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
+                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
+#
+# #2
+pol &lt;- st_polygon(x = list(coords)) %&gt;% st_sfc %&gt;% st_sf(ID = 1, crs = 4326)
+roads_rpj &lt;- st_transform(roads, crs = st_crs(districts))
 ```
 
 ---
-### More operations
-
-- Fancy buffering
+### Plotting
 
 ```r
-roads20 &lt;- roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;% 
-  filter(km &gt; 200) %&gt;% 
-  st_buffer(dist = 20000) %&gt;% 
-  st_transform(crs = 4326)
-
-ggplot(districts3) + geom_sf() + 
-  # geom_sf(data = roads20, fill = "red")
-  geom_sf(data = st_union(roads20), fill = "red")
-
-st_union(roads20) %&gt;% st_cast("POLYGON") %&gt;% st_as_sf() %&gt;% 
-  mutate(ID = as.character(1:nrow(.))) %&gt;% 
-  # ggplot() + geom_sf(aes(fill = as.factor(ID)))
-  ggplot() + geom_sf(aes(fill = ID))
-
-ggplot(districts3) + geom_sf(aes(fill = distName))
-districts3 %&gt;% mutate(ID = 1:nrow(.)) %&gt;% 
-  ggplot() + geom_sf(aes(fill = ID))
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(pol, col = "purple", add = TRUE)
+plot(roads_rpj, col = 'red', add = TRUE)
 ```
 
-- Differencing
-
-```r
-dif &lt;- st_difference(districts3, smallest_buffer)
-ggplot(dif) + geom_sf(fill = "grey50")
-
-dif2 &lt;- st_difference(smallest_buffer, districts3)
-ggplot(dif2) + geom_sf(fill = "grey50")
+```
+## Warning in plot.sf(roads_rpj, col = "red", add = TRUE): ignoring all but the
+## first attribute
 ```
 
-- Unioning
+![](class14_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 
+
+---
+## `st_intersects`
+- Similar to "Select by Spatial Location"
+- Finds indices of second object that intersect each element of first object
 
 ```r
-uni &lt;- st_union(dif)
-ggplot(uni) + geom_sf(fill = "grey50")
-uni2 &lt;- st_union(dif, smallest_buffer)
-ggplot(uni2) + geom_sf(fill = "grey50")
-uni3 &lt;- st_union(dif, buff_int_dists)
-ggplot(uni3) + geom_sf(fill = "grey50")
+st_intersects(x = roads_rpj, y = districts)
+```
 
-uni3
+```
+## Sparse geometry binary predicate list of length 473, where the
+## predicate was `intersects'
+## first 10 elements:
+##  1: 43, 58
+##  2: 55
+##  3: 43
+##  4: 43
+##  5: 9, 14, 25, 55
+##  6: 25, 50, 51
+##  7: 24, 50
+##  8: 24
+##  9: 50
+##  10: 38
 ```
 
 ---
-- Sampling
+## `st_intersects`
+
+```r
+highway &lt;- roads_rpj[401,]
+dists_int &lt;- districts %&gt;% slice(st_intersects(x = highway, y = districts)[[1]])
+#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar
+dists_int
+```
+
+```
+## Simple feature collection with 13 features and 2 fields
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 26.82275 ymin: -16.67104 xmax: 33.6875 ymax: -9.083201
+## Geodetic CRS:  GCS_unknown
+## # A tibble: 13 × 3
+##    distName                                                      geometry   area
+##    &lt;chr&gt;                                                    &lt;POLYGON [°]&gt;  &lt;dbl&gt;
+##  1 Chibombo      ((28.89229 -14.79981, 28.96829 -14.83748, 28.99061 -14.… 13479.
+##  2 Chinsali      ((32.34814 -9.745779, 32.39081 -9.757746, 32.44521 -9.7… 15513.
+##  3 Isoka         ((33.6875 -10.57932, 33.64154 -10.61133, 33.61895 -10.5…  8889.
+##  4 Kabwe         ((28.62611 -14.35334, 28.56405 -14.39707, 28.53172 -14.…  1545.
+##  5 Kafue         ((28.21828 -15.32924, 28.19965 -15.37978, 28.21785 -15.…  5799.
+##  6 Kapiri Mposhi ((28.89229 -14.79981, 28.87305 -14.79676, 28.8408 -14.7… 17082.
+##  7 Lusaka        ((28.4325 -15.49861, 28.41655 -15.48415, 28.33609 -15.4…   422.
+##  8 Mazabuka      ((27.79194 -15.65721, 27.82913 -15.66165, 27.8341 -15.7…  6767.
+##  9 Mkushi        ((29.80904 -13.45655, 29.79202 -13.51482, 29.83907 -13.… 17710.
+## 10 Mpika         ((31.10328 -10.96646, 31.11047 -10.99688, 31.15785 -11.… 40250.
+## 11 Nakonde       ((33.05925 -9.634867, 33.04477 -9.717537, 33.05045 -9.7…  4722.
+## 12 Serenje       ((31.43724 -13.42509, 31.41359 -13.46214, 31.37249 -13.… 23678.
+## 13 Siavonga      ((28.92478 -15.94845, 28.84758 -16.05104, 28.85917 -16.…  3938.
+```
+
+```r
+plot(st_geometry(dists_int), col = 'grey')
+plot(highway, col = 'red', add = TRUE)
+```
+
+```
+## Warning in plot.sf(highway, col = "red", add = TRUE): ignoring all but the
+## first attribute
+```
+
+![](class14_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+
+---
+## `st_intersection()`
+- finds intersecting pairs between two objects
+- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
+
+```r
+pol_int_dists &lt;- st_intersection(x = pol, y = districts)
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries
+```
+
+```r
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
+     add = TRUE)
+```
+
+![](class14_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+
+---
+## `st_difference`
+- Similar to "erase" in ArcGIS
+- Returns first object without second object. 
+
+```r
+d1 &lt;- st_difference(x = districts, y = pol)
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries
+```
+
+```r
+d2 &lt;- st_difference(x = pol, y = districts)
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries
+```
+
+```r
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+d1 %&gt;% st_geometry %&gt;% plot(col = "grey")
+d2 %&gt;% st_geometry %&gt;% plot(col = "grey")
+```
+
+![](class14_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+
+---
+## `st_union`
+- Combines objects without resolving borders. 
+- Really takes all possible combinations of first and 2nd object
+- Switching order of inputs changes column order
+
+```r
+uni1 &lt;- st_union(x = pol, y = districts)
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries
+```
+
+```r
+uni1
+```
+
+```
+## Simple feature collection with 72 features and 3 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  WGS 84
+## First 10 features:
+##     ID      distName      area                              .
+## 1    1       Chadiza  2550.935 MULTIPOLYGON (((26.4 -15.6,...
+## 1.1  1         Chama 17469.694 MULTIPOLYGON (((26.4 -15.6,...
+## 1.2  1       Chavuma  4599.663 MULTIPOLYGON (((26.4 -15.6,...
+## 1.3  1      Chibombo 13478.544 MULTIPOLYGON (((26.4 -15.6,...
+## 1.4  1       Chiengi  3791.817 MULTIPOLYGON (((26.4 -15.6,...
+## 1.5  1 Chililabombwe  1014.002 MULTIPOLYGON (((26.4 -15.6,...
+## 1.6  1       Chilubi  4339.476 MULTIPOLYGON (((26.4 -15.6,...
+## 1.7  1      Chingola  1729.519 MULTIPOLYGON (((26.4 -15.6,...
+## 1.8  1      Chinsali 15512.644 MULTIPOLYGON (((26.4 -15.6,...
+## 1.9  1       Chipata  6200.832 MULTIPOLYGON (((26.4 -15.6,...
+```
+
+```r
+uni2 &lt;- st_union(x = districts, y = pol)
+```
+
+```
+## Warning: attribute variables are assumed to be spatially constant throughout
+## all geometries
+```
+
+```r
+uni2
+```
+
+```
+## Simple feature collection with 72 features and 3 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  GCS_unknown
+## # A tibble: 72 × 4
+##    distName        area    ID                                           geometry
+##  * &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;                                 &lt;MULTIPOLYGON [°]&gt;
+##  1 Chadiza        2551.     1 (((32.45056 -14.28611, 32.65876 -14.1972, 33.0001…
+##  2 Chama         17470.     1 (((33.64154 -10.61133, 33.61895 -10.58417, 33.583…
+##  3 Chavuma        4600.     1 (((22.042 -13.50042, 22.07372 -13.49779, 22.13168…
+##  4 Chibombo      13479.     1 (((28.87305 -14.79676, 28.8408 -14.75284, 28.8232…
+##  5 Chiengi        3792.     1 (((29.14024 -9.039982, 29.16764 -9.04765, 29.1719…
+##  6 Chililabombwe  1014.     1 (((28.01253 -12.35119, 27.98945 -12.34021, 27.962…
+##  7 Chilubi        4339.     1 (((30.40208 -11.14174, 30.39746 -11.11073, 30.470…
+##  8 Chingola       1730.     1 (((27.4628 -12.27935, 27.44569 -12.24882, 27.3945…
+##  9 Chinsali      15513.     1 (((32.30827 -9.753086, 32.29436 -9.7779, 32.25595…
+## 10 Chipata        6201.     1 (((32.90448 -13.24411, 32.89845 -13.22351, 32.843…
+## # … with 62 more rows
+```
+
+```r
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
+plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
+```
+
+![](class14_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+---
+## `st_buffer()`
+- Best to use projected coordinates (e.g. Albers)
+
+```r
+## project everything to Albers
+farmers_alb &lt;- farmers_sf %&gt;% st_transform(st_crs(roads))
+long_roads &lt;- roads %&gt;% filter(as.numeric(st_length(.)) &gt; 500000)
+districts_alb &lt;- districts %&gt;% st_transform(st_crs(roads))
+
+roads_buff_20km = st_buffer(long_roads, 20000)
+plot(st_geometry(districts_alb), col = "grey")
+plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
+plot(st_geometry(long_roads), col = "red", add = TRUE)
+```
+
+![](class14_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+
+---
+## `st_sample`
 
 
 ```r
-# simple within extent
+par(mar = rep(0, 4))
+districts %&gt;% st_union %&gt;% plot(col = "grey")
 set.seed(1)
-sample100 &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% 
-  st_sample(size = 100, exact = TRUE)
-ggplot(districts3) + geom_sf() + 
-  geom_sf(data = districts3 %&gt;% filter(n &gt; 0), fill = "lightblue") + 
-  geom_sf(data = sample100, size = 0.5, col = "red")
-
-# stratified by polygon
-ndists &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% nrow(.)
-strat_sample &lt;- districts3 %&gt;% filter(n &gt; 0) %&gt;% 
-  st_sample(size = rep(5, ndists), exact = TRUE)
-
-ggplot(districts3) + geom_sf() + 
-  geom_sf(data = districts3 %&gt;% filter(n &gt; 0), fill = "lightblue") + 
-  geom_sf(data = strat_sample, size = 0.5, col = "red")
+districts %&gt;% st_union %&gt;% st_sample(size = 100, exact = TRUE) %&gt;% 
+  plot(pch = 20, add = TRUE)
 ```
 
+![](class14_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+
+
 ---
-### Exercises
+## Exercise
+Find all districts within 50 km of sampled points. 
+
+
+
+---
+## Exercise
+Of the sampled farmers, how many are within 100km of one of the "long roads"?
+
+
+
+---
+### Further Exercises
 
 #### Round 1
 - Calculate the length of roads in kilometers
@@ -405,7 +749,11 @@ ggplot() + geom_sf
 buffered_object %&gt;% st_sample()
 ```
 
-
+---
+##HOMEWORK
+- Review all of Unit 2, Module 1
+- Assignment 4 due next Tuesday (3/21) 
+- It is long, don't wait!
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -54,319 +54,352 @@ saveWidget(m, "docs/figures/zambialeaflet2.html")
 height="500"></iframe>
 
 ---
+### Today
+- Projects
+- Review of `sf` 
+- Spatial Operations
 
 
-### Non-spatial to spatial
+---
+### Projects
+- [List](https://agroimpacts.github.io/geospaar/projects.html#project-list)
+- [USF Nightlights](https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md)
 
-- Read in farmer data
-```{r, eval = FALSE}
+"That is looking at public housing in New York. Students looked at it for Boston and San Fran last semester.  It would be great to add other cities, but maybe public housing isn’t available so other variables could be looked at instead of public housing, like demographic characteristics. Basically looking to see whether there is more brightness in similar neighborhoods that might indicate more floodlighting or other factors that make it brighter (perhaps less tree cover, etc)."
+
+
+---
+### Review
+-read/write
+-projections
+-plot
+-area/length
+
+
+---
+### Reading
+- Create spatial points from csv
+```{r, message=FALSE, }
 library(tidyverse)
 library(sf)
+## read in csv
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
   read_csv() 
+
+## convert tibble to 'sf'
 farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+
+
+
+---
+
+### Reading
+- Reading shapefiles
+- Both `st_read` and `read_sf` work
+
+```{r, message = F}
 districts <- read_sf(system.file("extdata/districts.shp", package = "geospaar"))
-roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+roads <- st_read(system.file("extdata/roads.shp", package = "geospaar"))
 ```
 
 ---
-  
-### Wrangle spatial data
-```{r, eval = FALSE}
-farmers_sf_trim <- farmers_sf %>% group_by(uuid) %>% summarize(n = n()) %>% 
-  st_join(., districts, left = FALSE)
+### Writing
+- `st_write` works as expected
+- Use '.geojson' (only one file)
+```{r, eval = F}
+#st_write(districts, "districts_out.shp")
+st_write(districts, "districts.geojson")
+```
+
+
+---
+### Projections (crs)
+- Geographic coordinates are: `4326`
+```{r, message = F}
+st_crs(farmers_sf) <- 4326
+farmers_sf %>% st_crs()
+```
+
+
+---
+## projections (use existing)
+- you can set projections based on another layer
+- but the two layers MUST have the same crs (e.g. geographic)
+```{r, message = F}
+farmers <- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"))
+farmers <- st_as_sf(farmers, coords = c("x", "y"))
+
+st_crs(farmers) <- st_crs(districts) ## set crs
+
+farmers %>% st_crs() ## print new crs
+```
+
+---
+## projections (transform)
+- Use `st_transform()` to project from one crs to another
+```{r, message = F}
+roads <- st_transform(x = roads, crs = st_crs(districts))
+st_crs(roads)
+```
+
+
+---
+## features from scratch
+```{r, message = F}
+pt <- st_point(x = c(28, -14))
+pt
+#> POINT (28 -14)
+#
+# #2
 pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
-pts <- st_geometry(pts) %>% st_as_sf() %>% st_cast("POINT") %>% 
-  cbind(ID = 1:nrow(.), .)
+pts
+#> MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))
+#
+# #3
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline
+#> LINESTRING (27 -15, 27.5 -15.5, 28 -16)
+#
+# #4
 pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
                              y = c(-15.5, -16.5, -17, -16, -15.5))))
-pol <- st_geometry(pol) %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .)
-sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16))) %>%
-  st_geometry() %>% st_as_sf() %>% cbind(ID = 1:nrow(.), .) %>% 
-  rename(geometry = x)
-
-set.seed(2)
-districts2 <- cbind(districts, st_centroid(districts) %>% st_coordinates()) %>% 
-  mutate(yield = (7 - 0.25 * -Y) * runif(n = nrow(.), min = 0.9, max = 1.2)) %>%
-  mutate(yld_cat = ifelse(yield > 4.5, "high", "other"), 
-         yld_cat = ifelse(between(yield, 3.5, 4.5), "medium", yld_cat),
-         yld_cat = ifelse(yield < 3.5, "low", yld_cat)) %>% 
-  dplyr::select(distName, X, Y, yield, yld_cat)
-
-farmer_ct <- farmers_sf %>% #st_as_sf(coords = c("x", "y")) %>% 
-  group_by(uuid) %>% count() %>% 
-  st_set_crs(st_crs(districts))
-
-farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
-farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
+pol
 ```
 
 ---
-### Spatial joins
-```{r, eval=FALSE}
-p <- ggplot(districts2) + geom_sf(fill = "grey")
-# farmer_ct <- farmers %>% group_by(uuid) %>% count()
-# st_crs(farmer_ct) <- st_crs(districts)
-farmer_ct <- farmers %>% group_by(uuid) %>% count() %>% 
-  st_set_crs(st_crs(districts))
-
-farmers_districts <- st_join(farmer_ct, districts2, largest = TRUE)
-p + geom_sf(data = farmers_districts, aes(color = n)) + 
-  scale_color_viridis_c()
-plot(districts2['yld_cat'])
-
-p + geom_sf(data = farmers_sf_trim, aes(color = n)) + 
-  scale_color_viridis_c()
-
-# lapply(farmers_per_dist$distName, function(x) {
-#   farmers_per_dist %>% filter(distName == x) %>% st_cast("POINT")
-# }) %>% do.call(rbind, .)
-# farmers_per_dist %>% st_cast("POINT") %>% plot()
-farmers_per_dist <- farmers_districts %>% group_by(distName) %>% count()
-p + geom_sf(data = farmers_per_dist) + 
-  geom_sf(data = farmers_per_dist %>% st_centroid(), col = "blue") + 
-  geom_sf(
-    # data = farmers_per_dist %>% st_cast("POINT") %>% st_centroid()
-    data = st_centroid(st_cast(farmers_per_dist, "POINT")), col = "red"
-  )
-lapply(1:nrow(farmers_per_dist), function(x) {
-  st_cast(farmers_per_dist[x, ], "POINT")
-}) %>% do.call(rbind, .) %>% 
-  # st_geometry %>% st_sfc() %>% 
-  # st_cast("MULTIPOINT") %>% 
-  st_centroid()
-
-farmers_per_dist %>% 
-  group_by(distName) %>% 
-  st_cast("POINT")
-st_centroid(st_cast(farmers_per_dist %>% group_by(distName), "POINT"))
-```
-
----
-### Spatial-non-spatial join
-```{r, eval=FALSE}
-districts3 <- as_tibble(farmers_per_dist) %>% dplyr::select(distName, n) %>% 
-  left_join(districts2, .) %>% mutate(n = ifelse(is.na(n), 0, n))
-
-p + geom_sf(data = districts3, aes(fill = log10(n))) +
-  # gexom_sf(data = districts3, aes(fill = n)) +
-  # scale_fill_brewer(palette = "RdBu")
-  scale_fill_viridis_c()
-# p + geom_sf(data = districts3, aes(fill = n))
-```
-
----
-### Subsetting
-
-By count
-```{r, eval = FALSE}
-p + districts3 %>% filter(n > 15) %>% geom_sf(data = ., fill = "red") + 
-  districts3 %>% filter(between(n, 1, 15)) %>% geom_sf(data = ., fill = "blue")
-p + geom_sf(data = districts3 %>% filter(n > 15), fill = "red") + 
-  geom_sf(data = districts3 %>% filter(between(n, 1, 15)), fill = "blue")
-```
-
-By area
-```{r, eval = FALSE}
-dmed <- districts3 %>% #mutate(area = as.numeric(st_area(.)) / 10^6) %>%
-  mutate(area = as.numeric(units::set_units(st_area(.), "km2"))) %>% 
-  filter(area == quantile(area, probs = 0.5, type = 1)) 
-p2 <- p + geom_sf(data = dmed, fill = "red")
-
-dmax <- districts3 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  # arrange(area) %>% slice(nrow(.)) %>%
-  # arrange(desc(area)) %>% slice(1) 
-  slice_max(order_by = area) #
-p2 + geom_sf(data = dmax, fill = "blue")
-
-districts3 %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
-  arrange(area) %>% pull(distName)
-```
-
----
-## Various
-
-Dataset
-```{r, eval=FALSE}
-pols <- st_multipolygon(list(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
-                                        y = c(-15.5, -16.5, -17, -16, -15.5))),
-                             list(cbind(x = c(26.5, 27.5, 27, 26, 26.5) + 1,
-                                        y = c(-15.5, -16.5, -17, -16, -15.5) -
-                                          1))))
-pols <- pols %>% st_geometry %>% st_cast("POLYGON") %>% 
-  st_as_sf(crs = 4326) %>%   
-  mutate(ID = 1:nrow(.)) %>% #as.data.frame() %>%
-  dplyr::select(ID)
-
-p + geom_sf(data = pols, aes(fill = as.factor(ID))) + 
-  geom_sf(data = st_union(pols), 
-          fill = rgb(1, 0, 1, alpha = 0.7), col = "purple")
-```
-
----
-### Intersects
-```{r, eval=FALSE}
-# which(st_intersects(districts2, st_union(pols), sparse = FALSE))
-int_dists <- districts2 %>% 
-  slice(which(st_intersects(., st_union(pols), sparse = FALSE)))
-p + geom_sf(data = int_dists, fill = "red") + 
-  geom_sf(data = pols, fill = "transparent", col = "blue")
-```
-
----
-### Intersection
-```{r, eval=FALSE}
-districts_pol <- st_intersection(districts2, st_union(pols))
-ggplot(districts_pol) + geom_sf(aes(fill = distName))
-p + geom_sf(data = districts_pol, aes(fill = distName))
-```
-
----
-### On your own
-
-- Select the smallest district in Zambia from `districts3`, and convert that
-to centroid
-```{r, eval = FALSE}
-smallest_centroid <- districts3 %>% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  filter
-```
-
-- Create a buffer of width 0.5 around that
-```{r, eval = FALSE}
-smallest_buffer <- smallest_centroid %>% st_buf...
-```
-
-- Use the buffer to select the districts from `districts3` that intersect with it
-```{r, eval = FALSE}
-dists_in_buff <- districts3 %>% 
-  filter(st_intersects(., smallest_buffer...
+### Plotting
+- Base `plot()` works with `sf`, use `add = TRUE`
+```{r, message = F}
+par(mar = c(0, 0, 0, 0))
+plot(districts %>% st_geometry(), col = "grey")
+plot(pt, add = TRUE, col = "red", pch = 20)
+plot(pts, add = TRUE, col = "blue", pch = 20)
+plot(sline, add = TRUE, col = "cyan", lwd = 2)
+plot(pol, add = TRUE, col = "orange", lwd = 2)
 ```
 
 
 ---
-- Use the buffer to do an intersection with `districts3`
-```{r, eval=FALSE}
-buff_int_dists <- st_intersection(...
-# p + geom_sf(data = buff_int_dists, aes(fill = distName))
-```
-
-- Calculate the area of the intersection
-
-
----
-
-- Select the smallest district in Zambia from `districts3`, and convert that
-to centroid
-```{r, eval = FALSE}
-smallest_centroid <- districts3 %>% 
-  mutate(area = as.numeric(st_area(.)) / 10^6) %>% 
-  filter(area == min(area)) %>% st_centroid()
-ggplot() + geom_sf(data = districts3) + 
-  geom_sf(data = smallest_centroid, col = "red", cex = 0.1)
-```
-
-- Create a buffer of width 0.5 around that
-```{r, eval = FALSE}
-# sf_use_s2(use_s2 = TRUE)
-sf_use_s2(use_s2 = FALSE)
-smallest_buffer <- smallest_centroid %>% st_buffer(dist = 0.5)
-ggplot() + geom_sf(data = smallest_centroid, col = "red") + 
-  geom_sf(data = smallest_buffer, col = "blue", fill = "transparent") 
+### Plotting (ggplot)
+- Use `geom_sf()`
+```{r, message = F}
+ggplot(districts) + geom_sf() +
+  geom_sf(data = roads, col = "red") + 
+  geom_sf(data = farmers_sf, col = "blue")
 ```
 
 ---
-
-- Use the buffer to select the districts from `districts3` that intersect with it
-```{r, eval = FALSE}
-dists_in_buff <- districts3 %>% 
-  filter(st_intersects(., smallest_buffer, sparse = FALSE))
-ggplot(districts3) + geom_sf() +
-  geom_sf(data = dists_in_buff, fill = "red") + 
-  geom_sf(data = smallest_buffer, fill = "blue") 
-  
+### Area and Length
+- `st_area()`, `st_length`. Default units are in meters
+- How many square m in a square km?
+```{r, message = F}
+dist_areas <- districts %>% st_area()
+dist_areas
+dist_areas %>% units::set_units("km^2")
 ```
 
 ---
-- Use the buffer to do an intersection with `districts3`
-```{r, eval=FALSE}
-buff_int_dists <- st_intersection(smallest_buffer, districts3)
-ggplot(districts3) + geom_sf() +
-  geom_sf(data = buff_int_dists, fill = "red")
+## add area as column
+```{r, message = F}
+districts <- districts %>% 
+  mutate(area = st_area(.) %>% units::set_units("km^2") %>% as.numeric()) 
+districts
+```
+
+---
+## Plot districts (exercise)
+- Use `geom_sf()` to plot area
+- Fill districts based on area column.
+- Use `scale_fill_continuous` , with `type = 'viridis'`
+```{r, message = F}
+
+```
+
+---
+## ggplot steps
+- Start with `ggplot()`. You can include data if you're only using one data set.
+- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
+- Add aesthetics in `aes()`. These are columns used for plotting. 
+- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
+- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
+
+
+
+```{r, message = F}
+
+```
+
+---
+## Answer
+```{r, message = F}
+ggplot(districts) + 
+  geom_sf(aes(fill = area )) +
+  scale_fill_continuous(type = 'viridis')
+```
+
+
+---
+## Calculate length (exercise)
+- Use `st_length()` to add colummn 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
+- Then plot roads based on length (use `scale_color_continuous()` )
+- Plot roads with line width 2 (`lwd = 2`)
+- Use `theme_bw()`
+
+```{r, message = F}
+
+```
+
+
+---
+## Answer
+```{r, message = F}
+roads <- roads %>% 
+  mutate(road_length = st_length(.) %>% units::set_units("km") %>% as.numeric()) 
 ggplot() +
-  geom_sf(data = buff_int_dists, aes(fill = distName.1))
+  geom_sf(data = districts, col = 'black', fill = NA)  +
+  geom_sf(data = roads, aes(col = road_length), lwd = 2) + 
+  scale_color_continuous(type = 'viridis') + theme_bw()
+
 ```
 
 ---
-### More operations
 
-- Fancy buffering
-```{r, eval=FALSE}
-roads20 <- roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
-  filter(km > 200) %>% 
-  st_buffer(dist = 20000) %>% 
-  st_transform(crs = 4326)
+### Spatial Operations
+Data setup
+```{r, message = F}
+coords <- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
+                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
+#
+# #2
+pol <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+roads_rpj <- st_transform(roads, crs = st_crs(districts))
 
-ggplot(districts3) + geom_sf() + 
-  # geom_sf(data = roads20, fill = "red")
-  geom_sf(data = st_union(roads20), fill = "red")
-
-st_union(roads20) %>% st_cast("POLYGON") %>% st_as_sf() %>% 
-  mutate(ID = as.character(1:nrow(.))) %>% 
-  # ggplot() + geom_sf(aes(fill = as.factor(ID)))
-  ggplot() + geom_sf(aes(fill = ID))
-
-ggplot(districts3) + geom_sf(aes(fill = distName))
-districts3 %>% mutate(ID = 1:nrow(.)) %>% 
-  ggplot() + geom_sf(aes(fill = ID))
-```
-
-- Differencing
-```{r, eval=FALSE}
-dif <- st_difference(districts3, smallest_buffer)
-ggplot(dif) + geom_sf(fill = "grey50")
-
-dif2 <- st_difference(smallest_buffer, districts3)
-ggplot(dif2) + geom_sf(fill = "grey50")
-```
-
-- Unioning
-
-```{r, eval=FALSE}
-uni <- st_union(dif)
-ggplot(uni) + geom_sf(fill = "grey50")
-uni2 <- st_union(dif, smallest_buffer)
-ggplot(uni2) + geom_sf(fill = "grey50")
-uni3 <- st_union(dif, buff_int_dists)
-ggplot(uni3) + geom_sf(fill = "grey50")
-
-uni3
 ```
 
 ---
-- Sampling
+### Plotting
+```{r, message = F}
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(pol, col = "purple", add = TRUE)
+plot(roads_rpj, col = 'red', add = TRUE)
+```
 
-```{r, eval=FALSE}
-# simple within extent
+
+---
+## `st_intersects`
+- Similar to "Select by Spatial Location"
+- Finds indices of second object that intersect each element of first object
+```{r, message = F}
+st_intersects(x = roads_rpj, y = districts)
+```
+
+---
+## `st_intersects`
+```{r, message = F}
+highway <- roads_rpj[401,]
+dists_int <- districts %>% slice(st_intersects(x = highway, y = districts)[[1]])
+#> although coordinates are longitude/latitude, st_intersects assumes that they are planar
+dists_int
+plot(st_geometry(dists_int), col = 'grey')
+plot(highway, col = 'red', add = TRUE)
+```
+
+
+---
+## `st_intersection()`
+- finds intersecting pairs between two objects
+- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
+```{r, message = F}
+pol_int_dists <- st_intersection(x = pol, y = districts)
+
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
+     add = TRUE)
+```
+
+---
+## `st_difference`
+- Similar to "erase" in ArcGIS
+- Returns first object without second object. 
+```{r, message = F}
+d1 <- st_difference(x = districts, y = pol)
+d2 <- st_difference(x = pol, y = districts)
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+d1 %>% st_geometry %>% plot(col = "grey")
+d2 %>% st_geometry %>% plot(col = "grey")
+```
+
+
+---
+## `st_union`
+- Combines objects without resolving borders. 
+- Really takes all possible combinations of first and 2nd object
+- Switching order of inputs changes column order
+```{r, message = F}
+uni1 <- st_union(x = pol, y = districts)
+uni1
+
+uni2 <- st_union(x = districts, y = pol)
+uni2
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
+plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
+```
+
+---
+## `st_buffer()`
+- Best to use projected coordinates (e.g. Albers)
+```{r, message = F}
+## project everything to Albers
+farmers_alb <- farmers_sf %>% st_transform(st_crs(roads))
+long_roads <- roads %>% filter(as.numeric(st_length(.)) > 500000)
+districts_alb <- districts %>% st_transform(st_crs(roads))
+
+roads_buff_20km = st_buffer(long_roads, 20000)
+plot(st_geometry(districts_alb), col = "grey")
+plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
+plot(st_geometry(long_roads), col = "red", add = TRUE)
+```
+
+---
+## `st_sample`
+
+```{r, message = F}
+par(mar = rep(0, 4))
+districts %>% st_union %>% plot(col = "grey")
 set.seed(1)
-sample100 <- districts3 %>% filter(n > 0) %>% 
-  st_sample(size = 100, exact = TRUE)
-ggplot(districts3) + geom_sf() + 
-  geom_sf(data = districts3 %>% filter(n > 0), fill = "lightblue") + 
-  geom_sf(data = sample100, size = 0.5, col = "red")
+districts %>% st_union %>% st_sample(size = 100, exact = TRUE) %>% 
+  plot(pch = 20, add = TRUE)
+```
 
-# stratified by polygon
-ndists <- districts3 %>% filter(n > 0) %>% nrow(.)
-strat_sample <- districts3 %>% filter(n > 0) %>% 
-  st_sample(size = rep(5, ndists), exact = TRUE)
 
-ggplot(districts3) + geom_sf() + 
-  geom_sf(data = districts3 %>% filter(n > 0), fill = "lightblue") + 
-  geom_sf(data = strat_sample, size = 0.5, col = "red")
+---
+## Exercise
+Find all districts within 50 km of sampled points. 
+
+```{r, message = F}
+
 ```
 
 ---
-### Exercises
+## Exercise
+Of the sampled farmers, how many are within 100km of one of the "long roads"?
+```{r, message = F}
+
+```
+
+
+---
+### Further Exercises
 
 #### Round 1
 - Calculate the length of roads in kilometers
@@ -396,4 +429,8 @@ ggplot() + geom_sf
 buffered_object %>% st_sample()
 ```
 
-
+---
+##HOMEWORK
+- Review all of Unit 2, Module 1
+- Assignment 4 due next Tuesday (3/21) 
+- It is long, don't wait!

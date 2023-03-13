@@ -2,9 +2,7 @@
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 # Geospatial Analysis with R <img src="https://s28151.pcdn.co/offices/marketing-and-communications/wp-content/blogs.dir/3/files/sites/106/2019/08/CU_Seal_Red_SM_60_75_v4-768x768.png" align="right" width="120" />
 
@@ -12,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Spring 2023
 
 
-Updated on: `r Sys.Date()`
+Updated on: 2023-03-13
 
 <center>
 ------------------ ------------------------------------------------------
