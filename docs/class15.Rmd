@@ -19,15 +19,191 @@ output:
 ---
 
 Data:  read in `farmers` and make into `sf`, `districts`, and `roads`
-```{r, eval=FALSE}
+```{r}
 library(geospaar)
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
   read_csv() %>% st_as_sf(coords = c("x", "y"))
+st_crs(farmers) <- 4326
 districts <- st_read(
   system.file("extdata/districts.shp", package = "geospaar")
 )
 roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
 ```
+
+
+---
+## Data
+```{r}
+library(tidyverse)
+library(geospaar)
+farmers_alb <- farmers %>% st_transform(st_crs(roads))
+long_roads <- roads %>% filter(as.numeric(st_length(.)) > 500000)
+districts_alb <- districts %>% st_transform(st_crs(roads))
+```
+
+---
+## Plotting
+- Use same crs
+- For `base` plotting, use `st_geometry`
+```{r}
+plot(st_geometry(districts), col = 'grey')
+plot(roads[1], col = 'red', add = TRUE)
+
+```
+
+---
+## st_intersects vs. st_intersection
+- `st_intersects()` is a "find by location"
+- Answer question - which districts intersect each road?
+- order matters
+```{r}
+intersects_obj <- st_intersects(long_roads, districts_alb)
+intersects_obj
+
+```
+
+
+```{r}
+## plot districts intersecting first road
+first_road <- long_roads[1,]
+intersecting_dists <- districts_alb %>% slice(intersects_obj[[1]])
+plot(st_geometry(intersecting_dists))
+plot(first_road, col = 'red', add = T)
+```
+
+---
+## st_intersection
+- Returns intersecting object
+-  st_intersection(lines, polygons) will be "lines"
+- Each element is one component of intersection
+```{r}
+intersection_obj <- st_intersection(long_roads, districts_alb)
+#print(intersection_obj)
+plot(st_geometry(intersection_obj))
+```
+
+---
+- Switching order of inputs only affects column order of output
+```{r}
+intersection_obj2 <- st_intersection( districts_alb, long_roads)
+#print(intersection_obj)
+plot(st_geometry(intersection_obj2))
+```
+
+---
+## Dissolving
+- Use `summarise` to dissolve
+- Let's add a random Group ID for each district
+- How do we plot?
+
+
+```{r}
+districts_alb$GROUP <- sample(LETTERS[1:3], NROW(districts_alb), replace = T)
+FILLS = c("A" = "red", "B" = "slateblue", "C" = "green4")
+
+ggplot(districts_alb) +
+  geom_sf(aes(fill = GROUP)) +
+  scale_fill_manual(values = FILLS)
+```
+
+---
+## Dissolving
+- Add an area column
+- Dissolve features using `summarise`, and calculate total area
+```{r}
+## add area column
+districts_alb <- districts_alb %>% mutate(area_km2 = st_area(.) %>% units::set_units("km^2") %>% as.numeric())
+districts_alb
+```
+
+---
+```{r}
+## Dissolve and plot
+dissolved_groups <- districts_alb %>% group_by(GROUP) %>% summarise(group_area = sum(area_km2))
+plot(dissolved_groups)
+```
+
+
+---
+## st_cast
+- Cast sf objects to specific data type
+- By default, will cast point--> multipoint, polygon --> multipolygon
+- You can also specify output, to cast polygons --> lines
+```{r}
+district_borders <- districts_alb %>% st_cast("MULTILINESTRING")
+plot(st_geometry(district_borders))
+```
+
+
+
+
+---
+## st_union
+- Each element in the output is a combination of one element in each input
+- Output size is product of size of each input
+```{r}
+options(max.print = 999999999)
+union_dists_roads <- st_union(districts_alb, long_roads)
+print(union_dists_roads$geometry)
+```
+
+---
+## st_union
+- Isolate one district
+```{r}
+chibombo <- districts_alb %>% filter(distName == "Chibombo")
+chibombo_union_roads <- st_union(chibombo, long_roads)
+plot(chibombo_union_roads[3,])
+#(chibombo_union_roads[3,] %>% pull(geometry))[[1]]
+```
+
+
+
+
+
+---
+## split apply combine
+- Separate areas into quintiles
+- how can we add original district borders (in green)?
+```{r}
+quintiles <- function(x) quantile(x, probs = seq(0, 1, 0.2))
+
+dist_quintiles <- districts %>% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  mutate(acls = cut(area, breaks = quintiles(area), include.lowest = TRUE)) %>%  group_by(acls) %>% summarize(mean_area = mean(area))
+
+dist_quintiles
+
+
+cols <- heat.colors(5)
+par(mar = rep(0, 4))
+plot(st_geometry(dist_quintiles), col = cols)
+#plot(st_geometry(districts), border = "red", add = T)
+legend(x = "bottomright", pch = 15, col = cols, bty = "n", 
+       legend = paste0(1:5, c("st", "nd", "rd", "th", "th"), " quantile"))
+```
+
+---
+## Joins
+- For table joins, use `dplyr` functions `*_join`, or `merge`
+- For spatial joins, use `st_join` 
+
+```{r}
+## spatial join of roads to districts
+dists_join_roads <- st_join(districts_alb, long_roads)
+```
+
+---
+## Joins
+- How to find which roads intersect districts?
+- `st_join` by default returns info for road 
+```{r}
+dists_join_roads <- st_join(districts_alb, long_roads, largest = F)
+```
+
+---
+## Plot options
+- Monday
 
 ---
 ## Adding to data
@@ -165,3 +341,18 @@ buffered_object %>% st_sample()
 
 ---
 ### Solve the problems!
+
+
+---
+## Group work
+- Each group does hw # 1
+- Groups split on other problems
+- First 5 minutes. No coding, draw diagrams and determine what functions you need
+- [SF cheatsheet](https://github.com/rstudio/cheatsheets/blob/main/sf.pdf)
+- [Examples](http://www.geo.hunter.cuny.edu/~ssun/R-Spatial/spatialops.html#spatial-operations)
+
+--- 
+## HW 
+- Unit 2 Mod 1 due Tuesday
+- Recommended: review links on previous slide
+- QUIZ Monday

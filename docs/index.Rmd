@@ -87,6 +87,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 8 (Mar 6, 8)
   - Vector operations
   - [Class 14 slides](class14.html)
+  - [Class 15 slides](class15.html)
   - Assignment 4 due (Unit 2 Module 1)
 - Week 9 (Mar 13, 15)
 - Week 10 (Mar 20, 22)
