@@ -24,16 +24,18 @@ output:
 - division into steps
 - code
 
---- 
-## plot figures
+---
+
+## plot figures Example 1
 ```{r, echo=FALSE, fig.align = "center", fig.height = 4, fig.width = 6}
 par(mar=c(0,0,0,0)) ## margins 
 plot(pressure)
 ```
 
 
---- 
-## plot figures
+---
+
+## plot figures Example 2
 ```{r, echo=FALSE, fig.align = "right", fig.height = 2, fig.width = 2}
 par(mar=c(3,3,3,3)) ## margins 
 plot(pressure)
