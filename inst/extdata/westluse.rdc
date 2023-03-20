@@ -1,0 +1,42 @@
+file format : IDRISI Raster A.1
+file title  : Landuse, vicinity of Westboro, MA, USA
+data type   : byte
+file type   : binary
+columns     : 615
+rows        : 558
+ref. system : plane
+ref. units  : meters
+unit dist.  : 20.0000000
+min. X      : 0.0000000
+max. X      : 615.0000000
+min. Y      : 0.0000000
+max. Y      : 558.0000000
+pos'n error : unknown
+resolution  : 20.0000000
+min. value  : 1
+max. value  : 13
+display min : 1
+display max : 13
+value units : classes
+value error : unknown
+flag value  : none
+flag def'n  : none
+legend cats : 13
+code      1 : Cropland
+code      2 : Pasture
+code      3 : Forest
+code      4 : Open Undeveloped
+code      5 : Open Developed
+code      6 : Multi-Family Residential
+code      7 : Small Lots Residential
+code      8 : Med. Lots Residential
+code      9 : Large Lots Residential
+code     10 : Commercial
+code     11 : Industrial
+code     12 : Transportation
+code     13 : Open Water
+lineage     : Data from MassGIS                                                 
+lineage     : Environmental Affairs                                             
+lineage     : Landuse data for 10 towns in Massachusetts                        
+lineage     : Spot satellite image coverage over Westboro                       
+lineage     : Original data on MassGIS CD in ArcInfo E00 format.                

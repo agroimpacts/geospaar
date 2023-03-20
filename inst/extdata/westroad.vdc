@@ -1,0 +1,44 @@
+file format : IDRISI Vector A.1
+file title  : Westboro -- Roads
+id type     : integer
+file type   : binary
+object type : line
+ref. system : plane
+ref. units  : m
+unit dist.  : 1
+min. X      : 0
+max. X      : 12300
+min. Y      : 0
+max. Y      : 11160
+pos'n error : unknown
+resolution  : unknown
+min. value  : 1
+max. value  : 10
+display min : 1
+display max : 10
+value units : classes
+value error : unknown
+flag value  : none
+flag def'n  : none
+legend cats : 3
+code      1 : Primary Roads
+code      2 : Secondary Roads
+code     10 : Ramp Access Roads
+lineage     : Control points used in the transformation :                       
+lineage     :         Old X        Old Y        New X        New Y    Residual  
+lineage     : ----------------------------------------------------------------- 
+lineage     :   465.678800   325.555900 582346.062500 462291.187500      omitted
+lineage     :   433.302600   431.644900 581631.750000 469571.875000     0.329799
+lineage     :   314.527500   237.575400 570307.250000 458779.093750      omitted
+lineage     :   313.446900   425.304600 573791.187500 471441.750000      omitted
+lineage     :   400.184500   353.069100 578108.812500 464939.718750     0.170548
+lineage     :   126.478180   338.622900 558363.187500 467411.531250     0.334414
+lineage     :   140.519550   469.611100 561239.500000 475617.843750     0.389356
+lineage     :   126.732800   222.617500 556696.562500 459913.531250     0.397217
+lineage     :   557.998000   122.505810 586116.187500 448167.718750     0.083789
+lineage     :   388.773100   164.364820 574460.125000 452854.687500      omitted
+lineage     :   222.104900   154.722270 562568.000000 454408.906250     0.251190
+lineage     :   290.489500   467.576900 571879.687500 473674.468750     0.560154
+lineage     : Overall RMS =     0.343321                                        
+lineage     : RMS Error is expressed in output map units.  With low RMS errors  
+lineage     : careful that an adequate sample exists (eg. 2-3 times the mathemat

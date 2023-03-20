@@ -84,20 +84,27 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 12 slides](class12.html)
   - [Class 13 slides](class13.html)
 - Spring Break
-- Week 8 (Mar 6, 8)
+- Week 8 (Mar 13, 15)
   - Vector operations
   - [Class 14 slides](class14.html)
   - [Class 15 slides](class15.html)
   - Assignment 4 due (Unit 2 Module 1)
-- Week 9 (Mar 13, 15)
-- Week 10 (Mar 20, 22)
+- Week 9 (Mar 20, 22)
+  - Raster basics
+  - [Class 16 slides](class16.html)
+  - Class 17
   - Mar 22 online (AAG)
-- Week 11 (Mar 29)
-  - Mar 27 no class (AAG)
-  - Assignment 5 due (Unit 2 Modules 2-3)
+- Week 11 (Mar 27, 29)
+  - Raster algebra, terrain analysis
+  - Mar 27 project prep (AAG)
+  - Class 18
 - Week 12 (Apr 3, 5)
-  - Project overview assignment due
+  - Raster wrap-up
+  - Class 19
+  - Class 20
+  - Assignment 5 (Unit 2 Module 2) 
 - Week 13-15 (Apr 10, 12, 17, 19, 24, 26, May 1)
+  - Project Overview due 
 - Final Projects due
   - May 8
 
