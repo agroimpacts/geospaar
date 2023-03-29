@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -23,6 +23,10 @@ class: center, middle, inverse, title-slide
 ---
 
 
+&lt;img src="figures/zam_dem_raster.png" width="50%" /&gt;&lt;img src="figures/zam_dem_stars.png" width="50%" /&gt;
+
+---
+
 ## Today
 
 - Challenge from last class
@@ -32,30 +36,119 @@ class: center, middle, inverse, title-slide
   - reading and writing
   - rasterize, raster to vector
 
+agg/disagg, masking
+assigning values
+zonal
+focal
+cellStats
 
 ---
-&lt;img src="figures/zam_dem_raster.png" width="50%" /&gt;&lt;img src="figures/zam_dem_stars.png" width="50%" /&gt;
+## Project overview
+- Due in several weeks
+- [Link](https://agroimpacts.github.io/geospaar/projects.html#project-overview-assignment)
+
+
+---
+- Load data
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
+districts &lt;- st_read(system.file("extdata/districts.shp", package = "geospaar"))
+```
+
+```
+## Reading layer `districts' from data source 
+##   `C:\Users\micha\AppData\Local\R\win-library\4.2\geospaar\extdata\districts.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 72 features and 1 field
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  GCS_unknown
+```
+
+```r
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+mypoly &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5)))) %&gt;%
+  st_sfc(crs = 4326) %&gt;% st_intersection(., districts) %&gt;% st_as_sf() %&gt;% 
+  mutate(ID = seq(1: NROW(.)))
+#st_crs(mypoly) &lt;- 4326
+smallest_centroid &lt;- districts %&gt;% filter(distName == "Lusaka") %&gt;% st_centroid()
+```
+
+```
+## Warning in st_centroid.sf(.): st_centroid assumes attributes are constant over
+## geometries of x
+```
+
+
+
+
 
 
 ---
 ### A quick demo of multi-panel plots
+- gridExtra
 
 ```r
+library(ggplot2)
+
 p &lt;- ggplot(districts) + geom_sf() + 
   geom_sf(data = smallest_centroid, color = "red")
-p
-p1 &lt;- p + geom_sf(data = small_pol, aes(color = as.factor(ID)),
+
+p1 &lt;- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),
                   fill = "transparent") + labs(color = "ID")
-small_pol2 &lt;- pol %&gt;% st_sfc() %&gt;% st_sf(crs = 4326) %&gt;% mutate(ID = 1)
-p2 &lt;- p + geom_sf(data = small_pol2, aes(color = as.factor(ID)),  
+# small_pol2 &lt;- pol %&gt;% st_sfc() %&gt;% st_sf(crs = 4326) %&gt;% mutate(ID = 1)
+p2 &lt;- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),  
                   fill = "transparent") + labs(color = "ID")
 
 gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
 
+![](class17_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+
+---
+- cowplot::plot_grid
+
+```r
 g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
                          p2 + theme(legend.position = "none"))
 cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
 ```
+
+![](class17_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+---
+
+- patchwork
+
+
+```r
+library(patchwork)
+```
+
+```
+## 
+## Attaching package: 'patchwork'
+```
+
+```
+## The following object is masked from 'package:raster':
+## 
+##     area
+```
+
+```r
+(p1 / p2) | p2 + plot_layout(guides = "collect")
+```
+
+![](class17_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
 
 ---
 ### `patchwork`
@@ -70,42 +163,131 @@ p1 + p1 / p
 (p1 + p2) / (p + p)
 ```
 
+---
+
+## raster objects
+- [Raster classes](https://rspatial.org/raster/pkg/2-classes.html)
+- `RasterLayer` object - 1 layer
+- `RasterStack` object - many layers, multiple file sources
+- `RasterBrick` object - many layers, fast, one file source (good for satellite imagery)
 
 ---
-## Reading/Writing/Manipulating rasters
-
-- create
+## accessing bands
+- use list `[[ ... ]]` notation
 
 ```r
+data(chirps)
+chirps[[3]] ## access by index
+```
+
+```
+## class      : RasterLayer 
+## dimensions : 197, 234, 46098  (nrow, ncol, ncell)
+## resolution : 0.05, 0.05  (x, y)
+## extent     : 21.95, 33.65, -18.05, -8.200001  (xmin, xmax, ymin, ymax)
+## crs        : +proj=longlat +datum=WGS84 +no_defs 
+## source     : memory
+## names      : Y16301 
+## values     : 0, 22.12555  (min, max)
+```
+
+```r
+#chirps[["Y16301"]] ## access by band name
+```
+
+
+```r
+plot(chirps[[3]])
+```
+
+![](class17_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+
+## Creating raster from scratch
+
+- how does `extent` work?
+
+```r
+library(raster)
 r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, crs = 4326)
 values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
 
 par(mar = c(0, 0, 0, 0))
 plot(districts %&gt;% st_geometry)
 plot(r, add = TRUE)
+```
 
-plot(r)
+![](class17_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
+---
+- Creating multi-layer stack
+
+
+```r
 s &lt;- stack(r, log10(r))
 names(s) &lt;- c("dummy", "log10dummy")
 plot(s)
+```
 
+![](class17_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+```r
+print(class(s))
+```
+
+```
+## [1] "RasterStack"
+## attr(,"package")
+## [1] "raster"
+```
+
+```r
 b &lt;- brick(s)
 brick(list(r, log10(r)))
-plot(b)
+```
 
+```
+## class      : RasterBrick 
+## dimensions : 10, 10, 100, 2  (nrow, ncol, ncell, nlayers)
+## resolution : 0.1, 0.1  (x, y)
+## extent     : 30, 31, -14, -13  (xmin, xmax, ymin, ymax)
+## crs        : +proj=longlat +datum=WGS84 +no_defs 
+## source     : memory
+## names      : layer.1, layer.2 
+## min values :       1,       0 
+## max values :      10,       1
+```
+
+```r
+plot(b)
+```
+
+![](class17_files/figure-html/unnamed-chunk-10-2.png)&lt;!-- --&gt;
+
+
+---
+- Creating multi-layer brick
+- what are the dimensions of this raster? resolution?
+- how are the values filled?
+
+
+```r
 b2 &lt;- lapply(1:10, function(x) {
   r &lt;- raster(extent(30, 31, -14, -13), res = 0.1, 
               crs = "+proj=longlat +datum=WGS84")
   set.seed(x)
   values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
   r
-}) %&gt;% stack %&gt;% brick
+}) %&gt;% brick
 plot(b2)
 ```
 
+![](class17_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
 ---
 ### A large brick
+- how does this differ from above?
 
 ```r
 b3 &lt;- lapply(1:10, function(x) {
@@ -116,33 +298,215 @@ b3 &lt;- lapply(1:10, function(x) {
   r
 }) %&gt;% stack %&gt;% brick
 plot(b3)
+```
+
+![](class17_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
+```r
 plot(b3[[1]])
+```
+
+![](class17_files/figure-html/unnamed-chunk-12-2.png)&lt;!-- --&gt;
+
+```r
 plot(b3[[10]])
+```
+
+![](class17_files/figure-html/unnamed-chunk-12-3.png)&lt;!-- --&gt;
+
+```r
 plot(b3[[c(1, 10)]])
 ```
 
----
+![](class17_files/figure-html/unnamed-chunk-12-4.png)&lt;!-- --&gt;
 
-- read and write
+---
+## read and write
 
 
 ```r
+## write raster
 writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
 dir(tempdir())
-# rm(r)
+```
+
+```
+##  [1] "file697010231df4"        "file69701aff785"        
+##  [3] "file69702b906094"        "file69703c0f21cb"       
+##  [5] "file6970418583f"         "file697048534637"       
+##  [7] "file6970487f3f53"        "file697061beb92"        
+##  [9] "file697063147926"        "file69706684532c"       
+## [11] "file69706c0f1fc3"        "file697076443e52"       
+## [13] "file697098d5ec8"         "mydummy.tif"            
+## [15] "xaringan697063de5142.js"
+```
+
+```r
+## read in raster
 r &lt;- raster(file.path(tempdir(), "mydummy.tif"))
 plot(r)
+```
 
-brick(s, filename = file.path(tempdir(), "mydumbrick.tif"), overwrite = TRUE)
-# stack(s, filename = file.path(tempdir(), "mydumbstack.tif"), overwrite = TRUE)
-brick(s, filename = file.path(tempdir(), "mydumbrick.grd"), overwrite = TRUE)
-brick(file.path(tempdir(), "mydumbrick.tif"))
-brick(file.path(tempdir(), "mydumbrick.grd"))
+![](class17_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+---
+## read and write
+
+- `brick` function can be used both to read and write
+
+```r
+## write file
+brick(s, filename = "mybrick.tif", overwrite = TRUE)
+```
+
+```
+## class      : RasterBrick 
+## dimensions : 10, 10, 100, 2  (nrow, ncol, ncell, nlayers)
+## resolution : 0.1, 0.1  (x, y)
+## extent     : 30, 31, -14, -13  (xmin, xmax, ymin, ymax)
+## crs        : +proj=longlat +datum=WGS84 +no_defs 
+## source     : mybrick.tif 
+## names      : layer.1, layer.2 
+## min values :       1,       0 
+## max values :      10,       1
+```
+
+```r
+## read file
+newbrick &lt;- brick( "mybrick.tif")
+```
+
+-  `raster()` only reads in one layer
+
+
+```r
+a &lt;- raster("mybrick.tif")
+nlayers(a)
 ```
 
 ---
 
-- plot
+## Projecting
+- `projectRaster` 
+- similar to `st_transform()`, use crs of existing layer to project
+- need to define resolution with `res` argument
+
+```r
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+chirpsz_alb &lt;- chirpsz %&gt;% projectRaster(., crs = crs(roads), res = 5000) 
+chirpsz_alb %&gt;% print()
+```
+
+```
+## class      : RasterBrick 
+## dimensions : 239, 252, 60228, 28  (nrow, ncol, ncell, nlayers)
+## resolution : 5000, 5000  (x, y)
+## extent     : -339903.4, 920096.6, -2142406, -947406.3  (xmin, xmax, ymin, ymax)
+## crs        : +proj=aea +lat_0=0 +lon_0=25 +lat_1=20 +lat_2=-23 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs 
+## source     : memory
+## names      :    Y16299,    Y16300,    Y16301,    Y16302,    Y16303,    Y16304,    Y16305,    Y16306,    Y16307,    Y16308,    Y16309,    Y16310,    Y16311,    Y16312,    Y16313, ... 
+## min values :         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0,         0, ... 
+## max values : 15.399838, 16.574985,  8.546795, 14.056892, 15.926837, 25.115780, 13.858732, 25.876838, 21.367656, 18.782245, 19.928994, 18.204016, 17.143065, 18.869527,  9.441813, ...
+```
+
+---
+## Vector &lt;--&gt; Raster
+- `rasterize` converts to raster. Need to pass argument that gives raster dimensions.
+- In below example, we use `chirpsz` for dimensions
+
+```r
+distsr &lt;- districts %&gt;% rasterize(., chirpsz)
+distsr %&gt;% plot_noaxes
+```
+
+![](class17_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+
+```r
+print(str(distsr))
+```
+
+```
+## Formal class 'RasterLayer' [package "raster"] with 13 slots
+##   ..@ file    :Formal class '.RasterFile' [package "raster"] with 13 slots
+##   .. .. ..@ name        : chr ""
+##   .. .. ..@ datanotation: chr "FLT4S"
+##   .. .. ..@ byteorder   : chr "little"
+##   .. .. ..@ nodatavalue : num -Inf
+##   .. .. ..@ NAchanged   : logi FALSE
+##   .. .. ..@ nbands      : int 1
+##   .. .. ..@ bandorder   : chr "BIL"
+##   .. .. ..@ offset      : int 0
+##   .. .. ..@ toptobottom : logi TRUE
+##   .. .. ..@ blockrows   : int 0
+##   .. .. ..@ blockcols   : int 0
+##   .. .. ..@ driver      : chr ""
+##   .. .. ..@ open        : logi FALSE
+##   ..@ data    :Formal class '.SingleLayerData' [package "raster"] with 13 slots
+##   .. .. ..@ values    : int [1:46098] NA NA NA NA NA NA NA NA NA NA ...
+##   .. .. ..@ offset    : num 0
+##   .. .. ..@ gain      : num 1
+##   .. .. ..@ inmemory  : logi TRUE
+##   .. .. ..@ fromdisk  : logi FALSE
+##   .. .. ..@ isfactor  : logi TRUE
+##   .. .. ..@ attributes:List of 1
+##   .. .. .. ..$ :'data.frame':	72 obs. of  2 variables:
+##   .. .. .. .. ..$ ID      : int [1:72] 1 2 3 4 5 6 7 8 9 10 ...
+##   .. .. .. .. ..$ distName: chr [1:72] "Chadiza" "Chama" "Chavuma" "Chibombo" ...
+##   .. .. ..@ haveminmax: logi TRUE
+##   .. .. ..@ min       : int 1
+##   .. .. ..@ max       : int 72
+##   .. .. ..@ band      : int 1
+##   .. .. ..@ unit      : chr ""
+##   .. .. ..@ names     : chr ""
+##   ..@ legend  :Formal class '.RasterLegend' [package "raster"] with 5 slots
+##   .. .. ..@ type      : chr(0) 
+##   .. .. ..@ values    : logi(0) 
+##   .. .. ..@ color     : logi(0) 
+##   .. .. ..@ names     : logi(0) 
+##   .. .. ..@ colortable: logi(0) 
+##   ..@ title   : chr(0) 
+##   ..@ extent  :Formal class 'Extent' [package "raster"] with 4 slots
+##   .. .. ..@ xmin: num 22
+##   .. .. ..@ xmax: num 33.7
+##   .. .. ..@ ymin: num -18.1
+##   .. .. ..@ ymax: num -8.2
+##   ..@ rotated : logi FALSE
+##   ..@ rotation:Formal class '.Rotation' [package "raster"] with 2 slots
+##   .. .. ..@ geotrans: num(0) 
+##   .. .. ..@ transfun:function ()  
+##   ..@ ncols   : int 234
+##   ..@ nrows   : int 197
+##   ..@ crs     :Formal class 'CRS' [package "sp"] with 1 slot
+##   .. .. ..@ projargs: chr "+proj=longlat +datum=WGS84 +no_defs"
+##   .. .. ..$ comment: chr "GEOGCRS[\"GCS_unknown\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.2"| __truncated__
+##   ..@ srs     : chr "GEOGCRS[\"WGS 84 (with axis order normalized for visualization)\",\n    DATUM[\"World Geodetic System 1984\",\n"| __truncated__
+##   ..@ history : list()
+##   ..@ z       : list()
+## NULL
+```
+
+```r
+# stack(distsr, chirpsz[[1:2]]) %&gt;% plotRGB(stretch = "lin")
+```
+
+---
+## Vector &lt;--&gt; Raster
+- `rasterToPolygons`, use dissolve to merge common raster values
+
+```r
+distsr_pol &lt;- rasterToPolygons(distsr, dissolve = TRUE)
+distsr_pol %&gt;% st_as_sf %&gt;% st_geometry %&gt;% plot
+distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
+```
+
+![](class17_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+
+
+
+---
+## Plotting
+- run examples below individually
 
 ```r
 plot(b)
@@ -151,24 +515,50 @@ plot_noaxes(b)
 plot_noaxes(b2, main = paste("Random", 1:10))
 plot(b2, main = paste("Random", 1:10))
 plot_noaxes(b, legend = FALSE)
+```
 
+---
+
+```r
 plot_noaxes(b[[1]], legend = FALSE)
 legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
        bty = "n")
+```
 
+---
+
+```r
 # plotting with larger datasets
 plot_noaxes(b3, main = paste("Random", 1:10))
 plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
+```
 
-rasterVis::levelplot(b3, names.attr = paste("Random", 1:10))
+---
+- rasterVis package includes additional plot options
 
+```r
+rasterVis::levelplot(b3)#, #names.attr = paste("Random", 1:10))
 rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
 rasterVis::levelplot(b[[1]])
 rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
   scale_fill_viridis_c()
+```
+
+---
+- ggplot() works with `geom_raster()`
+
+```r
 ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
   # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
   geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+```
+
+
+---
+- stars package
+
+
+```r
 stars::st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
 stars::st_as_stars(b) %&gt;% plot()
 ```
@@ -188,17 +578,31 @@ as.data.frame(b) %&gt;% as_tibble()
 ---
 ## Pre-processing
 - Aggregating/disaggregating
+- what is default method for aggregating?
 
 ```r
-aggregate(b, fact = 2) %&gt;% plot
+plot(b, main = paste0("Brick ", 1:2) )
+aggregate(b, fact = 2) %&gt;% plot(., main = paste0("Brick agg", 1:2) )
 # aggregate(b, fun = min, fact = 2) %&gt;% plot
 # aggregate(b, fun = sd, fact = 2) %&gt;% plot
-plot(b)
-disaggregate(b, fact = 2) %&gt;% plot
-disaggregate(b, fact = 2, bilinear = TRUE) %&gt;% plot
 ```
 
+---
+
+## Pre-processing
+- what is default method for disaggregating?
+
+```r
+plot(b, main = paste0("Brick ", 1:2) )
+disaggregate(b, fact = 2) %&gt;% plot(., main = paste0("Brick disagg", 1:2) )
+disaggregate(b, fact = 2, method = 'bilinear') %&gt;% plot(., main = paste0("Brick disagg bilinear", 1:2) )
+```
+
+
+
+---
 - Masking
+- `mask` makes values `NA` outside of mask area.
 
 ```r
 library(geospaar)
@@ -208,32 +612,196 @@ chirpsz &lt;- mask(chirps, districts)
 plot_noaxes(chirpsz[[1]])
 plot(st_geometry(districts), add = TRUE)
 # rasterVis::levelplot(chirpsz[[1:5]])
-plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-            legend = FALSE, zlim = c(0, 50))
-plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-     legend = FALSE, zlim = c(0, 50))
 ```
 
 ---
 
-- Projecting
 
 ```r
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-chirpsz %&gt;% projectRaster(., crs = crs(roads), res = 5000) -&gt; chirpsz_alb
-chirpsz_alb %&gt;% print
+plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
+            legend = FALSE, zlim = c(0, 50))
 ```
 
-- Rasterize/vectorize
+![](class17_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
 
 ```r
-distsr &lt;- districts %&gt;% rasterize(., chirpsz)
-distsr %&gt;% plot_noaxes
-# stack(distsr, chirpsz[[1:2]]) %&gt;% plotRGB(stretch = "lin")
-distsr_pol &lt;- rasterToPolygons(distsr, dissolve = TRUE)
-distsr_pol %&gt;% st_as_sf %&gt;% st_geometry %&gt;% plot
-distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
+# plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
+#      legend = FALSE, zlim = c(0, 50))
 ```
+
+
+---
+
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+
+---
+## Calculations
+- math operations work cell-wise
+
+```r
+rf1 &lt;- chirpsz[[1]] + chirpsz[[2]]
+rf2 &lt;- chirpsz[[1]] * 5
+```
+
+
+```r
+# dev.off()
+plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
+```
+
+---
+## `cellStats`
+- `cellStats` applies a function (`max`) to all cells in layer 
+- `zlim =` argument defined min and max of color ramp 
+
+```r
+mx &lt;- cellStats(rf2, max)
+zl &lt;- c(0, mx)
+par(mfrow = c(2, 2))
+plot(chirpsz[[1]], zlim = zl)
+plot(chirpsz[[2]], zlim = zl)
+plot(rf1, zlim = zl)
+plot(rf2, zlim = zl)
+```
+
+
+
+---
+## `cellStats`
+- other `cellStats` options
+- apply to single layer
+
+```r
+# mean(c(1, 4, 10, NA), na.rm = TRUE)
+cellStats(chirpsz[[1]], stat = mean)
+cellStats(chirpsz[[1]], stat = range)
+```
+
+---
+## `cellStats`
+- apply cellStats to multiple layers
+- `cellStats` always works one layer at a time. 
+-  if input has 28 layers, `cellStats` returns 28 values.
+
+
+```r
+cellStats(chirpsz, stat = mean)
+cellStats(chirpsz, stat = sum)
+cellStats(chirpsz, stat = range)
+cellStats(chirpsz, summary)
+```
+
+
+---
+### `calc` (z-dimension, i.e. layers)
+- `calc` looks at all layers together.
+- `calc(brick, mean)` will find the pixel-wise mean across all layers
+- how would you interpret below?
+
+```r
+plot(calc(chirpsz, mean))
+plot(calc(chirpsz, sum))
+plot(calc(chirpsz, range))
+```
+
+---
+
+## neighborhoods
+- `focal` applies window functions, e.g. high-pass or low-pass filters
+- what is `w` below?
+
+
+```r
+raintot &lt;- calc(chirpsz, fun = sum)
+w &lt;- matrix(1, nrow = 5, ncol = 5)
+rainwindow &lt;- focal(raintot, w = w, fun = mean, na.rm = TRUE)
+rainwindow2 &lt;- focal(raintot, w = w, fun = mean)
+rainwindow3 &lt;- focal(raintot, w = w, fun = sd)
+```
+
+---
+- what is difference between plots below?
+
+```r
+par(mfrow = c(2, 2), mar = rep(0, 4))
+plot_noaxes(raintot, legend = FALSE)
+plot_noaxes(rainwindow, legend = FALSE)
+plot_noaxes(rainwindow2, legend = FALSE)
+plot_noaxes(rainwindow3, legend = FALSE)
+```
+
+---
+
+## zonal stats
+- `resample` used to match extent
+- `zonal` averages values by district (although districts have been rasterized)
+
+```r
+distsr_rs &lt;- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent between districts raster and chirpsz
+zonemu &lt;- zonal(x = chirpsz, z = distsr_rs, fun = "mean")
+head(zonemu)[, 1:5]
+```
+
+
+
+
+---
+
+## zonal stats
+- `subs()` used to convert daily precip values from table to raster
+- let's examine piped command
+
+```r
+distr_rfmu &lt;- zonemu %&gt;% data.frame %&gt;% dplyr::select(1:2) %&gt;% 
+  subs(x = distsr_rs, y = ., by = "zone")
+plot_noaxes(distr_rfmu)
+```
+
+---
+## selecting and resetting values
+- first calculate quartiles for total rainfall over all days
+
+```r
+raintot &lt;- calc(chirpsz, fun = sum)
+print(quantile(raintot))
+```
+
+```
+##        0%       25%       50%       75%      100% 
+##  10.39840  36.77773  47.77374  60.14730 158.54464
+```
+
+```r
+#rainclasses &lt;- raintot
+```
+
+---
+- now reclass based on quartiles
+  - class 1: &lt; 37 mm
+  - class 1: 37 - 60 mm
+  - class 2: &gt; 60 mm
+
+```r
+rainquant &lt;- raintot ## make a copy of total rainfall object
+rainquant[raintot &lt; 37] &lt;- 0
+rainquant[(raintot &gt; 37) &amp; (raintot &lt; 60)] &lt;- 1
+rainquant[raintot &gt; 60] &lt;- 2
+plot(raintot)
+```
+
+![](class17_files/figure-html/unnamed-chunk-41-1.png)&lt;!-- --&gt;
+
+```r
+plot(rainquant)
+```
+
+![](class17_files/figure-html/unnamed-chunk-41-2.png)&lt;!-- --&gt;
 
 ---
 ## Calculations
@@ -249,9 +817,15 @@ distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
 - Reproject to Albers
 - Disaggregate to 0.02 degrees (bilinear and NGB)
 - Calculate the sum of rainfall from `chirps`
-- Identify all areas of total rainfall &gt; 10 mm
+- Identify all areas of total rainfall &gt; 10 mm. Set these cells to 1 and other cells to 0.
 - Calculate the mean rainfall in Zambia for the 15th day in `chirps`
 
+---
+## HW
+- Review exercises
+- Read Unit 2 Module 2b, Parts 1-2
+- [Raster classes](https://rspatial.org/raster/pkg/2-classes.html)
+- HW 5 due Sat 4/8
 
 
     </textarea>
