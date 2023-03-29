@@ -96,7 +96,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 11 (Mar 27, 29)
   - Raster analysis, neighborhoods
   - Mar 27 project prep (AAG)
-  - Class 17(class17.html)
+  - [Class 17 slides](class17.html)
 - Week 12 (Apr 3, 5)
   - Raster wrap-up
   - Class 18
