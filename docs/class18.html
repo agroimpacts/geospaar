@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.16/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.20/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -30,155 +30,134 @@ class: center, middle, inverse, title-slide
 
 
 ---
-## Exercise
+## Exercises
 
-- Create a raster `r` that has the extent xmin = 25, xmax = 30, ymin = -12, ymax = -10, and a resolution of 0.1
-
-
-```r
-r &lt;- raster(extent(....
-```
-
-- Populate it with randomly sampled values from between 1:100
-
-
-```r
-values(r) &lt;- ....
-```
-- Create a stack `s` using r and r * 10
-- Convert `s` to a brick `b`
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall &gt; 10 mm. Set these cells to 1 and other cells to 0.
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
 
 
 ---
-## Raster to other types
-
-```r
-plot(b)
-b[1:10]
-b[1:ncell(b)]
-as.matrix(b)
-as.data.frame(b) %&gt;% as_tibble()
-```
-
-
----
-## Pre-processing
-- Aggregating/disaggregating
-
-```r
-aggregate(b, fact = 2) %&gt;% plot
-# aggregate(b, fun = min, fact = 2) %&gt;% plot
-# aggregate(b, fun = sd, fact = 2) %&gt;% plot
-plot(b)
-disaggregate(b, fact = 2) %&gt;% plot
-disaggregate(b, fact = 2, bilinear = TRUE) %&gt;% plot
-```
-
-- Masking
-
-```r
-data(chirps)
-plot_noaxes(chirps[[1]])
-chirpsz &lt;- mask(chirps, districts)
-plot_noaxes(chirpsz[[1]])
-plot(st_geometry(districts), add = TRUE)
-# rasterVis::levelplot(chirpsz[[1:5]])
-plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-            legend = FALSE, zlim = c(0, 50))
-plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-     legend = FALSE, zlim = c(0, 50))
-```
-
----
-
-- Projecting
-
-```r
-roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-chirpsz %&gt;% projectRaster(., crs = crs(roads), res = 5000) -&gt; chirpsz_alb
-chirpsz_alb %&gt;% print
-```
-
-- Rasterize/vectorize
-
-```r
-distsr &lt;- districts %&gt;% rasterize(., chirpsz)
-distsr %&gt;% plot_noaxes
-# stack(distsr, chirpsz[[1:2]]) %&gt;% plotRGB(stretch = "lin")
-distsr_pol &lt;- rasterToPolygons(distsr, dissolve = TRUE)
-distsr_pol %&gt;% st_as_sf %&gt;% st_geometry %&gt;% plot
-distsr_pol %&gt;% st_as_sf %&gt;% slice(49) %&gt;% plot(add = TRUE)
-```
-
----
-## Calculations
+## Review
 
 - raster algebra
 - statistics
 - z dimension stats
 
+---
+## load data
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% st_as_sf(coords = c("x", "y"))
+districts &lt;- st_read(system.file("extdata/districts.shp", package = "geospaar"))
+```
+
+```
+## Reading layer `districts' from data source 
+##   `C:\Users\micha\AppData\Local\R\win-library\4.2\geospaar\extdata\districts.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 72 features and 1 field
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+## Geodetic CRS:  GCS_unknown
+```
+
+```r
+distsr &lt;- districts %&gt;% rasterize(., chirpsz)
+distsr_rs &lt;- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent between districts raster and chirpsz
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+
 
 ---
-## Calculations
+## selecting and resetting values
 
+- first calculate quartiles for total rainfall over all days
 
 ```r
-rf1 &lt;- chirpsz[[1]] + chirpsz[[2]]
-rf2 &lt;- chirpsz[[1]] * 5
-
-mx &lt;- cellStats(rf2, max)
-zl &lt;- c(0, mx)
-par(mfrow = c(2, 2))
-plot(chirpsz[[1]], zlim = zl)
-plot(chirpsz[[2]], zlim = zl)
-plot(rf1, zlim = zl)
-plot(rf2, zlim = zl)
-
-# dev.off()
-plot(rf1 / 1000)
-plot(((log10(rf1 + 1) * 10) / 5)^2)
+raintot &lt;- calc(chirpsz, fun = sum)
+print(quantile(raintot))
 ```
 
-- statistics
-
-```r
-# mean(c(1, 4, 10, NA), na.rm = TRUE)
-cellStats(chirpsz[[1]], stat = mean)
-cellStats(chirpsz[[1]], stat = range)
-cellStats(chirpsz, stat = mean)
-cellStats(chirpsz, stat = sum)
-cellStats(chirpsz, stat = range)
-cellStats(chirpsz, summary)
+```
+##        0%       25%       50%       75%      100% 
+##  10.39840  36.77773  47.77374  60.14730 158.54464
 ```
 
-- z dimension stats
-
 ```r
-plot(calc(chirpsz, mean))
-plot(calc(chirpsz, sum))
-plot(calc(chirpsz, range))
-```
----
-
-- neighborhoods
-
-
-```r
-raintot &lt;- calc(chirpsz, stat = sum)
-w &lt;- matrix(1, nrow = 5, ncol = 5)
-rainwindow &lt;- focal(raintot, w = w, fun = mean, na.rm = TRUE)
-rainwindow2 &lt;- focal(raintot, w = w, fun = mean)
-rainwindow3 &lt;- focal(raintot, w = w, fun = sd)
-par(mfrow = c(2, 2), mar = rep(0, 4))
-plot_noaxes(raintot, legend = FALSE)
-plot_noaxes(rainwindow, legend = FALSE)
-plot_noaxes(rainwindow2, legend = FALSE)
-plot_noaxes(rainwindow3, legend = FALSE)
+#rainclasses &lt;- raintot
 ```
 
 ---
+- now reclass based on quartiles
+  - class 1: &lt; 37 mm
+  - class 1: 37 - 60 mm
+  - class 2: &gt; 60 mm
 
-- reclassify
+```r
+rainquant &lt;- raintot ## make a copy of total rainfall object
+rainquant[raintot &lt; 37] &lt;- 0
+rainquant[(raintot &gt; 37) &amp; (raintot &lt; 60)] &lt;- 1
+rainquant[raintot &gt; 60] &lt;- 2
+plot(raintot)
+```
+
+![](class18_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+```r
+plot(rainquant)
+```
+
+![](class18_files/figure-html/unnamed-chunk-3-2.png)&lt;!-- --&gt;
+
+
+---
+## Select values 
+- what does each raster represent
+
+```r
+# #1
+raintot &lt;- calc(chirpsz, fun = sum)
+raincv &lt;- calc(chirpsz, fun = cv)
+
+# #2
+highrain_highcv &lt;- raintot &gt; 80 &amp; raincv &gt; 200  
+
+# #3
+dist54 &lt;- distsr_rs == 54  # a
+distrain &lt;- dist54 * raintot  # b
+distrain[dist54 == 0] &lt;- NA  # c
+# distrain &lt;- mask(raintot, dist54, maskvalue = 0)  # d
+
+# #4
+meandistrain &lt;- distrain &gt; cellStats(distrain, mean)
+
+# #5
+rain_gt_mu &lt;- raintot &gt; cellStats(raintot, mean)
+```
+
+---
+## Stack and plot
+
+```r
+s &lt;- stack(raintot, raincv, highrain_highcv, distrain, meandistrain, rain_gt_mu)
+titles &lt;- c("Total rain", "Rain CV", "High rain, high CV", "Dist 54 rain", 
+            "Dist 54 rain &gt; mean", "Rain &gt; mean")
+plot_noaxes(s, main = titles)  
+```
+
+![](class18_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+---
+## Categorical rasters
+- Create from `cut()`
 
 
 ```r
@@ -191,6 +170,9 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
        pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
 
+---
+## Categorical rasters
+- Create from `reclassify()`
 
 ```r
 rain &lt;- cellStats(raintot, range)
@@ -204,17 +186,260 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
        pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
 
+---
+
+## Extracting values
+
+- `extract()` can extract values from points, polygons
+
+Extract rain from farmer locations
+
+```r
+distinct_farmers &lt;- farmers %&gt;% distinct(uuid, .keep_all = TRUE) 
+
+distinct_farmers &lt;- distinct_farmers %&gt;%  mutate(rain = raster::extract(x = raintot, y = .)) 
+distinct_farmers
+```
+
+```
+## Simple feature collection with 793 features and 6 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 24.777 ymin: -18.222 xmax: 33.332 ymax: -8.997
+## CRS:           NA
+## # A tibble: 793 × 7
+##    uuid     date       season rained planted         geometry  rain
+##  * &lt;chr&gt;    &lt;date&gt;      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;POINT&gt; &lt;dbl&gt;
+##  1 009a8424 2015-11-15      1      0       0 (27.256 -16.926)  66.9
+##  2 00df166f 2015-11-15      1      0       0 (26.942 -16.504)  72.0
+##  3 02671a00 2015-11-15      1      0       0 (27.254 -16.914)  66.9
+##  4 03f4dcca 2015-11-15      1      0       0 (27.237 -16.733)  69.8
+##  5 042cf7b3 2015-11-15      1      0       0 (27.138 -16.807)  75.1
+##  6 05618404 2015-11-15      1      0       0 (26.875 -16.611)  66.1
+##  7 064beba0 2015-11-15      1      1       0 (26.752 -16.862)  58.4
+##  8 083a46a2 2015-11-15      1      0       0 (26.977 -16.765)  70.4
+##  9 08eb2224 2015-11-15      1      0       0 (26.912 -16.248)  54.0
+## 10 0ab761d6 2015-11-15      1      0       0  (27.113 -16.95)  72.4
+## # … with 783 more rows
+```
+
+---
+## Extracting values
+Extract total rain from districts.
+
+```r
+distrain &lt;- districts  %&gt;% 
+  raster::extract(x = raintot, y = ., fun = mean) %&gt;% print
+```
+
+```
+##            [,1]
+##  [1,]  88.68835
+##  [2,]  31.28064
+##  [3,] 119.84252
+##  [4,]  58.35027
+##  [5,]  74.89090
+##  [6,]  57.32735
+##  [7,]  52.02864
+##  [8,]  53.47900
+##  [9,]  36.46143
+## [10,]  57.26564
+## [11,]  67.99078
+## [12,]  42.05916
+## [13,]  37.77411
+## [14,]  27.06633
+## [15,]  41.87610
+## [16,]  68.27658
+## [17,]  71.55040
+## [18,]  44.01604
+## [19,]  71.30763
+## [20,]  45.12769
+## [21,]  56.23443
+## [22,]  40.97470
+## [23,]  57.26540
+## [24,]  65.30063
+## [25,]  44.50085
+## [26,]  44.93841
+## [27,]  65.49556
+## [28,]  55.19250
+## [29,]  34.58595
+## [30,]  52.79643
+## [31,]  32.50201
+## [32,]  33.06812
+## [33,]  56.24162
+## [34,]  56.47576
+## [35,]  73.53218
+## [36,]  44.12176
+## [37,]  44.05120
+## [38,]  48.99760
+## [39,]  47.76143
+## [40,]  29.54978
+## [41,]  69.70491
+## [42,]  44.62936
+## [43,]  41.09122
+## [44,]  39.81579
+## [45,]  44.15476
+## [46,]  49.81842
+## [47,]  54.94505
+## [48,]  43.98485
+## [49,]  63.98032
+## [50,]  52.09214
+## [51,]  55.81442
+## [52,]  64.82665
+## [53,]  49.01939
+## [54,]  51.98236
+## [55,]  35.80360
+## [56,]  44.02220
+## [57,]  89.23898
+## [58,]  28.72634
+## [59,]  46.55391
+## [60,]  48.23395
+## [61,]  62.89131
+## [62,]  57.64092
+## [63,]  61.68815
+## [64,]  39.00570
+## [65,]  36.76255
+## [66,]  42.59177
+## [67,]  31.21948
+## [68,]  37.88690
+## [69,]  33.76104
+## [70,]  53.98820
+## [71,]  60.90310
+## [72,]  90.68664
+```
 
 
 ---
-## Exercises
+## Sampling values
+- Setup
 
-- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
-- Reproject to Albers
-- Disaggregate to 0.02 degrees (bilinear and NGB)
-- Calculate the sum of rainfall from `chirps`
-- Identify all areas of total rainfall &gt; 10 mm
-- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+```r
+farmers_env &lt;- farmers %&gt;% distinct(uuid, .keep_all = TRUE) %&gt;% 
+  mutate(rain = raster::extract(x = raintot, y = .)) %&gt;%
+  mutate(district = raster::extract(x = distsr_rs, y = .)) 
+farmdistid &lt;- farmers_env %&gt;% drop_na %&gt;% distinct(district) %&gt;% pull
+farmdistsr &lt;- distsr_rs %in% farmdistid
+distsrfarm &lt;- mask(x = distsr_rs, mask = farmdistsr, maskvalue = 0)
+```
+
+---
+## `sampleRandom`
+- `sampleRandom` returns the cell values of the sample. 
+- We then use cell values to extract precip from `raintot`
+
+```r
+# #2
+set.seed(1)
+distsamp &lt;- sampleRandom(x = distsrfarm, size = nrow(farmers_env), cells = TRUE)
+randrain &lt;- raintot[distsamp[, 1]]
+```
+
+---
+## `sampleStratified`
+- We use `distsrfarm` to stratify layers.  (based on cell values)
+- equal size sample from each strata (i.e. district)
+
+```r
+set.seed(1)
+distsamp_str &lt;- sampleStratified(x = distsrfarm, 
+                                 size = nrow(farmers_env) / length(farmdistid),  cells = TRUE)
+stratrandrain &lt;- raintot[distsamp_str[, 1]]
+```
+
+---
+## Comparison
+
+```r
+rand_rain_stats &lt;- bind_rows(
+  tibble(rain = distrain, dat = "Districts"),
+  tibble(rain = randrain, dat = "Simple"),
+  tibble(rain = stratrandrain, dat = "Stratified")
+) %&gt;% drop_na
+
+rand_rain_stats %&gt;% ggplot() +
+  geom_boxplot(mapping = aes(y = rain, fill = dat), position = "dodge2") +
+  scale_fill_manual(values = c("lightblue", "steelblue", "cadetblue")) + 
+  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm")
+```
+
+![](class18_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+
+
+
+---
+## Challenge group work
+- You are looking to compare ndvi measurements from the Arable Mark (ground sensor) and Sentinel-2, for one growing season in Zambia. 
+- You start with a .csv file containing the dates and ground sensor ndvi.
+
+```r
+library(geospaar)
+ground_df &lt;- read.csv(("../inst/extdata/chilanga_farmer/Makulu_farmer.csv"))
+ground_df$date &lt;- as.Date(ground_df$date)
+ggplot(ground_df) +
+  geom_point(aes(x = date, y = ndvi),col = 'red') +
+  theme_bw()
+```
+
+```
+## Warning: Removed 175 rows containing missing values (`geom_point()`).
+```
+
+![](class18_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+
+---
+## Challenge group work
+- You have downloaded a set of Sentinel-2 raster files for this area.
+- Here we show how to import one such file.
+
+```r
+r1 &lt;- brick("../inst/extdata/chilanga_farmer/20210529T075609_20210529T082146_T35LPC.tif")
+plot(r1)
+```
+
+![](class18_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+## Challenge group work
+- You know the coordinates of the Mark location. Here, we use that to create an `sf` object.
+
+```r
+pt &lt;- st_point(x = c(28.28576,	-15.58808)) %&gt;% st_sfc(crs = 4326) %&gt;% st_as_sf()
+```
+
+---
+## Your goal
+- Extract Sentinel-2 NDVI values, using a 20m buffer around `pt`. 
+- Add a column "S2_ndvi". to `ground_df`. Dates with no S2 observation should have an `NA` value.
+- Use `ggplot` to plot a time-series of the pod NDVI (red), and S2 ndvi (blue)
+- Calculate the 'delta' (offset) between pod and S2 ndvi. Plot this time-series as well. 
+
+---
+## Hints
+-  Use `list.files()`, to list files in a directory. Use the `pattern` parameter to specify .tif
+- Reproject "pt" to match the crs of the raster. 
+- To extract dates from file names, use `substr`. 
+- To convert a string to a date object, see below
+
+
+```r
+a &lt;- "20201101"
+as.Date(a, format = "%Y%m%d")
+```
+
+```
+## [1] "2020-11-01"
+```
+
+---
+## HW
+- Work on challenge problem
+- Quiz Wednesday
+- Read Unit 2 Module 2b, Parts 1-2
+- HW 5 due Sun 4/9
+
+
+
 
 
 

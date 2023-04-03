@@ -18,161 +18,100 @@ output:
 
 
 ---
-## Exercise
+## Exercises
 
-- Create a raster `r` that has the extent xmin = 25, xmax = 30, ymin = -12, ymax = -10, and a resolution of 0.1
-
-```{r, eval=FALSE}
-r <- raster(extent(....
-
-```
-
-- Populate it with randomly sampled values from between 1:100
-
-```{r, eval=FALSE}
-values(r) <- ....
-
-```
-- Create a stack `s` using r and r * 10
-- Convert `s` to a brick `b`
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+- Reproject to Albers
+- Disaggregate to 0.02 degrees (bilinear and NGB)
+- Calculate the sum of rainfall from `chirps`
+- Identify all areas of total rainfall > 10 mm. Set these cells to 1 and other cells to 0.
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
 
 
 ---
-## Raster to other types
-```{r, eval=FALSE}
-library(dplyr)
-plot(b)
-b[1:10]
-b[1:ncell(b)]
-as.matrix(b)
-as.data.frame(b) %>% as_tibble()
-as_tibble(b)
-```
-
-
----
-## Pre-processing
-- Aggregating/disaggregating
-```{r, eval = FALSE}
-aggregate(b, fact = 2) %>% plot
-aggregate(b, fun = min, fact = 2) %>% plot
-aggregate(b, fun = sd, fact = 2) %>% plot
-plot(b)
-disaggregate(b, fact = 2) %>% plot
-par(mar = rep(0, 4))
-disaggregate(b, fact = 2, method = "bilinear") %>% plot
-```
-
-- Masking
-```{r, eval = FALSE}
-library(geospaar)
-districts <- st_read(system.file("extdata/districts.shp", package = "geospaar"))
-data(chirps)
-plot_noaxes(chirps[[1]])
-chirpsz <- mask(chirps, districts)
-plot_noaxes(chirpsz[[1]])
-plot(st_geometry(districts), add = TRUE)
-# rasterVis::levelplot(chirpsz[[1:5]])
-plot_noaxes(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-            legend = FALSE, zlim = c(0, 50))
-plot(chirpsz, nr = 3, nc = 4, maxnl = 12, mar = c(0, 0, 0, 0), 
-     legend = FALSE, zlim = c(0, 50))
-```
-
----
-
-- Projecting
-```{r, eval = FALSE}
-roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
-chirpsz_alb <- projectRaster(chirpsz, crs = crs(roads), res = 5000)
-# projectRaster(chirpsz, crs = crs(roads))
-chirpsz %>% projectRaster(., crs = crs(roads), res = 5000) -> chirpsz_alb
-chirpsz_alb %>% print
-plot(chirpsz_alb[[1]])
-plot(chirpsz[[1]])
-```
-
-- Rasterize/vectorize
-```{r, eval = FALSE}
-# distsr <- districts %>% rasterize(., chirpsz)
-# districts <- districts %>% mutate(ID = sample(1:1000, size = nrow(.)))
-distsr <- rasterize(districts, chirpsz)
-distsr2 <- rasterize(districts, chirpsz, field = "ID")
-distsr %>% plot_noaxes
-class(distsr@data@attributes[[1]])
-distsr2 %>% plot_noaxes
-# stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
-distsr_pol <- rasterToPolygons(distsr, dissolve = TRUE)
-distsr_pol %>% st_as_sf %>% st_geometry() %>% plot()
-distsr_pol %>% st_as_sf %>% slice(49) %>% plot(add = TRUE)
-```
-
----
-## Calculations
+## Review
 
 - raster algebra
 - statistics
 - z dimension stats
 
+---
+## load data
+```{r, message = F}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% st_as_sf(coords = c("x", "y"))
+districts <- st_read(system.file("extdata/districts.shp", package = "geospaar"))
+distsr <- districts %>% rasterize(., chirpsz)
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent between districts raster and chirpsz
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+```
+
+
 
 ---
-## Calculations
+## selecting and resetting values
 
-```{r, eval=FALSE}
-rf1 <- chirpsz[[1]] + chirpsz[[2]]
-rf2 <- chirpsz[[1]] * 5
+- first calculate quartiles for total rainfall over all days
+```{r, message = F}
+raintot <- calc(chirpsz, fun = sum)
+print(quantile(raintot))
+#rainclasses <- raintot
 
-mx <- cellStats(rf2, max)
-zl <- c(0, mx)
-par(mfrow = c(2, 2))
-plot(chirpsz[[1]], zlim = zl)
-plot(chirpsz[[2]], zlim = zl)
-plot(rf1, zlim = zl)
-plot(rf2, zlim = zl)
-
-# dev.off()
-plot(rf1 / 1000)
-plot(((log10(rf1 + 1) * 10) / 5)^2)
-
-```
-
-- statistics
-```{r, eval=FALSE}
-# mean(c(1, 4, 10, NA), na.rm = TRUE)
-cellStats(chirpsz[[1]], stat = mean)
-cellStats(chirpsz[[1]], stat = range)
-cellStats(chirpsz, stat = mean)
-cellStats(chirpsz, stat = sum)
-cellStats(chirpsz, stat = range)
-cellStats(chirpsz, summary)
-```
-
-- z dimension stats
-```{r, eval=FALSE}
-plot(calc(chirpsz, mean))
-plot(calc(chirpsz, sum))
-plot(calc(chirpsz, range))
-```
----
-
-- neighborhoods
-
-```{r, eval=FALSE}
-raintot <- calc(chirpsz, stat = sum)
-w <- matrix(1, nrow = 5, ncol = 5)
-rainwindow <- focal(raintot, w = w, fun = mean, na.rm = TRUE)
-rainwindow2 <- focal(raintot, w = w, fun = mean)
-rainwindow3 <- focal(raintot, w = w, fun = sd)
-par(mfrow = c(2, 2), mar = rep(0, 4))
-plot_noaxes(raintot, legend = FALSE)
-plot_noaxes(rainwindow, legend = FALSE)
-plot_noaxes(rainwindow2, legend = FALSE)
-plot_noaxes(rainwindow3, legend = FALSE)
 ```
 
 ---
+- now reclass based on quartiles
+  - class 1: < 37 mm
+  - class 1: 37 - 60 mm
+  - class 2: > 60 mm
+```{r, message = F}
+rainquant <- raintot ## make a copy of total rainfall object
+rainquant[raintot < 37] <- 0
+rainquant[(raintot > 37) & (raintot < 60)] <- 1
+rainquant[raintot > 60] <- 2
+plot(raintot)
+plot(rainquant)
+```
 
-- reclassify
+
+---
+## Select values 
+- what does each raster represent
+```{r, message = F}
+# #1
+raintot <- calc(chirpsz, fun = sum)
+raincv <- calc(chirpsz, fun = cv)
+
+# #2
+highrain_highcv <- raintot > 80 & raincv > 200  
+
+# #3
+dist54 <- distsr_rs == 54  # a
+distrain <- dist54 * raintot  # b
+distrain[dist54 == 0] <- NA  # c
+# distrain <- mask(raintot, dist54, maskvalue = 0)  # d
+
+# #4
+meandistrain <- distrain > cellStats(distrain, mean)
+
+# #5
+rain_gt_mu <- raintot > cellStats(raintot, mean)
+
+```
+
+---
+## Stack and plot
+```{r, message = F}
+s <- stack(raintot, raincv, highrain_highcv, distrain, meandistrain, rain_gt_mu)
+titles <- c("Total rain", "Rain CV", "High rain, high CV", "Dist 54 rain", 
+            "Dist 54 rain > mean", "Rain > mean")
+plot_noaxes(s, main = titles)  
+```
+
+---
+## Categorical rasters
+- Create from `cut()`
 
 ```{r, eval=FALSE}
 raincat <- cut(raintot, breaks = c(0, 50, 100, 200))
@@ -184,6 +123,9 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
        pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
 ```
 
+---
+## Categorical rasters
+- Create from `reclassify()`
 ```{r, eval=FALSE}
 rain <- cellStats(raintot, range)
 rain_3 <- cbind(c(floor(rain[1]), 50, 100),
@@ -197,17 +139,138 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
 
 ```
 
+---
+
+## Extracting values
+
+- `extract()` can extract values from points, polygons
+
+Extract rain from farmer locations
+```{r, message = F}
+distinct_farmers <- farmers %>% distinct(uuid, .keep_all = TRUE) 
+
+distinct_farmers <- distinct_farmers %>%  mutate(rain = raster::extract(x = raintot, y = .)) 
+distinct_farmers
+```
+
+---
+## Extracting values
+Extract total rain from districts.
+```{r, message = F}
+distrain <- districts  %>% 
+  raster::extract(x = raintot, y = ., fun = mean) %>% print
+```
 
 
 ---
-## Exercises
+## Sampling values
+- Setup
+```{r, message = F}
+farmers_env <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
+  mutate(rain = raster::extract(x = raintot, y = .)) %>%
+  mutate(district = raster::extract(x = distsr_rs, y = .)) 
+farmdistid <- farmers_env %>% drop_na %>% distinct(district) %>% pull
+farmdistsr <- distsr_rs %in% farmdistid
+distsrfarm <- mask(x = distsr_rs, mask = farmdistsr, maskvalue = 0)
+```
 
-- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
-- Reproject to Albers
-- Disaggregate to 0.02 degrees (bilinear and NGB)
-- Calculate the sum of rainfall from `chirps`
-- Identify all areas of total rainfall > 10 mm
-- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+---
+## `sampleRandom`
+- `sampleRandom` returns the cell values of the sample. 
+- We then use cell values to extract precip from `raintot`
+```{r, message = F}
+# #2
+set.seed(1)
+distsamp <- sampleRandom(x = distsrfarm, size = nrow(farmers_env), cells = TRUE)
+randrain <- raintot[distsamp[, 1]]
+```
+
+---
+## `sampleStratified`
+- We use `distsrfarm` to stratify layers.  (based on cell values)
+- equal size sample from each strata (i.e. district)
+```{r, message = F}
+set.seed(1)
+distsamp_str <- sampleStratified(x = distsrfarm, 
+                                 size = nrow(farmers_env) / length(farmdistid),  cells = TRUE)
+stratrandrain <- raintot[distsamp_str[, 1]]
+```
+
+---
+## Comparison
+```{r, message = F}
+rand_rain_stats <- bind_rows(
+  tibble(rain = distrain, dat = "Districts"),
+  tibble(rain = randrain, dat = "Simple"),
+  tibble(rain = stratrandrain, dat = "Stratified")
+) %>% drop_na
+
+rand_rain_stats %>% ggplot() +
+  geom_boxplot(mapping = aes(y = rain, fill = dat), position = "dodge2") +
+  scale_fill_manual(values = c("lightblue", "steelblue", "cadetblue")) + 
+  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm")
+```
+
+
+
+
+---
+## Challenge group work
+- You are looking to compare ndvi measurements from the Arable Mark (ground sensor) and Sentinel-2, for one growing season in Zambia. 
+- You start with a .csv file containing the dates and ground sensor ndvi.
+```{r, message = F}
+library(geospaar)
+ground_df <- read.csv(("../inst/extdata/chilanga_farmer/Makulu_farmer.csv"))
+ground_df$date <- as.Date(ground_df$date)
+ggplot(ground_df) +
+  geom_point(aes(x = date, y = ndvi),col = 'red') +
+  theme_bw()
+```
+
+---
+## Challenge group work
+- You have downloaded a set of Sentinel-2 raster files for this area.
+- Here we show how to import one such file.
+```{r, message = F}
+r1 <- brick("../inst/extdata/chilanga_farmer/20210529T075609_20210529T082146_T35LPC.tif")
+plot(r1)
+```
+
+---
+## Challenge group work
+- You know the coordinates of the Mark location. Here, we use that to create an `sf` object.
+```{r, message = F}
+pt <- st_point(x = c(28.28576,	-15.58808)) %>% st_sfc(crs = 4326) %>% st_as_sf()
+```
+
+---
+## Your goal
+- Extract Sentinel-2 NDVI values, using a 20m buffer around `pt`. 
+- Add a column "S2_ndvi". to `ground_df`. Dates with no S2 observation should have an `NA` value.
+- Use `ggplot` to plot a time-series of the pod NDVI (red), and S2 ndvi (blue)
+- Calculate the 'delta' (offset) between pod and S2 ndvi. Plot this time-series as well. 
+
+---
+## Hints
+-  Use `list.files()`, to list files in a directory. Use the `pattern` parameter to specify .tif
+- Reproject "pt" to match the crs of the raster. 
+- To extract dates from file names, use `substr`. 
+- To convert a string to a date object, see below
+
+```{r, message = F}
+a <- "20201101"
+as.Date(a, format = "%Y%m%d")
+```
+
+---
+## HW
+- Work on challenge problem
+- Quiz Wednesday
+- Read Unit 2 Module 2b, Parts 1-2
+- HW 5 due Sun 4/9
+
+
+
 
 
 
