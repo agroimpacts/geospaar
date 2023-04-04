@@ -57,14 +57,13 @@ roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
 raintot <- calc(chirpsz, fun = sum)
 print(quantile(raintot))
 #rainclasses <- raintot
-
 ```
 
 ---
-- now reclass based on quartiles
+- now reclass based on tertiles
   - class 1: < 37 mm
-  - class 1: 37 - 60 mm
-  - class 2: > 60 mm
+  - class 2: 37 - 60 mm
+  - class 3: > 60 mm
 ```{r, message = F}
 rainquant <- raintot ## make a copy of total rainfall object
 rainquant[raintot < 37] <- 0
@@ -119,8 +118,8 @@ cols <- c("grey70", "lightblue", "lightgreen")
 plot_noaxes(raincat, col = cols,
             legend = FALSE,  main = "Total Rainfall",
             mar = c(0, 0, 1, 0))
-legend(x = "bottomright", legend = c("high", "medium", "low"),
-       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+legend(x = "bottomright", legend = c("low", "medium", "high"),
+       pch = 15, pt.cex = 3, col = cols, bty = "n")
 ```
 
 ---
@@ -149,7 +148,7 @@ Extract rain from farmer locations
 ```{r, message = F}
 distinct_farmers <- farmers %>% distinct(uuid, .keep_all = TRUE) 
 
-distinct_farmers <- distinct_farmers %>%  mutate(rain = raster::extract(x = raintot, y = .)) 
+distinct_farmers <- distinct_farmers %>%  mutate(rain = raster::extract(x =raintot, y = .)) 
 distinct_farmers
 ```
 
@@ -181,7 +180,7 @@ distsrfarm <- mask(x = distsr_rs, mask = farmdistsr, maskvalue = 0)
 ```{r, message = F}
 # #2
 set.seed(1)
-distsamp <- sampleRandom(x = distsrfarm, size = nrow(farmers_env), cells = TRUE)
+distsamp <- sampleRandom(x = distsrfarm, size = nrow(farmers_env), cells = TRUE, asRaster = T)
 randrain <- raintot[distsamp[, 1]]
 ```
 
