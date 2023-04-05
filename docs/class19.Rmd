@@ -14,115 +14,111 @@ output:
 ## Today
 
 - Challenge
-- Raster intro, cont.
+- Terrain analysis
+- Interpolation, Distance
+- Modeling 
 
 ---
-## Challenge
-
-- Create 20 random rasters using lapply
-  - resolution of 0.1
-  - extent of Zambia
-  - convert to brick
-- crop and mask to extent of Zambia’s largest district
-- plot  
-
-
----
-## Calculations
-
-- raster algebra
-- statistics
-- z dimension stats
-
-
----
-## Calculations
-
-```{r, eval=FALSE}
+## Challenge group work
+- You are looking to compare ndvi measurements from the Arable Mark (ground sensor) and Sentinel-2, for one growing season in Zambia. 
+- You start with a .csv file containing the dates and ground sensor ndvi.
+```{r, message = F}
 library(geospaar)
-rf1 <- chirpsz[[1]] + chirpsz[[2]]
-rf2 <- chirpsz[[1]] * 5
-
-mx <- cellStats(rf2, max)
-zl <- c(0, mx)
-par(mfrow = c(2, 2))
-plot(chirpsz[[1]], zlim = zl)
-plot(chirpsz[[2]], zlim = zl)
-plot(rf1, zlim = zl)
-plot(rf2, zlim = zl)
-plot(stack(rf1, rf2))
-plot(stack(rf1, rf2), zlim = zl)
-
-# dev.off()
-plot(rf1 / 1000)
-plot(((log10(rf1 + 1) * 10) / 5)^2)
-```
-
-- statistics
-```{r, eval=FALSE}
-# mean(c(1, 4, 10, NA), na.rm = TRUE)
-cellStats(chirpsz[[1]], stat = mean)
-cellStats(chirpsz[[1]], stat = range)
-cellStats(chirpsz, stat = mean)
-cellStats(chirpsz, stat = sum)
-cellStats(chirpsz, stat = range)
-cellStats(chirpsz, summary)
+library(raster)
+ground_df <- read.csv(("../inst/extdata/chilanga_farmer/Makulu_farmer.csv"))
+ground_df$date <- as.Date(ground_df$date)
+ggplot(ground_df) +
+  geom_point(aes(x = date, y = ndvi),col = 'red') +
+  theme_bw()
 ```
 
 ---
-- z dimension stats
-```{r, eval=FALSE}
-plot(calc(chirpsz, mean))
-plot(calc(chirpsz, sum))
-plot(calc(chirpsz, range))
-?modal
-plot(calc(round(chirpsz, 0), modal))
-plot(calc(chirpsz, modal))
-v <- values(calc(chirpsz, modal))
-table(v[!is.na(v)])
-```
----
-
-- neighborhoods
-
-```{r, eval=FALSE}
-raintot <- calc(chirpsz, sum)
-w <- matrix(1, nrow = 5, ncol = 5)
-rainwindow <- focal(raintot, w = w, fun = mean, na.rm = TRUE)
-rainwindow2 <- focal(raintot, w = w, fun = mean)
-rainwindow3 <- focal(raintot, w = w, fun = sd)
-par(mfrow = c(2, 2), mar = rep(0, 4))
-plot_noaxes(raintot, legend = FALSE)
-plot_noaxes(rainwindow, legend = FALSE)
-plot_noaxes(rainwindow2, legend = FALSE)
-plot_noaxes(rainwindow3, legend = FALSE)
+## Challenge group work
+- You have downloaded a set of Sentinel-2 raster files for this area.
+- Here we show how to import one such file.
+```{r, message = F}
+r1 <- brick("../inst/extdata/chilanga_farmer/20210529T075609_20210529T082146_T35LPC.tif")
+plot(r1)
 ```
 
 ---
-
-- reclassify
-
-```{r, eval=FALSE}
-raincat <- cut(raintot, breaks = c(0, 50, 100, 200))
-cols <- c("grey70", "lightblue", "lightgreen")
-plot_noaxes(raincat, col = cols,
-            legend = FALSE,  main = "Total Rainfall",
-            mar = c(0, 0, 1, 0))
-legend(x = "bottomright", legend = c("high", "medium", "low"),
-       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+## Challenge group work
+- You know the coordinates of the Mark location. Here, we use that to create an `sf` object.
+```{r, message = F}
+pt <- st_point(x = c(28.28576,	-15.58808)) %>% st_sfc(crs = 4326) %>% st_as_sf()
 ```
 
-```{r, eval=FALSE}
-rain <- cellStats(raintot, range)
-rain_3 <- cbind(c(floor(rain[1]), 50, 100),
-                 c(50, 100, ceiling(rain[2])), 1:3)
-raincat2 <- reclassify(raintot, rain_3, include.lowest = TRUE)
-plot_noaxes(raincat2, col = cols,
-            legend = FALSE,  main = "Total Rainfall",
-            mar = c(0, 0, 1, 0))
-legend(x = "bottomright", legend = c("high", "medium", "low"),
-       pch = 15, pt.cex = 3, col = rev(cols), bty = "n")
+---
+## Your goal
+- Extract Sentinel-2 NDVI values, using a 20m buffer around `pt`. 
+- Add a column "S2_ndvi". to `ground_df`. Dates with no S2 observation should have an `NA` value.
+- Use `ggplot` to plot a time-series of the pod NDVI (red), and S2 ndvi (blue)
+- Calculate the 'delta' (offset) between pod and S2 ndvi. Plot this time-series as well. 
 
+---
+## Create buffer, ndvi image
+
+```{r, message = F}
+pt_buffer <- pt %>% st_transform(crs = crs(r1)) %>% st_buffer(20)
+ndvi <- (r1[['B8']] - r1[['B4']])/(r1[['B8']] + r1[['B4']])
+plot(ndvi)
+plot(pt_buffer, add = T)
+```
+
+---
+## Extract value, date
+
+```{r, message = F}
+value <- raster::extract(ndvi, pt_buffer, fun = mean) %>% as.numeric()
+img_date <- "20210529T075609_20210529T082146_T35LPC.tif" %>% 
+  substr( 1, 8) %>% 
+  as.Date(., format = "%Y%m%d")
+print(value)
+print(img_date)
+```
+
+---
+## Add value to data frame
+```{r, message = F}
+row_index <- which(ground_df$date == img_date)
+
+ground_df$S2_ndvi <- NA ## set up blank column
+
+ground_df[row_index, "S2_ndvi"] <- value
+#ground_df
+```
+
+---
+## Use `for` to add all values
+```{r, message = F}
+image_files <- list.files("../inst/extdata/chilanga_farmer/", pattern = ".tif")
+
+for (name in image_files){
+  print(name)
+  r <- brick(paste0("../inst/extdata/chilanga_farmer/", name))
+  ndvi <- (r[['B8']] - r[['B4']])/(r[['B8']] + r[['B4']])
+  value <- raster::extract(ndvi, pt_buffer, fun = mean) %>% as.numeric()
+  img_date <- name %>% substr( 1, 8) %>% as.Date(., format = "%Y%m%d")
+  row_index <- which(ground_df$date == img_date)
+  ground_df[row_index, "S2_ndvi"] <- value
+}
+#View(ground_df)
+```
+
+---
+## Mean Difference
+
+```{r, message = F}
+ground_df$ndvi_diff <- ground_df$ndvi - ground_df$S2_ndvi
+mean(ground_df$ndvi_diff, na.rm = T)
+```
+
+- plot
+```{r, message = F}
+ggplot(ground_df) +
+  geom_point(aes(x = date, y = ndvi), col = 'red') +
+  geom_point(aes(x = date, y = S2_ndvi), col = 'blue') +
+  theme_bw()
 ```
 
 ---
@@ -132,8 +128,106 @@ legend(x = "bottomright", legend = c("high", "medium", "low"),
 - Reproject to Albers
 - Disaggregate to 0.02 degrees (bilinear and NGB)
 - Calculate the sum of rainfall from `chirps`
-- Identify all areas of total rainfall > 10 mm
+- Identify all areas of total rainfall > 10 mm. Set these cells to 1 and other cells to 0.
 - Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+
+
+
+
+---
+## Exercise answers
+- Create a dummy raster (sampling from 1:100) using district 49 for extent and res of 0.1
+
+```{r, eval=FALSE}
+r <- raster(extent(districts[49, ]), res = 0.1, crs = 4326)
+set.seed(1)
+values(r) <- sample(1:100, size = ncell(r), replace = TRUE)
+plot_noaxes(r)
+plot(districts[49, ]$geometry, add = TRUE)
+```
+
+- Reproject to Albers
+```{r, eval=FALSE}
+ralb <- projectRaster(r, crs = "ESRI:102022", 
+                      res = c(13000, 11000), method = "ngb")
+ralb <- projectRaster(r, crs = "ESRI:102022", res = c(13000, 13000))
+par(mfrow = c(1, 2))
+plot_noaxes(r)
+plot_noaxes(ralb)
+r; ralb
+```
+- Disaggregate to 0.02 degrees
+```{r, eval=FALSE}
+r02 <- disaggregate(r, fact = 5)
+r02b <- disaggregate(r, fact = 5, method = "bilinear")
+plot(stack(r02, r02b))
+```
+
+---
+
+- Calculate the sum of rainfall from `chirps`
+```{r, eval=FALSE}
+raintot <- calc(chirps, sum)
+raintot2 <- calc(chirpsz, sum)
+plot(stack(raintot, raintot2))
+```
+- Identify all areas of total rainfall > 10 mm
+```{r, eval=FALSE}
+rain10 <- raintot2 > 10
+rain50 <- raintot2 > 50
+rain100 <- raintot2 > 100
+rains <- stack(rain10, rain50, rain100)
+names(rains) <- c("Rain_gt_10mm", "Rain_gt_50mm", "Rain_gt_100mm")
+plot(rains, main = c("Rain > 10mm", "Rain > 50mm", "Rain > 100mm"))
+```
+- Calculate the mean rainfall in Zambia for the 15th day in `chirps`
+```{r, eval=FALSE}
+rainmean <- calc(chirpsz, mean)
+cellStats(chirpsz[[15]], mean)
+hist(chirpsz[[15]], breaks = seq(0, 12, 2))
+freq(chirpsz[[15]])
+plot(rainmean)
+# plot(rainmean)
+```
+
+
+
+---
+## Today
+
+- terrain analysis
+- distance
+- modeling
+
+---
+## Simple terrain analysis
+- requires DEM as input (use getData)
+```{r, message = F}
+dem <- getData(name = "alt", country = "ZMB", path = tempdir())
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+districts <- st_read(system.file("extdata/districts.shp", package = "geospaar"))
+
+## reproject DEM to Albers
+zamr <- raster(x = extent(districts), crs = crs(districts), res = res(dem))
+values(zamr) <- 1:ncell(zamr)
+zamr_alb <- projectRaster(from = zamr, res = 1000, crs = crs(roads), 
+                          method = "ngb")
+demalb <- projectRaster(from = dem, to = zamr_alb)  # default is bilinear
+plot(demalb)
+```
+
+---
+## Simple terrain analysis
+```{r, message = F}
+vars <- c("slope", "aspect", "flowdir", "tri")
+terrvars <- stack(lapply(1:length(vars), function(x) {
+  tv <- terrain(x = demalb, opt = vars[x], unit = "degrees")
+}))
+names(terrvars) <- vars
+
+plot_noaxes(terrvars)
+```
+
 
 ---
 ## Terrain analysis with zonal statistics
@@ -195,6 +289,166 @@ names(weekly_rainfall) <- paste0("wk", unique(wk))
 rflim <- range(cellStats(weekly_rainfall, range))
 plot(stack(weekly_rainfall), zlim = rflim)
 ```
+
+---
+## Distance
+- plot distance from points
+- points must be in same projection as model raster
+```{r, message = F}
+set.seed(1)
+randsamp <- sampleRandom(raintotalb, size = 10, xy = TRUE) %>% 
+  as_tibble %>%  
+  st_as_sf(coords = c("x", "y")) 
+st_crs(randsamp) <- crs(raintotalb)
+# #2
+ptdistr <- distanceFromPoints(object = raintotalb, xy = as_Spatial(randsamp))
+ptdistrmsk <- mask(ptdistr, raintotalb)
+plot(ptdistrmsk)
+```
+
+
+
+---
+## Interpolation
+- You have values at certain sample points, but need values at all points in raster
+- 
+```{r, message = F}
+## Simple terrain analysis
+library(gstat)
+
+# #1
+raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
+names(raintotalb) <- "rain"
+r <- raster(extent(raintotalb), res = res(raintotalb), 
+            crs = crs(raintotalb), vals = 1)
+
+# #2
+set.seed(1)
+rainsamp <- sampleRandom(raintotalb, size = 1000, xy = TRUE)
+rainsamp <- as.data.frame(rainsamp)
+# head(rainsamp)
+
+# #3
+invdist <- gstat(id = "rain", formula = rain ~ 1, locations = ~x + y, 
+                 data = rainsamp)
+invdistr <- interpolate(object = r, model = invdist)
+invdistrmsk <- mask(x = invdistr, mask = raintotalb)
+```
+
+
+---
+- kriging
+```{r, message = F}
+coordinates(rainsamp) <- ~x + y  # a
+crs(rainsamp) <- crs(roads)  # b
+v <- variogram(object = rain ~ 1, data = rainsamp)  # c
+m <- fit.variogram(object = v, model = vgm("Sph"))  # d
+m
+#> model    psill    range
+#> 1   Nug  14.1009      0.0
+#> 2   Sph 380.2139 457427.7
+
+plot(variogramLine(m, max(v[, 2])), type = "l")  # e
+points(v[, 2:3], pch = 20)  # f
+legend("bottomright", legend = c("variogram fit", "variogram"), 
+       lty = c(1, NA), pch = c(NA, 20), bty = "n") # g
+ordkrig <- gstat(id = "rain", formula = rain ~ 1, data = rainsamp, model= m)
+ordkrigr <- interpolate(object = r, model = ordkrig)
+ordkrigrmsk <- mask(x = ordkrigr, mask = raintotalb)
+```
+
+---
+## plot interpolations
+```{r, message = F}
+raininterp <- stack(raintotalb, invdistrmsk, ordkrigrmsk)
+titles <- c("Actual rain", "IDW rain", "Kriged rain")
+par(mfrow = c(2, 2), mar = c(0, 0, 1, 0))
+plot(rainsamp, pch = 20, cex = 0.5)
+for(i in 1:3) plot_noaxes(raininterp[[i]], main = titles[i])
+```
+
+
+
+
+
+---
+## Regression modeling
+- we will predict precipitation from 3 variables
+  - X (longitude)
+  - Y (latitude)
+  - elevation
+- First sample points and create table
+```{r, message = F}
+data(zamprec)
+zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
+names(zamprecalb) <- "rain"
+elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
+
+# #2
+set.seed(1)
+pts <- sampleRandom(x = zamprecalb, size = 500, sp = TRUE) %>% st_as_sf
+pts <- pts %>% mutate(elev = raster::extract(x = elev, y = .)) 
+pts_dat <- bind_cols(
+  pts %>% data.frame %>% dplyr::select(-geometry) %>% as_tibble, 
+  st_coordinates(pts) %>% as_tibble
+) %>% drop_na
+head(pts_dat)
+```
+
+---
+## Create linear model
+```{r, message = F}
+rain_lm <- lm(rain ~ X + Y + elev, data = pts_dat)
+summary(rain_lm)
+```
+
+---
+## Create raster layers for each  variable
+- We already have layers for precip and elevation. 
+- Need layers for long and lat.
+```{r, message = F}
+xs <- xFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+ys <- yFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+X <- Y <- raintotalb
+values(X) <- xs
+values(Y) <- ys
+predst <- stack(X, Y, elev)
+names(predst) <- c("X", "Y", "elev")
+plot(predst)
+```
+
+---
+## Apply model and plot
+```{r, message = F}
+## apply model to raster stack
+predrainr <- predict(object = predst, model = rain_lm)
+
+## plot
+s <- stack(zamprecalb, predrainr, (predrainr - zamprecalb) / zamprecalb * 100)
+mae <- round(cellStats(abs(zamprecalb - predrainr), mean), 1)  
+
+pnames <- c("'Observed' Rainfall", "Predicted Rainfall", "% Difference")
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 4))
+for(i in 1:3) {
+  plot_noaxes(s[[i]], main = pnames[i])
+  if(i %in% 1:2) {
+    pts %>% st_geometry %>% 
+      plot(pch = 20, cex = 0.2, col = "grey70", add = TRUE)
+  } else {
+    mtext(side = 1, line = -3, cex = 0.8, 
+          text = paste("Mean abs err =", mae, "mm"))
+  }
+}
+```
+
+
+
+---
+## HW
+- HW 5 due Sun 4/9
+
+
+
 
 
 
