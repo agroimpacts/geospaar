@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.21/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## Ground Sensor Random Forest demo
+]
+
+---
+
+
+
+
+---
+## Random Forests
+- Used for regression (continuous prediction) or classification (categorical prediction)
+- Good for non-linear modeling.
+- Does NOT take into account spatial location. Each pixel's values are treated separately.(although [spatial version](https://link.springer.com/article/10.1007/s11004-021-09946-w) exists)
+
+---
+
+---
+## Example 2
+- Predict ground sensor NDVI from satellite time-series
+- predict ground-based `ndvi_fitted` from Sentinel-1, 2 data
+
+```r
+load("../inst/extdata/filt_data.rda")
+indep_var &lt;- c("s2_ndvi_fitted", "s2_evi2_fitted", "s2_gcvi_fitted",
+               "s1_VH_fitted", "s1_VV_fitted", "s1_vh_vv_fitted")
+dep_var &lt;- "ndvi_fitted"
+```
+
+---
+## Create random forest model
+- We will validate on Zambia 2020-21 sites.
+- So we remove these sites from model training.
+
+```r
+library(dplyr)
+train_data &lt;- filt_data %&gt;% filter(group_id != "Zam_20_21") %&gt;% select(all_of(c(indep_var, dep_var)) )
+head(train_data)
+```
+
+```
+##   s2_ndvi_fitted s2_evi2_fitted s2_gcvi_fitted s1_VH_fitted s1_VV_fitted
+## 1      0.1406883      0.2184422       1.238491    -13.85516    -7.064181
+## 2      0.1430863      0.2223616       1.250054    -13.67935    -6.960656
+## 3      0.1457532      0.2267302       1.260880    -13.50355    -6.857131
+## 4      0.1486949      0.2315582       1.270766    -13.32774    -6.753605
+## 5      0.1519224      0.2368768       1.279854    -13.15194    -6.650080
+## 6      0.1554465      0.2427170       1.288285    -12.97614    -6.546555
+##   s1_vh_vv_fitted ndvi_fitted
+## 1       -6.790975   0.1617020
+## 2       -6.718696   0.1587518
+## 3       -6.646418   0.1558017
+## 4       -6.574139   0.1528515
+## 5       -6.501860   0.1498170
+## 6       -6.429581   0.1466474
+```
+
+---
+## create model
+- Dep variable - `ndvi_fitted`
+- Indep variables - all other variables in `train_data`
+
+```r
+library(ranger)
+rf_model &lt;- ranger(ndvi_fitted ~ ., 
+                   data=train_data, 
+                   importance='impurity', mtry=3)
+print(rf_model)
+```
+
+```
+## Ranger result
+## 
+## Call:
+##  ranger(ndvi_fitted ~ ., data = train_data, importance = "impurity",      mtry = 3) 
+## 
+## Type:                             Regression 
+## Number of trees:                  500 
+## Sample size:                      33068 
+## Number of independent variables:  6 
+## Mtry:                             3 
+## Target node size:                 5 
+## Variable importance mode:         impurity 
+## Splitrule:                        variance 
+## OOB prediction error (MSE):       0.002081451 
+## R squared (OOB):                  0.9561656
+```
+
+```r
+# 
+# library(randomForest)
+# rf_model &lt;- randomForest(ndvi_fitted ~ .,
+#                      data = train_data, 
+#                      proximity=TRUE,
+#                      importance = T) 
+```
+
+---
+## Variable importance
+
+
+```r
+library(vip)
+v1 &lt;- vip(rf_model)
+v1
+```
+
+![](sensor_rf_demo_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+---
+## Predict for validation data and plot
+
+```r
+library(ggplot2)
+valid_data &lt;- filt_data %&gt;% filter(group_id == "Zam_20_21")
+ndvi_hat &lt;- predict(rf_model, data = valid_data )
+
+valid_data$ndvi_hat &lt;- ndvi_hat[["predictions"]]
+sites &lt;- unique(valid_data$Location)
+#par(mfrow = c(7,2))
+plots &lt;- lapply(sites, function(site){
+  p1 &lt;- ggplot(valid_data %&gt;% filter(Location == site)) + 
+    geom_point(aes(x = date, y = ndvi_fitted), col = "blue", alpha = 0.2) + 
+    geom_point(aes(x = date, y = ndvi_hat), col = "red") + 
+    geom_line(aes(x = date, y = s2_ndvi_fitted), alpha = 0.5, col = 'grey') + 
+    geom_point(aes(x = date, y = s2_ndvi), alpha = 0.5, col = 'grey') + 
+    ggtitle(site) +
+  theme_bw()
+  print(p1)
+  return(p1)
+})
+```
+
+![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-2.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-3.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-4.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-5.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-6.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-7.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-8.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-9.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-10.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-11.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-12.png)&lt;!-- --&gt;![](sensor_rf_demo_files/figure-html/unnamed-chunk-5-13.png)&lt;!-- --&gt;
+
+---
+## Plots
+- red: predicted ndvi
+- blue: pod ndvi (dep var)
+- grey: S2 ndvi (one of indep var)
+
+```r
+#par(mfrow= c(2,2))
+grid.arrange(plots[[1]],
+             plots[[2]],
+             plots[[3]],
+             plots[[4]],
+  nrow = 2)
+# for (k in 1:4){
+#   print(plots[[k]])
+# }
+```
+
+&lt;img src="sensor_rf_demo_files/figure-html/figures-side-1.png" width="50%" /&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.21/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## WUR Random Forest demo
+]
+
+---
+
+
+
+
+---
+## Random Forests
+- Used for regression (continuous prediction) or classification (categorical prediction)
+- Good for non-linear modeling.
+- Does NOT take into account spatial location. Each pixel's values are treated separately.(although [spatial version](https://link.springer.com/article/10.1007/s11004-021-09946-w) exists)
+
+---
+## RF video
+- [Visual Guide](https://www.youtube.com/watch?v=cIbj0WuK41w)
+
+---
+
+## RF Demo
+- All code taken from https://geoscripting-wur.github.io/AdvancedRasterAnalysis/ 
+- All code courtesy of Wageningen University &amp; Research
+
+
+
+---
+## Study area
+- Predict land cover in Ethiopia using Sentinel-2 imagery
+- Create RF classification model using training polygons
+
+
+
+---
+## Load data and summary stats
+
+```r
+# Check for packages and install if missing
+if(!"terra" %in% installed.packages()){install.packages("terra")}
+if(!"sf" %in% installed.packages()){install.packages("sf")}
+if(!"ranger" %in% installed.packages()){install.packages("ranger")}
+
+library(terra)
+```
+
+```
+## terra 1.7.3
+```
+
+```r
+library(sf)
+```
+
+```
+## Linking to GEOS 3.9.3, GDAL 3.5.2, PROJ 8.2.1; sf_use_s2() is TRUE
+```
+
+```r
+library(ranger)
+
+# Create data directory,
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+# Create output directory
+if (!dir.exists("output")) {
+  dir.create("output")
+}
+
+# Download data and unzip
+download.file("https://github.com/GeoScripting-WUR/AdvancedRasterAnalysis/releases/download/advrast-data/AdvancedRaster.zip", "data/AdvancedRaster.zip")
+unzip("data/AdvancedRaster.zip", exdir="data")
+
+# Load data and rename the layers
+Gewata &lt;- rast("data/S2B2A_T36NZP_20201227T075239_20m_gewata_crop.tif")
+names(Gewata) &lt;- readLines("data/S2B2A_T36NZP_20201227T075239_20m_gewata_bands.txt")
+
+# The image is cloud-free, so drop the cloud mask layer
+Gewata &lt;- subset(Gewata, "SCL", negate = TRUE)
+
+# Check out the attributes
+Gewata$B02
+```
+
+```
+## class       : SpatRaster 
+## dimensions  : 1362, 2322, 1  (nrow, ncol, nlyr)
+## resolution  : 20, 20  (x, y)
+## extent      : 806780, 853220, 822240, 849480  (xmin, xmax, ymin, ymax)
+## coord. ref. : WGS 84 / UTM zone 36N (EPSG:32636) 
+## source      : S2B2A_T36NZP_20201227T075239_20m_gewata_crop.tif 
+## name        : B02
+```
+
+```r
+# Some basic statistics using global() from the terra package
+global(Gewata$B02, fun = "max")$max
+```
+
+```
+## [1] 4466
+```
+
+```r
+global(Gewata$B02, fun = "mean")$mean
+```
+
+```
+## [1] 320.8917
+```
+
+```r
+# What is the maximum value of all three bands?
+global(Gewata, fun = "max")$max
+```
+
+```
+## [1]  4466  5115  5365  4989  8790 10546  6982 14146 11008
+```
+
+```r
+# summary() is useful function for a quick overview
+summary(Gewata$B02)
+```
+
+```
+## Warning: [summary] used a sample
+```
+
+```
+##       B02      
+##  Min.   :  54  
+##  1st Qu.: 248  
+##  Median : 315  
+##  Mean   : 321  
+##  3rd Qu.: 387  
+##  Max.   :4466
+```
+
+```r
+# Histograms for all the bands in one window (automatic, if a SpatRaster is supplied)
+hist(Gewata, maxpixels = 1000)
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning: [hist] a sample of32% of the cells was used
+```
+
+```
+## Warning in plot.window(xlim, ylim, "", ...): "maxpixels" is not a graphical
+## parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...):
+## "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(1, ...): "maxpixels" is not a graphical parameter
+```
+
+```
+## Warning in axis(2, at = yt, ...): "maxpixels" is not a graphical parameter
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+
+---
+## Check correlation of S2 bands
+
+```r
+pairs(Gewata, maxpixels = 1000)
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
+
+---
+## Create NDVI band
+
+```r
+par(mfrow = c(1, 1)) # reset plotting window
+ndvi &lt;- app(c(Gewata$B8A, Gewata$B04), fun = function(x){(x[1] - x[2]) / (x[1] + x[2])})
+plot(ndvi)
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+
+---
+## Add NDVI band to original raster
+
+```r
+# Rescale to original scale
+gewata &lt;- app(Gewata, fun = function(x) x / 10000)
+
+# Make a new SpatRaster by combining the Gewata and NDVI SpatRasters
+covs &lt;- c(gewata, ndvi)
+names(covs) &lt;- c(names(Gewata), "NDVI")
+names(covs)
+```
+
+```
+##  [1] "B02"  "B03"  "B04"  "B05"  "B06"  "B07"  "B11"  "B12"  "B8A"  "NDVI"
+```
+
+```r
+plot(covs)
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+
+---
+## Download training polygons in .csv
+
+```r
+# Download training polygons
+download.file("https://github.com/GeoScripting-WUR/AdvancedRasterAnalysis/releases/download/advrast-data/trainingPoly.csv", "data/trainingPoly.csv")
+
+# Load the training polygons from a csv file using st_read:
+trainingPoly &lt;- st_read("data/trainingPoly.csv")
+```
+
+```
+## Reading layer `trainingPoly' from data source 
+##   `C:\Users\micha\Documents\geospaar\docs\data\trainingPoly.csv' 
+##   using driver `CSV'
+## Simple feature collection with 16 features and 3 fields
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 813300.2 ymin: 822891.5 xmax: 846719.1 ymax: 848830.4
+## CRS:           NA
+```
+
+```r
+# Superimpose training polygons onto NDVI plot
+par(mfrow = c(1, 1)) # reset plotting window
+plot(ndvi)
+plot(trainingPoly, add = TRUE)
+```
+
+```
+## Warning in plot.sf(trainingPoly, add = TRUE): ignoring all but the first
+## attribute
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+---
+## Inspect training polygons
+
+```r
+# Inspect the trainingPoly object
+trainingPoly &lt;- trainingPoly[, c(2:4)] #remove an unused column
+trainingPoly
+```
+
+```
+## Simple feature collection with 16 features and 2 fields
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 813300.2 ymin: 822891.5 xmax: 846719.1 ymax: 848830.4
+## CRS:           NA
+## First 10 features:
+##    OBJECTID   Class                       geometry
+## 1         1 wetland POLYGON ((821935.6 833523.3...
+## 2         2 wetland POLYGON ((824714 831022.8, ...
+## 3         3 wetland POLYGON ((830913.4 832637.4...
+## 4         4 wetland POLYGON ((832451.1 833023.5...
+## 5         5 wetland POLYGON ((834905.6 837919.2...
+## 6         6  forest POLYGON ((833159.4 846635.4...
+## 7         7  forest POLYGON ((831922.1 848830.4...
+## 8         8  forest POLYGON ((842202 832724.6, ...
+## 9         9  forest POLYGON ((840860.9 829199.5...
+## 10       10  forest POLYGON ((839926.8 824919.4...
+```
+
+```r
+trainingPoly$Class &lt;- as.factor(trainingPoly$Class)
+summary(trainingPoly$Class)
+```
+
+```
+## cropland   forest  wetland 
+##        6        5        5
+```
+
+```r
+# We can make a new 'Code' column by converting the factor levels to integer by using the as.numeric() function,
+trainingPoly$Code &lt;- as.numeric(trainingPoly$Class)
+# Inspect the new 'Code' column
+summary(trainingPoly$Code)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.000   2.000   1.938   3.000   3.000
+```
+
+
+---
+## Improve legend of training polygons
+
+```r
+# Define a colour scale for the classes (as above) corresponding to: cropland, forest, wetland
+cols &lt;- c("orange", "dark green", "light blue")
+
+# Superimpose training polygons (colour by class) onto NDVI plot
+plot(ndvi)
+plot(trainingPoly["Class"], add = TRUE, pal = cols)
+
+# Add a customised legend
+legend("topright", legend = c("cropland", "forest", "wetland"), fill = cols, bg = "white")
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+## Extract pixel values from training polygons
+- data frame has both S2 values, land cover class.
+
+```r
+# Extract pixel values below the polygons into a dataframe
+trainingData &lt;- extract(covs, trainingPoly)
+
+# Add a column specifying the class based on the polygon ID
+trainingData$Class &lt;- trainingPoly$Class[trainingData$ID]
+
+# Remove the training polygon ID's from the dataframe
+trainingData$ID &lt;- NULL
+
+head(trainingData, n = 10)
+```
+
+```
+##       B02    B03    B04    B05    B06    B07    B11    B12    B8A      NDVI
+## 1  0.0492 0.0746 0.0680 0.1105 0.1999 0.2280 0.2425 0.1496 0.2608 0.5863747
+## 2  0.0518 0.0759 0.0705 0.1168 0.2093 0.2397 0.2505 0.1576 0.2706 0.5866315
+## 3  0.0523 0.0772 0.0710 0.1189 0.2073 0.2418 0.2501 0.1567 0.2717 0.5856434
+## 4  0.0482 0.0714 0.0674 0.1120 0.1971 0.2265 0.2331 0.1394 0.2617 0.5903981
+## 5  0.0476 0.0732 0.0675 0.1126 0.1959 0.2257 0.2364 0.1421 0.2586 0.5860166
+## 6  0.0481 0.0716 0.0671 0.1117 0.1932 0.2231 0.2360 0.1433 0.2550 0.5833592
+## 7  0.0483 0.0726 0.0678 0.1128 0.1997 0.2287 0.2398 0.1483 0.2559 0.5810936
+## 8  0.0517 0.0760 0.0700 0.1161 0.2057 0.2356 0.2484 0.1558 0.2678 0.5855536
+## 9  0.0528 0.0757 0.0717 0.1176 0.2049 0.2360 0.2501 0.1570 0.2699 0.5802108
+## 10 0.0502 0.0745 0.0679 0.1145 0.2065 0.2351 0.2480 0.1502 0.2676 0.5952310
+##      Class
+## 1  wetland
+## 2  wetland
+## 3  wetland
+## 4  wetland
+## 5  wetland
+## 6  wetland
+## 7  wetland
+## 8  wetland
+## 9  wetland
+## 10 wetland
+```
+
+```r
+tail(trainingData, n = 10)
+```
+
+```
+##          B02    B03    B04    B05    B06    B07    B11    B12    B8A      NDVI
+## 87195 0.0352 0.0544 0.0563 0.0986 0.1997 0.2351 0.2193 0.1324 0.2652 0.6497667
+## 87196 0.0377 0.0586 0.0651 0.1053 0.1789 0.2219 0.2357 0.1534 0.2433 0.5778210
+## 87197 0.0400 0.0594 0.0736 0.1108 0.1637 0.1842 0.2491 0.1729 0.2144 0.4888889
+## 87198 0.0445 0.0750 0.0807 0.1316 0.2074 0.2370 0.2476 0.1602 0.2707 0.5406944
+## 87199 0.0334 0.0537 0.0528 0.0960 0.2105 0.2668 0.2187 0.1242 0.2930 0.6946212
+## 87200 0.0385 0.0653 0.0605 0.1127 0.2108 0.2402 0.2329 0.1482 0.2709 0.6348823
+## 87201 0.0475 0.0758 0.0835 0.1279 0.2009 0.2237 0.2624 0.1716 0.2552 0.5069383
+## 87202 0.0578 0.0941 0.1053 0.1617 0.2302 0.2592 0.2904 0.1873 0.2959 0.4750748
+## 87203 0.0342 0.0559 0.0585 0.0957 0.1683 0.1825 0.2304 0.1466 0.2152 0.5725247
+## 87204 0.0364 0.0588 0.0689 0.1169 0.1619 0.1887 0.2472 0.1672 0.2074 0.5012667
+##          Class
+## 87195 cropland
+## 87196 cropland
+## 87197 cropland
+## 87198 cropland
+## 87199 cropland
+## 87200 cropland
+## 87201 cropland
+## 87202 cropland
+## 87203 cropland
+## 87204 cropland
+```
+
+---
+## Examine NDVI values for each class
+
+```r
+val_crop &lt;- subset(trainingData, Class == "cropland")
+val_forest &lt;- subset(trainingData, Class == "forest")
+val_wetland &lt;- subset(trainingData, Class == "wetland")
+
+# NDVI
+par(mfrow = c(3, 1))
+hist(val_crop$NDVI, main = "cropland", xlab = "NDVI", xlim = c(0, 1), col = "orange")
+hist(val_forest$NDVI, main = "forest", xlab = "NDVI", xlim = c(0, 1), col = "dark green")
+hist(val_wetland$NDVI, main = "wetland", xlab = "NDVI", xlim = c(0, 1), col = "light blue")
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+## Scatter plot of NIR (Band 8) and SWIR (Band 11)
+
+```r
+par(mfrow = c(1, 1))
+# Scatterplot of bands 8a and 11 for the three classes
+plot(B8A ~ B11, data = val_crop, pch = ".", col = "orange", xlim = c(0, 0.4), ylim = c(0, 0.5))
+points(B8A ~ B11, data = val_forest, pch = ".", col = "dark green")
+points(B8A ~ B11, data = val_wetland, pch = ".", col = "light blue")
+legend("topright", legend = c("cropland", "forest", "wetland"), fill = c("orange", "dark green", "light blue"), bg = "white")
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+## Load `ranger` package and create rf model
+- `ranger` package used for random forests
+
+```r
+library(ranger)
+modelRF &lt;- ranger(x = trainingData[, 1:ncol(trainingData)-1], 
+                  y = trainingData$Class,
+                  importance = "permutation", seed = 0xfedbeef)
+modelRF
+```
+
+```
+## Ranger result
+## 
+## Call:
+##  ranger(x = trainingData[, 1:ncol(trainingData) - 1], y = trainingData$Class,      importance = "permutation", seed = 267239151) 
+## 
+## Type:                             Classification 
+## Number of trees:                  500 
+## Sample size:                      87204 
+## Number of independent variables:  10 
+## Mtry:                             3 
+## Target node size:                 1 
+## Variable importance mode:         permutation 
+## Splitrule:                        gini 
+## OOB prediction error:             3.25 %
+```
+
+---
+## Confusion matrix and importance of rf model. 
+
+```r
+# Inspect the structure and element names of the resulting model
+#class(modelRF)
+#str(modelRF)
+#names(modelRF)
+
+# Inspect the confusion matrix of the OOB error assessment
+modelRF$confusion.matrix
+```
+
+```
+##           predicted
+## true       cropland forest wetland
+##   cropland    34458    325     547
+##   forest       1154  29632      78
+##   wetland       702     25   20283
+```
+
+```r
+importance(modelRF)
+```
+
+```
+##        B02        B03        B04        B05        B06        B07        B11 
+## 0.34202261 0.17654909 0.21132630 0.09417466 0.07903757 0.08445868 0.11888119 
+##        B12        B8A       NDVI 
+## 0.21622270 0.08891954 0.12867787
+```
+
+---
+## Run prediction on full raster image.
+- Check names are same for raster layer (`covs`) and training data.
+
+```r
+names(covs)
+```
+
+```
+##  [1] "B02"  "B03"  "B04"  "B05"  "B06"  "B07"  "B11"  "B12"  "B8A"  "NDVI"
+```
+
+```r
+names(trainingData)
+```
+
+```
+##  [1] "B02"   "B03"   "B04"   "B05"   "B06"   "B07"   "B11"   "B12"   "B8A"  
+## [10] "NDVI"  "Class"
+```
+
+```r
+predLC &lt;- predict(covs, modelRF, fun = function(...) predict(...)$predictions)
+```
+
+```
+## Predicting.. Progress: 53%. Estimated remaining time: 27 seconds.
+## Predicting.. Progress: 98%. Estimated remaining time: 1 seconds.
+## Aggregating predictions.. Progress: 59%. Estimated remaining time: 21 seconds.
+## Aggregating predictions.. Progress: 99%. Estimated remaining time: 0 seconds.
+```
+
+---
+## Plot predicted land cover 
+
+```r
+# Plot the results
+# Recall: 1 = cropland, 2 = forest, 3 = wetland
+cols &lt;- c("orange", "dark green", "light blue")
+plot(predLC, col = cols, legend = FALSE)
+legend("bottomright",
+       legend = c("cropland", "forest", "wetland"),
+       fill = cols, bg = "white")
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+
+
+
+---
+## Make forest mask
+- 1 if forest
+- 0 if non-forest
+
+```r
+# Make an NA-value raster based on the LC raster attributes
+formask &lt;- setValues(predLC, NA)
+
+# Assign 1 to formask to all cells corresponding to the forest class
+formask[predLC == 2] &lt;- 1
+plot(formask, col = "dark green", legend = FALSE)
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+
+---
+## Create forest patch map
+
+```r
+# Group raster cells into patches based on the Queen's Case
+if(!file.exists(fn &lt;- "output/clumformask.tif")) {
+  forestpatches &lt;- patches(formask, directions = 8, filename = fn)
+} else {
+  forestpatches &lt;- rast(fn)
+}
+
+plot(forestpatches, col = topo.colors(nrow(forestpatches)))
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+---
+## Investigate patch size
+
+```r
+# Assign frequency table (to a dataframe)
+patchFreq &lt;- freq(forestpatches)
+
+# Inspect the dataframe
+head(patchFreq)
+```
+
+```
+##   layer value count
+## 1     1     1    15
+## 2     1     2     3
+## 3     1     3     1
+## 4     1     4    26
+## 5     1     5     4
+## 6     1     6     2
+```
+
+```r
+tail(patchFreq)
+```
+
+```
+##       layer value count
+## 29194     1 40457     2
+## 29195     1 40458     2
+## 29196     1 40459     1
+## 29197     1 40460     1
+## 29198     1 40461     2
+## 29199     1 40462     1
+```
+
+---
+## Remove patches of size 1
+
+```r
+# Which rows of the data.frame are only represented by one cell?
+str(which(patchFreq$count == 1))
+```
+
+```
+##  int [1:14991] 3 8 16 20 22 25 26 30 31 34 ...
+```
+
+```r
+# Which values do these correspond to?
+str(patchFreq$value[which(patchFreq$count == 1)])
+```
+
+```
+##  num [1:14991] 3 10 23 34 36 42 47 53 55 60 ...
+```
+
+```r
+# Put these into a vector of patch ID's to be removed
+excludeID &lt;- patchFreq$value[which(patchFreq$count == 1)]
+
+# Make a new forest mask to be sieved
+formaskSieve &lt;- formask
+
+# Assign NA to all patches whose IDs are found in excludeID
+formaskSieve[forestpatches %in% excludeID] &lt;- NA
+
+## Zoom in to a small extent to check the results
+# Note: you can also define your own zoom by using e &lt;- drawExtent()
+e &lt;- ext(c(830000, 834000, 830000, 834000))
+par(mfrow = c(1, 2)) # allow 2 plots side-by-side
+plot(formask, ext = e, col="dark green", legend = FALSE, main = 'formask')
+plot(formaskSieve, ext = e, col="dark green", legend = FALSE, main = 'formaskSieve')
+```
+
+![](wur_rf_demo_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

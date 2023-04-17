@@ -1,0 +1,319 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: WUR Random Forest demo
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+## Random Forests
+- Used for regression (continuous prediction) or classification (categorical prediction)
+- Good for non-linear modeling.
+- Does NOT take into account spatial location. Each pixel's values are treated separately.(although [spatial version](https://link.springer.com/article/10.1007/s11004-021-09946-w) exists)
+
+---
+## RF video
+- [Visual Guide](https://www.youtube.com/watch?v=cIbj0WuK41w)
+
+---
+
+## RF Demo
+- All code taken from https://geoscripting-wur.github.io/AdvancedRasterAnalysis/ 
+- All code courtesy of Wageningen University & Research
+
+
+
+---
+## Study area
+- Predict land cover in Ethiopia using Sentinel-2 imagery
+- Create RF classification model using training polygons
+
+
+
+---
+## Load data and summary stats
+```{r}
+# Check for packages and install if missing
+if(!"terra" %in% installed.packages()){install.packages("terra")}
+if(!"sf" %in% installed.packages()){install.packages("sf")}
+if(!"ranger" %in% installed.packages()){install.packages("ranger")}
+
+library(terra)
+library(sf)
+library(ranger)
+
+# Create data directory,
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+# Create output directory
+if (!dir.exists("output")) {
+  dir.create("output")
+}
+
+# Download data and unzip
+download.file("https://github.com/GeoScripting-WUR/AdvancedRasterAnalysis/releases/download/advrast-data/AdvancedRaster.zip", "data/AdvancedRaster.zip")
+unzip("data/AdvancedRaster.zip", exdir="data")
+
+# Load data and rename the layers
+Gewata <- rast("data/S2B2A_T36NZP_20201227T075239_20m_gewata_crop.tif")
+names(Gewata) <- readLines("data/S2B2A_T36NZP_20201227T075239_20m_gewata_bands.txt")
+
+# The image is cloud-free, so drop the cloud mask layer
+Gewata <- subset(Gewata, "SCL", negate = TRUE)
+
+# Check out the attributes
+Gewata$B02
+
+# Some basic statistics using global() from the terra package
+global(Gewata$B02, fun = "max")$max
+global(Gewata$B02, fun = "mean")$mean
+
+# What is the maximum value of all three bands?
+global(Gewata, fun = "max")$max
+
+# summary() is useful function for a quick overview
+summary(Gewata$B02)
+
+# Histograms for all the bands in one window (automatic, if a SpatRaster is supplied)
+hist(Gewata, maxpixels = 1000)
+```
+
+
+---
+## Check correlation of S2 bands
+```{r}
+pairs(Gewata, maxpixels = 1000)
+```
+
+---
+## Create NDVI band
+```{r}
+par(mfrow = c(1, 1)) # reset plotting window
+ndvi <- app(c(Gewata$B8A, Gewata$B04), fun = function(x){(x[1] - x[2]) / (x[1] + x[2])})
+plot(ndvi)
+```
+
+---
+## Add NDVI band to original raster
+```{r}
+# Rescale to original scale
+gewata <- app(Gewata, fun = function(x) x / 10000)
+
+# Make a new SpatRaster by combining the Gewata and NDVI SpatRasters
+covs <- c(gewata, ndvi)
+names(covs) <- c(names(Gewata), "NDVI")
+names(covs)
+plot(covs)
+```
+
+
+---
+## Download training polygons in .csv
+```{r}
+# Download training polygons
+download.file("https://github.com/GeoScripting-WUR/AdvancedRasterAnalysis/releases/download/advrast-data/trainingPoly.csv", "data/trainingPoly.csv")
+
+# Load the training polygons from a csv file using st_read:
+trainingPoly <- st_read("data/trainingPoly.csv")
+
+# Superimpose training polygons onto NDVI plot
+par(mfrow = c(1, 1)) # reset plotting window
+plot(ndvi)
+plot(trainingPoly, add = TRUE)
+```
+
+
+---
+## Inspect training polygons
+```{r}
+# Inspect the trainingPoly object
+trainingPoly <- trainingPoly[, c(2:4)] #remove an unused column
+trainingPoly
+trainingPoly$Class <- as.factor(trainingPoly$Class)
+summary(trainingPoly$Class)
+# We can make a new 'Code' column by converting the factor levels to integer by using the as.numeric() function,
+trainingPoly$Code <- as.numeric(trainingPoly$Class)
+# Inspect the new 'Code' column
+summary(trainingPoly$Code)
+```
+
+
+---
+## Improve legend of training polygons
+```{r}
+# Define a colour scale for the classes (as above) corresponding to: cropland, forest, wetland
+cols <- c("orange", "dark green", "light blue")
+
+# Superimpose training polygons (colour by class) onto NDVI plot
+plot(ndvi)
+plot(trainingPoly["Class"], add = TRUE, pal = cols)
+
+# Add a customised legend
+legend("topright", legend = c("cropland", "forest", "wetland"), fill = cols, bg = "white")
+```
+
+---
+## Extract pixel values from training polygons
+- data frame has both S2 values, land cover class.
+```{r}
+# Extract pixel values below the polygons into a dataframe
+trainingData <- extract(covs, trainingPoly)
+
+# Add a column specifying the class based on the polygon ID
+trainingData$Class <- trainingPoly$Class[trainingData$ID]
+
+# Remove the training polygon ID's from the dataframe
+trainingData$ID <- NULL
+
+head(trainingData, n = 10)
+tail(trainingData, n = 10)
+```
+
+---
+## Examine NDVI values for each class
+```{r}
+val_crop <- subset(trainingData, Class == "cropland")
+val_forest <- subset(trainingData, Class == "forest")
+val_wetland <- subset(trainingData, Class == "wetland")
+
+# NDVI
+par(mfrow = c(3, 1))
+hist(val_crop$NDVI, main = "cropland", xlab = "NDVI", xlim = c(0, 1), col = "orange")
+hist(val_forest$NDVI, main = "forest", xlab = "NDVI", xlim = c(0, 1), col = "dark green")
+hist(val_wetland$NDVI, main = "wetland", xlab = "NDVI", xlim = c(0, 1), col = "light blue")
+```
+
+---
+## Scatter plot of NIR (Band 8) and SWIR (Band 11)
+```{r}
+par(mfrow = c(1, 1))
+# Scatterplot of bands 8a and 11 for the three classes
+plot(B8A ~ B11, data = val_crop, pch = ".", col = "orange", xlim = c(0, 0.4), ylim = c(0, 0.5))
+points(B8A ~ B11, data = val_forest, pch = ".", col = "dark green")
+points(B8A ~ B11, data = val_wetland, pch = ".", col = "light blue")
+legend("topright", legend = c("cropland", "forest", "wetland"), fill = c("orange", "dark green", "light blue"), bg = "white")
+```
+
+---
+## Load `ranger` package and create rf model
+- `ranger` package used for random forests
+```{r}
+library(ranger)
+modelRF <- ranger(x = trainingData[, 1:ncol(trainingData)-1], 
+                  y = trainingData$Class,
+                  importance = "permutation", seed = 0xfedbeef)
+modelRF
+```
+
+---
+## Confusion matrix and importance of rf model. 
+```{r}
+# Inspect the structure and element names of the resulting model
+#class(modelRF)
+#str(modelRF)
+#names(modelRF)
+
+# Inspect the confusion matrix of the OOB error assessment
+modelRF$confusion.matrix
+importance(modelRF)
+```
+
+---
+## Run prediction on full raster image.
+- Check names are same for raster layer (`covs`) and training data.
+```{r}
+names(covs)
+names(trainingData)
+predLC <- predict(covs, modelRF, fun = function(...) predict(...)$predictions)
+```
+
+---
+## Plot predicted land cover 
+```{r}
+# Plot the results
+# Recall: 1 = cropland, 2 = forest, 3 = wetland
+cols <- c("orange", "dark green", "light blue")
+plot(predLC, col = cols, legend = FALSE)
+legend("bottomright",
+       legend = c("cropland", "forest", "wetland"),
+       fill = cols, bg = "white")
+```
+
+
+
+---
+## Make forest mask
+- 1 if forest
+- 0 if non-forest
+```{r}
+# Make an NA-value raster based on the LC raster attributes
+formask <- setValues(predLC, NA)
+
+# Assign 1 to formask to all cells corresponding to the forest class
+formask[predLC == 2] <- 1
+plot(formask, col = "dark green", legend = FALSE)
+```
+
+---
+## Create forest patch map
+```{r}
+# Group raster cells into patches based on the Queen's Case
+if(!file.exists(fn <- "output/clumformask.tif")) {
+  forestpatches <- patches(formask, directions = 8, filename = fn)
+} else {
+  forestpatches <- rast(fn)
+}
+
+plot(forestpatches, col = topo.colors(nrow(forestpatches)))
+```
+
+---
+## Investigate patch size
+```{r}
+# Assign frequency table (to a dataframe)
+patchFreq <- freq(forestpatches)
+
+# Inspect the dataframe
+head(patchFreq)
+tail(patchFreq)
+```
+
+---
+## Remove patches of size 1
+```{r}
+# Which rows of the data.frame are only represented by one cell?
+str(which(patchFreq$count == 1))
+
+# Which values do these correspond to?
+str(patchFreq$value[which(patchFreq$count == 1)])
+
+# Put these into a vector of patch ID's to be removed
+excludeID <- patchFreq$value[which(patchFreq$count == 1)]
+
+# Make a new forest mask to be sieved
+formaskSieve <- formask
+
+# Assign NA to all patches whose IDs are found in excludeID
+formaskSieve[forestpatches %in% excludeID] <- NA
+
+## Zoom in to a small extent to check the results
+# Note: you can also define your own zoom by using e <- drawExtent()
+e <- ext(c(830000, 834000, 830000, 834000))
+par(mfrow = c(1, 2)) # allow 2 plots side-by-side
+plot(formask, ext = e, col="dark green", legend = FALSE, main = 'formask')
+plot(formaskSieve, ext = e, col="dark green", legend = FALSE, main = 'formaskSieve')
+```
+
+

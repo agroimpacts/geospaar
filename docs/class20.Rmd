@@ -50,8 +50,8 @@ distsr_rs <- resample(x = distsr, y = temps_mask, method = "ngb")
 - [examples](https://r-spatial.github.io/mapview/articles/mapview_02-advanced.html)
 ```{r, message = F, warning = F}
 library(mapview)
-mapview(districts)
-#mapview(districts %>% st_geometry(), fill = NA, color = 'red')
+#mapview(districts)
+mapview(districts %>% st_geometry(), fill = NA, color = 'red')
 ```
 
 ---

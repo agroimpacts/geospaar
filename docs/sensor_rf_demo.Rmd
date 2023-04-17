@@ -1,0 +1,115 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Ground Sensor Random Forest demo
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+## Random Forests
+- Used for regression (continuous prediction) or classification (categorical prediction)
+- Good for non-linear modeling.
+- Does NOT take into account spatial location. Each pixel's values are treated separately.(although [spatial version](https://link.springer.com/article/10.1007/s11004-021-09946-w) exists)
+
+---
+## Example 2
+- Predict ground sensor NDVI from satellite time-series
+- predict ground-based `ndvi_fitted` from Sentinel-1, 2 data
+```{r, message = F, warning = F}
+load("../inst/extdata/filt_data.rda")
+indep_var <- c("s2_ndvi_fitted", "s2_evi2_fitted", "s2_gcvi_fitted",
+               "s1_VH_fitted", "s1_VV_fitted", "s1_vh_vv_fitted")
+dep_var <- "ndvi_fitted"
+```
+
+---
+## Create random forest model
+- We will validate on Zambia 2020-21 sites.
+- So we remove these sites from model training.
+```{r, message = F, warning = F}
+library(dplyr)
+train_data <- filt_data %>% filter(group_id != "Zam_20_21") %>% select(all_of(c(indep_var, dep_var)) )
+head(train_data)
+```
+
+---
+## create model
+- Use `ranger` package (much faster than `randomForest`)
+- Dep variable - `ndvi_fitted`
+- Indep variables - all other variables in `train_data`
+```{r, message = F, warning = F}
+library(ranger)
+rf_model <- ranger(ndvi_fitted ~ ., 
+                   data=train_data, 
+                   importance='impurity', mtry=3)
+print(rf_model)
+
+# 
+# library(randomForest)
+# rf_model <- randomForest(ndvi_fitted ~ .,
+#                      data = train_data, 
+#                      proximity=TRUE,
+#                      importance = T) 
+```
+
+---
+## Variable importance
+
+```{r, message = F, warning = F}
+library(vip)
+v1 <- vip(rf_model)
+v1
+```
+
+
+---
+## Predict for validation data and plot
+```{r, message = F, warning = F}
+library(ggplot2)
+valid_data <- filt_data %>% filter(group_id == "Zam_20_21")
+ndvi_hat <- predict(rf_model, data = valid_data )
+
+valid_data$ndvi_hat <- ndvi_hat[["predictions"]]
+sites <- unique(valid_data$Location)
+#par(mfrow = c(7,2))
+plots <- lapply(sites, function(site){
+  p1 <- ggplot(valid_data %>% filter(Location == site)) + 
+    geom_point(aes(x = date, y = ndvi_fitted), col = "blue", alpha = 0.2) + 
+    geom_point(aes(x = date, y = ndvi_hat), col = "red") + 
+    geom_line(aes(x = date, y = s2_ndvi_fitted), alpha = 0.5, col = 'grey') + 
+    geom_point(aes(x = date, y = s2_ndvi), alpha = 0.5, col = 'grey') + 
+    ggtitle(site) +
+  theme_bw()
+  print(p1)
+  return(p1)
+})
+  
+```
+
+---
+## Plots
+- red: predicted ndvi
+- blue: pod ndvi (dep var)
+- grey: S2 ndvi (one of indep var)
+```{r, figures-side, fig.show="hold", out.width="50%", message = F, warning = F}
+#par(mfrow= c(2,2))
+grid.arrange(plots[[1]],
+             plots[[2]],
+             plots[[3]],
+             plots[[4]],
+  nrow = 2)
+# for (k in 1:4){
+#   print(plots[[k]])
+# }
+```
+
