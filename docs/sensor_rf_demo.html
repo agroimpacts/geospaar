@@ -32,8 +32,6 @@ class: center, middle, inverse, title-slide
 - Does NOT take into account spatial location. Each pixel's values are treated separately.(although [spatial version](https://link.springer.com/article/10.1007/s11004-021-09946-w) exists)
 
 ---
-
----
 ## Example 2
 - Predict ground sensor NDVI from satellite time-series
 - predict ground-based `ndvi_fitted` from Sentinel-1, 2 data
@@ -75,6 +73,7 @@ head(train_data)
 
 ---
 ## create model
+- Use `ranger` package (much faster than `randomForest`)
 - Dep variable - `ndvi_fitted`
 - Indep variables - all other variables in `train_data`
 
@@ -100,8 +99,8 @@ print(rf_model)
 ## Target node size:                 5 
 ## Variable importance mode:         impurity 
 ## Splitrule:                        variance 
-## OOB prediction error (MSE):       0.002081451 
-## R squared (OOB):                  0.9561656
+## OOB prediction error (MSE):       0.002084633 
+## R squared (OOB):                  0.9560986
 ```
 
 ```r

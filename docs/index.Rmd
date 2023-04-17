@@ -1,5 +1,15 @@
 ---
-output: github_document
+title: "Index"
+subtitle: Index
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+
 ---
 
 ```{r setup, include=FALSE}
@@ -103,8 +113,10 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 19 slides](class19.html)
   - Assignment 5 (Unit 2 Module 2) 
 - Week 13-15 (Apr 10, 12, 17, 19, 24, 26, May 1)
+  - Project Overview due (Apr 16)
   - [Class 20 slides (leaflet, plotly)](class20.html)
-  - Project Overview due 
+  - [Random Forest - raster classification](wur_rf_demo.html)
+  - [Random Forest - ground sensors](sensor_rf_demo.html)
 - Final Projects due
   - May 8
 
