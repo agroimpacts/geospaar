@@ -1,0 +1,137 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: rgee setup
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## rgee setup
+- Use Google Earth Engine in R!
+- All code thanks to Ricardo Dalagnol [github](https://github.com/ricds/DL_RS_GEE/tree/7a3e70758e81b3bc6ef86cc67a231ed4a8827809)
+- Shout-out to André de Oliveira Domingues for getting this to work!!
+
+---
+
+# GEE account 
+
+- you need a GEE account
+- log in the https://code.earthengine.google.com/ and register for one
+
+
+
+
+
+---
+# Install Miniconda
+
+- the conda environment is where the GEE Python API will be located. The RGEE package uses it.
+- first you need to install the Miniconda OUTSIDE of R
+- install Miniconda3 at https://docs.conda.io/en/latest/miniconda.html
+- open 'anaconda' in the command prompt (window button --> anaconda, you will see anaconda prompt)
+- then type in the commands below one-by-one (without the #) to install the rgee_py environment and packages:
+```{bash, eval = F}
+# run these one line at a time in Miniconda
+conda create -n rgee_py python=3.9
+activate rgee_py
+pip install google-api-python-client
+pip install earthengine-api
+pip install numpy
+pip install gcloud
+```
+
+
+---
+# Get conda environment and copy to R variable
+
+- ok conda should now be installed, now lets get the path to the environment, type inside miniconda:
+```{bash, eval = F}
+conda env list
+```
+
+- copy the path to the rgee_py environment, you will need it set in the variable below inside R:
+- note the use of double backslashes \\
+- this below is where is located in MY computer, you have to use the 'conda env list' command to find where it is located on yours
+```{r, eval = F}
+rgee_environment_dir = "C:\\Users\\micha\\miniconda3\\envs\\rgee_py"
+```
+
+---
+# Install R packages (rgee)
+```{r, eval = F}
+## if you installed everything above, you can now install the packages inside R
+#install.packages('pacman')
+library(pacman)
+# install/load general packages used in the scripts
+p_load(raster,
+       rgdal,
+       rgeos,
+       gdalUtils,
+       sp,
+       sf,
+       leaflet,
+       mapview,
+       caret)
+#install.packages('BiocManager')
+
+# now some more specific packages related to using the rgee
+p_load(rgee, geojsonio, remotes, reticulate, devtools, googledrive)
+install_github("r-spatial/rgee")
+```
+
+---
+# Set Python environment in R
+- sometimes at this point you are required to restart R or the computer before proceeding
+- try restarting if the installation do not finish properly and run the installation again after restart
+
+```{r, eval = F}
+# set python
+reticulate::use_python(rgee_environment_dir, required=T)
+rgee::ee_install_set_pyenv(
+  py_path = rgee_environment_dir, # Change it for your own Python PATH
+  py_env = "rgee_py" # Change it for your own Python ENV
+)
+Sys.setenv(RETICULATE_PYTHON = rgee_environment_dir)
+Sys.setenv(EARTHENGINE_PYTHON = rgee_environment_dir)
+```
+
+
+- Set Global Python Env under Tools --> Global options --> Python --> Select --> Find Conda Env
+
+---
+# Run the following
+
+- You may need to run in R (once)
+```{r, eval = F}
+rgee::ee_install_upgrade()
+```
+
+- You also may need to run (in Miniconda, with env activated)
+```{bash, eval = F}
+conda install earthengine-api==0.1.323 
+
+# run below and follow instructions
+earthengine authenticate --quiet
+```
+
+
+---
+# Launch rgee
+
+```{r, eval = F}
+rgee::ee_clean_credentials()
+rgee::ee_Initialize('michaeljcecil@gmail.com',
+                    drive = T)
+```
+
+
+
