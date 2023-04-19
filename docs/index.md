@@ -3,7 +3,7 @@
 
 ## Spring 2023
 
-Updated on: 2023-02-13
+Updated on: 2023-04-17
 
 <center>
 
@@ -24,7 +24,8 @@ Updated on: 2023-02-13
 
 ## Links
 
--   [Helpful Links](cheatsheets.html)
+-   [Helpful functions](helpful_functions.html)
+-   [Cheatsheets](cheatsheets.html)
 
 ## Course materials
 
@@ -67,23 +68,41 @@ The class materials were designed by Lyndon Estes and Lei Song.
     -   [Class 7 slides](class7.html)
     -   Assignment 2 due (Unit 1 Modules 2-3)
 -   Week 5 (Feb 13, 15)
-    -   tidyr universe, data analysis
+    -   tidyr universe, working with data
     -   [Class 8 slides](class8.html)
+    -   [Class 9 slides](class9.html)
 -   Week 6 (Feb 20, 22)
-    -   plotting, useful libraries
+    -   regression, plotting
+    -   [Class 10 slides](class10.html)
+    -   [Class 11 slides](class11.html)
     -   Assignment 3 due (Unit 1 Module 4)
 -   Week 7 (Feb 27, Mar 1)
+    -   more ggplot, intro to vector
+    -   [Class 12 slides](class12.html)
+    -   [Class 13 slides](class13.html)
 -   Spring Break
--   Week 8 (Mar 6, 8)
+-   Week 8 (Mar 13, 15)
+    -   Vector operations
+    -   [Class 14 slides](class14.html)
+    -   [Class 15 slides](class15.html)
     -   Assignment 4 due (Unit 2 Module 1)
--   Week 9 (Mar 13, 15)
--   Week 10 (Mar 20, 22)
+-   Week 9 (Mar 20, 22)
+    -   Raster basics
+    -   [Class 16 slides](class16.html)
     -   Mar 22 online (AAG)
--   Week 11 (Mar 29)
-    -   Mar 27 no class (AAG)
-    -   Assignment 5 due (Unit 2 Modules 2-3)
+-   Week 11 (Mar 27, 29)
+    -   Raster analysis, neighborhoods
+    -   Mar 27 project prep (AAG)
+    -   [Class 17 slides](class17.html)
 -   Week 12 (Apr 3, 5)
-    -   Project overview assignment due
+    -   Raster algebra, terrain, modeling
+    -   [Class 18 slides](class18.html)
+    -   [Class 19 slides](class19.html)
+    -   Assignment 5 (Unit 2 Module 2)
 -   Week 13-15 (Apr 10, 12, 17, 19, 24, 26, May 1)
+    -   Project Overview due (Apr 16)
+    -   [Class 20 slides (leaflet, plotly)](class20.html)
+    -   [Random Forest - raster classification](wur_rf_demo.html)
+    -   [Random Forest - ground sensors](sensor_rf_demo.html)
 -   Final Projects due
     -   May 8

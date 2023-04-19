@@ -117,6 +117,8 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 20 slides (leaflet, plotly)](class20.html)
   - [Random Forest - raster classification](wur_rf_demo.html)
   - [Random Forest - ground sensors](sensor_rf_demo.html)
+  - [rgee - install](rgee_install.html)
+  - [rgee - examples](rgee_examples.html)
 - Final Projects due
   - May 8
 
