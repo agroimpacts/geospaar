@@ -106,6 +106,7 @@ Sys.setenv(EARTHENGINE_PYTHON = rgee_environment_dir)
 
 
 - Set Global Python Env under Tools --> Global options --> Python --> Select --> Find Conda Env
+- Do the same for Project Options (if you are in a project)
 
 ---
 # Run the following

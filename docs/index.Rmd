@@ -1,15 +1,5 @@
 ---
-title: "Index"
-subtitle: Index
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
