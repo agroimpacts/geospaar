@@ -109,6 +109,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Random Forest - ground sensors](sensor_rf_demo.html)
   - [rgee - install](rgee_install.html)
   - [rgee - examples](rgee_examples.html)
+  - [Shiny apps](rshiny.html)
 - Final Projects due
   - May 8
 
