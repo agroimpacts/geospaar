@@ -30,6 +30,7 @@ class: center, middle, inverse, title-slide
 - The [Shiny website](https://shiny.rstudio.com/gallery/) is a great place to start, with a gallery and examples.
 
 
+
 ---
 ## Shiny app
 The app code is divided into three parts
@@ -69,8 +70,6 @@ shinyApp(ui = ui, server = server) ## launches the interactive app
 
 
 ```r
-library(shiny)
-
 ui &lt;- fluidPage(
   titlePanel("Hello Shiny!"),
   sidebarLayout(
@@ -124,9 +123,6 @@ shinyApp(ui = ui, server = server)
 
 
 ```r
-library(rgee)
-library(leaflet)
-library(shiny)
 ee_Initialize()
 
 createTimeBand &lt;- function(img) {
@@ -208,9 +204,11 @@ shinyApp(ui = ui, server = server)
 
 ---
 ## MA Environmental Justice Population
+- Data downloaded from [MassGIS](https://www.mass.gov/info-details/massgis-data-2020-environmental-justice-populations)
 
 ```r
-ej_pop &lt;- read_sf("C:/Users/micha/Downloads/ej2020/EJ_POLY.shp") %&gt;% st_transform(., crs = '+proj=longlat +datum=WGS84' )
+ej_pop &lt;- read_sf("../inst/extdata/EJ_POLY.shp") %&gt;% 
+  st_transform(., crs = '+proj=longlat +datum=WGS84' )
 
 towns &lt;- unique(ej_pop$MUNICIPALI) %&gt;% sort()
 ```
@@ -232,7 +230,7 @@ ui &lt;- fluidPage(
         selectInput("Towns",
                 "Select Town to Zoom", 
                 choices = towns),
-        textOutput("summary")
+        verbatimTextOutput("summary")
       )       
     ),
 
@@ -254,11 +252,18 @@ server &lt;- function(input, output, session) {
   observeEvent( input$Towns,  {  
     town &lt;- print(input$Towns)
     town_bg &lt;- ej_pop %&gt;% filter(MUNICIPALI == town) 
+    ej_bg_count &lt;- NROW(town_bg)
+    ej_bg_pop &lt;- sum(town_bg$TOTAL_POP)
     cent &lt;- town_bg %&gt;% st_union() %&gt;% st_centroid() %&gt;% st_coordinates() 
     
+    
+    
     output$summary &lt;- renderText({
-      paste("current town:", town)
-    })
+      c(paste("current town:", town, '\n'),
+        paste("total EJ block groups: ", ej_bg_count, '\n'),
+        paste("pop in EJ block groups: ", ej_bg_pop))
+      
+    }, sep = '\n' )
     output$map &lt;- renderLeaflet({
     leaflet(ej_pop) %&gt;%
       addProviderTiles("CartoDB.Positron") %&gt;% 

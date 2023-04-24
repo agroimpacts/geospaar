@@ -19,6 +19,11 @@ knitr::opts_chunk$set(echo = TRUE)
 - The `Shiny` package allows for creation of interactive apps, that can be hosted on a website.
 - The [Shiny website](https://shiny.rstudio.com/gallery/) is a great place to start, with a gallery and examples.
 
+```{r, include = F}
+library(rgee)
+library(leaflet)
+library(shiny)
+```
 
 ---
 ## Shiny app
@@ -59,7 +64,6 @@ knitr::include_graphics("figures/rshiny_sidebar.png")
   - plot output has ID `distPlot`
 
 ```{r, eval = F}
-library(shiny)
 
 ui <- fluidPage(
   titlePanel("Hello Shiny!"),
@@ -111,9 +115,7 @@ shinyApp(ui = ui, server = server)
 - Create an image collection of nightlights data, and calculate the linear trend of nightlights at each pixel. (stored in `col_reduce`)
 
 ```{r, eval = F}
-library(rgee)
-library(leaflet)
-library(shiny)
+
 ee_Initialize()
 
 createTimeBand <- function(img) {
@@ -192,8 +194,10 @@ shinyApp(ui = ui, server = server)
 
 ---
 ## MA Environmental Justice Population
+- Data downloaded from [MassGIS](https://www.mass.gov/info-details/massgis-data-2020-environmental-justice-populations)
 ```{r, eval = F}
-ej_pop <- read_sf("C:/Users/micha/Downloads/ej2020/EJ_POLY.shp") %>% st_transform(., crs = '+proj=longlat +datum=WGS84' )
+ej_pop <- read_sf("../inst/extdata/EJ_POLY.shp") %>% 
+  st_transform(., crs = '+proj=longlat +datum=WGS84' )
 
 towns <- unique(ej_pop$MUNICIPALI) %>% sort()
 ```
@@ -214,7 +218,7 @@ ui <- fluidPage(
         selectInput("Towns",
                 "Select Town to Zoom", 
                 choices = towns),
-        textOutput("summary")
+        verbatimTextOutput("summary")
       )       
     ),
 
@@ -235,11 +239,18 @@ server <- function(input, output, session) {
   observeEvent( input$Towns,  {  
     town <- print(input$Towns)
     town_bg <- ej_pop %>% filter(MUNICIPALI == town) 
+    ej_bg_count <- NROW(town_bg)
+    ej_bg_pop <- sum(town_bg$TOTAL_POP)
     cent <- town_bg %>% st_union() %>% st_centroid() %>% st_coordinates() 
     
+    
+    
     output$summary <- renderText({
-      paste("current town:", town)
-    })
+      c(paste("current town:", town, '\n'),
+        paste("total EJ block groups: ", ej_bg_count, '\n'),
+        paste("pop in EJ block groups: ", ej_bg_pop))
+      
+    }, sep = '\n' )
     output$map <- renderLeaflet({
     leaflet(ej_pop) %>%
       addProviderTiles("CartoDB.Positron") %>% 
