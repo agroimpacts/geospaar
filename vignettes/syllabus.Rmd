@@ -76,7 +76,7 @@ Your progress in this class will be assessed as follows:
 ```{r, echo = FALSE}
 # a <- c(20, 30, 40)
 # a / sum(a)
-mat <- rbind(c("Practical assignments (n=5)", "55% of grade", "55% of grade"), 
+mat <- rbind(c("Practical assignments (n=5)", "55% of grade", "45% of grade"), 
              c("Partcipiation", "10% of grade", "10% of grade"),
             c("Overview for final semester project", "10% of grade", 
               "15% of grade"),
