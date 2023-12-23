@@ -52,11 +52,9 @@ cd c/My\ Documents/projects/geog246346
 
 ### 5. Clone the `geospaar` repository
 
-Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
-```R
-library(devtools)
-install_github("agroimpacts/geospaar", build_vignettes = TRUE)
-```
+  ```bash
+  https://github.com/agroimpacts/geospaar.git
+  ```
 
 ### 6. Build or pull the `docker` image
 
@@ -87,9 +85,17 @@ Then run the image using the following script that comes with the `geospaar` rep
 
 This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will will then give you a fully functioning Rstudio-server instance after you log in. 
 
-### 6. Browse the course materials
+### 7. Browse the course materials
 
-As package vignettes, from an R terminal:
+Build the `geospaar` package... 
+
+```R
+library(devtools)
+install_github("agroimpacts/geospaar", build_vignettes = TRUE)
+```
+
+...and then, from the R console in Rstudio:
+
 ```R
 browseVignettes("geospaar")
 ```
