@@ -8,41 +8,19 @@ This course draws from a number of other `R` courses and materials that are onli
 
 ## Installation
 
-#### 1. Get the `devtools` package
-
-If you have a Windows machine and don't already have Rtools installed, you will first need to download that and install it from [here](https://cran.r-project.org/bin/windows/Rtools/). Run the next lines below after that installs. (if you are on Mac or Linux, then skip `Rtools`). 
+The course materials can be installed as a standard `R` package, using a desktop Rstudio installation (or another IDE), or within a `docker` container. For the standalone case, you can run the following from your Rstudio (or similar IDE) installation (which assumes you have the `devtools` package installed):
 
 ```R
-install.packages("devtools")
-library(devtools)
+devtools::install_github("agroimpacts/geospaar", build_vignettes = TRUE)
 ```
 
-Add these ones as well, while you are at it:
-```R  
-install.packages(c("knitr", "kableExtra"))
-```
+The dockerized approach, which will be followed for the full class, provides a consistent environment, making it less susceptible to the idiosyncrasies of different operating systems. The same container environment will be used for developing `R` packages for class assignments and projects. More detail on working with `docker` can be found in the materials for [Advanced Geospatial Analysis with Python](https://hamedalemo.github.io/advanced-geo-python/lectures/docker.html), taught by Professor Alemohammad. For now we will just use it for installing course materials. Please follow these steps to get started. 
 
-#### 3. install the `geospaar` package
+### 1. Get a GitHub account
 
-Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
-```R
-library(devtools)
-install_github("agroimpacts/geospaar", build_vignettes = TRUE)
-```
+If you don't already have one, please go to [github.com](https://github.com/) and sign up for a free account. 
 
-#### 4. Browse the course materials
-
-As package vignettes:
-```R
-browseVignettes("geospaar")
-```
-
-On the web:
-Thanks to @LLeiSong, the materials are also available through the [course website](https://agroimpacts.github.io/geospaar/).
-
-## For Clark students
-
-Get a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) for GitHub, which is necessary for undertaking assignments (which will be on submitted on private repos).
+If you are enrolled in this course, also get a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) for GitHub, which is necessary for undertaking assignments (which will be on submitted in a private repo established on your own GitHub account).
 
 - Go into your GitHub account, and click settings, and then (on the left)  developer settings 
 - Select personal access tokens
@@ -53,5 +31,71 @@ Get a [personal access token](https://help.github.com/articles/creating-a-person
 </p>
 
 - Copy the token and paste it somewhere safe (e.g. a secure password manager) 
+
+### 2. If you are a Windows users, install a Linux terminal emulator
+
+- If not, skip to step 3
+
+- If so, either install [`WSL`](https://learn.microsoft.com/en-us/windows/wsl/install), or [Git Bash](https://gitforwindows.org/). You can get away with Windows command prompt or Power Shell, but a *nix emulator is preferred.
+
+### 3. Install `docker`
+
+Download and install the version of docker for your operating system from [here](https://www.docker.com/products/docker-desktop/), and create an account. Note: You can sign up with your Github credentials
+
+### 4. Set up a project directory on your computer 
+
+If you are taking this class, this will be the directory you use to install the class materials and your own assignment repositories/packages. Assuming you have a directory called something like `c:\My Documents\projects`, make a sub-folder called `geog246346`. Using your command line interface (your terminal or terminal emulator), navigate to it. 
+
+```bash
+cd c/My\ Documents/projects/geog246346
+```
+
+### 5. Clone the `geospaar` repository
+
+Note that the code below is a bit outdated, as the `remotes` package is the newer version for installs from remote repositories. However, the `devtools` version still works. 
+```R
+library(devtools)
+install_github("agroimpacts/geospaar", build_vignettes = TRUE)
+```
+
+### 6. Build or pull the `docker` image
+
+Using docker, you can either build or pull the docker image you need by running the following:
+
+- build (assuming you are in the project directory you made in step 4):
+
+  ```bash
+  cd geospaar
+  LATEST=<version number> # enter the version number here, latest is 4.3.2
+  docker build . -t agroimpacts/geospaar:$LATEST
+  ```
+  
+- pull (this gets you the latest version already committed to docker hub):
+
+  ```bash
+  LATEST=<version number> # enter the version number here, latest is 4.3.2
+  docker pull agroimpacts/geospaar:$LATEST
+  ```
+
+Then run the image using the following script that comes with the `geospaar` repo:
+
+  ```bash
+  PORT=8787 # this is the port to run on--you might want to change it
+  MY_PROJECT_DIRECTORY=c/My\ Documents/projects # change this to yours!!!
+  ./run-container.sh -v $LATEST -p $PORT $MY_PROJECT_DIRECTORY
+  ```
+
+This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will will then give you a fully functioning Rstudio-server instance after you log in. 
+
+### 6. Browse the course materials
+
+As package vignettes, from an R terminal:
+```R
+browseVignettes("geospaar")
+```
+
+On the web:
+Thanks to @LLeiSong, the materials are also available through the [course website](https://agroimpacts.github.io/geospaar/).
+
 
 

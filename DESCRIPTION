@@ -1,24 +1,29 @@
 Package: geospaar
 Type: Package
 Title: Course materials for Clark University's GEOG 246/346
-Version: 0.3.0-6
-Author: Lyndon Estes
+Version: 1.0.0
 Maintainer: Lyndon Estes <LEstes@clarku.edu>
+Authors@R: c(
+	person("Lyndon D.", "Estes", role = c("cre", "aut"),  
+	        email = "lestes@clarku.edu", 
+	        comment = c(ORCID = "0000-0002-9358-816X")),
+    person("Lei", "Song",  role = "ctb", 
+            comment = c(ORCID = "0000-0002-4371-1473")),
+    person("Michael", "Cecil", role = "ctb", 
+            comment = c(ORCID = "0000-0003-2011-8607")))
 Description: This package contains the course materials for Geospatial 
     Analysis with R. 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends:
-    raster,
+    terra,
     sf,
     tidyverse,
     R (>= 3.3.6)
 Imports:
     cowplot,
-    lwgeom,
-    rgdal,
-    rgeos
+    lwgeom
 Suggests: 
     kableExtra,
     knitr, 
@@ -26,4 +31,6 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/agroimpacts/geospaar
+BugReports: https://github.com/agroimpacts/geospaar/issues/
+LazyLoad: yes
 RoxygenNote: 7.2.3
