@@ -54,12 +54,12 @@ kable(DF)
 # Participation
 
 Participation is worth 10% of your final grade and has two components.
-- Code work between classes. Students will at times be asked to work on practical problems between classes. The time for this work will not exceed 1 hour. Students should have code examples and provide examples of errors/obstacles. 
+- Code work between classes. You will at times be asked to work on practical problems between classes. The time for this work will not exceed 1 hour. You should have code examples and provide examples of errors/obstacles. 
 - Reading quizzes. Periodically, short quizzes will be given on core concepts from readings. These quizzes will be closed-book and not exceed 10 minutes. (e.g. explain in general terms how an apply function works). Students receiving 60% or higher on a quiz receive a "Complete" grade.
 
 # For assignments
 
-Assessment: Can we load the data you used, run your code, and arrive at the same result you reported?
+Assessment: Can we load the data you used, run your code, and arrive at the same result you reported? Does your code conform to the style guide (note: we are a little obsessive about this)
 
 We will grade using this rubric (or one close to it that captures the results/style/reproducibility dimensions).
 

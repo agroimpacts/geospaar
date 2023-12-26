@@ -53,7 +53,7 @@ cd c/My\ Documents/projects/geog246346
 ### 5. Clone the `geospaar` repository
 
   ```bash
-  https://github.com/agroimpacts/geospaar.git
+  git clone https://github.com/agroimpacts/geospaar.git
   ```
 
 ### 6. Build or pull the `docker` image

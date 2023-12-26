@@ -13,16 +13,19 @@ h2 { /* Header 2 */
 h3 { /* Header 3 */
   font-size: 18px;
 }
+
 code { /* Code block */
   font-size: 12px;
   padding: 0 1px;
   margin-bottom: 10px;
 }
+
 pre { /* Code block - determines code spacing between lines */
   font-size: 10px;
   padding: 10px;
   background: #F5FAFA;
 }
+
 pre code {
   padding: 0;
   background-color: #F5FAFA;
