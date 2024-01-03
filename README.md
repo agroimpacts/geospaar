@@ -20,11 +20,11 @@ The dockerized approach, which will be followed for the full class, provides a c
 
 If you don't already have one, please go to [github.com](https://github.com/) and sign up for a free account. 
 
-If you are enrolled in this course, also get a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) for GitHub, which is necessary for undertaking assignments (which will be on submitted in a private repo established on your own GitHub account).
+If you are enrolled in this course, also get a [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) for GitHub, which is necessary for undertaking assignments (which will be on submitted in a private repo established on your own GitHub account). Use the classic token rather than the newer fine-grained tokens. 
 
 - Go into your GitHub account, and click settings, and then (on the left)  developer settings 
 - Select personal access tokens
-- Generate a new token, name it something meaningful, and check the "repo" box
+- Generate a new token (classic), name it something meaningful, and check the "repo" box
 
 <p align="center">
   <img width="793" height="328" src="vignettes/fig/pat4.png">

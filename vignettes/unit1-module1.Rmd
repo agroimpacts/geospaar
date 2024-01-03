@@ -604,7 +604,9 @@ We are going to do one more thing before wrapping up this section, which is to c
 browseVignettes("roxygen2")
 ```
 
-Vignettes are also useful for connecting R packages to the broader pursuit of reproducibility. For example, you can use them to document the entire analytical workflow for a peer-reviewed paper (as shown in the two examples [above](#packages) ). Or they can be used to deliver the materials for an `R` course, as we are doing here. 
+An alternative approach is navigate to the "Help" tab in Rstudio, enter the package name in the search bar, and then click on the html links to a specific vignette for the package (many packages have more than one vignette). **Note: this is the preferred way to access vignettes when using Rstudio server in the docker container.**  
+
+Vignettes are also useful for connecting `R` packages to the broader pursuit of reproducibility. For example, you can use them to document the entire analytical workflow for a peer-reviewed paper (as shown in the two examples [above](#packages) ). Or they can be used to deliver the materials for an `R` course, as we are doing here. 
 
 In this class, you will learn to use vignettes to document your assignments, including any code that you write that does not need to be reused (and therefore converted into an assignment). 
 
@@ -732,21 +734,18 @@ In R CMD INSTALL
 Reloading attached lde346
 ```
 
-And then if you run in console:
+And then, as discussed previously using the `roxygen2` example using one of the two approaches suggested to find your package vignette, e.g. 
+
 ```{r, eval = FALSE}
 browseVignettes("lde346")  # replace with your package name
 ```
-
-An html index with your vignette listed in it will pop-up, and you can click through to read your vignette rendered as a local webpage. Pretty cool, no? 
+Pretty cool, no? 
 
 One more way we are going to try this. Checking whether your package can be installed locally. We are going to use another `devtools` function:
 
 ```{r, eval = FALSE}
 devtools::install_github("agroimpacts/lde346", build_vignettes = TRUE, 
                          auth_token = "paste_your_github_token_here")
-# note that this is being replaced by the following:
-# devtools::install_github("agroimpacts/lde346", build_vignettes = TRUE)
-
 ```
 
 One other tweak: in your DESCRIPTION you will see this line:
@@ -786,12 +785,13 @@ For the first assignment of this class, you are going to do the following:
     }  
     ```
     
-- Now change the function that it is named `my_multiplier`. Change the main argument ("x") to "value", update the documentation to reflect that change and the change in the function name, in all places that it seems relevant, and edit the first `print` statement so that instead of "Too low!", a character output, you multiply x by 1 (`x * 1`, unquoted). Replace the `print` with `return`. Do the same for the second statement, by change the multiplier to 5, and for the final one change it to multiply by 10.   
+- Now change the function that it is named `my_multiplier`. Change the main argument ("x") to "value", update the documentation to reflect that change and the change in the function name, in all places that it seems relevant, and edit the first `print` statement so that instead of "Too low!", a character output, you multiply "value" by 1 (`value * 1`, unquoted). Replace the `print` with `return`. Do the same for the second statement, by change the multiplier to 5, and for the final one change it to multiply by 10.   
 - Save the file in the R/ folder so that it has the same name as the function (with .R extension).
 - Update your vignette so that it demonstrates how `my_multiplier` is used, in addition to the demonstration of  `my_number_checker` that you have already added. 
-- Commit and push your changes. Test installing your packages so that it builds with a browsable vignette. Use `devtools::install`, and also `devtools::install_github` to make sure that it does. 
+- Commit and push your changes. Before committing, delete the `hello.Rd` and `hello.R` files, as we do not want those. Also do not commit html files in your vignettes folder. Test installing your packages so that it builds with a browsable vignette. Use `devtools::install`, and also `devtools::install_github` to make sure that it does. 
 - Once complete, create a new branch called "a1" in your local repo. Push that branch to GitHub as well.  Then switch back into (i.e. checkout) your main branch. 
 - You are done. 
+
 
 ***
 <center>

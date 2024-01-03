@@ -29,7 +29,7 @@ In this module, we will begin to learn about the `R` language, starting with the
 
 So let's first look at `R`'s species. 
 
-## A taxonomy of R
+# A taxonomy of R
 The Linnean system of biological classification groups species hierarchically, from Kingdom all the way down to species (and even sub-species), according to the figure below ([source](https://bioelevenncuevas.files.wordpress.com/2012/10/01_14classifyinglife_l.jpg)). 
 
 ```{r out.width = "30%", fig.align='center', echo=FALSE}
@@ -40,7 +40,7 @@ We can adapt the lower end of the hierarchy to classify `R`'s objects (and proba
 
 -------- ----------------------------------------------
 Domain   Analog; digital
-Kingdom  Calculator; Mainframe; Desktop; Laptop; Phone 
+Kingdom  Mainframe; Desktop; Laptop; Phone; Cloud/HPC 
 Phylum   Windows; Mac; Linux
 Class    Interpreted; Compiled
 Order    Python; Ruby; Perl; R
@@ -51,9 +51,9 @@ Species  logical; integer; character; boolean; closure
 
 Admittedly the classifications I give above this might not be that sound, but our focus here is on Family, Genus, Species, which are internal to `R`. Here we liken taxonomic family to the set of *classes* that define the different types of objects in R. "But wait", you say, "that's confusing! Why don't you map taxonomic class to `R` classes?" I know, I know, but I wanted to use the whole hierarchy, and it felt better to use Class to distinguish programming languages (into interpreted versus compiled). Plus I didn't want to have to jump over Order, which I would have struggled to fill with this analogy. 
 
-Moving on, Family maps onto `R` structures, and Species onto types, primarily to data types. My organization of these topics is pieced together from several sources of information that are online (classes [1](http://adv-r.had.co.nz/OO-essentials.html), [2](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming); structures [3](http://adv-r.had.co.nz/Data-structures.html), [4](https://www.rspatial.org/intr/3-basic-data-structures.html); types: [5](https://www.rspatial.org/intr/2-basic-data-types.html)), and it is based on the level of complexity inherent in the object.
+Moving on, Family maps onto `R` structures, and Species onto types, primarily to data types. My organization of these topics is pieced together from several sources of information that are online (classes [1](http://adv-r.had.co.nz/OO-essentials.html), [2](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming); structures [3](http://adv-r.had.co.nz/Data-structures.html), [4](https://rspatial.org/intr/3-basic-data-structures.html); types: [5](https://rspatial.org/intr/2-basic-data-types.html)), and it is based on the level of complexity inherent in the object.
 
-### Species (data types)
+## Species (data types)
 Let's start with the simplest level first, the species in our taxonomic analogy. Here we refer to the types of data that we work with (in `R` or any language). Types are actually assigned to any `R` object, even ones that we are more complex, as the `typeof` function (run `?typeof` to see) will show you, but here we are thinking only of the types of data, which are logical, integer, double, character, NULL, and the less used (at least for this class) complex and raw.
 
 ```{r}
@@ -71,11 +71,11 @@ What is `raw`? According to `?raw`:
 > The raw type is intended to hold raw bytes
 
 
-### Genus (data structures and functions)
+## Genus (data structures and functions)
 One level up from data types are structures and functions. I liken these to the genus level because both are designed to do something with data--either hold the data or do something to, with, or on the data, and each of these can have many forms. For example, a vector is a type of data structure, which can be either an atomic vector or a list, and any of these can hold multiple data types. So let's look at structures first. 
 
-#### Data structures
-##### One dimensional
+### Data structures
+#### One dimensional
 I have already mentioned the most basic structure, which is a *vector*. An atomic vector is a one-dimensional object that contains a single data type:
 ```{r}
 a <- c("a", "b", "c", "d")
@@ -94,7 +94,7 @@ l
 str(l)
 ```
 
-##### Two or more dimensions
+#### Two or more dimensions
 Notice that each of the data types is maintained in the list (which we put together using the `list` function), and we can verify the type of data in the list using the `str` function. If we try to put together this same mix of types into an atomic vector using the `c` (concatenate) function, we don't get the same results.
 
 ```{r}
@@ -133,10 +133,10 @@ str(l2)
 
 We can put all the matrices, `data.frame`s, and `array` we just made into a `list`, as well as some of the functions we were using to make those objects (`c`, `list`). 
 
-#### Functions
+### Functions
 That brings us now to functions. I know it is perhaps strained to think of a function as a genus, but functions are a kind of structure and functions can be organized into different groups, so it is not entirely crazy to think of functions as being analogous(ish) to Genus. So what are the functional genera?
 
-##### Primitives
+#### Primitives
  The first genus consists of *primitive* functions, of which `c` and `list` are two examples, but also ones like `sum`. Primitive functions are actually `C` functions that are called directly by `R` that contain no `R` code:
 
 ```{r}
@@ -147,7 +147,7 @@ list
 
 By running the function without parentheses, you can see what type of function they are. You can also get a complete list of `R`'s primitive functions by running `names(methods:::.BasicFunsList)`. 
 
-##### Operators
+#### Operators
 *Operators* are another kind of functional genus, such as the usual mathematical symbols `+`, `-`, `/`, `*`, and logical ones such as `>`, `<`, and `|`, plus a number of others, some of which are listed [here](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Operators). This list overlaps heavily, with the list of *primitives*, so might even be considered more properly a sub-genus of it, although there are non-primitive operators in existence, such as `?`. 
 
 ```{r}
@@ -156,7 +156,7 @@ By running the function without parentheses, you can see what type of function t
 (10 > 5) & (5 < 6)
 ```
 
-##### Control structures{#control-structures}
+#### Control structures{#control-structures}
 There are a number of functions that `R` shares with other languages, which are (to paraphrase from [here](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Control-structures)) used to control the sequence in which statements (e.g. `a <- 1 + 10`) are evaluated. There are functions such as `for`, `while`, `if`, `else`, `break`, etc. 
 ```{r}
 a <- c(1, 11)
@@ -187,7 +187,7 @@ lapply(c(1, 11), function(x) {
 })
 ```
 
-##### Base, package, and user-defined functions
+#### Base, package, and user-defined functions
 Beyond the primitives, `R` ships with a number of already built functions,  including various commonly used statistical functions. 
 
 ```{r}
@@ -206,7 +206,7 @@ my_random_function <- function(x) (x * 10) - 2 + 10^2
 my_random_function(c(2, 4, 100))
 ```
 
-##### Generic functions{#generic-functions}
+#### Generic functions{#generic-functions}
 This is the last genus of functions we will describe, as it sets us up to think next about classes (the Family).  Generics are functions that have a common name and generally do the same thing, but produce different outputs depending on what *class* (Family) of object they are applied to. Three widely used generics are `print`, `plot`, and `summary`. Let's look at two examples of `summary`
 
 ```{r}
@@ -225,10 +225,10 @@ methods(summary)
 Quite a list (and much longer for `print`)! The notation above is `<generic_function>.<class>`. Generics can also be understood within the context of *object-oriented programming*, which is an important aspect of `R` and `python`. We get into this more below. 
 
 
-### Family (classes)
+## Family (classes)
 Finally we arrive at classes, which in our (hopefully still useful) analogy is akin to a taxonomic family. To better understand classes (and why they are likened to a taxonomic family, a higher level of organization than genus and species), we need to learn about object-oriented programming (OOP), in which classes are a central concept. 
 
-#### OOP
+### OOP
 The best short explanation I have seen for what OOP is comes from a `python` [guide](https://python.swaroopch.com/oop.html): 
 
 > In all the programs we wrote till now, we have designed our program around functions i.e. blocks of statements which manipulate data. This is called the procedure-oriented way of programming. There is another way of organizing your program which is to combine data and functionality and wrap it inside something called an object. This is called the object oriented programming paradigm. Most of the time you can use procedural programming, but when writing large programs or have a problem that is better suited to this method, you can use object oriented programming techniques.
@@ -269,7 +269,7 @@ The main takeaway here is that a class defines different types of objects and wh
     plot(rst)
     ```
   
-    The example above jumps a bit ahead of where we are currently, but it shows what happens when a generic function is not available for a particular class. Here we created an object of class `raster` (we will be seeing much more of these in Unit 2), and tried to `plot` it (i.e. map the raster). The method for plotting a raster is `plot.raster`, so when you call the generic function `plot` and apply it to `rst` (`plot(rst)`), it will map the raster `rst`.  However, in this example the `plot` method for rasters is not available because the `raster` package was not loaded. `R` was instead trying to apply `plot.default` to  object `rst`, which has a very different structure than a class that `plot.default` is able to handle, e.g:
+    The example above jumps a bit ahead of where we are currently, but it shows what happens when a generic function is not available for a particular class. Here we created an object of class `raster` (we will be seeing much more of these in Unit 2, but specifically working with those generated by the `terra` package), and tried to `plot` it (i.e. map the raster). The method for plotting a raster is `plot.raster`, so when you call the generic function `plot` and apply it to `rst` (`plot(rst)`), it will map the raster `rst`.  However, in this example the `plot` method for rasters is not available because the `raster` package was not loaded. `R` was instead trying to apply `plot.default` to  object `rst`, which has a very different structure than a class that `plot.default` is able to handle, e.g:
 
   
     ```{r, fig.width = 5}
@@ -319,7 +319,7 @@ The main takeaway here is that a class defines different types of objects and wh
 
 Okay, that's enough on OO for now.
 
-## Environments
+# Environments
 
 This brings us to the final chapter in our extended ecological metaphor. We have just heard about `R`'s species and their taxonomy, so now we will talk about how they interact. In ecology, we talk about species' environments. In `R`, objects have different environments. To learn about `R` environments in detail, there is a [whole chapter on them in Advanced R](https://adv-r.hadley.nz/environments.html). However, for now, to avoid too much confusion, and since (according to the chapter) "Understanding environments is not necessary for day-to-day use of R", we will focus on just a few aspects of what environments are and how they affect objects in ways that you will almost certainly encounter. 
 
@@ -333,7 +333,7 @@ Environments in `R` are actually lists, which are nested in ways such that objec
 2. The package environment
 3. The execution environment
 
-### The global environment
+## The global environment
 
 This is the top level environment in `R`, and is the place where any object that you create in the console or a script that you are using for interactive analysis lives. 
 
@@ -356,7 +356,7 @@ environment(lm)
 
 We see that `f` is a function defined in the global environment, whereas `mean` and `lm` belong to "namespaces" called `base` and `stats`, respectively. 
 
-### The package environment and namespaces
+## The package environment and namespaces
 This last point on namespaces brings us to packages. Packages have their own environments, as well as namespace environment. Let's let Hadley Wickham [explain this](https://adv-r.hadley.nz/environments.html#basics):
 
 > Every function in a package is associated with a pair of environments: the package environment, which you learned about earlier, and the namespace environment.
@@ -365,7 +365,7 @@ This last point on namespaces brings us to packages. Packages have their own env
 
 > - The namespace environment is the internal interface to the package. The package environment controls how we find the function; the namespace controls how the function finds its variables.
 
-Okay, there are a few things to dive into in that explanation. First, you will note the mention of ::. That has already appeared several times in examples in these first two modules. When you create an `R` package, it makes a package environment that contains its functions. You access the functions in the package environment in one of two ways:
+There are a few things to dive into in that explanation. First, you will note the mention of `::`. That has already appeared several times in examples in these first two modules. When you create an `R` package, it makes a package environment that contains its functions. You access the functions in the package environment in one of two ways:
 
 
 ```{r, fig.width=5, fig.height=3.5}
@@ -373,7 +373,7 @@ rst <- raster::raster(nrows = 10, ncols = 10, vals = 1:100)
 raster::plot(rst)
 ```
 
-This is the first way we tried to do it, with the exception that we now use the :: to get access to `raster`'s `plot` method (we didn't do that before), so that `rst` can actually be plotted. 
+This is the first way we tried to do it, with the exception that we now use the `::` to get access to `raster`'s `plot` method (we didn't do that before), so that `rst` can actually be plotted. 
 
 The second way uses the function `library` to load and attach an installed package, here `raster`, which makes the `raster` function available in the *search* path, so it can be called without using the `packagename::function_name` format. 
 ```{r, fig.width=5, fig.height=3.5}
@@ -422,7 +422,7 @@ That is why package developers are [encouraged](http://r-pkgs.had.co.nz/namespac
 
 Package functions can always be left as functions internal to the package, that is, they exist in the package's namespace environment. Such internal functions might be used by one of the exported functions. You can actually access such functions from outside the package by using the ::: operator, although this is not recommended.  
 
-### The function environment
+## The function environment
 The last environment we will discuss is the *function environment*, which actually has three more environmental terms associated with it: the *enclosing environment*, the *binding environment*, and the **execution environment**, according to [this section](http://adv-r.had.co.nz/Environments.html#function-envs) in one version of Advanced R. We won't worry about the first two, except to note that the enclosing environment is the one in which the function was created--so if you define a function in a script but don't add it to a package, it will be enclosed by the global environment.     
 
 The **execution environment** is important to know for everyday programming purposes (in my opinion, at any rate). It is a temporary environment that is created within functions when they are executed. Here's a short demonstration of how the function environment differs from the global environment. 
@@ -496,7 +496,7 @@ Note that the value of `x` gets updated it each iteration, and the environment i
 
 Okay, so that's it for environments, and actually for this whole module. There is no formal assignment for this module, just some questions to answer. 
 
-#### Question to answer
+# Question to answer
 1. What are the data types in `R`?
 2. What is the difference between a `matrix` and `data.frame`? 
 3. What do a `data.frame` and a `list` have in common?

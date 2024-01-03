@@ -25,9 +25,9 @@ library(knitr)
 
 # Introduction to R programming{#introduction-to-r-programming}
 
-Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a brief, high-ish level overview of `R`'s structure. Now we get down to the business of learning how to use it.
+Up until now we learned mostly about setting up and maintaining an `R` project package. We have walked through a brief, high-level overview of `R`'s structure. Now we get down to the business of learning how to use it.
 
-## How R is evolving and how it affects us{#how-r-is-evolving-and-how-it-affects-us}
+## How `R` is evolving and how it affects us{#how-r-is-evolving-and-how-it-affects-us}
 Before starting, we need to turn back to natural history for another metaphor, specifically evolution. `R` is a language that has been undergoing fairly substantial changes recently. There seems to be clear development trajectories within the language, much like the evolution of species.
 
 ```{r out.width = "40%", fig.align='center', echo=FALSE, fig.cap="An (approximate) lineage of R packages/objects involved in data handling and graphics."}
@@ -40,9 +40,9 @@ The graphic above is crude and almost certainly not correct in some respects (e.
 
 Most prominent amongst these are the `dplyr` and `ggplot2` packages, which respectively provide methods for manipulating data sets and producing graphics. These packages are designed around a fairly different syntax than that of base `R`, and are increasingly dominating the `R` world. They are becoming so dominant in fact that a number of leading lights in the R field argue that `R` beginners should first be taught using tidyverse packages, and avoid base `R` and much of the programmatic concepts that are needed to go with it. The argument is summarized [here](http://varianceexplained.org/r/teach-tidyverse/). 
 
-The idea is appealing, but since this is a course on `Geospatial Analysis with R`, I believe we have no choice but to learn base `R`, because many spatial packages are built with base `R` functions and don't yet work with the tidyverse. 
+The idea is appealing, but since this is a course on `Geospatial Analysis with R`, I believe we should still learn base `R`, because many spatial packages are designed with base `R` in mind. Although `tidyverse` compliance/compatibility among spatial packages is growing, in practice many of the examples you will find for them use base `R` syntax, particularly the flagship package for raster-based analyses, [`terra`](https://rspatial.org/pkg/1-introduction.html), which is the much faster replacement for the workhorse `raster` package. 
 
-At the same time, we also need to learn some tidyverse, at least `dplyr`, because the rapidly maturing `sf` package (the replacement for `sp`, which provides spatial vector functionality in `R`) is designed to work with the tidyverse. 
+At the same time, we also need to learn some tidyverse, at least `dplyr` and `ggplot`, because the `sf` package (the replacement for `sp`, which provides spatial vector functionality in `R`) is designed to work with the tidyverse. 
 
 So we are going to learn aspects of both. Before diving in, I want to illustrate how different syntaxes can look within some of `R`'s evolutionary branches. We'll focus on data manipulation.
 
@@ -105,7 +105,7 @@ d <- data.frame(a = sample(letters[1:7], size = 1000, replace = TRUE),
 d_tb <- as_tibble(d)
 ```
 
-The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced `data.frame`s with vastly improved performance in terms of processing times and memory handling, as well as a whole suite of functions designed to manipulate them that differ markedly from original base syntax. The first thing to note is that the generic `print` functions (note you are implictly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines. Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
+The example above creates a data.frame `d` and randomly assigns some values to it, and then converts it to a `tibble` (`d_tb`) and then a `data.table` (`d_dt`). A `tibble` and `data.table` are both enhanced `data.frame`s with vastly improved performance in terms of processing times and memory handling, as well as a whole suite of functions designed to manipulate them that differ markedly from original base syntax. The first thing to note is that the generic `print` functions (note: you are implicitly calling `print` when you simply type out the name of an object and then execute the code) for each summarize the objects in fairly different ways. In fact, we swapped (implicit) `print` for `head` when it came to our `data.frame`, because it would have printed all 1000 lines. Both the `tibble` and `data.table` produce more compact outputs. Note that printing a `tibble` shows information on the data type in each column, and just the first 10 rows. Printing a `data.table` shows no information on data type, and shows the first and last 5 rows, and separates row numbers from data with ":".   
 
 The real differences come with the syntax for manipulating these datasets. Let's take a brief look at how we might operate on the three objects, by calculating the mean of variable "b" according to the categorical groups defined in "a". 
 
@@ -117,7 +117,9 @@ aggregate(d$b, list(d$a), mean)
 And with the `tibble`. For this we load up `dplyr`, which provides the functions designed to work with this. 
 ```{r}
 library(dplyr)
-d_tb %>% group_by(a) %>% summarize(mean(b))
+d_tb %>% 
+  group_by(a) %>% 
+  summarize(mean(b))
 ```
 
 And finally the `data.table`:
@@ -133,7 +135,7 @@ d_dt[, mean(b), by = a][order(a)]
 #> 7: g  9.061001
 ```
 
-Three fairly different syntaxes for doing the same thing. These are in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on `tibble` and that will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames or souped-up data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
+Three fairly different syntaxes for doing the same thing. These are in descending order of processing speed. Generally an operation performed on a large `data.frame` will be much slower than one performed on a `tibble`, which will be slower than a `data.table`. Also note that the functions `aggregate` (from the core `R` package `stats`) and `group_by` and `summarize` (from `dplyr`) can be applied to all three objects interchangeably, since all three objects are just data.frames. `data.table` is the exception, as much of the functionality of `data.table` is provided within the `[]`, so you can't apply the syntax we show for `d_dt` to `d_tb` and `d`. 
 
 ```{r, error=TRUE}
 d[, mean(b), by = a][order(a)]
@@ -155,7 +157,7 @@ In this module, you will be asked to answer questions and practice coding along 
 
 # Indexing
 
-You are already acquainted with R objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. Indexing is also referred to as subsetting, because when we extract values we are selecting a subset of an object. 
+You are already acquainted with `R` objects, data types, classes, functions, etc. Now let's start to work with them. We'll start by figuring out how to create and index into different types of data structures, which is useful if we want to extract or edit values within them. Indexing is also referred to as subsetting, because when we extract values we are selecting a subset of an object. 
 
 ## One-dimensional data structures
 
@@ -830,7 +832,8 @@ d %>% mutate(a = ifelse(a %in% c("a", "e"), "zzz", a),
 #
 # #3
 d %>% mutate(a = ifelse(a %in% c("a", "e"), "zzz", a)) %>%  
-  mutate(c = ifelse(c > 7 & c < 18, -9999, c)) %>% mutate(b = b + 10) %>% 
+  mutate(c = ifelse(c > 7 & c < 18, -9999, c)) %>% 
+  mutate(b = b + 10) %>% 
   mutate(d = b^2)
 ```
 
@@ -1271,7 +1274,7 @@ apply(dat, 1, function(x) sum(x) / sum(dat))
 
 We start by extracting one `data.frame` from `dat_list`, and then use various flavors of `apply` on that. In #1 and #2, we use the argument names for clarity (use `?apply`) to view them.  #1 applies sum to each row of `dat`, #2 to each column (i.e. the exact same thing as `rowSums` and `colSums`).  #3 takes the row means (i.e. the analog to `rowMeans`), and #4 the range of values in each column. In the last case, `apply` is more useful because there is no `rowRanges` function that provides a simpler version.  In #5 we use an anonymous function to take the row sums of `dat` and divide them by the total sum of `dat`, which gives us a weighted mean. 
 
-### When should I use for versus *apply?
+### When should I use `for` versus `*apply`?
 
 We have already heard that `*apply` is preferred in `R`, but `for` is still useful, and different use`R`s answers will vary. My own personal answer to this is to use an `*apply` if you want to capture the output of a looping operation in an object (i.e. in most cases), and use `for` when you don't need to catch it. For me, this typically relates to when I need to make multi-panel plots using base `R` graphics, e.g. 
 
@@ -1320,7 +1323,7 @@ Select Option `10: lapply and sapply`. Work through the whole unit, then escape 
 # Unit assignment 
 
 ## Set-up
-Make sure you are working in the master branch of your project. Create a new vignette named "module3.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 
+Make sure you are working in the main branch of your project. Create a new vignette named "module3.Rmd". You will use this to document the tasks you undertake for this assignment. Rename the previous vignette "module1.Rmd". 
 
 ## Create a new package function
 Create a new function within your package, using `roxygen2` notation to write help files (as done for your Assignment 1 function), and save the function in a separate .R file for each, named the same as the function contained therein
@@ -1332,7 +1335,7 @@ Name the new function `mycalc`, which will take three arguments, "x", "y", and "
 1:5 / c(5, 2, 3, 10, 2)
 ```
 
-Here's are a related function that can be adapted for this purpose:
+Here's a related function that can be adapted for this purpose:
 
 ```{r, warning=FALSE, error = TRUE}
 somewhat_related_function <- function(x, fun) {
