@@ -473,7 +473,7 @@ We'll start by learning a bit more about `R` packages.  First, I will direct you
 include_graphics("fig/u1m1-10.png") 
 ```
 
-The one folder (R) and two of the files (DESCRIPTION and NAMESPACE) are critical to building an `R` package. The DESCRIPTION file provides the package's metadata, which is described in detail [here](http://r-pkgs.had.co.nz/description.html#description) (read this section). The NAMESPACE is described in detail [here](http://r-pkgs.had.co.nz/description.html#description), but as that section said, it is a complicated topic, so we won't touch on it now. The approach we are using to building packages updates NAMESPACE automatically (you shouldn't mess with it), so we will leave for now and come back to it later on. The R folder is the place where your core package functions live, along with their documentation. There are a few other folders that are important for `R` packages (to the extent that we use them in this class), which are "data", "inst", "man", "vignettes". Those have not yet been made, so we will revisit them to discuss what they do as they appear in our package-making workflow.  
+The one folder (R) and two of the files (DESCRIPTION and NAMESPACE) are critical to building an `R` package. The DESCRIPTION file provides the package's metadata, which is described in detail [here](http://r-pkgs.had.co.nz/description.html#description) (read this section). The NAMESPACE is described in detail [here](http://r-pkgs.had.co.nz/description.html#description), but as that section said, it is a complicated topic, so we won't touch on it now. The approach we are using to building packages updates NAMESPACE automatically (you shouldn't mess with it), so we will leave for now and come back to it later on. The `R` folder is the place where your core package functions live, along with their documentation. There are a few other folders that are important for `R` packages (to the extent that we use them in this class), which are "data", "inst", "man", "vignettes". Those have not yet been made, so we will revisit them to discuss what they do as they appear in our package-making workflow.  
 
 You can create your first `R` package quite easily, as the folder is currently structured. If you look right next to the `git` tab in your RStudio interface, you will see a "Build" tab. Click on that, and then click on the "Install" button. That will build the package. You can confirm the package was built and installed if you browse in the "Packages" tab (in the lower right pane in our current setup), and browse down and find your package named listed alphabetically. Click on that. You will see the contents of the help pages for your package. Since you have no functions in your R folder, and no documentation for those functions, you have no help pages. Let's remedy that. 
 
@@ -481,7 +481,7 @@ You can create your first `R` package quite easily, as the folder is currently s
 include_graphics("fig/u1m1-11.png") 
 ```
 
-If you are using R in Windows, and have a new install, you will probably see the warning as shown above about installing RTools. Go to the link it shows and install the latest recommended version of the Rtools executable (.exe).  
+If you are not working within the `docker` environment, and are using `R` in Windows, and have a new install, you will probably see the warning as shown above about installing `RTools`. Go to the link it shows and install the latest recommended version of the `Rtools` executable (.exe).  
 
 ## Your first package function{#your-first-package-function}
 We'll learn more about exactly what a function is in the next module, but for now it is sufficient to know that a function provides a convenient way for repeating an operation without having to keep re-writing a longer set of commands, or as it is put [here](https://r4ds.had.co.nz/functions.html) (in Hadley Wickham's R for Data Science book):
@@ -521,7 +521,7 @@ my_number_checker(7)
 my_number_checker(11)
 ```
 
-The lines above show how the code can be re-run three times to check three different values, needing just 12 lines (the function itself plus the three separate executions of it) versus 24 as originally written (3 copies of the `if`-`else` statements and `x` with three different values). 
+The lines above show how the code can be re-run three times to check three different values, needing just 12 lines (the function itself plus the three separate executions of it) versus 24 as originally written (3 copies of the `if`/`else` statements and `x` with three different values). 
 
 A function can be written in any script, and then live only in that script. But what if you want to reuse that function some day? You'll have to find that script and copy it to your new script. If there is any possibility of that, then you should follow Hillary Parker's [advice](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/) to make an R package: 
 
@@ -529,7 +529,7 @@ A function can be written in any script, and then live only in that script. But 
 
 She goes on to provide a handy tutorial for using `devtools` commands to create a package, which I followed in creating my first package. In our case, we have started out with an RStudio project, so we will proceed a bit differently, but basically follow her tutorial from step 2 onwards, using the example function we created above. So, in RStudio, go to File > New File > R script (or CTRL(CMD, if Mac)-Shift-N), and copy the full body (all 9 lines) of `my_number_checker` function above into the file, and then save it into the R folder of your project as `my_number_checker.R` 
 
-Straightforward, but now, as Hillary points out, you will need to add documentation so that you can understand what your function does. First, you will have to install the `roxygen2` package, if you don't already have it. Next, copy and paste the lines below *above* the body of the function in `my_number_checker.R`:
+Straightforward, but now, as Hillary points out, you will need to add documentation so that you can understand what your function does. First, you will have to install the `roxygen2` package, if you don't already have it (it comes with the `docker` image). Next, copy and paste the lines below *above* the body of the function in `my_number_checker.R`:
 
 ```
 #' A number-checking function
@@ -609,7 +609,7 @@ Vignettes are also useful for connecting R packages to the broader pursuit of re
 In this class, you will learn to use vignettes to document your assignments, including any code that you write that does not need to be reused (and therefore converted into an assignment). 
 
 ### RMarkdown
-We write vignettes using RMarkdown files, which provide a way of mixing text,  code, and the output of that code into a variety of document formats, including html, pdf, Word, and various presentation formats. The vignette you are reading now is written in RMarkdown, and you can learn a great deal about how it works by reading the corresponding .Rmd file. But first, have a read of [Rstudio's Overview of Rmarkdown](http://rmarkdown.rstudio.com/)--click "Get Started" and then go through all the linked sections (Introduction through Cheatsheets). This will give a pretty thorough overview of RMarkdown and what it can do. Make sure you pay extra attention to the section on [Code Chunks](https://rmarkdown.rstudio.com/lesson-3.html), particularly "Chunk Options", which control the display and output of the code in your Rmd file. 
+We write vignettes using RMarkdown files (note: there is a newer format called Quarto that is now available, but we still use Rmarkdown because Quarto seems to need extra steps for vignettes), which provide a way of mixing text,  code, and the output of that code into a variety of document formats, including html, pdf, Word, and various presentation formats. The vignette you are reading now is written in RMarkdown, and you can learn a great deal about how it works by reading the corresponding .Rmd file. But first, have a read of [Rstudio's Overview of Rmarkdown](http://rmarkdown.rstudio.com/)--click "Get Started" and then go through all the linked sections (Introduction through Cheatsheets). This will give a pretty thorough overview of RMarkdown and what it can do. Make sure you pay extra attention to the section on [Code Chunks](https://rmarkdown.rstudio.com/lesson-3.html), particularly "Chunk Options", which control the display and output of the code in your Rmd file. 
 
 You can pull up a template for an RMarkdown file by going to File > New File > RMarkdown (a new RStudio install might tell you to update some packages first, which you should do). Name it "Test" in the dialog it brings up, and then save it to your project directory, and then press the "Knit" button at the top of the RStudio window.  That will create the html output in a special new window.  Delete test.Rmd and test.html when you are finished (we don't want to track these). 
 
@@ -762,28 +762,33 @@ Okay, that's a wrap for this unit. You just have to do the assignment now.
 
 For the first assignment of this class, you are going to do the following:
 
-- Add a new function to your package. We will use Hillary Parker's cat_function as the template, which we find in her package writing [tutorial/post](https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/). 
-- Paste that into a new `R` script (source) file. Make it first conform to the `R` style guide, so that it looks like this:
+- Add a new function to your package, based on the `my_number_checker` function you were working with above
+- Copy that code and paste that it into a new `R` script (source) file. Make it first conform to the `R` style guide, so that it looks like this:
 
     ```{r, eval = FALSE}
-    #' A Cat Function
-    #' @description This function allows you to express your love of cats.
-    #' @param love Do you love cats? Defaults to TRUE.
+    #' A number-checking function
+    #' @description This function allows you to test whether a number falls 
+    #' into the Goldilocks range (5-9) or not
+    #' @param x A number
     #' @export
     #' @examples
-    #' cat_function()
-    cat_function <- function(love = TRUE) {
-      if(love == TRUE){
-        print("I love cats!")
+    #' my_number_checker(1)
+    #' my_number_checker(7)
+    #' my_number_checker(11)    
+    my_number_checker <- function(x) {
+      if(x < 5) {
+        print("Too low!") 
+      } else if(x >= 5 & x < 10) {
+        print("Just right!!! :)")
       } else {
-        print("I am not a cool person.")
+        print("Too high!")
       }
-    }
+    }  
     ```
     
-- Change the function so that it is now the `squirrel_function`. Change the main argument (the param) to "admire", update the documentation to reflect changes from cats to squirrels, in all places that it seems relevant, and edit the first `print` statement to read "I strongly admire squirrels!", and the second to read "I do not belong to the squirrel fan club." 
-- Save the file in the R/ folder so that it has the same name as the function (with .R extenstion).
-- Update your vignette so that it demonstrates how the `squirrel_function` is used, in addition to the demonstration of  `my_number_checker` that you have already added. 
+- Now change the function that it is named `my_multiplier`. Change the main argument ("x") to "value", update the documentation to reflect that change and the change in the function name, in all places that it seems relevant, and edit the first `print` statement so that instead of "Too low!", a character output, you multiply x by 1 (`x * 1`, unquoted). Replace the `print` with `return`. Do the same for the second statement, by change the multiplier to 5, and for the final one change it to multiply by 10.   
+- Save the file in the R/ folder so that it has the same name as the function (with .R extension).
+- Update your vignette so that it demonstrates how `my_multiplier` is used, in addition to the demonstration of  `my_number_checker` that you have already added. 
 - Commit and push your changes. Test installing your packages so that it builds with a browsable vignette. Use `devtools::install`, and also `devtools::install_github` to make sure that it does. 
 - Once complete, create a new branch called "a1" in your local repo. Push that branch to GitHub as well.  Then switch back into (i.e. checkout) your main branch. 
 - You are done. 
