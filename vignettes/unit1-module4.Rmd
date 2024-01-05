@@ -36,7 +36,7 @@ library(tidyr)
 library(ggplot2)
 ```
 
-For this module, we will start making extensive use of `%>%`. You will save yourself much time by using the keyboard shortcut for inserting that operator, which is `CMD + shift + m` on Mac, `ctrl + shift + m` on Windows.
+We will start making extensive use of `%>%` (the pipe operator). You will save yourself much time by using the keyboard shortcut for inserting that operator, which is `CMD + shift + m` on a Mac, `ctrl + shift + m` on Windows. You will wear your fingers out typing the three characters out each time (and also not get the automatic space on either side).
 
 # Data preparation
 The first thing we need is some data to work with. R comes with many built-in  datasets, but when you are out in the wild and working on your own with `R`, you are generally going to get your datasets from somewhere else. That means that you will need to read them into `R`. Once you have read them in, you will often need to clean them up and rearrange them before they are ready to analyze. This section focuses on reading in and organizing your data in `R`. We are going to work with files in the commonly used csv data format. 
@@ -44,7 +44,7 @@ The first thing we need is some data to work with. R comes with many built-in  d
 ## Reading in and writing out data
 We are going to work with three csv files that I downloaded from [FAOStat](http://www.fao.org/faostat/en/#home), one of the primary sources for agricultural census data. The data I downloaded represent the planted areas and harvest quantities of maize, wheat, and sorghum for the years 1961-2017 for Zambia and South Africa. They are bundled up here with `geospaar`, so you can access them by reading them in as `system.file`s. 
 
-We can easily read in each file using base `R`'s `read.csv` function, which is widely used.  However, we are going to skip straight to a more powerful csv reader provided by the tidyverse's [`readr`](https://readr.tidyverse.org) package. Even more powerful is `data.table::fread`, which is excellent (and as far as I know, still the fastest on the market) for reading in very large csv files, but we are sticking with the tidyverse. First, for grins, here is how you would use `read.csv`
+We can easily read in each file using base `R`'s `read.csv` function, which is widely used.  However, we are going to skip straight to a more powerful csv reader provided by the `tidyverse`'s [`readr`](https://readr.tidyverse.org) package. Even more powerful is `data.table::fread`, which is excellent (and as far as I know, still the fastest on the market) for reading in very large csv files, but we are sticking with the tidyverse. First, for grins, here is how you would use `read.csv`
 
 ```{r}
 f <- system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
@@ -66,9 +66,9 @@ library(dplyr)
 maize %>% slice(1)  # same as maize[1, ]  
 ```
 
-That's the first row of data from `maize`, using `dplyr::slice` instead of `maize[1, ]` to get it. We don't need everything in there. We are interested in just a few columns actually. We'll get to how we select those data in the next section. 
+That's the first row of data from `maize`, using `dplyr::slice` instead of `maize[1, ]` to get it. We don't need everything in there, and are actually interested in just a few columns actually. We'll get to how we select those data in the next section. 
 
-Let's get all three datasets read in first:
+First, let's read in all three datasets:
 
 ```{r}
 # Chunk 1
@@ -183,7 +183,7 @@ maize %>% pivot_longer(cols = c("Area harvested", "Production"),
 # maize %>% gather(key = Element, value = Value, `Area harvested`, Production)
 ```
 
-Here we use `tidyr::pivot_longer` (which is busy replacing `tidyr::gather`) to reshape `maize` back to its original form. We have three arguments, "cols", which designates the columns you want to convert to combine into long form, "names_to", which specifies the name of the column that will hold the key variable, and "values_to", which specifies the name of the column that will hold the values. The commented out line shows how to do the same thing with the older `gather` function. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
+Here we use `tidyr::pivot_longer` (which replaced `tidyr::gather`) to reshape `maize` back to its original form. We have three arguments, "cols", which designates the columns you want to convert to combine into long form, "names_to", which specifies the name of the column that will hold the key variable, and "values_to", which specifies the name of the column that will hold the values. The commented out line shows how to do the same thing with the older `gather` function. Gathering, also known as going from wide to long (or tall), is probably more common than spreading, but for our datasets we have to spread, because the original form keeps two clearly distinct variables in one column. So we will keep the reshaped `maize`. 
 
 
 ### Renaming
@@ -224,7 +224,6 @@ lapply(crops, function(x) {
 ```
 
 The tidying is now done, although we haven't saved the results to a new object yet. We'll do that next. 
-
 
 ### Combining datasets (and operations)
 Oftentimes when one is working with data, there is a need to combine several datasets into one. These three datasets are one such example--we don't really need to keep our three `tibble`s as separate elements in a list, as it might be easier to perform any further manipulations of the data if we combine them all into one big `tibble`. We'll look at two ways of joining tables. 
@@ -321,7 +320,7 @@ right_join(x = t1, y = t3, by = "v1")
 full_join(x = t1, y = t3, by = "v1")
 ```
 
-In #1 and #2, `t1` and `t3` produce identical results using either `inner_join` or `left_join`, even though they do slightly different things:
+In #1 and #2, `t1` and `t3` produce identical results using either `inner_join` or `left_join`, even though they do slightly different things (note: quotes are from older documentation):
 
 - `?inner_join`: 
 
@@ -374,7 +373,8 @@ We are now going to end by doing a more complicated join based on three columns,
 ```{r}
 # Chunk 16
 # #1
-yields <- crops_df %>% mutate(yield = prod / harv_area) %>% 
+yields <- crops_df %>% 
+  mutate(yield = prod / harv_area) %>% 
   dplyr::select(crop, country, year, yield)
 yields %>% slice(1:2)
 # 
@@ -398,16 +398,24 @@ That last line on Chunk #12 (`crops_df %>% sample_n(., size = 20)`) gives an opp
 set.seed(1)
 # 
 # #1
-crops_df %>% sample_n(., size = 20) %>% arrange(year)
+crops_df %>% 
+  sample_n(., size = 20) %>% 
+  arrange(year)
 # 
 # #2
-crops_df %>% sample_n(., size = 20) %>% arrange(country, year)
+crops_df %>% 
+  sample_n(., size = 20) %>% 
+  arrange(country, year)
 # 
 # #3
-crops_df %>% sample_n(., size = 20) %>% arrange(crop, country, year)
+crops_df %>% 
+  sample_n(., size = 20) %>% 
+  arrange(crop, country, year)
 # 
 # #4
-crops_df %>% sample_n(., size = 20) %>% arrange(crop, country, -year)
+crops_df %>% 
+  sample_n(., size = 20) %>% 
+  arrange(crop, country, -year)
 ```
 
 We are taking the same random sample in each example above, ordering the resulting outputs differently in each case: #1 orders ascending by year (oldest to most recent); #2 orders ascending first by country than by year; #3 ascending by crop, country, and year; #4 by ascending by crop and country, but descending by year (note the `-` sign).
@@ -508,7 +516,9 @@ Long or tall (i.e. tidy) data formats facilitate split-apply-combine (SAC) analy
 
 ```{r}
 # Chunk 22
-crop_ylds %>% group_by(crop) %>% summarize(mean_yield = mean(yield))
+crop_ylds %>% 
+  group_by(crop) %>% 
+  summarize(mean_yield = mean(yield))
 ```
 
 We just did an SAC on the `crop_ylds` data that entailed splitting the dataset by crop type, applying the `mean` function, and then combining the results of that into a summary `tibble`.  We can use an `lapply` and `rbind` to illustrate the inner workings of that SAC:
@@ -533,7 +543,9 @@ Chunk 23 #1 contains both the split (using base `R` syntax rather than `dplyr`, 
 Now let's look at a more complex SAC:
 ```{r}
 # Chunk 24
-crop_ylds %>% group_by(crop, country) %>% summarize(mean_yield = mean(yield))
+crop_ylds %>% 
+  group_by(crop, country) %>% 
+  summarize(mean_yield = mean(yield))
 ```
 
 Here we do two splits: the first on crop, the second on country, so after applying and combining we get the mean yield for each crop for each country.  Let's do that with `lapply`:
@@ -635,10 +647,14 @@ Now that we have a sense of how to do split-apply-combine, let's dig a bit more 
 summary(crop_ylds$harv_area)
 #
 # #2
-crop_ylds %>% select(harv_area) %>% summary()
+crop_ylds %>% 
+  select(harv_area) %>% 
+  summary()
 #
 # #3
-crop_ylds %>% pull(harv_area) %>% summary()
+crop_ylds %>% 
+  pull(harv_area) %>% 
+  summary()
 ```
 
 In #1, we use the `summary` function on *harv_area*, pulled out of `crop_ylds` as a vector. #2 does the same thing using `dplyr` verbs. Note how `summary()` appears at the end of the pipeline, and we don't have to give it a variable name because it receives implicitly consumes everything coming out of the upstream pipe (in this case, just *harv_area*).  However, that returns summary output in a `table`, whereas the base method returns a named vector. #3 produces the equivalent of #1, using `dplyr::pull` instead of select. `pull` is the `dplyr` equivalent of `crop_ylds$harv_area`, i.e. it pulls a variable froma `data.frame` or `tibble` into a vector. 
@@ -650,7 +666,9 @@ In #1, we use the `summary` function on *harv_area*, pulled out of `crop_ylds` a
 summary(crop_ylds[, c("harv_area", "prod")])
 #
 # #2
-crop_ylds %>% select(harv_area, prod) %>% summary()
+crop_ylds %>% 
+  select(harv_area, prod) %>% 
+  summary()
 ```
 
 With #1 showing the base approach, and #2 the `dplyr` method. Fairly straight-forward. How about if we want to do it in an SAC (these approaches are not) where we need to apply some grouping?  
@@ -660,7 +678,8 @@ With #1 showing the base approach, and #2 the `dplyr` method. Fairly straight-fo
 q1 <- function(x) quantile(x, 0.25) 
 q3 <- function(x) quantile(x, 0.75)
 crop_ylds %>% select(crop, country, harv_area, prod) %>% 
-  group_by(crop, country) %>% rename(ha = harv_area, p = prod) %>% 
+  group_by(crop, country) %>% 
+  rename(ha = harv_area, p = prod) %>% 
   summarise_all(list(min, q1, med = median, mu = mean, q3, max))
 ```
 
@@ -675,13 +694,17 @@ Evaluating associations between data variables (e.g. correlations) is one of the
 cor(crop_ylds[, c("prod", "harv_area")])
 # 
 # #2
-crop_ylds %>% select(prod, harv_area) %>% cor()
+crop_ylds %>% 
+  select(prod, harv_area) %>% 
+  cor()
 # 
 # #3
 cor.test(x = crop_ylds$prod, y = crop_ylds$harv_area)
 #
 # # 4
-crop_ylds %>% group_by(crop, country) %>% summarise(cor = cor(prod, harv_area))
+crop_ylds %>% 
+  group_by(crop, country) %>% 
+  summarise(cor = cor(prod, harv_area))
 ```
 
 We first apply `stats::cor` using base syntax to calculate the correlation matrix between *prod* and *harv_area* (#1), and then do the same thing with `dplyr`. In #3 we apply the `cor.test` to those two variables, using base syntax, which produces statistics regarding the confidence interval and significance of the correlation coefficient. This is harder to do in `dplyr`, because the output from `cor.test` is not tabular, so we are not doing that here (but there is a tidyverse oriented `corrr` package that should help with that). #4 shows how to use `cor` with `summarize` when grouping by *crop* and *country*. The output is the correlation coefficient for the two variables for each crop and country over the time series (this only works for a two variable correlation analysis--it fails when a third variable is added). Note the negative correlation between maize production and harvested area in South Africa, whereas all the others are generally strongly positive (as they should be--generally the more area you plant to a crop, the more tons of it you produce). We'll come back to that. 

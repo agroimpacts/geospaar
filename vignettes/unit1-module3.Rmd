@@ -1328,7 +1328,7 @@ Make sure you are working in the main branch of your project. Create a new vigne
 ## Create a new package function
 Create a new function within your package, using `roxygen2` notation to write help files (as done for your Assignment 1 function), and save the function in a separate .R file for each, named the same as the function contained therein
 
-Name the new function `mycalc`, which will take three arguments, "x", "y", and "fun", which stands for "function". Arguments "x" and "y" will be vectors or matrices, while argument "fun" will have four possible values: "sum", "subtract", "divide", "multiply". Function `mycalc` will use conditional statements to choose the correct calculation to make based on the value you argument value given to oper. For example, if you pass to "x" a vector `1:5`, and to "y" a vector `c(5, 2, 3, 10, 2)`, and set "fun" to "divide", you should get:  
+Name the new function `mycalc`, which will take three arguments, "x", "y", and "fun", which stands for "function". Arguments "x" and "y" will be vectors or matrices, while argument "fun" will have four possible values: "sum", "subtract", "divide", "multiply". Function `mycalc` will use conditional statements to choose the correct calculation to make based on the value given to "fun". For example, if you pass to "x" a vector `1:5`, and to "y" a vector `c(5, 2, 3, 10, 2)`, and set "fun" to "divide", you should get:  
     
     
 ```{r, echo = FALSE}
@@ -1338,15 +1338,11 @@ Name the new function `mycalc`, which will take three arguments, "x", "y", and "
 Here's a related function that can be adapted for this purpose:
 
 ```{r, warning=FALSE, error = TRUE}
-somewhat_related_function <- function(x, fun) {
+related_function <- function(x, fun) {
   if(fun == "log") {
     o <- log(x)
   } else if(fun == "square") {
     o <- x^2
-  } else if(fun == "cube") {
-    o <- x^3
-  } else if(fun == "sqrt") {
-    o <- sqrt(x)
   } else {
     o <- paste("Not a recognized function")
   }
@@ -1356,18 +1352,16 @@ somewhat_related_function <- function(x, fun) {
 # Examples
 a <- c(1, 10, 100, 1000)
 b <- cbind(a, b = log10(a))
-somewhat_related_function(x = a, "log")
-somewhat_related_function(x = b, "square")
-somewhat_related_function(x = b, "cube")
-somewhat_related_function(x = a, "sqrt")
-somewhat_related_function(x = a, "log10")
+related_function(x = a, "log")
+related_function(x = b, "square")
+related_function(x = b, "cube")
 ```
     
 So you have to adapt the function by 1) adding a second argument for y, 2) changing the operations performed within the conditional statements, 3) the values of the arguments that "fun" responds to, as well as 4) the function name. 
 
 ## Vignette tasks
 1. Create the following vectors: 
-    - An integer vector of length 20, to be named `v1`, using the `sample` function to randomly select 20 values from 0 through 100, use the option "replace = TRUE" (which means that you can the same value randomly selected more than one time)
+    - An integer vector of length 20, to be named `v1`, using the `sample` function to randomly select 20 values from 0 through 100, use the option "replace = TRUE" (which means that you can draw the same value more than one time)
     - A second integer vector (named `v2`), also of length 20, but selecting 20 values from the range 1:10. 
     - A numeric vector of length 20 (named `v3`), using the `runif` function with the minimum set to 0 and the maximum to 1. 
     - A character vector of length 20 (named `v4`), using randomly selected values from the built-in dataset `LETTERS`. You will use `v2` to select the values out of `LETTERS` (this means that you are using `v2` as an __index__). 
@@ -1378,7 +1372,7 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
 3. Create a `data.frame` (named `DF`) by bindings the columns of `v1`, `v2`, `v3`, and `v4`. 
     - Question: why shouldn't you use the name "df" to name this object?  
     - Change the column names of `DF` to "a", "b", "c", and "grp". 
-    - Question: why is it okay to rename a column in `DF` "c", but not to rename `v3` that name? 
+    - Question: why is it okay to rename a column in `DF` "c", but not to rename `v3` as `c`? 
     - Look at the `str` of `DF`. What kind of data type is "grp"? How would you change it between character and factor and back again? 
 
 4. Demonstrate the use of your new function: 
@@ -1400,26 +1394,26 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Write an `lapply` that applies `sum` to `l`. This one does not need an anonymous function 
     - Now write an `lapply` that iterates over the elements of `l`, and uses your `mycalc` to multiply each element of `l` by `v2`
     - Hints:
-        - You will need to use an anonymous function (`function(x)`)
-        - The interior of your function (i.e. the part between `({})` use the `mycalc` function. 
+        - You will need to use an anonymous function
+        - The interior of your function (i.e. the part between `({})` will use the `mycalc` function. 
     - Do the same but with `sapply`
 
     
 ## Assignment output{#assignment-output}
 
-As with the previous assignment, this assignment should be delivered as R package that: 
+As with the previous assignment, this assignment should be delivered as an R package that: 
 
-1. Has a vignettes, man, and R folder, with the necessary ingredients in them ("calculations" vignette, R function files, .Rd files for the function documentation) 
+1. Has a vignettes, man, and R folder, with the necessary ingredients in them ("calculations" vignette, `R` function files, .Rd files for the function documentation) 
 
 2. Has a DESCRIPTION and NAMESPACE file that shows that both your functions are exported. Fill out the DESCRIPTION file with your relevant details, a description of the package, etc. Also, use 3-digit version numbering. 0.0.0 is the initial version of your package. 0.0.X (where X means some integer in a sequence, 1 if this is your first minor update) is the updated version after a minor fix (a small bug corrected or documentation updated), 0.X.0 is an intermediate release (maybe you have added a new function or two), X.0.0 is a major release of a working version of the package. 
 
 3. Can be installed with browsable vignettes using `install_github`. 
 
-4. Code written according to Hadley Wickham's R style guide.
+4. Code written according to Hadley Wickham's `R` style guide. Points will be deducted for code that extends beyond 80 characters per line, does not follow naming conventions, etc.
 
 5. No extraneous files/folders in your repo. 
 
-6. In writing your vignettes, make sure that the content of objects that result from each assigned task are printed into the vignette, For example, if you are asked to create a two column data.frame:
+6. In writing your vignettes, make sure that the content of objects that result from each assigned task are printed into the vignette. For example, if you are asked to create a two column `data.frame`:
 
     This is wrong:
     ```{r}
