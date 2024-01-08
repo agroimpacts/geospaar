@@ -84,11 +84,12 @@ check_image=$(docker image inspect ${rstudio_image})
 container_name=geospaar_rstudio
 
 # Running rstudio on localhost:8787
+prefs=rstudio-prefs.json
 docker run --rm -d -p 8787:${port} -e PASSWORD=password \
   --name "${container_name}" \
   -v "${full_d}":/home/rstudio/ \
   -v "${r_package_dir}":/packages \
-  -v "${full_d}"/geospaar/.config/rstudio:/home/rstudio/.config/rstudio/ \
+  -v "${full_d}"/geospaar/"${prefs}":/home/rstudio/.config/rstudio/"${prefs}" \
   -v "${full_d}"/geospaar/.Rprofile:/home/rstudio/.Rprofile:rw \
   "${rstudio_image}"
 

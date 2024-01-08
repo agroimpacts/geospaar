@@ -1328,7 +1328,7 @@ Make sure you are working in the main branch of your project. Create a new vigne
 ## Create a new package function
 Create a new function within your package, using `roxygen2` notation to write help files (as done for your Assignment 1 function), and save the function in a separate .R file for each, named the same as the function contained therein
 
-Name the new function `mycalc`, which will take three arguments, "x", "y", and "fun", which stands for "function". Arguments "x" and "y" will be vectors or matrices, while argument "fun" will have four possible values: "sum", "subtract", "divide", "multiply". Function `mycalc` will use conditional statements to choose the correct calculation to make based on the value given to "fun". For example, if you pass to "x" a vector `1:5`, and to "y" a vector `c(5, 2, 3, 10, 2)`, and set "fun" to "divide", you should get:  
+Name the new function `my_calc`, which will take three arguments, "x", "y", and "fun", which stands for "function". Arguments "x" and "y" will be vectors or matrices, while argument "fun" will have four possible values: "sum", "subtract", "divide", "multiply". Function `my_calc` will use conditional statements to choose the correct calculation to make based on the value given to "fun". For example, if you pass to "x" a vector `1:5`, and to "y" a vector `c(5, 2, 3, 10, 2)`, and set "fun" to "divide", you should get:  
     
     
 ```{r, echo = FALSE}
@@ -1376,26 +1376,26 @@ So you have to adapt the function by 1) adding a second argument for y, 2) chang
     - Look at the `str` of `DF`. What kind of data type is "grp"? How would you change it between character and factor and back again? 
 
 4. Demonstrate the use of your new function: 
-    - Use `mycalc` to sum and divide the following pairs of objects:
+    - Use `my_calc` to sum and divide the following pairs of objects:
         - `v1`, `v2`
         - `v2`, `v3`
         - `v1`, `v3`
         - `m1`, `m1`
         - `m1`, `m2`
     - Capture the output of each operation in objects `d1` through `d5` for the divisions, and `s1` through `s5` for the sums. 
-    - Using `mycalc` with `DF`:
+    - Using `my_calc` with `DF`:
         - Multiply row1, column1 by row1, column2
         - Multiply rows 1-10, column 1-3 by rows1-10, columns 1-3
         - Divide the values in columns "a" and "b" by the values in column "c" of `DF` corresponding to the rows in "grp" that have values "E". In selecting the columns, use their names, rather than their index numbers, to select them
-    - Repeat the last of the aforementioned calculations, but this time do not use `mycalc`. Simply do it using the two `DF` subsets with the `/` operator
+    - Repeat the last of the aforementioned calculations, but this time do not use `my_calc`. Simply do it using the two `DF` subsets with the `/` operator
 
 5. Demonstrate the use of `*apply`:
     - Combine `v1`, `m1`, and `m2` into a list `l`
     - Write an `lapply` that applies `sum` to `l`. This one does not need an anonymous function 
-    - Now write an `lapply` that iterates over the elements of `l`, and uses your `mycalc` to multiply each element of `l` by `v2`
+    - Now write an `lapply` that iterates over the elements of `l`, and uses your `my_calc` to multiply each element of `l` by `v2`
     - Hints:
         - You will need to use an anonymous function
-        - The interior of your function (i.e. the part between `({})` will use the `mycalc` function. 
+        - The interior of your function (i.e. the part between `({})` will use the `my_calc` function. 
     - Do the same but with `sapply`
 
     
