@@ -8,11 +8,7 @@ This course draws from a number of other `R` courses and materials that are onli
 
 ## Installation
 
-The course materials can be installed as a standard `R` package, using a desktop Rstudio installation (or another IDE), or within a `docker` container. For the standalone case, you can run the following from your Rstudio (or similar IDE) installation (which assumes you have the `devtools` package installed):
-
-```R
-devtools::install_github("agroimpacts/geospaar", build_vignettes = TRUE)
-```
+The course materials can be installed as a standard `R` package, using a desktop Rstudio installation (or another IDE), or within a `docker` container. For the standalone case, you can simply install the course package from your Rstudio Desktop (or similar IDE) installation (which assumes you have the `devtools` package installed), per step 7 below. 
 
 The dockerized approach, which will be followed for the full class, provides a consistent environment, making it less susceptible to the idiosyncrasies of different operating systems. The same container environment will be used for developing `R` packages for class assignments and projects. More detail on working with `docker` can be found in the materials for [Advanced Geospatial Analysis with Python](https://hamedalemo.github.io/advanced-geo-python/lectures/docker.html), taught by Professor Alemohammad. For now we will just use it for installing course materials. Please follow these steps to get started. 
 
@@ -83,11 +79,10 @@ Then run the image using the following script that comes with the `geospaar` rep
   ./run-container.sh -v $LATEST -p $PORT $MY_PROJECT_DIRECTORY
   ```
 
-This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will will then give you a fully functioning Rstudio-server instance after you log in. 
-
+This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will then give you a fully functioning Rstudio-server instance after you log in. 
 ### 7. Browse the course materials
 
-Build the `geospaar` package... 
+Build the `geospaar` package...
 
 ```R
 library(devtools)

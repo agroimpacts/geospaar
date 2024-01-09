@@ -1282,6 +1282,7 @@ There are no package functions to create for this assignment. All work is to be 
 
 ## Vignette tasks
 1. Create three `tibble`s, `t1`, `t2`, `t3`. `t1` has 10 rows, with column `V1` containing values G1 through G10, and `V2` containing `runif` between 75 and 125.  `t2` has 15 rows with `v1` (G1 - G15) and `v3` containing a random selection of `LETTERS` A-F. `t3` has 20 rows (`v1` with G1-G20), and `v4` with numbers from the random normal distribution (`mean` = 100, `sd` = 20). Use a seed of 1 for random numbers. Join `t1`, `t2`, and `t3` within a single pipeline, using:
+
   - `left_join`
   - `right_join`
   - `full_join`
@@ -1296,11 +1297,9 @@ There are no package functions to create for this assignment. All work is to be 
 5. Calculate a correlation matrix between *harv_area* and *yield* for each crop-country combination, using `dplyr` verbs. Arrange the result (negative to positive) by the value of the correlation coefficient. See Chunk 34 for guidance.
 
 6. Create a single scatter plot with `ggplot` that shows the relationship between *harv_area* (x-axis) and *yield* (y-axis) for maize, separated by country on a single plot. Make it a point scatter plot, with a straight trendline fit through each set of points (i.e. `method = "lm"`). You will need to use `geom_point` and `geom_smooth`. Make a title ("Harvested area versus yield") and x ("Harvested area (ha)") and y ("Yield (t/ha)") labels.   
-
 7. Create a single scatter plot with `graphics::plot` that plots just South African wheat yields (y-axis) against year (x-axis). Plot the points, and then add a linear trendline to it, by wrapping the `abline` around the `lm` function. Make the points solid grey ("grey") and the `abline` blue. Label the y axis as "Yield (t/ha)". Remove the x-axis label. Give a title: "South African wheat (1961-2017)". Chunk 54 is your guide. 
 
 8. Use `ggplot` to make a 5-bin histogram of Zambia's maize yields. The x-label should be "Yield (t/ha)", the title should be "Zambian Maize", and bins should be blue with black outlines. 
-
 
 ## Assignment output{#assignment-output}
 Refer to [Unit 1 Module 3's Assignment output section](unit1-module3.html#assignment-output) for submission instructions. The only differences are as follows:
