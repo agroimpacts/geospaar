@@ -25,35 +25,24 @@ options(width = 100)
 ```
 
 # Working with spatial vector data{#working-with-spatial-vector-data}
+In this section we will start to work with spatial vector data, learning the most common forms of vector-based spatial operations. We will be working primarily with the `sf` package, which replaces the earlier `sp` package.
 
-In this section we will start to work with spatial vector data, learning the most common forms of vector-based spatial operations. We will be working primarily with the new `sf` package. If you had taken this class in Spring, 2018, you would have primarily learned the older `sp` package. However, `sf` is now mature enough that we can use it exclusively for all vector-based operations, and it is much more powerful than `sp`. We still, however, need to use `sp` a little bit, because the `raster` package (we get to that in the next module) still requires `sp` classes for many of its functions that work with vectors.
-
-The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to intersections, buffers, and differencing.  
+The material in this section assumes that the reader is familiar with standard GIS operations and concepts, ranging from projections and transformations to intersections, buffers, and differences.  
 
 # Preparation
-## Installation
+## Set-up{#set-up}
 
 Let's start by loading `geospaar`.
 ```{r, warning=FALSE, message=FALSE}
 library(geospaar)
 ```
 
-`geospaar` imports `sf`, which in turn imports `rgdal`, `raster`, `rgeos`, `sp`, and a bunch of other packages that are useful for spatial stuff. `sp` is the package that `sf` is replacing. `rgdal` is something you probably haven't looked into much yet, so what is it?  This is a package that, according to `rgdal`'s DESCRIPTION file: 
+`geospaar` imports `sf`. `sf` depends on the following external libraries (from [here](https://cran.r-project.org/web/packages/sf/index.html)): 
 
-> Provides bindings to the Geospatial Data Abstraction Library ('GDAL') (>= 1.6.3) and access to projection/transformation operations from the 'PROJ.4' library. The 'GDAL' and 'PROJ.4' libraries are external to the package, and, when installing the package from source, must be correctly installed first. Both 'GDAL' raster and 'OGR' vector map data can be imported into R, and 'GDAL' raster data and 'OGR' vector data exported.
+> SystemRequirements: 	GDAL (>= 2.0.1), GEOS (>= 3.4.0), PROJ (>= 4.8.0), sqlite3
 
-That means that `rgdal` allows us to call these external libraries that give us the ability to read in a wide range of raster and vector formats, provided we have these libraries already installed on our computer.  
+These are external libraries that provide key geospatial capabilities that are used by `R` and many other languages and platforms that can be used for geospatial analytics. If you are using the docker container, these are already installed so you don't have to worry about them.  Read more about them by following these links: [GDAL](https://gdal.org/), [GEOS](https://libgeos.org/), [PROJ](https://proj.org/en/9.3/), [sqlite3](https://www.sqlite.org/index.html)
 
-You may have to install `rgdal` separately to get things to work. Platform specific instructions follow.
-
-### Windows
-
-You should be able to do most of the work in this section by simply installing the `rgdal` library.  
-
-### Mac
-The same holds as for Windows (just install `rgdal`), but you might also have to install the full GDAL and PROJ.4 libraries. The easiest way to do that is to go to William Kyngesburye's website to [download the latest QGIS version](http://www.kyngchaos.com/software/qgis), which as of writing (9 October, 2017) is 2.18.13-1. The installer bundles in GDAL and PROJ.4 along with QGIS, doing it all for you in one go.  Read the page first and then the various readme's accompanying the install files you extract from the .dmg. 
-
-## Set-up{#set-up}
 You should already have your class Rstudio project setup, with a `notebooks/` folder within it. If you don't already have it, create a `data/` folder within `notebooks/`, which is where you will practice writing spatial data files.  
 
 # Reading, writing, and making vector data{#reading-writing-and-making-vector-data}
@@ -86,13 +75,20 @@ farmers <- read_csv(system.file("extdata/farmer_spatial.csv",
 #
 # 1
 set.seed(30)
-farmers %>% sample_n(5) %>% arrange(season, date)
+farmers %>% 
+  sample_n(5) %>% 
+  arrange(season, date)
 #
 # #2
-farmers %>% distinct(uuid) %>% count()
+farmers %>% 
+  distinct(uuid) %>% 
+  count()
 # 
 # #3
-farmers %>% group_by(uuid, season) %>% count() %>% arrange(uuid)
+farmers %>% 
+  group_by(uuid, season) %>% 
+  count() %>% 
+  arrange(uuid)
 ```
 
 Okay, #1 shows us that this dataset, read in as `farmers`, is a `tibble`, which means it is non-spatial at the moment, even though its comes with  coordinates. #2 shows us that there are 793 farmers in the survey, and #3 shows a varying number of observations per farmer per season, with some farmers appearing only in one season. 
@@ -101,7 +97,8 @@ Given that these are point data, we can turn them into a facsimile of spatial da
 
 ```{r, out.width='50%'}
 # Chunk 2
-ggplot(farmers %>% distinct(uuid, x, y)) + geom_point(aes(x, y))
+ggplot(farmers %>% distinct(uuid, x, y)) + 
+  geom_point(aes(x, y))
 ```
 
 We first cut `farmers` down to just unique farmer *uuid* and coordinates (to avoid duplicate points--remember, there is more than one observation per farmer for most farmers), and then use `gglot` to shows us, in a very crude way, where these points lie in space. This works, because `farmers$x` (the longitude) is exactly analogous to the x coordinate of a scatter plot, and `farmers$y` (latitude) is the y coordinate. But it is still not a spatial object. So, let's convert it to one, and then plot it again.
@@ -189,14 +186,14 @@ rm(farmers)
 farmers <- st_read(dir(tempdir(), pattern = "farmers.shp", full.names = TRUE))
 ```
 
-Okay, so we used `file.remove` to get rid of the .sqlite, and then used `rm` to get rid of the existing `farmers` `r class(farmers)[1]` object, and then read back in the `farmers` we had written to the .shp. So we have `farmers` back again.   
+We used `file.remove` to get rid of the .sqlite, and then used `rm` to get rid of the existing `farmers` `r class(farmers)[1]` object, and then read back in the `farmers` we had written to the .shp. So we have `farmers` back again.   
 
-Now, there are two more datasets that come with `geospaar` to read in using `st_read`: `roads.shp` and `districts.shp`. The paths to both are found with the `system.file` function. I'll set up the first one for you. 
+Now, there are two more datasets that come with `geospaar` to read in using `st_read`: `roads.geojson` and `districts.geojson`. The paths to both are found with the `system.file` function. I'll set up the first one for you. 
 ```{r}
 # Chunk 10
-fnm <- system.file("extdata/roads.shp", package = "geospaar")
-roads <- st_read(dsn = fnm)
-fnm <- system.file("extdata/districts.shp", package = "geospaar")
+fnm <- system.file("extdata/roads.geojson", package = "geospaar")
+roads <- st_read(dsn = fnm) #%>% st_set_crs("ESRI:102022")
+fnm <- system.file("extdata/districts.geojson", package = "geospaar")
 districts <- st_read(dsn = fnm)
 ```
 
@@ -209,7 +206,7 @@ plot(st_geometry(roads), col = "red", add = TRUE)
 plot(st_geometry(farmers), pch = 20, reset = FALSE, col = "blue", add = TRUE)
 ```
 
-Okay, so what have we done? First, we use the `par` function with the `mar` (margin) argument and a 4-element vector of 0s to remove the inner margins of the plot so that the map of Zambia fills the plot frame. We then use `plot` to draw the map of `districts` (wrapped in `st_geometry`, to just grab the geometry part), which are administrative boundaries for Zambia. We then use lines to add `roads` on top of that, making them red. Finally, we add the `farmers` data as blue points. Note the use of `add = TRUE`, which is necessary to overlay the two plots on the `district` boundaries without creating a new plot of each. 
+So what have we done? First, we use the `par` function with the `mar` (margin) argument and a 4-element vector of 0s to remove the inner margins of the plot so that the map of Zambia fills the plot frame. We then use `plot` to draw the map of `districts` (wrapped in `st_geometry`, to just grab the geometry part), which are administrative boundaries for Zambia. We then use lines to add `roads` on top of that, making them red. Finally, we add the `farmers` data as blue points. Note the use of `add = TRUE`, which is necessary to overlay the two plots on the `district` boundaries without creating a new plot of each. 
 
 That's great, you say, but I see no `roads` in the map. Where are they? And why are there two farmers outside of Zambia?  
 
@@ -227,14 +224,14 @@ sapply(sfdat, function(x) st_bbox(x))
 
 In the code above, we add our 3 `sf` objects into a `list` (`sfdat`), and then use `sapply` to apply `st_bbox` to each list element to get their bounding boxes. That produces an output matrix that shows in the westernmost (xmin), southernmost (ymin), easternmost (xmax), and northernmost (ymax) coordinates of each object. This shows us that `roads`' coordinates are in different units (meters) than `districts`' and `farmers`', which are decimal degrees.  So when we tried to plot `roads` on the same map as `districts` and `farmers`, `roads` didn't appear because the units are not the same. You could get a map of `roads` if you plotted them on their own. 
 
-### Checking the CRS of a `Spatial*` object
+### Checking the CRS of an `sf` object
 
 In this case, we have to do a bit more, which is to convert `roads` coordinate reference system (CRS) to decimal degrees.  How do we do that?  First, we have to know the crs we want to transform `roads` into, which we can do by checking the `st_crs` of `farmers` or `districts`:
 
 ```{r}
 # Chunk 13
-st_crs(districts)
-st_crs(roads)
+st_crs(districts)$proj4string
+st_crs(roads)$proj4string
 ```
 
 We use `st_crs`, which is `sf`'s function for checking and assigning a CRS to an `sf` object. When you run it as we have done with `st_crs(districts)`, it returns an object of class `crs` (you can verify that by running `class(st_crs(districts))`). We see that `districts` and `roads` have different values in their "PROJCRS" fields, which holds the projection string that contains the projection parameters of the CRS. If you want to understand the meaning of projection string parameters, please have a look at the [documentation](http://proj4.org) for the `proj.4` library, specifically the page on [parameters](http://proj4.org/parameters.html).
@@ -243,7 +240,7 @@ This one basically tells us that `districts` has a geographic (longlat) projecti
 
 ```{r}
 # Chunk 14
-sapply(sfdat, st_crs)
+sapply(sfdat, function(x) st_crs(x)$proj4string)
 ```
 
 These results show us that `farmers` does not have a projection string. So how come it was able to plot on the same map as `districts`? Because the coordinates are in the same units. However, we want to fix that before we move to the next step, reprojecting:  
@@ -252,11 +249,12 @@ These results show us that `farmers` does not have a projection string. So how c
 # Chunk 15
 st_crs(farmers) <- st_crs(districts)
 st_crs(sfdat$farmers) <- st_crs(districts)
-st_crs(sfdat$farmers)
+st_crs(sfdat$farmers)$proj4string
 ```
 
 Simple--we apply the fix to `farmers` and to `sfdat$farmers` by assigning each the proj4string from `districts`. We can do that because we are pretty sure that the coordinates for farmers are from a geographic coordinate system that uses the WGS84 datum. If that is incorrect, we are introducing some spatial error. But for now, this is fine. 
 
+Another note, when running `st_crs`, we are extracting the `proj4string` element from the resulting `crs` object. That is because it provides a more compact string representation of the CRS information. Running `st_crs(sfdat$farmers)` produces a much lengthier (and more informative) output in `wkt` format. Go ahead and try that.  
 
 ### Reprojecting
 
@@ -367,14 +365,14 @@ As you probably closed this project between Section 1 and 2, you will also need 
 
 ```{r}
 # Chunk 20
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read()
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
+roads <- system.file("extdata/roads.geojson", package = "geospaar") %>% st_read()
+districts <- system.file("extdata/districts.geojson", package = "geospaar") %>% 
   st_read()
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
   read_csv() %>% st_as_sf(coords = c("x", "y"), crs = 4326)
 ```
 
-This looks a bit different than what we did before. In this construction, we make use of `dplyr` pipes to do everything in one go for all three datasets. We pipe the file path to `roads.shp` straight to `sf::st_read()`, and that reads in it as a one-liner. Same goes for `districts` (despite the line break). `farmers` gets the file path piped to `read_csv`, and then the coercion to `sf` happens right downstream. We add the `crs = 4326` argument to `st_as_sf` to provide the missing projection information (4326 is the EPSG identifier for GCS WGS84)
+This looks a bit different than what we did before. In this construction, we make use of `dplyr` pipes to do everything in one go for all three datasets. We pipe the file path to `roads.geojson` straight to `sf::st_read()`, and that reads in it as a one-liner. Same goes for `districts` (despite the line break). `farmers` gets the file path piped to `read_csv`, and then the coercion to `sf` happens right downstream. We add the `crs = 4326` argument to `st_as_sf` to provide the missing projection information (4326 is the EPSG identifier for GCS WGS84)
 
 ## Spatial properties{#spatial-properties}
 
@@ -410,16 +408,19 @@ So this was an estimate of area from a non-project dataset. How does that compar
 dist_areas_alb <- districts %>% 
   st_transform(crs = st_crs(roads)) %>% 
   st_area()
-mean(abs(dist_areas_alb - dist_areas)) %>% units::set_units("ha")
-mean(abs(dist_areas_alb - dist_areas)) / mean(dist_areas_alb) * 100
+absd <- mean(abs(dist_areas_alb - dist_areas)) %>% units::set_units("ha")
+pctd <- as.numeric(absd / (mean(dist_areas_alb) / 10000)) * 100 
+absd
+pctd
 ```
 
-Using `st_transform` with the CRS from `roads` to reproject `district`, and then calculate polygons areas, we see the mean absolute difference between areas calculated from the projected and unprojected datasets is just over 5 ha, which is a tiny percentage (0.0005%) of the average district area. Not much to write home about.   
+Using `st_transform` with the CRS from `roads` to reproject `district`, and then calculate polygons areas, we see the mean absolute difference between areas calculated from the projected and unprojected datasets is around `r round(absd)` ha, which is a tiny percentage (`r round(pctd, 3)`%) of the average district area. Not much to write home about, but also not nothing if absolute accuracy of area calculations is your interest.   
 
 ```{r, out.width="50%"}
 # Chunk 22
 districts %>% 
-  st_area() %>% units::set_units("km^2") %>% as.numeric() %>% 
+  st_area() %>% units::set_units("km^2") %>% 
+  as.numeric() %>% 
   tibble(km2 = .) %>% 
   ggplot() + 
   geom_histogram(aes(x = km2), bins = 15, fill = "blue", col = "grey") + 
@@ -433,14 +434,20 @@ We can also calculate the distances between spatial features. To do that, we are
 ```{r, out.width="50%"}
 # Chunk 23
 # # 1
-dist_cent <- districts %>% st_transform(., st_crs(roads)) %>% st_centroid()
+dist_cent <- districts %>% 
+  st_transform(., st_crs(roads)) %>% 
+  st_centroid()
 # dist_cent <- st_centroid(st_transform(districts, st_crs(roads)))  # equivalent
 
 # #2
 par(mar = c(0, 0, 0, 0))
-districts %>% st_transform(., st_crs(roads)) %>% st_geometry() %>% 
+districts %>% 
+  st_transform(., st_crs(roads)) %>% 
+  st_geometry() %>% 
   plot(col = "grey")
-dist_cent %>% st_geometry() %>% plot(col = "red", pch = 20, add = TRUE)
+dist_cent %>% 
+  st_geometry() %>% 
+  plot(col = "red", pch = 20, add = TRUE)
 ```
 
 Notice that right below the centroid calculation pipeline (#1) is a commented out line, which is the non-pipeline equivalent of the operation.  In #2, we make the plots, setting up the plotting functions for both the `districts` polygons and their centroids on the downstream ends of pipelines.  
@@ -458,7 +465,9 @@ d1_dists <- st_distance(x = dist_cent[1, ], y = dist_cent[-1, ])
 d1_dists %>% as.vector()
 #
 # #3
-d1_dists %>% as.vector() %>% quantile() / 1000
+d1_dists %>% 
+  as.vector() %>% 
+  quantile() / 1000
 ```
 
 There are two variants above. The first (#1) is captured in `all_dists`, and it produces a matrix that provides the distance, in meters, between each district centroid and every other district centroid (we show the first 5 rows and 5 columns of the matrix, otherwise it is 72X72). To get that, you simply pass in the `dist_cent` object into to the "x" argument. The second variant (#2) (`d1_dists`), uses both "x" and "y" arguments, and it simply finds the distance between the first district centroid and all the other districts' centroids. We coerce the matrix to a vector for more compact printing. In #3, we summarize `d1_dists` using the `quantile` function, converting meters to kilometers. 
@@ -494,9 +503,13 @@ numeric vectors. We then plot each set of lengths as histograms (#3), converting
 # Chunk 26
 par(mar = c(0, 0, 0, 0))
 st_geometry(districts) %>% plot(col = "grey")
-districts %>% slice(1, 20, 40) %>% plot(col = "blue", add = TRUE)
+districts %>% 
+  slice(1, 20, 40) %>% 
+  plot(col = "blue", add = TRUE)
 set.seed(123)
-farmers %>% sample_n(20) %>% st_geometry() %>%  
+farmers %>% 
+  sample_n(20) %>% 
+  st_geometry() %>%  
   plot(col = "yellow", pch = "+", add = TRUE)
 ```
 
@@ -545,9 +558,13 @@ In this case a `left_join` works because the number of records is identical and 
 test_join <- left_join(districts, dist_area, by = "distName")
 plot(st_geometry(districts))
 set.seed(7)
-districts %>% sample_n(5) %>% plot(add = TRUE, col = rgb(1, 0, 0, alpha = 0.5))
+districts %>% 
+  sample_n(5) %>% 
+  plot(add = TRUE, col = rgb(1, 0, 0, alpha = 0.5))
 set.seed(7)
-test_join %>% sample_n(5) %>% st_geometry() %>% 
+test_join %>% 
+  sample_n(5) %>% 
+  st_geometry() %>% 
   plot(add = TRUE, col = rgb(0, 0, 1, alpha = 0.5))
 ```
 
@@ -579,9 +596,11 @@ As with plain old `data.frame`s, we might want to do split-apply-combine operati
 # Chunk 30
 # #1
 tertiles <- function(x) quantile(x, probs = c(0, 0.333, 0.667, 1))
-dist_tertiles <- districts %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+dist_tertiles <- districts %>% 
+  mutate(area = as.numeric(st_area(.)) / 10^6) %>%
   mutate(acls = cut(area, breaks = tertiles(area), include.lowest = TRUE)) %>% 
-  group_by(acls) %>% summarize(mean_area = mean(area))  
+  group_by(acls) %>% 
+  summarize(mean_area = mean(area))  
 dist_tertiles
 #
 # #2
@@ -605,7 +624,8 @@ quintiles <- function(x) quantile(x, probs = seq(0, 1, 0.2))
 dist_quintiles <- districts %>% 
   mutate(area = as.numeric(st_area(.)) / 10^6) %>%
   mutate(acls = cut(area, breaks = quintiles(area), include.lowest = TRUE)) %>% 
-  group_by(acls) %>% summarize(sd_area = sd(area))
+  group_by(acls) %>% 
+  summarize(sd_area = sd(area))
 dist_quintiles
 
 cols <- heat.colors(5)
@@ -650,7 +670,9 @@ coords <- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25),
                 "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
 #
 # #2
-pol <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+pol <- st_polygon(x = list(coords)) %>% 
+  st_sfc %>% 
+  st_sf(ID = 1, crs = 4326)
 pol
 
 par(mar = rep(0, 4))
@@ -714,9 +736,11 @@ pol_int_muarea <- pol_int_dists %>%
 pol_int_muarea
 
 par(mfrow = c(1, 2))
-pol_int_dists %>% st_geometry() %>% 
+pol_int_dists %>% 
+  st_geometry() %>% 
   plot(col = rainbow(n = nrow(pol_int_dists)), main = "Intersections")
-pol_int_muarea %>% st_geometry() %>% 
+pol_int_muarea %>% 
+  st_geometry() %>% 
   plot(col = "blue", main = "Dissolved intersections")
 ```
 
@@ -741,7 +765,9 @@ pol_int_dists
 
 rbcols <- rainbow(n = nrow(pol_int_dists))
 par(mar = rep(0, 4))
-pol_int_dists %>% st_geometry %>% plot(col = rbcols)
+pol_int_dists %>% 
+  st_geometry %>% 
+  plot(col = rbcols)
 ```
 
 Notice how the object contains three polygons and one multipolygon, which is the blue district (Mufumbwe), which needs to be MULTIPOLYGON because the light green district (Kaoma) drives a wedge between it, making it two pieces. Let's run `st_cast`:
@@ -763,10 +789,16 @@ It throws a warning, because Mufumbwe can't be reduced to a POLYGON without jett
 ```{r, fig.height=2, fig.width=5}
 # Chunk 39
 par(mfrow = c(1, 3), mar = c(0, 0, 1, 0))
-pol_int_dists %>% st_geometry %>% plot(col = rbcols, main = "Uncast")
-pol_int_dists %>% st_cast() %>% st_geometry %>% 
+pol_int_dists %>% 
+  st_geometry %>% 
+  plot(col = rbcols, main = "Uncast")
+pol_int_dists %>% 
+  st_cast() %>% 
+  st_geometry %>% 
   plot(col = rbcols, main = "Cast to MULTIPOLYGON")
-pol_int_dists %>% st_cast("POLYGON") %>% st_geometry %>% 
+pol_int_dists %>% 
+  st_cast("POLYGON") %>% 
+  st_geometry %>% 
   plot(col = rbcols, main = "Cast to POLYGON")
 ```
 
@@ -778,9 +810,13 @@ We can also cast the polygons to lines, and even to points:
 ```{r, out.width="50%"}
 # Chunk 40
 par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-pol_int_dists %>% st_cast("MULTILINESTRING") %>% st_geometry %>% 
+pol_int_dists %>% 
+  st_cast("MULTILINESTRING") %>% 
+  st_geometry %>% 
   plot(col = rbcols, main = "Cast to MULTILINESTRING")
-pol_int_dists %>% st_cast("MULTIPOINT") %>% st_geometry %>% 
+pol_int_dists %>% 
+  st_cast("MULTIPOINT") %>% 
+  st_geometry %>% 
   plot(col = rbcols, main = "Cast to MULTIPOINT", pch = 20)
 ```
 ```{r, echo = FALSE}
@@ -802,8 +838,12 @@ d1 <- st_difference(x = districts, y = pol)
 d2 <- st_difference(x = pol, y = districts)
 
 par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-d1 %>% st_geometry %>% plot(col = "grey")
-d2 %>% st_geometry %>% plot(col = "grey")
+d1 %>% 
+  st_geometry %>% 
+  plot(col = "grey")
+d2 %>% 
+  st_geometry %>% 
+  plot(col = "grey")
 ```
 
 `d1` erases `pol`, leaving a hole, whereas `d2`, by reversing the order of objects into the "x" and "y" arguments, does the same thing as an intersection, by erasing all the districts surrounding `pol`.  
@@ -885,9 +925,13 @@ We have seen a little bit of sampling already, but the previous examples just sa
 ```{r, out.width="50%", message=FALSE, warning=FALSE}
 # Chunk 44
 par(mar = rep(0, 4))
-districts %>% st_union %>% plot(col = "grey")
+districts %>% 
+  st_union %>% 
+  plot(col = "grey")
 set.seed(1)
-districts %>% st_union %>% st_sample(size = 100, exact = TRUE) %>% 
+districts %>% 
+  st_union %>% 
+  st_sample(size = 100, exact = TRUE) %>% 
   plot(pch = 20, add = TRUE)
 ```
 
@@ -955,7 +999,7 @@ Make sure you are working in the master branch of your project (you should not b
 There are no package functions to create for this assignment. All work is to be done in the vignette. 
 
 ## Vignette tasks
-1. Read in the `farmers_spatial.csv`, `districts.shp`, and `roads.shp` datasets. Reduce the size of the farmers data by first selecting distinct observations by *uuid*, *x*, *y*, *season*, i.e. use `distinct(uuid, x, y, season)`. After that convert it to an `sf` object. Reproject the farmers and districts data to Albers projection (using the CRS from roads), naming each `farmers_alb` and `districts_alb`. Ideally (worth an extra 0.5 points) you will do all the necessary steps to create `farmers_alb` and `districts_alb` in one pipeline. 
+1. Read in the `farmers_spatial.csv`, `districts.geojson`, and `roads.geojson` datasets. Reduce the size of the farmers data by first selecting distinct observations by *uuid*, *x*, *y*, *season*, i.e. use `distinct(uuid, x, y, season)`. After that convert it to an `sf` object. Reproject the farmers and districts data to Albers projection (using the CRS from roads), naming each `farmers_alb` and `districts_alb`. Ideally (worth an extra 0.5 points) you will do all the necessary steps to create `farmers_alb` and `districts_alb` in one pipeline. 
 
 2. Create a plot using `sf::plot` that shows all three datasets on one map, with `districts_alb` in grey, with `roads` in red over that, and `farmers_alb` as a blue cross over that. Use the relevant chunk arguments to center the figure in the vignette html, and to have a height of 4 inches and a width of 6 inches. The figure should have 0 margins all around. 
 

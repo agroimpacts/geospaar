@@ -34,13 +34,15 @@ If you are enrolled in this course, also get a [personal access token](https://h
 
 - If so, either install [`WSL`](https://learn.microsoft.com/en-us/windows/wsl/install), or [Git Bash](https://gitforwindows.org/). You can get away with Windows command prompt or Power Shell, but a *nix emulator is preferred.
 
+- Either way, please **DO NOT** use the Windows command prompt or Power Shell for subsequent work (you are of course free to do so, but you will have to troubleshoot any problems that arise on your own). 
+
 ### 3. Install `docker`
 
 Download and install the version of docker for your operating system from [here](https://www.docker.com/products/docker-desktop/), and create an account. Note: You can sign up with your Github credentials
 
 ### 4. Set up a project directory on your computer 
 
-If you are taking this class, this will be the directory you use to install the class materials and your own assignment repositories/packages. Assuming you have a directory called something like `c:\My Documents\projects`, make a sub-folder called `geog246346`. Using your command line interface (your terminal or terminal emulator), navigate to it. 
+If you are taking this class, this will be the directory you use to install the class materials and your own assignment repositories/packages. Assuming you have a directory called something like `c:\My Documents\projects`, make a sub-folder called `geog246346`. Using your *nix terminal, navigate to it. 
 
 ```bash
 cd c/My\ Documents/projects/geog246346
@@ -54,20 +56,20 @@ cd c/My\ Documents/projects/geog246346
 
 ### 6. Build or pull the `docker` image
 
-Using docker, you can either build or pull the docker image you need by running the following:
+Using docker, you can either build or pull the docker image you need by running the following in your terminal:
 
 - build (assuming you are in the project directory you made in step 4):
 
   ```bash
   cd geospaar
-  LATEST=<version number> # enter the version number here, latest is 4.3.2
+  LATEST=VERSION # replace this with the version number here, here 4.3.2
   docker build . -t agroimpacts/geospaar:$LATEST
   ```
   
 - pull (this gets you the latest version already committed to docker hub):
 
   ```bash
-  LATEST=<version number> # enter the version number here, latest is 4.3.2
+  LATEST=VERSION # replace this with the version number here, here 4.3.2
   docker pull agroimpacts/geospaar:$LATEST
   ```
 
@@ -75,11 +77,15 @@ Then run the image using the following script that comes with the `geospaar` rep
 
   ```bash
   PORT=8787 # this is the port to run on--you might want to change it
-  MY_PROJECT_DIRECTORY=c/My\ Documents/projects # change this to yours!!!
-  ./run-container.sh -v $LATEST -p $PORT $MY_PROJECT_DIRECTORY
+  MY_DIR=c/My\ Documents/projects/geog246346 # change to yours!!!
+  ./run-container.sh -v $LATEST -p $PORT $MY_DIR
   ```
 
+Note: Make sure that MY_DIR is the path of the directory that your cloned `geospaar` is in. MY_DIR should not include geospaar at the end of the path, because then `docker` will try and mount the `geospaar` folder, which will cause problems. We want to mount the directory `geospaar` is in so that we can create other projects in the same directory as `geospaar` while we are working in the `docker` container. 
+
 This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will then give you a fully functioning Rstudio-server instance after you log in. 
+
+
 ### 7. Browse the course materials
 
 Build the `geospaar` package...
@@ -97,6 +103,7 @@ browseVignettes("geospaar")
 
 On the web:
 Thanks to @LLeiSong, the materials are also available through the [course website](https://agroimpacts.github.io/geospaar/).
+
 
 
 
