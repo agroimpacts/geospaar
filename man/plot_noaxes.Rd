@@ -2,9 +2,9 @@
 % Please edit documentation in R/plot_noaxes.R
 \name{plot_noaxes}
 \alias{plot_noaxes}
-\title{Plot rasters without axes by default}
+\title{Plot SpatRasters without axes by default}
 \usage{
-plot_noaxes(x, axes = FALSE, box = FALSE, mar = c(0, 0, 1, 4), ...)
+plot_noaxes(x, axes = FALSE, box = FALSE, mar = c(1, 0.5, 1, 4), ...)
 }
 \arguments{
 \item{x}{An object of class Raster*}
@@ -22,7 +22,7 @@ image.plot and to plot, such as main='title', ylab='latitude'}
 A plotted raster
 }
 \description{
-This is a small variant on raster::plot that provides default
+This is a small variant on terra::plot that provides default
 margin parameters and sets axes and box arguments to false
 }
 \examples{

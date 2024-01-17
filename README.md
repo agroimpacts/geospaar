@@ -69,7 +69,7 @@ Using docker, you can either build or pull the docker image you need by running 
 - pull (this gets you the latest version already committed to docker hub):
 
   ```bash
-  LATEST=VERSION # replace this with the version number here, here 4.3.2
+  LATEST=VERSION # replace VERSION with the version number, currently 4.3.2
   docker pull agroimpacts/geospaar:$LATEST
   ```
 

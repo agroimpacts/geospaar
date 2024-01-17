@@ -25,6 +25,10 @@ library(geospaar)
 options(width = 100)
 ```
 
+\hline
+**NOTE: This vignette will be updated from `raster` to `terra`**
+\hline
+
 # Algebra, categorizing, and sampling
 
 Let's move on and look at some additional raster-based analyses. The next few sections depend on objects created in the previous sections (Unit 2 Module 2a). The code to recreate those is here:
