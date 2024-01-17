@@ -62,7 +62,7 @@ Using docker, you can either build or pull the docker image you need by running 
 
   ```bash
   cd geospaar
-  LATEST=VERSION # replace this with the version number here, here 4.3.2
+  LATEST=VERSION # replace VERSION with the latest version number, here 4.3.2
   docker build . -t agroimpacts/geospaar:$LATEST
   ```
   
@@ -77,7 +77,7 @@ Then run the image using the following script that comes with the `geospaar` rep
 
   ```bash
   PORT=8787 # this is the port to run on--you might want to change it
-  MY_DIR=c/My\ Documents/projects/geog246346 # change to yours!!!
+  MY_DIR=c/My\ Documents/projects/geog246346 # change to your directory!!!
   ./run-container.sh -v $LATEST -p $PORT $MY_DIR
   ```
 
