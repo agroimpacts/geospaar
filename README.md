@@ -97,7 +97,7 @@ Either approach to launching will give you a URL (https://localhost:8787) that y
 Build the `geospaar` package. To do so, first in Rstudio, go to File > Open Project, and then navigate to the `geospaar` folder, and then select the `geospaar.Rproj` file. That opens up the Rstudio project. Then, in the `R` console, run:
 
 ```R
-devtools::install("agroimpacts/geospaar", build_vignettes = TRUE)
+devtools::install(build_vignettes = TRUE)
 ```
 
 Or, alternatively, you can run:
