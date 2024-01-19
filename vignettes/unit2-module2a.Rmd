@@ -84,7 +84,7 @@ The plot of `r` over `districts` uses the `plot` method defined for `raster*` ob
 
 Let's look now at the structure of the object `r`.
 
-```{r rasterstructure}
+```{r rasterstructure, eval=FALSE}
 # Chunk 2
 r
 #> class       : SpatRaster 

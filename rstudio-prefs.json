@@ -33,5 +33,6 @@
         "console_right_on_top": true,
         "additional_source_columns": 0
     },
-    "default_project_location": "~"
+    "default_project_location": "~",
+    "rmd_chunk_output_inline": false
 }

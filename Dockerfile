@@ -11,7 +11,9 @@ RUN install2.r --error \
     patchwork \
     kableExtra \
     prettydoc \
-    cowplot
+    cowplot \
+    here \
+    rmdformats
 
 COPY --chown=rstudio:rstudio rstudio-prefs.json \
   /home/rstudio/.config/rstudio
