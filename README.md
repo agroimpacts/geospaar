@@ -82,24 +82,51 @@ Then run the image using the following script that comes with the `geospaar` rep
   ```
 
 Note: Make sure that MY_DIR is the path of the directory that your cloned `geospaar` is in. MY_DIR should not include geospaar at the end of the path, because then `docker` will try and mount the `geospaar` folder, which will cause problems. We want to mount the directory `geospaar` is in so that we can create other projects in the same directory as `geospaar` while we are working in the `docker` container. 
+  
+You can also run it from your project directory containing `geospaar`, as follows:
 
-This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will then give you a fully functioning Rstudio-server instance after you log in. 
+  ```bash
+  cd $MY_DIR # or, if you are in geospaar, you can one level up with cd ..
+  ./geospaar/run-container.sh -v $LATEST -p $PORT `pwd`
+  ```
 
+Either approach to launching will give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will then give you a fully functioning Rstudio-server instance after you log in. 
 
 ### 7. Browse the course materials
 
-Build the `geospaar` package...
+Build the `geospaar` package. To do so, first in Rstudio, go to File > Open Project, and then navigate to the `geospaar` folder, and then select the `geospaar.Rproj` file. That opens up the Rstudio project. Then, in the `R` console, run:
 
 ```R
-library(devtools)
-install_github("agroimpacts/geospaar", build_vignettes = TRUE)
+devtools::install("agroimpacts/geospaar", build_vignettes = TRUE)
 ```
 
-...and then, from the R console in Rstudio:
+Or, alternatively, you can run:
+
+```R
+devtools::install_github("agroimpacts/geospaar", build_vignettes = TRUE)
+```
+
+And you don't need to open the `geospaar` project to do that. 
+
+To browse the materials, from the R console in Rstudio:
 
 ```R
 browseVignettes("geospaar")
 ```
+
+In the docker container, there is an additional step you have to do to make the vignettes findable. In the browser that opens up, providing the index of vignettes, you will see an address that looks something like this:
+
+```
+http://localhost:8787/session/Rvig.17c2b221378.html
+```
+
+Change that to:
+
+```
+http://localhost:8787/help/session/Rvig.17c2b221378.html
+```
+
+And you will be able to read the individual vignettes.
 
 On the web:
 Thanks to @LLeiSong, the materials are also available through the [course website](https://agroimpacts.github.io/geospaar/).
