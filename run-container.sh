@@ -23,7 +23,7 @@ case "$(uname -s)" in
         ;;
     Linux*)     # Linux
         READLINK="readlink"
-        LAUNCHER="gitbash"
+        LAUNCHER="nix"
         ;;
     CYGWIN*|MINGW32*|MSYS*|MINGW*) # Windows
         READLINK="readlink"
@@ -108,13 +108,13 @@ fi
 
 if [[ "${LAUNCHER}" == "gitbash"  ]]; then
   echo Launching from a $LAUNCHER platform
-  winpty docker run --rm -d -p 8787:8787 -e PASSWORD=password \
+  winpty docker run --rm -d -p 8787:$PORT -e PASSWORD=password \
     --name geospaar_rstudio \
     -v /$PWD:/home/rstudio/ \
-    -v /$PWD/r_$ver_packages:/packages \
-    -v /$PWD/geospaar/$prefs:/home/rstudio/.config/rstudio/$prefs \
+    -v /$PWD/r_4.3.2_packages:/packages \
+    -v /$PWD/geospaar/rstudio-prefs.json:/home/rstudio/.config/rstudio/rstudio-prefs.json \
     -v /$PWD/geospaar/.Rprofile:/home/rstudio/.Rprofile:rw \
-    $rstudio_image
+    agroimpacts/geospaar:4.3.2
 fi
 
 echo "geospaar_rstudio listening on port ${port}"
