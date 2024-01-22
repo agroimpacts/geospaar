@@ -6,7 +6,7 @@ RUN apt-get clean all && \
     apt-get upgrade -y
 
 # Install R packages
-RUN install-silicon.sh
+RUN ../install-silicon.sh
 
 COPY --chown=rstudio:rstudio rstudio-prefs.json \
   /home/rstudio/.config/rstudio
