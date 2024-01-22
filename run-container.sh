@@ -108,7 +108,7 @@ fi
 
 if [[ "${LAUNCHER}" == "gitbash"  ]]; then
   echo Launching from a $LAUNCHER platform
-  winpty docker run --rm -d -p 8787:$PORT -e PASSWORD=password \
+  winpty docker run --rm -d -p 8787:8787 -e PASSWORD=password \
     --name geospaar_rstudio \
     -v /$PWD:/home/rstudio/ \
     -v /$PWD/r_4.3.2_packages:/packages \
