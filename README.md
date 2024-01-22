@@ -56,7 +56,11 @@ cd c/My\ Documents/projects/geog246346
 
 ### 6. Build or pull the `docker` image
 
-Using docker, you can either build or pull the docker image you need by running the following in your terminal:
+Using docker, you can either build or pull the docker image you need by running the following in your terminal, assuming you have either a Mac with an Intel chip, or a Windows-based machine. If not, go to the section on Mac with M1/M2 chips. 
+
+For Intel-based Mac and Windows:
+
+You can either build a local image or pull a pre-built image:
 
 - build (assuming you are in the project directory you made in step 4):
 
@@ -73,6 +77,14 @@ Using docker, you can either build or pull the docker image you need by running 
   docker pull agroimpacts/geospaar:$LATEST
   ```
 
+For Macs with an M1 or M2 chip, the option is to try and build an image that starts with rocker/rstudio:latest pre-built for linux/amd64 architectures. This requires installing many packages up front and will take a while (and at the moment it is still untested):
+
+  ```bash
+  cd geospaar
+  LATEST=VERSION # replace VERSION with the latest version number, here 4.3.2
+  docker build -f dockerfiles/silicon.Dockerfile -t agroimpacts/geospaar:$LATEST .
+  ```
+  
 Then run the image using the following script that comes with the `geospaar` repo:
 
   ```bash
