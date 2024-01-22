@@ -17,4 +17,4 @@ EXPOSE 8787
 
 WORKDIR /home/rstudio
 
-[/init]
+CMD ["/init"]
