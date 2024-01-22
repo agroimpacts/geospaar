@@ -3,8 +3,8 @@
 # Adapted from scripts provided by rocker, e.g.
 # https://github.com/rocker-org/rocker-versioned2/blob/master/scripts/\
 # install_tidyverse.sh
-#!/bin/bash
 
+#!/bin/bash
 set -e
 
 ## build ARGs
