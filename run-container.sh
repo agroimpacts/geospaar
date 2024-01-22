@@ -18,7 +18,7 @@ usage() {
 # Check the operating system
 case "$(uname -s)" in
     Darwin*)    # macOS
-        READLINK="greadlink"  # On macOS, use 'greadlink' from coreutils package
+        READLINK="readlink"  # On macOS, use 'greadlink' from coreutils package
         LAUNCHER="nix"
         ;;
     Linux*)     # Linux
