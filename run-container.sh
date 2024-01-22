@@ -23,7 +23,7 @@ case "$(uname -s)" in
         ;;
     Linux*)     # Linux
         READLINK="readlink"
-        LAUNCHER="nix"
+        LAUNCHER="gitbash"
         ;;
     CYGWIN*|MINGW32*|MSYS*|MINGW*) # Windows
         READLINK="readlink"
@@ -111,7 +111,7 @@ if [[ "${LAUNCHER}" == "gitbash"  ]]; then
   winpty docker run --rm -d -p 8787:8787 -e PASSWORD=password \
     --name geospaar_rstudio \
     -v /$PWD:/home/rstudio/ \
-    -v /$PWD/r_$VER_packages:/packages \
+    -v /$PWD/r_$ver_packages:/packages \
     -v /$PWD/geospaar/$prefs:/home/rstudio/.config/rstudio/$prefs \
     -v /$PWD/geospaar/.Rprofile:/home/rstudio/.Rprofile:rw \
     $rstudio_image
