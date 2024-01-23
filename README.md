@@ -104,7 +104,23 @@ You can also run it from your project directory containing `geospaar`, as follow
 
 Either approach to launching will give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will then give you a fully functioning Rstudio-server instance after you log in. 
 
-### 7. Browse the course materials
+When you are finished with Rstudio server, you should stop the container:
+
+  ```bash
+  docker stop geospaar_rstudio
+  ```
+  
+You can restart the container again with the same `./geospaar/run-container.sh ...` command you used previously.  
+
+### 7. Additional GitHub configuration steps
+
+Before installing the course package, there are a few more GitHub configuration steps you have to set up to set up your GitHub on your container-based Rstudio server (or your local) Rstudio desktop. These entail setting up ssh keys and adding them to your GitHub account. 
+
+The instructions for setting those up are found [here](https://agroimpacts.github.io/geospaar/unit1-module1.html#using-git-and-github) in Unit 1, Module, specifically 4.1 on `git` configuration and 4.3 on syncing your first repository. 
+
+Once you have completed those steps and confirmed you can access the remote repo of `geospaar`, you can install the package. 
+
+### 8. Install `geospaar` and browse the course materials
 
 Build the `geospaar` package. To do so, first in Rstudio, go to File > Open Project, and then navigate to the `geospaar` folder, and then select the `geospaar.Rproj` file. That opens up the Rstudio project. Then, in the `R` console, run:
 
