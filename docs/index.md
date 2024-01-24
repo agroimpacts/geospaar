@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-01-22
+Updated on: 2024-01-24
 
 <center>
 
@@ -51,6 +51,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 2 (Jan 22, 24)
   - Using git and Github; R packages;
   - [Class 2 slides](class2.html)
+  - [Class 3 slides](class3.html)
   - Assignment 1 due (Unit 1 Module 1)
 - Week 3 (Jan 29, Jan 31)
   - Continued setup work, RMarkdown, R ecosystem
