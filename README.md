@@ -58,7 +58,7 @@ cd c/My\ Documents/projects/geog246346
 
 Using docker, you can either build or pull the docker image you need by running the following in your terminal, assuming you have either a Mac with an Intel chip, or a Windows-based machine. If not, go to the section on Mac with M1/M2 chips. 
 
-For Intel-based Mac and Windows:
+#### Intel-based Mac and Windows
 
 You can either build a local image or pull a pre-built image:
 
@@ -77,15 +77,17 @@ You can either build a local image or pull a pre-built image:
   docker pull agroimpacts/geospaar:$LATEST
   ```
 
-For Macs with an M1 or M2 chip, the option is to try and build an image that starts with rocker/rstudio:latest pre-built for linux/amd64 architectures. This requires installing many packages up front and will take a while (and at the moment it is still untested):
+#### Mac Silicon
+For Macs with a Silicon chip (M1/M2/M3), it appears that your OS has to be 14.2 or higher to run the container, otherwise there are clashes with the Linux architecture that is used to build the image (which is linux/amd64, whereas M1/M2 wants to use linux/arm64). We have started an experimental build script for M1/M2 chips running OS <14.2, but this doesn't work yet, so for now we advise you to upgrade your OS, and then run the build command as:
 
   ```bash
-  cd geospaar
-  LATEST=VERSION # replace VERSION with the latest version number, here 4.3.2
-  docker build -f dockerfiles/silicon.Dockerfile -t agroimpacts/geospaar:$LATEST .
+  docker build --platform=linux/amd64 . -t agroimpacts/geospaar:$LATEST
   ```
-  
-Then run the image using the following script that comes with the `geospaar` repo:
+
+If that still doesn't work, please install `R` and Rstudio desktop
+
+#### 7. Run the container
+After building, run the image using the following script that comes with the `geopaar` repo:
 
   ```bash
   PORT=8787 # this is the port to run on--you might want to change it
@@ -93,9 +95,9 @@ Then run the image using the following script that comes with the `geospaar` rep
   ./run-container.sh -v $LATEST -p $PORT $MY_DIR
   ```
 
-Note: Make sure that MY_DIR is the path of the directory that your cloned `geospaar` is in. MY_DIR should not include geospaar at the end of the path, because then `docker` will try and mount the `geospaar` folder, which will cause problems. We want to mount the directory `geospaar` is in so that we can create other projects in the same directory as `geospaar` while we are working in the `docker` container. 
+Note: Make sure that MY_DIR is the path of the directory that your cloned `geospaar` is in. MY_DIR should not include "geospaar" at the end of the path, because then `docker` will try and mount the `geospaar` folder, which will cause problems (the script will fail). We want to mount the directory `geospaar` is in so that we can create other projects in the same directory as `geospaar` while we are working in the `docker` container. 
   
-You can also run it from your project directory containing `geospaar`, as follows:
+You can also (preferably) run it from your project directory containing `geospaar`, as follows:
 
   ```bash
   cd $MY_DIR # or, if you are in geospaar, you can one level up with cd ..
@@ -112,7 +114,7 @@ When you are finished with Rstudio server, you should stop the container:
   
 You can restart the container again with the same `./geospaar/run-container.sh ...` command you used previously.  
 
-### 7. Additional GitHub configuration steps
+### 8. Additional GitHub configuration steps
 
 Before installing the course package, there are a few more GitHub configuration steps you have to set up to set up your GitHub on your container-based Rstudio server (or your local) Rstudio desktop. These entail setting up ssh keys and adding them to your GitHub account. 
 
@@ -120,7 +122,28 @@ The instructions for setting those up are found [here](https://agroimpacts.githu
 
 Once you have completed those steps and confirmed you can access the remote repo of `geospaar`, you can install the package. 
 
-### 8. Install `geospaar` and browse the course materials
+For people launching the container from Git Bash, there are some additional steps that need to be followed:
+
+1. First, make sure your project folder is fresh and empty, except for a new clone of `geospaar` 
+2. If it isn't, the easiest and least risky is to make a new folder (e.g. geog246346b). Move into that folder, and run git clone again on the `geospaar` repo 
+3. Make sure your an container is not running (`docker stop geospaar_rstudio`)
+4. Run `docker image ls` and copy the image id for any existing `agroimpacts/geospaar:$LATEST` images. Then using that copied id, run `docker rmi <imageid>` (replace `<imageid>` with the id you just copied. That will remove the current image. 
+5. Enter the geospaar folder (`cd geospaar`) to get into your newly cloned `geospaar`, and then rerun the docker build commands.  Then launch the container again
+6. You are now in a fresh Rstudio server environment.  You should see that the "geospaar" and the "r_ver4.3.2_packages" folders are there. The Rstudio server interface should not be pointing at a new project 
+7. Now, follow the steps mentioned at the top of this section: 
+  - Configure your GitHub username and email in the terminal of Rstudio server
+  - Then create an ssh key and add it to GitHub
+8. Now, open the geospaar project using the new project dialog in Rstudio server. The opened project should show a `git` tab in the lower left pane of the IDE 
+9. In the terminal in Rstudio server run the following commands:
+
+  ```bash
+  git config --global safe.directory '*'
+  git config core.fileMode false
+  ```
+10. Next, run `git status`. It should show a bunch of files have been modified. If it does, run:
+  `git stash`, followed again by `git status`. It should show no changes to the repo.  Try `git pull`, which should that you are be up to date. This should be working now
+
+### 9. Install `geospaar` and browse the course materials
 
 Build the `geospaar` package. To do so, first in Rstudio, go to File > Open Project, and then navigate to the `geospaar` folder, and then select the `geospaar.Rproj` file. That opens up the Rstudio project. Then, in the `R` console, run:
 

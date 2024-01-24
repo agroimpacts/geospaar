@@ -39,8 +39,8 @@ You can get always get away with using Windows command prompt or Power Shell, bu
 If you are enrolled in the class, you need to do this step, which can be the final one. If not you can skip to the next section
 Download and install the version of docker for your operating system from [here](https://www.docker.com/products/docker-desktop/), and create an account. Note: You can sign up with your Github credentials, if you already have them. 
 
-## Optional: Install `R1`
-Go to [R page](https://www.r-project.org) and download the current stable release, R 4.2.1, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
+## Optional: Install `R`
+Go to [R page](https://www.r-project.org) and download the current stable release, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
 
 ## Optional: Install RStudio Desktop
 Go to [RStudio page](https://rstudio.com/products/rstudio/download/#download) and download the current stable release, using the correct version for your operating system (Linux x86, Mac, Windows, etc).
