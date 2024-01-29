@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.19/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class3plus.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## Class 4
+]
+
+---
+
+
+&lt;img src="figures/weekly-rf.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+data("chirps")
+library(rasterVis)
+library(lubridate)
+library(RColorBrewer)
+library(raster)
+zam &lt;- getData("GADM", country = "ZMB", level = 1)
+
+dates &lt;- seq(as_date("2016-10-25"), as_date("2016-11-21"), by = "day")
+dates &lt;- data.frame(dates, w = unlist(lapply(1:4, function(x) rep(x, 7))))
+rfweek &lt;- stack(lapply(unique(dates$w), function(x) {
+  w &lt;- which(dates$w == x)
+  calc(chirps[[x]], sum)
+}))
+wk &lt;- as_date(sapply(unique(dates$w), function(x) dates[dates$w == x, 1][1]))
+names(rfweek) &lt;- wk
+
+mapTheme &lt;- rasterTheme(region = brewer.pal(9, "Blues"))
+pstrip &lt;- list(cex = 1, col = "white")
+png("figures/weekly-rf.png", height = 5, width = 5, res = 300,
+    units = "in", bg = "transparent")
+p &lt;- levelplot(rfweek, scales=list(draw = FALSE), par.settings = mapTheme,
+               names.attr = paste("Week of", wk), axes = FALSE, xlab = "",
+               ylab = "", par.strip.text = pstrip, 
+               main = list("Weekly Rainfall (mm)", col = "White"), 
+               colorkey = list(axis.line = list(col = "white"), 
+                               axis.text = list(col = "white")))
+p2 &lt;- p + latticeExtra::layer(sp.polygons(zam, col = "grey80", lwd = 0.7))
+p2
+dev.off()
+```
+
+---
+# Today
+
+- A review of where we are so far
+- Rmarkdown demo
+- Picking up from last class
+  - Projects and package set-up
+  - `git` / GitHub
+      - syncing, commit, push, pull, branching, merging
+
+---
+# So far...
+
+- We should know:
+  - Key concepts/tools of reproducibility and why we use them
+  - How to set up R package project with `git` VCS
+      - More on package structures: see [here](https://r-pkgs.org/package-structure-state.html)
+  - Where your library lives
+  - *What the key ingredients in a package are*
+  - *How to keep project synced between local and remote repos*
+  - *How to document functions*
+
+--
+
+- What we might not know (about packages):
+  - data folder and lazy loads
+  - inst folder and how to get at it
+
+---
+
+## Git/GitHub 
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://kevintshoemaker.github.io/StatsChats/GIT1.png" alt="kevintshoemaker.github.io/StatsChats/GIT_tutorial" width="70%" /&gt;
+&lt;p class="caption"&gt;kevintshoemaker.github.io/StatsChats/GIT_tutorial&lt;/p&gt;
+&lt;/div&gt;
+---
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://kevintshoemaker.github.io/StatsChats/GIT2.png" alt="kevintshoemaker.github.io/StatsChats/GIT_tutorial" width="70%" /&gt;
+&lt;p class="caption"&gt;kevintshoemaker.github.io/StatsChats/GIT_tutorial&lt;/p&gt;
+&lt;/div&gt;
+---
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="https://i.stack.imgur.com/yof9f.png" alt="stackoverflow.com/questions/7212740/why-git-is-called-a-distributed-source-control-system" width="70%" /&gt;
+&lt;p class="caption"&gt;stackoverflow.com/questions/7212740/why-git-is-called-a-distributed-source-control-system&lt;/p&gt;
+&lt;/div&gt;
+---
+## Our Branching Model
+
+&lt;img src="figures/class3_1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+## Merging
+
+&lt;img src="figures/class4_gitmerge.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+## Git exercises (1)
+- Open your personal R repo (e.g. `mjc346` in RStudio)
+- Copy and paste the text in your Description file to a separate file. 
+- Create a new branch, `test_merge`. You can create this branch in the Git tab, or in Terminal, using `git checkout -b test_merge`
+- With the new branch active, create a new file `test_function` within the R folder. Create a simple function that takes a number `x` as an input, and prints "`x` is my favorite number!". Save and commit this file in the new branch.
+- Switch back to the `main` branch. You should see a pop-up message. What happens to the `test_function.R` file? Can you see it in your file explorer?
+- merge the new file to the main branch using the command `git merge test_merge` in Terminal. What happens?
+- The `merge` command automatically merges and commits changes to the main branch
+
+---
+## Git exercises (2)
+- In the `test_merge` branch, open the Description file. Update the version to 0.0.2. Save and commit.
+- Switch to the `main` branch. Add a second author in the Author line. Save and commit.
+- Now test merging the change from `test_merge` to `main` using `git merge test_merge`. Does this work?
+
+---
+## Git exercises (3)
+- In the `test_merge` branch, add a third fictional author. Save and commit.
+- Switch to the `main` branch. Again add a third author, but use a different author than in the `test_merge` branch.
+- Now test merging the change from `test_merge` to `main` using `git merge test_merge`. Does this work?
+- Open the Description file. What does it look like?
+- After you are done, delete the branch using `git branch -D test_merge`
+- Update the Description file in the `main` branch by pasting the text you saved. Save and commit. 
+---
+
+# Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+
+---
+
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+## Search Engine Science
+
+ - Sometimes you just need the error message
+&lt;img src="figures/class3_4.jpeg" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+## Search Engine Science
+
+- Sometimes you need to search
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+- How you search matters
+
+---
+
+&lt;img src="figures/class3_5.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+## Listserves
+&lt;img src="figures/class3_3.png" width="90%" style="display: block; margin: auto;" /&gt;
+---
+
+## Package functions
+- `install.packages` : installs binary packages from CRAN
+- `devtools::install_github`: installs from Github
+-  `devtools::install("C:/Users/micha/Documents/geospaar/")` to install locally 
+
+---
+
+## Data in packages
+
+&lt;img src="figures/class4_1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+- packages often include example data
+- Lazy loading data only loads when used
+- Lazy loaded data in data/ folder
+  - formats: .R, .rda, .RData, .tab, .txt, .csv
+- Non lazy loads (raw data) in inst/extdata
+
+---
+
+
+```r
+ls()
+```
+
+```
+## character(0)
+```
+
+```r
+data("farmers_env", package = "geospaar")
+ls()
+```
+
+```
+## [1] "farmers_env"
+```
+
+```r
+farmers_env
+```
+
+```
+## Simple feature collection with 793 features and 3 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 24.777 ymin: -18.222 xmax: 33.332 ymax: -8.997
+## CRS:           NA
+## # A tibble: 793 × 4
+##    uuid             geometry  rain district
+##  * &lt;chr&gt;             &lt;POINT&gt; &lt;dbl&gt;    &lt;dbl&gt;
+##  1 009a8424 (27.256 -16.926)  66.9       11
+##  2 00df166f (26.942 -16.504)  72.0       11
+##  3 02671a00 (27.254 -16.914)  66.9       11
+##  4 03f4dcca (27.237 -16.733)  69.8       11
+##  5 042cf7b3 (27.138 -16.807)  75.1       11
+##  6 05618404 (26.875 -16.611)  66.1       11
+##  7 064beba0 (26.752 -16.862)  58.4       20
+##  8 083a46a2 (26.977 -16.765)  70.4       11
+##  9 08eb2224 (26.912 -16.248)  54.0       59
+## 10 0ab761d6  (27.113 -16.95)  72.4       11
+## # … with 783 more rows
+```
+
+```r
+rm(list = ls())
+ls()
+```
+
+```
+## character(0)
+```
+
+---
+
+```r
+library(geospaar)
+ls()
+```
+
+```
+## character(0)
+```
+
+```r
+farmers_env
+```
+
+```
+## Simple feature collection with 793 features and 3 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 24.777 ymin: -18.222 xmax: 33.332 ymax: -8.997
+## CRS:           NA
+## # A tibble: 793 × 4
+##    uuid             geometry  rain district
+##  * &lt;chr&gt;             &lt;POINT&gt; &lt;dbl&gt;    &lt;dbl&gt;
+##  1 009a8424 (27.256 -16.926)  66.9       11
+##  2 00df166f (26.942 -16.504)  72.0       11
+##  3 02671a00 (27.254 -16.914)  66.9       11
+##  4 03f4dcca (27.237 -16.733)  69.8       11
+##  5 042cf7b3 (27.138 -16.807)  75.1       11
+##  6 05618404 (26.875 -16.611)  66.1       11
+##  7 064beba0 (26.752 -16.862)  58.4       20
+##  8 083a46a2 (26.977 -16.765)  70.4       11
+##  9 08eb2224 (26.912 -16.248)  54.0       59
+## 10 0ab761d6  (27.113 -16.95)  72.4       11
+## # … with 783 more rows
+```
+
+```r
+ls()
+```
+
+```
+## character(0)
+```
+
+---
+## Raw data in inst/extdata
+
+&lt;img src="figures/class4_2.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+system.file("extdata", package = "geospaar")
+```
+
+```
+## [1] "/Library/Frameworks/R.framework/Versions/4.2/Resources/library/geospaar/extdata"
+```
+
+```r
+dir(system.file("extdata", package = "geospaar"))
+```
+
+```
+##  [1] "cdf_corn.csv"          "chilanga_farmer"      
+##  [3] "chirps.tif"            "districts.geojson"    
+##  [5] "EJ_POLY.cpg"           "EJ_POLY.dbf"          
+##  [7] "EJ_POLY.prj"           "EJ_POLY.sbn"          
+##  [9] "EJ_POLY.sbx"           "EJ_POLY.shp"          
+## [11] "EJ_POLY.shp.xml"       "EJ_POLY.shx"          
+## [13] "FAOSTAT_maize.csv"     "FAOSTAT_sorghum.csv"  
+## [15] "FAOSTAT_wheat.csv"     "farmer_spatial.csv"   
+## [17] "filt_data.rda"         "roads.geojson"        
+## [19] "train_reference.csv"   "westluse.rdc"         
+## [21] "westluse.rst"          "westroad.vct"         
+## [23] "westroad.vdc"          "whittier_down_d_h.rda"
+## [25] "whittier_mid_d_h.rda"  "whittier_up_d_h.rda"
+```
+
+```r
+f &lt;- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+head(read.csv(f))
+```
+
+```
+##       uuid      x       y       date season rained planted
+## 1 009a8424 27.256 -16.926 2015-11-15      1      0       0
+## 2 00df166f 26.942 -16.504 2015-11-15      1      0       0
+## 3 02671a00 27.254 -16.914 2015-11-15      1      0       0
+## 4 03f4dcca 27.237 -16.733 2015-11-15      1      0       0
+## 5 042cf7b3 27.138 -16.807 2015-11-15      1      0       0
+## 6 05618404 26.875 -16.611 2015-11-15      1      0       0
+```
+
+---
+## Other package folders
+- See [Chap 9 of "R Packages"](https://r-pkgs.org/misc.html) for more examples of R packages folders.
+
+---
+# A look at RMarkdown
+
+Chunk options
+
+&lt;img src="figures/class4_3.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+[Rmarkdown demo](rmarkdown_demo.html) by Lei Song
+
+---
+## RMarkdown exercises
+- In your personal R project, Create new RMarkdown file using `usethis::use_vignette(name = "example_vignette")`
+- Create chunks for the following:
+  - Load the `geospaar` package
+  - Load the `chirps` data and print its structure using `str(chirps)`
+  - Plot `chirps` data using `raster::plot(chirps)`. Above this chunk, include a text description for the CHIRPS data using different text formatting (bold, italics, etc). You can see information on the `CHIRPS` data in the `man` folder.
+  - Include a chunk with an obvious error, like `5 + "string"`
+  - Try knitting this RMD using different [chunk options](https://rmarkdown.rstudio.com/lesson-3.html)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
