@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-01-29
+Updated on: 2024-01-31
 
 <center>
 
@@ -55,6 +55,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 3 (Jan 29, Jan 31)
   - Continued setup work, RMarkdown, R ecosystem
   - [Class 4 slides](class4.html)
+  - [Class 5 slides](class5.html)  
   - Assignment 1 due (Unit 1 Module 1)
 - Week 4 (Feb 5, 7)
   - R data structures, OOP, Environments, Control flow
