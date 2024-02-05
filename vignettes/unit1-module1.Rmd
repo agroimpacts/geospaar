@@ -55,7 +55,7 @@ The first set of skills we are going to learn in this course are not related to 
 
 > the ability of a researcher to duplicate the results of a prior study using the same materials as were used by the original investigator. That is, a second researcher might use the same raw data to build the same analysis files and implement the same statistical analysis in an attempt to yield the same results.
 
-That is actually a quote by Goodman, Fanelli, & Ioannidis (2016) in an [e-book on reproducibility](https://www.practicereproducibleresearch.org/core-chapters/2-assessment.html), but it works here. 
+That is actually a quote by Goodman, Fanelli, & Ioannidis (2016) in an [e-book on reproducibility](http://www.practicereproducibleresearch.org/core-chapters/2-assessment.html), but it works here. 
 
 Reproducibility is a useful concept/mindset to learn, regardless of whether you are going into academia or industry, as it ultimately makes your life easier, particularly when you have to revisit and revise work. The practice of making your work reproducible also makes it easier to share your work with others. 
 
