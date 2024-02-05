@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-01-31
+Updated on: 2024-02-05
 
 <center>
 
@@ -59,20 +59,21 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - Assignment 1 due (Unit 1 Module 1)
 - Week 4 (Feb 5, 7)
   - R data structures, OOP, Environments, Control flow
-  - Assignment 2 due (Unit 1 Modules 2-3)
+  - [Class 6 slides](class6.html)  
 - Week 5 (Feb 12, 14)
   - tidyr universe, working with data
+  - Assignment 2 due (Unit 1 Modules 2-3)
 - Week 6 (Feb 19, 21)
   - regression, plotting
-  - Assignment 3 due (Unit 1 Module 4)
 - Week 7 (Feb 19, 21)
   - more ggplot, intro to vector
+  - Assignment 3 due (Unit 1 Module 4)
 - Spring Break
 - Week 8 (Feb 26, 28)
   - Vector operations
-  - Assignment 4 due (Unit 2 Module 1)
 - Week 9 (Mar 11, 13)
   - Raster basics
+  - Assignment 4 due (Unit 2 Module 1)
 - Week 11 (Mar 18, 20)
   - Raster analysis, neighborhoods
   - Mar 27 project prep (AAG)
@@ -80,6 +81,6 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - Raster algebra, terrain, modeling
   - Assignment 5 (Unit 2 Module 2)
 - Week 13-15 (April)
-  - Project Overview due
+  - Project Overview due (beginning week 13)
 - Final Projects due
   - May 5

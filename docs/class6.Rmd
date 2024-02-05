@@ -1,0 +1,453 @@
+---
+title: "Geospatial Analysis with R" 
+subtitle: Class 6
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class6.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, eval=FALSE}
+s3url <- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+b <- raster::brick(s3url)[[4:2]]
+png(here::here("external/slides/figures/ghana_planet.png"), height = 4, 
+    width = 4, units  = "in", res = 300, bg = "transparent")
+raster::plotRGB(b, stretch = "lin")
+dev.off()
+```
+
+---
+# Today
+
+- data folder and lazy loads
+- inst folder and how to get at it
+- RMarkdown
+- The `R` ecosystem
+- Building blocks of R: data types, functions, etc
+
+---
+
+# Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+
+---
+
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+## Search Engine Science
+
+- Sometimes you just need the error message
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_4.jpeg")
+```
+
+---
+## Search Engine Science
+
+- Sometimes you need to search
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+- How you search matters
+
+---
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_5.png")
+```
+
+---
+## Listserves
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_3.png")
+```
+---
+
+## Package functions
+- `install.packages` : installs binary packages from CRAN
+- `devtools::install_github`: installs from Github
+-  `devtools::install("C:/Users/micha/Documents/geospaar/")` to install locally 
+
+---
+
+## Data in packages
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_1.png")
+```
+
+- packages often include example data
+- Lazy loading data only loads when used
+- Lazy loaded data in data/ folder
+  - formats: .R, .rda, .RData, .tab, .txt, .csv
+- Non lazy loads (raw data) in inst/extdata
+
+---
+
+```{r}
+ls()
+data("farmers_env", package = "geospaar")
+ls()
+farmers_env
+rm(list = ls())
+ls()
+```
+
+---
+```{r, message=FALSE}
+library(geospaar)
+ls()
+farmers_env
+ls()
+```
+
+---
+## Raw data in inst/extdata
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_2.png")
+```
+
+---
+
+```{r}
+system.file("extdata", package = "geospaar")
+dir(system.file("extdata", package = "geospaar"))
+f <- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+head(read.csv(f))
+```
+
+---
+## Other package folders
+- See [Chap 9 of "R Packages"](https://r-pkgs.org/misc.html) for more examples of R packages folders.
+
+
+---
+# A look at RMarkdown
+
+Chunk options
+
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class4_3.png")
+```
+
+[Rmarkdown demo](rmarkdown_demo.html) by Lei Song
+[RMarkdown gallery](https://rmarkdown.rstudio.com/lesson-1.html)
+
+---
+
+## RMarkdown exercises
+- In your personal R project, Create new RMarkdown file using `usethis::use_vignette(name = "example_vignette")`
+- Create chunks for the following:
+  - Load the `geospaar` package
+  - Load the `chirps` data and print its structure using `str(chirps)`
+  - Plot `chirps` data using `raster::plot(chirps)`. Above this chunk, include a text description for the CHIRPS data using different text formatting (bold, italics, etc). You can see information on the `CHIRPS` data in the `man` folder.
+  - Include a chunk with an obvious error, like `5 + "string"`
+  - Try knitting this RMD using different [chunk options](https://rmarkdown.rstudio.com/lesson-3.html)
+---
+
+# The R Ecosystem
+
+```{r, out.width = "60%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class5_u1m2.png")
+```
+
+---
+## The R Ecosystem
+### Common objects
+
+```{r, echo=FALSE, fig.align='center', out.width = "80%", fig.cap='Credit: L. Song'}
+knitr::include_graphics("figures/class2_objects.png")
+```
+
+---
+## The R Ecosystem
+### Data types
+There are 6 atomic data types:
+- character
+  e.g. `'hello world'`, `'abc'`
+- double (real or decimal)
+  e.g. `10`, `3.14`, `1e10`
+- integer
+  e.g. `1L`
+- logical
+  e.g. `TRUE`, `FALSE`, `T`, `F`
+- complex
+  e.g. `1 + 3i` (not commonly used by us)
+- *raw* (rarely used by us)
+
+---
+## The R Ecosystem
+### Special data types
+
+- `NULL`: Does not exist
+- Missing data: `NA`. A special logical type that converts into the type it is associated with.
+- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
+- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+
+---
+## The R Ecosystem
+### Special data types
+
+- Date: `as.Date('1970-1-5')`
+- Time: `as.POSIXct('1970-1-5')`
+- Factor: factors are integers with associated labels. 
+
+---
+## The R Ecosystem
+### Checking data type
+
+- `typeof(x)`
+- `is.xxx(x)`: 
+
+  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
+  
+  * `is.numeric(x)` 
+  
+  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
+
+---
+## The R Ecosystem
+### Converting data type
+
+- `as.xxx(x)`:
+
+  * e.g. `as.numeric(x)`, `as.double(x)`, `as.character(x)`, `as.integer(x)`, `as.logical(x)`, `as.complex(x)`, `as.raw(x)`, `as.factor(x)`, `as.Date(x)`, `as.POSIXct(x)`.
+  
+- logical < integer < double < character
+
+---
+## The R Ecosystem
+### Data structures
+- Atomic vectors (most commonly thought of kind):
+
+  * A sequence of objects of the **same class**.
+  * Arrays and matrices are vectors with more than one dimension.
+  
+      - Matrices have 2 dimensions.
+      - Arrays could have higher dimensions.
+
+- Lists
+
+  * Lists can contain objects of **different classes**.
+  * Lists can be converted list-matrix or list-array by defining dimensions.
+  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
+
+---
+
+## The R Ecosystem
+### Vectors
+
+```{r, echo=FALSE, fig.align='center', fig.cap='Credit: L. Song'}
+knitr::include_graphics("figures/class2_vector.png")
+```
+
+---
+## Let's create some data
+
+- `vector`
+- `matrix`
+- `data.frame`
+- `list`
+---
+## Creating a vector
+```{r}
+v1 <- c(1,2,3,4,5)
+v2 <- 6:10
+print(v1)
+print(v2)
+```
+
+---
+## Combining vectors
+
+```{r}
+v1 <- c(1,2,3,4,5)
+v2 <- 6:10
+v3 <- c(v1, v2)
+print(v3)
+print(class(v3))
+```
+---
+## Combining vectors
+What happens when you combine data types in a vector?
+
+```{r}
+v4 <- c(v1, "test")
+print(v4)
+print(class(v4))
+```
+---
+## Vectorized operations
+```{r}
+v1 <- 1:9
+print(v1)
+print(v1 + 5) ## addition applied to each element in vector
+print(v1 * 3) ## multiplication applied to each element in vector
+```
+
+---
+## Accessing elements in vector
+```{r}
+v1 <- (1:9)*3 
+print(v1)
+print(v1[4])
+```
+
+```{r}
+v1 <- letters[1:7]
+print(paste0("This letter is ", v1)) # paste0 concatenates strings
+```
+
+Question: How would you say "Letter 1 is a", "Letter 2 is b", etc. 
+---
+## Creating a matrix
+```{r}
+v1 <- 1:9
+m1 <- matrix(v1, nrow = 3, byrow = T)
+m2 <- cbind(v1 = 1:3, v2 = 1:3, v3 = 0:0)
+print(m1)
+print(m2)
+```
+---
+## Accessing elements in a matrix
+```{r}
+m2 <- cbind(v1 = 1:3, v2 = 1:3, v3 = 0:0)
+print(m2)
+print("first row:")
+print(m2[1, ])
+print("second column")
+print(m2[, 2])
+print("access by column name")
+print(m2[, "v2"])
+```
+
+Question: Create a 3 row, 4 column matrix, where the first column is (1, 2, 3), second column is (4, 5, 6 ) etc. 
+
+---
+## Lists
+Lists can mix object of different types. 
+
+```{r}
+l <- list("a", 1, 0.5, TRUE)
+print(l)
+print(str(l)) # structure of l
+```
+
+---
+## Lists
+Lists can also be nested.
+```{r}
+l1 <- list("a", 1, 0.5, TRUE)
+l2 <- list(l1, "test", matrix(1:9, nrow = 3)) ## first element of l2 is a list.
+print(l2)
+```
+Question: what is the length of l1? what is the length of each element of l1? (use `length` function)
+---
+## Accessing elements in lists
+Use double brackets `[[  ]]` to access elements in lists. 
+```{r}
+l1 <- list("a", 1, 0.5, TRUE)
+l2 <- list(l1, "test", matrix(1:9, nrow = 3)) ## first element of l2 is a list.
+print(l2[[1]])
+print(l2[[2]])
+print(l2[[3]])
+```
+
+Question: The first element of l2 is a list. Access this first element from l2, then the 4th element from l1. 
+
+---
+## Data frames
+We will use data frames A LOT. Data frames are really tables, but they are stored in R as lists, with the following conditions.
+- Each element in the list represents a column.
+- Each element in the list is an atomic vector.
+- The length of each vector is the same (the number of rows)
+
+```{r}
+m1 <- cbind(1:3, letters[1:3])
+print(m1) # a matrix cannot hold multiple data types. 
+print(class(m1))
+```
+```{r}
+df <- data.frame(numbers = 1:3, abc = letters[1:3])
+print(df) # a data frame CAN hold multiple data types. 
+print(class(df))
+```
+
+---
+## Useful functions
+- `print`
+- You can print just about anything, but as a generic function, `print` works differently for different types of objects.
+```{r}
+a <- "test"
+df <- data.frame(numbers = 1:3, abc = letters[1:3])
+print(a) # a data frame CAN hold multiple data types. 
+print(df)
+```
+```{r}
+methods(print) ## all the different ways to print...
+```
+---
+## Examining objects
+- `ls`, `class`, `str`
+```{r}
+a <- "test"
+df <- data.frame(numbers = 1:3, abc = letters[1:3])
+ls() ## list objects in global environemtn
+```
+```{r}
+class(df) ## class
+```
+
+```{r}
+str(df) ## structure
+```
+
+---
+## Sampling
+- Sample without replacement
+```{r}
+set.seed(1234) ## set a random seed
+v <- 1:100
+s <- sample(v, 50)
+print(s)
+print(sort(s))
+```
+
+- Sample with replacement
+```{r}
+s2 <- sample(v, 50, replace = T)
+print(sort(s2))
+```
+
+---
+## Does S2 have duplicates?
+```{r}
+s2_unique <- unique(s2)
+print(length(s2))
+print(length(s2_unique))
+
+print(length(s2) == length(s2_unique))
+```
+
+

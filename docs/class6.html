@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.19/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class6.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## Class 6
+]
+
+---
+
+
+
+
+```r
+s3url &lt;- glue::glue("/vsis3/activemapper/",
+                    "planet/composite_sr_buf_fix/GS/",
+                    "tile486317_736815_736967.tif")  # not accessible
+b &lt;- raster::brick(s3url)[[4:2]]
+png(here::here("external/slides/figures/ghana_planet.png"), height = 4, 
+    width = 4, units  = "in", res = 300, bg = "transparent")
+raster::plotRGB(b, stretch = "lin")
+dev.off()
+```
+
+---
+# Today
+
+- data folder and lazy loads
+- inst folder and how to get at it
+- RMarkdown
+- The `R` ecosystem
+- Building blocks of R: data types, functions, etc
+
+---
+
+# Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+
+---
+
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+## Search Engine Science
+
+- Sometimes you just need the error message
+&lt;img src="figures/class3_4.jpeg" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+## Search Engine Science
+
+- Sometimes you need to search
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+- How you search matters
+
+---
+
+&lt;img src="figures/class3_5.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+## Listserves
+&lt;img src="figures/class3_3.png" width="90%" style="display: block; margin: auto;" /&gt;
+---
+
+## Package functions
+- `install.packages` : installs binary packages from CRAN
+- `devtools::install_github`: installs from Github
+-  `devtools::install("C:/Users/micha/Documents/geospaar/")` to install locally 
+
+---
+
+## Data in packages
+
+&lt;img src="figures/class4_1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+- packages often include example data
+- Lazy loading data only loads when used
+- Lazy loaded data in data/ folder
+  - formats: .R, .rda, .RData, .tab, .txt, .csv
+- Non lazy loads (raw data) in inst/extdata
+
+---
+
+
+```r
+ls()
+```
+
+```
+## character(0)
+```
+
+```r
+data("farmers_env", package = "geospaar")
+ls()
+```
+
+```
+## [1] "farmers_env"
+```
+
+```r
+farmers_env
+```
+
+```
+##         uuid        geometry     rain district
+## 1   009a8424 27.256, -16.926 66.93754       11
+## 2   00df166f 26.942, -16.504 72.00297       11
+## 3   02671a00 27.254, -16.914 66.93754       11
+## 4   03f4dcca 27.237, -16.733 69.78009       11
+## 5   042cf7b3 27.138, -16.807 75.14184       11
+## 6   05618404 26.875, -16.611 66.09323       11
+## 7   064beba0 26.752, -16.862 58.36053       20
+## 8   083a46a2 26.977, -16.765 70.38586       11
+## 9   08eb2224 26.912, -16.248 53.95671       59
+## 10  0ab761d6 27.113, -16.950 72.43802       11
+## 11  0bd19b6a 26.772, -16.860 58.36053       20
+## 12  0c0c6ed8 26.794, -16.843 57.79966       11
+## 13  0c18f625 26.862, -16.674 68.36250       11
+## 14  0cbc4225 26.859, -16.176 57.92710       59
+## 15  0eb65faa 27.056, -16.935 69.99150       11
+## 16  0ed7bf8d 27.294, -16.746 80.89200       11
+## 17  12d7333e 27.237, -16.733 69.78009       11
+## 18  130455fd 26.885, -16.589 73.05731       11
+## 19  146fd88d 27.237, -16.922 73.24045       11
+## 20  14e2047a 27.306, -16.742 78.35793       11
+## 21  14eb1bc1 26.913, -16.251 55.04950       11
+## 22  14f4d804 27.336, -16.834 72.22664       11
+## 23  16d25908 26.780, -16.851 58.36053       20
+## 24  186977a2 26.862, -16.674 68.36250       11
+## 25  19c2befd 26.933, -17.041 63.51126       11
+## 26  1a3ed58f 27.276, -16.878 67.82761       11
+## 27  1a4008c2 26.859, -16.178 57.92710       59
+## 28  1ae8ccff 27.094, -16.813 78.34108       11
+## 29  1c7690e0 27.261, -16.921 66.93754       11
+## 30  1cba393a 26.930, -16.508 72.00297       11
+## 31  261e38c9 26.974, -16.748 69.62228       11
+## 32  26b02eaa 27.114, -16.790 69.24673       11
+## 33  26ccd1ca 27.279, -16.926 66.93754       11
+## 34  26d99644 26.917, -16.532 72.00297       11
+## 35  28706e65 26.969, -16.723 69.62228       11
+## 36  28c79d87 26.857, -16.191 57.92710       59
+## 37  2abd46c3 27.294, -16.744 80.89200       11
+## 38  2b60914d 27.275, -16.884 67.82761       11
+## 39  2cf13d38 27.050, -17.003 69.43579       11
+## 40  2d70af82 26.863, -16.590 73.05731       11
+## 41  30c2e51a 27.313, -16.779 78.28657       11
+## 42  3112ec39 27.272, -16.873 67.82761       11
+## 43  32855ee6 26.975, -16.760 70.38586       11
+## 44  33361d1c 26.830, -16.817 63.43196       11
+## 45  36c0532e 26.953, -16.487 67.75720       11
+## 46  373bc918 27.050, -17.003 69.43579       11
+## 47  381e38ea 27.293, -16.744 80.89200       11
+## 48  38c83136 26.933, -16.463 69.48450       11
+## 49  3a042f06 27.076, -16.952 79.16811       11
+## 50  3a0b6560 27.285, -16.748 80.89200       11
+## 51  3a5c6f75 27.050, -17.004 69.43579       11
+## 52  3b3d1539 26.857, -16.193 57.92710       59
+## 53  3b6cbc47 27.059, -17.006 78.89503       11
+## 54  3e3c2a80 26.971, -16.753 70.38586       11
+## 55  3e8b66b7 27.118, -16.919 72.43802       11
+## 56  3fed4ec6 27.239, -16.741 69.78009       11
+## 57  4120e368 26.979, -16.762 70.38586       11
+## 58  4313155f 27.266, -16.921 66.93754       11
+## 59  44c8a2b6 27.063, -17.004 78.89503       11
+## 60  45a89b91 27.109, -16.980 70.20730       11
+## 61  46fa47e5 26.930, -17.054 52.02611       11
+## 62  47939706 27.275, -16.884 67.82761       11
+## 63  48635f6e 27.099, -16.964 79.16811       11
+## 64  48c828d0 27.265, -16.921 66.93754       11
+## 65  4932fac2 26.810, -16.607 59.16776       11
+## 66  496c557b 27.297, -16.935 66.93754       11
+## 67  499a72b8 26.831, -16.817 63.43196       11
+## 68  4a58fbbb 26.877, -16.585 73.05731       11
+## 69  4afc2d3e 27.067, -16.988 79.16811       11
+## 70  4b671e6b 27.294, -16.744 80.89200       11
+## 71  4ca666fd 27.089, -16.951 79.16811       11
+## 72  4cb11854 27.129, -16.790 69.24673       11
+## 73  4d524878 27.032, -16.961 75.39918       11
+## 74  4f75193d 26.961, -16.727 69.62228       11
+## 75  51d50f10 26.983, -16.765 70.38586       11
+## 76  54d0a15c 26.941, -16.485 69.48450       11
+## 77  55772276 26.864, -16.662 68.36250       11
+## 78  561a6a5d 27.080, -16.972 79.16811       11
+## 79  58d39a53 26.791, -16.841 57.79966       11
+## 80  5b732fcd 26.850, -16.216 53.30880       59
+## 81  5c093270 27.255, -16.908 66.93754       11
+## 82  5c13f0ee 27.255, -16.909 66.93754       11
+## 83  5e0473ca 26.821, -16.604 59.16776       11
+## 84  5e37a888 27.128, -16.772 69.24673       11
+## 85  5e65fc11 27.094, -16.890 73.09578       11
+## 86  5e911b62 27.061, -17.004 78.89503       11
+## 87  61228b69 26.802, -16.832 63.43196       11
+## 88  6132a9b3 27.316, -16.782 78.28657       11
+## 89  62642d7c 27.234, -16.733 69.78009       11
+## 90  646d6573 27.256, -16.926 66.93754       11
+## 91  64a63ad8 27.230, -16.717 69.78009       11
+## 92  664bdf41 26.781, -16.870 58.36053       20
+## 93  66e41828 26.804, -16.854 61.28291       11
+## 94  67cbcae6 26.896, -16.704 72.95570       11
+## 95  684d8902 26.966, -16.733 69.62228       11
+## 96  6b38721b 26.788, -16.876 58.36053       20
+## 97  6c223ecd 26.913, -16.519 72.00297       11
+## 98  6d05224a 26.853, -16.210 53.86879       59
+## 99  6d774598 26.913, -16.250 53.95671       59
+## 100 6dfd9cdf 27.301, -16.816 72.22664       11
+## 101 6ff740a4 27.299, -16.935 66.93754       11
+## 102 703825ba 26.788, -16.876 58.36053       20
+## 103 70b5f403 27.037, -16.954 75.39918       11
+## 104 718d866e 26.859, -16.178 57.92710       59
+## 105 730b727a 27.056, -16.934 69.99150       11
+## 106 732af424 26.833, -16.818 63.43196       11
+## 107 74ccfcac 26.899, -16.856 61.73315       11
+## 108 7572e663 27.199, -16.924 71.00794       11
+## 109 770da037 26.833, -16.817 63.43196       11
+## 110 78284b9d 26.995, -16.972 75.29367       11
+## 111 7af5af0a 27.301, -16.758 78.28657       11
+## 112 7d101d28 27.305, -16.803 72.22664       11
+## 113 7da072ff 27.066, -16.944 69.99150       11
+## 114 7eed2695 26.923, -17.049 63.51126       11
+## 115 7f49bc48 27.284, -16.749 80.89200       11
+## 116 7f9ab0f7 27.094, -16.976 79.16811       11
+## 117 814ca378 27.061, -17.004 78.89503       11
+## 118 85867e62 27.111, -16.933 72.43802       11
+## 119 85f03621 26.938, -16.513 72.00297       11
+## 120 88462901 26.881, -16.597 73.05731       11
+## 121 890ca2c8 27.107, -16.940 72.43802       11
+## 122 8b816f5f 27.255, -16.915 66.93754       11
+## 123 8d074cec 26.869, -16.596 73.05731       11
+## 124 8d2db211 26.934, -17.036 63.51126       11
+## 125 8d690816 26.936, -16.744 72.52380       11
+## 126 8da4a6d6 26.858, -16.594 73.05731       11
+## 127 92563785 27.234, -16.923 73.24045       11
+## 128 926caf97 26.869, -16.610 66.09323       11
+## 129 95374d3f 27.039, -16.842 70.56110       11
+## 130 96b6d097 26.995, -16.953 75.29367       11
+## 131 975ffe94 26.831, -16.818 63.43196       11
+## 132 981208ad 27.344, -16.776 78.28657       11
+## 133 991ece73 27.086, -16.967 79.16811       11
+## 134 99dc8db6 27.182, -16.917 71.00794       11
+## 135 9a8786eb 27.258, -16.929 66.93754       11
+## 136 9b42e80a 26.869, -16.614 66.09323       11
+## 137 9c0fe82f 26.974, -16.760 70.38586       11
+## 138 a006eab2 27.335, -16.798 78.28657       11
+## 139 a0f8b4ef 27.039, -16.830 70.56110       11
+## 140 a30b3bde 27.048, -16.926 71.20597       11
+## 141 a5ad178a 27.060, -17.005 78.89503       11
+## 142 a62be645 26.863, -16.595 73.05731       11
+## 143 a67f255e 26.815, -16.585 66.42364       11
+## 144 a84d2d02 26.831, -16.817 63.43196       11
+## 145 a914f6e1 26.788, -16.863 58.36053       20
+## 146 a9a99b3e 26.920, -17.052 52.02611       11
+## 147 a9d39da7 26.928, -16.520 72.00297       11
+## 148 aa5f0d29 26.951, -16.727 69.62228       11
+## 149 aac48cd5 27.050, -17.003 69.43579       11
+## 150 abd530e7 26.981, -16.762 70.38586       11
+## 151 ace80c2e 27.306, -16.931 66.28913       11
+## 152 ad783a0a 27.336, -16.797 78.28657       11
+## 153 afaecd2e 27.305, -16.793 78.28657       11
+## 154 affb013a 26.963, -16.920 70.25295       11
+## 155 b0e82f78 27.339, -16.834 72.22664       11
+## 156 b1e1a3f3 26.789, -16.878 58.36053       20
+## 157 b3d90826 26.922, -16.526 72.00297       11
+## 158 b5a7a1f4 26.935, -16.513 72.00297       11
+## 159 b66a5a55 26.974, -16.766 70.38586       11
+## 160 b825d94e 27.113, -16.773 69.24673       11
+## 161 b9d85ebc 27.234, -16.923 73.24045       11
+## 162 ba5973c2 26.835, -16.815 63.43196       11
+## 163 baea69b4 27.279, -16.877 67.82761       11
+## 164 bb876912 26.936, -16.505 72.00297       11
+## 165 bba2dfd0 27.339, -16.797 78.28657       11
+## 166 bc32b0b4 26.864, -16.599 73.05731       11
+## 167 bc8d8a74 27.275, -16.877 67.82761       11
+## 168 bf8b44c4 26.791, -16.874 58.36053       20
+## 169 c084cfc1 26.795, -16.879 58.36053       20
+## 170 c124742c 27.209, -16.917 73.24045       11
+## 171 c152455a 27.085, -16.934 69.99150       11
+## 172 c2668cdf 27.123, -16.769 69.24673       11
+## 173 c32d45ee 27.068, -16.939 69.99150       11
+## 174 c42827cf 27.096, -16.949 69.99150       11
+## 175 c6f737ea 27.304, -16.793 78.28657       11
+## 176 c784ee02 26.859, -16.194 57.92710       59
+## 177 c7d6f91c 26.831, -16.817 63.43196       11
+## 178 c7e2a514 26.810, -16.606 59.16776       11
+## 179 c946796f 27.004, -16.841 70.56110       11
+## 180 c9ee7136 27.039, -16.842 70.56110       11
+## 181 c9f5f663 27.128, -16.779 69.24673       11
+## 182 cc014f7d 26.778, -16.870 58.36053       20
+## 183 cc230be1 27.286, -16.788 76.04762       11
+## 184 cdcc9666 27.293, -16.747 80.89200       11
+## 185 ce041f38 26.961, -16.743 69.62228       11
+## 186 d027ee45 27.293, -16.747 80.89200       11
+## 187 d16f790f 27.016, -16.932 71.20597       11
+## 188 d1d9637e 27.136, -16.800 69.24673       11
+## 189 d1e20dc3 26.912, -16.254 55.04950       11
+## 190 d263ea45 26.827, -16.820 63.43196       11
+## 191 d362925c 26.859, -16.193 57.92710       59
+## 192 d6313bed 27.301, -16.758 78.28657       11
+## 193 d644ee96 26.867, -16.610 66.09323       11
+## 194 d6e18dd9 27.086, -16.961 79.16811       11
+## 195 d9ce012d 27.325, -16.757 78.28657       11
+## 196 de338705 27.293, -16.747 80.89200       11
+## 197 dea21f52 27.097, -16.899 73.09578       11
+## 198 df1604d4 27.271, -16.784 76.04762       11
+## 199 dfc6f992 26.823, -16.625 59.16776       11
+## 200 e2510e54 27.123, -16.922 72.43802       11
+## 201 e25b2b0f 26.789, -16.877 58.36053       20
+## 202 e27cd268 27.056, -16.935 69.99150       11
+## 203 e3407303 26.781, -16.856 58.36053       20
+## 204 e340de50 26.956, -16.738 69.62228       11
+## 205 e36fdd30 26.947, -16.746 72.52380       11
+## 206 e82a9751 26.790, -16.823 57.79966       11
+## 207 e91d6065 27.135, -16.770 69.24673       11
+## 208 e9f6b304 27.066, -16.944 69.99150       11
+## 209 ebd881fc 27.310, -16.803 72.22664       11
+## 210 ee2f89cf 27.090, -16.971 79.16811       11
+## 211 f0118efa 27.286, -16.932 66.93754       11
+## 212 f08a0aa3 27.032, -16.961 75.39918       11
+## 213 f0bcb418 27.107, -16.772 69.24673       11
+## 214 f6ebaa5b 27.300, -16.934 66.93754       11
+## 215 f752c993 27.300, -16.756 76.04762       11
+## 216 f825b96c 27.060, -16.986 79.16811       11
+## 217 fb3fc0e0 27.086, -16.783 71.25740       11
+## 218 fb666168 26.780, -16.851 58.36053       20
+## 219 fbdacd81 26.999, -16.956 75.29367       11
+## 220 fbef7ba1 27.227, -16.738 69.78009       11
+## 221 fc263f78 27.232, -16.720 69.78009       11
+## 222 fce31f54 26.826, -16.595 66.42364       11
+## 223 fe096545 27.260, -16.922 66.93754       11
+## 224 0649944b 27.336, -16.784 78.28657       11
+## 225 08683ecf 27.284, -16.749 80.89200       11
+## 226 0a2efd25 27.338, -16.794 78.28657       11
+## 227 0f095777 26.815, -16.599 66.42364       11
+## 228 116e1bcc 26.859, -16.595 73.05731       11
+## 229 16128e91 27.100, -16.894 73.09578       11
+## 230 27fb5351 27.094, -16.906 69.99150       11
+## 231 2a840b88 27.338, -16.794 78.28657       11
+## 232 3182c9bb 27.086, -16.961 79.16811       11
+## 233 3210d99e 26.939, -16.490 69.48450       11
+## 234 36883452 27.051, -16.840 78.34108       11
+## 235 36db3c21 26.769, -16.873 58.36053       20
+## 236 3c0a7255 27.280, -16.872 67.82761       11
+## 237 41b213e1 26.900, -16.852 61.73315       11
+## 238 4285ad8d 26.808, -16.835 63.43196       11
+## 239 46498dc8 26.975, -16.826 69.10195       11
+## 240 48b2c57f 26.781, -16.849 57.79966       11
+## 241 4ae722c5 27.298, -16.930 66.93754       11
+## 242 4bc9a120 27.183, -16.915 71.00794       11
+## 243 5769b555 27.336, -16.834 72.22664       11
+## 244 5ad27ec3 26.812, -16.599 66.42364       11
+## 245 60734a06 26.989, -16.830 69.10195       11
+## 246 646ea49f 27.053, -16.927 69.99150       11
+## 247 6be46cee 26.967, -16.821 69.10195       11
+## 248 6df8bb5e 26.977, -16.819 69.10195       11
+## 249 6e1aeb91 27.045, -16.962 75.39918       11
+## 250 73c31707 27.117, -16.920 72.43802       11
+##  [ reached 'max' / getOption("max.print") -- omitted 543 rows ]
+```
+
+```r
+rm(list = ls())
+ls()
+```
+
+```
+## character(0)
+```
+
+---
+
+```r
+library(geospaar)
+ls()
+```
+
+```
+## character(0)
+```
+
+```r
+farmers_env
+```
+
+```
+## Simple feature collection with 793 features and 3 fields
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: 24.777 ymin: -18.222 xmax: 33.332 ymax: -8.997
+## CRS:           NA
+## # A tibble: 793 × 4
+##    uuid             geometry  rain district
+##  * &lt;chr&gt;             &lt;POINT&gt; &lt;dbl&gt;    &lt;dbl&gt;
+##  1 009a8424 (27.256 -16.926)  66.9       11
+##  2 00df166f (26.942 -16.504)  72.0       11
+##  3 02671a00 (27.254 -16.914)  66.9       11
+##  4 03f4dcca (27.237 -16.733)  69.8       11
+##  5 042cf7b3 (27.138 -16.807)  75.1       11
+##  6 05618404 (26.875 -16.611)  66.1       11
+##  7 064beba0 (26.752 -16.862)  58.4       20
+##  8 083a46a2 (26.977 -16.765)  70.4       11
+##  9 08eb2224 (26.912 -16.248)  54.0       59
+## 10 0ab761d6  (27.113 -16.95)  72.4       11
+## # … with 783 more rows
+```
+
+```r
+ls()
+```
+
+```
+## character(0)
+```
+
+---
+## Raw data in inst/extdata
+
+&lt;img src="figures/class4_2.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+system.file("extdata", package = "geospaar")
+```
+
+```
+## [1] "/Library/Frameworks/R.framework/Versions/4.2/Resources/library/geospaar/extdata"
+```
+
+```r
+dir(system.file("extdata", package = "geospaar"))
+```
+
+```
+##  [1] "cdf_corn.csv"          "chilanga_farmer"      
+##  [3] "chirps.tif"            "districts.geojson"    
+##  [5] "EJ_POLY.cpg"           "EJ_POLY.dbf"          
+##  [7] "EJ_POLY.prj"           "EJ_POLY.sbn"          
+##  [9] "EJ_POLY.sbx"           "EJ_POLY.shp"          
+## [11] "EJ_POLY.shp.xml"       "EJ_POLY.shx"          
+## [13] "FAOSTAT_maize.csv"     "FAOSTAT_sorghum.csv"  
+## [15] "FAOSTAT_wheat.csv"     "farmer_spatial.csv"   
+## [17] "filt_data.rda"         "roads.geojson"        
+## [19] "train_reference.csv"   "westluse.rdc"         
+## [21] "westluse.rst"          "westroad.vct"         
+## [23] "westroad.vdc"          "whittier_down_d_h.rda"
+## [25] "whittier_mid_d_h.rda"  "whittier_up_d_h.rda"
+```
+
+```r
+f &lt;- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+head(read.csv(f))
+```
+
+```
+##       uuid      x       y       date season rained planted
+## 1 009a8424 27.256 -16.926 2015-11-15      1      0       0
+## 2 00df166f 26.942 -16.504 2015-11-15      1      0       0
+## 3 02671a00 27.254 -16.914 2015-11-15      1      0       0
+## 4 03f4dcca 27.237 -16.733 2015-11-15      1      0       0
+## 5 042cf7b3 27.138 -16.807 2015-11-15      1      0       0
+## 6 05618404 26.875 -16.611 2015-11-15      1      0       0
+```
+
+---
+## Other package folders
+- See [Chap 9 of "R Packages"](https://r-pkgs.org/misc.html) for more examples of R packages folders.
+
+
+---
+# A look at RMarkdown
+
+Chunk options
+
+&lt;img src="figures/class4_3.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+[Rmarkdown demo](rmarkdown_demo.html) by Lei Song
+[RMarkdown gallery](https://rmarkdown.rstudio.com/lesson-1.html)
+
+---
+
+## RMarkdown exercises
+- In your personal R project, Create new RMarkdown file using `usethis::use_vignette(name = "example_vignette")`
+- Create chunks for the following:
+  - Load the `geospaar` package
+  - Load the `chirps` data and print its structure using `str(chirps)`
+  - Plot `chirps` data using `raster::plot(chirps)`. Above this chunk, include a text description for the CHIRPS data using different text formatting (bold, italics, etc). You can see information on the `CHIRPS` data in the `man` folder.
+  - Include a chunk with an obvious error, like `5 + "string"`
+  - Try knitting this RMD using different [chunk options](https://rmarkdown.rstudio.com/lesson-3.html)
+---
+
+# The R Ecosystem
+
+&lt;img src="figures/class5_u1m2.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+## The R Ecosystem
+### Common objects
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class2_objects.png" alt="Credit: L. Song" width="80%" /&gt;
+&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## The R Ecosystem
+### Data types
+There are 6 atomic data types:
+- character
+  e.g. `'hello world'`, `'abc'`
+- double (real or decimal)
+  e.g. `10`, `3.14`, `1e10`
+- integer
+  e.g. `1L`
+- logical
+  e.g. `TRUE`, `FALSE`, `T`, `F`
+- complex
+  e.g. `1 + 3i` (not commonly used by us)
+- *raw* (rarely used by us)
+
+---
+## The R Ecosystem
+### Special data types
+
+- `NULL`: Does not exist
+- Missing data: `NA`. A special logical type that converts into the type it is associated with.
+- Infinity: `Inf` (e.g. `1 / 0`) and `-Inf` (e.g. `-1 / 0`. A special double type.
+- Undefined value: `NaN`. Also a special double type. (e.g. `0 / 0`)
+
+---
+## The R Ecosystem
+### Special data types
+
+- Date: `as.Date('1970-1-5')`
+- Time: `as.POSIXct('1970-1-5')`
+- Factor: factors are integers with associated labels. 
+
+---
+## The R Ecosystem
+### Checking data type
+
+- `typeof(x)`
+- `is.xxx(x)`: 
+
+  * e.g. `is.double(x)`, `is.integer(x)`, `is.logical(x)`, `is.character(x)`, `is.complex(x)`, `is.raw(x)`, `is.factor`
+  
+  * `is.numeric(x)` 
+  
+  * e.g. `is.na(y)`, `is.nan(y)`, `is.null(y)`, `is.infinite(y)`, `is.finite(y)`.
+
+---
+## The R Ecosystem
+### Converting data type
+
+- `as.xxx(x)`:
+
+  * e.g. `as.numeric(x)`, `as.double(x)`, `as.character(x)`, `as.integer(x)`, `as.logical(x)`, `as.complex(x)`, `as.raw(x)`, `as.factor(x)`, `as.Date(x)`, `as.POSIXct(x)`.
+  
+- logical &lt; integer &lt; double &lt; character
+
+---
+## The R Ecosystem
+### Data structures
+- Atomic vectors (most commonly thought of kind):
+
+  * A sequence of objects of the **same class**.
+  * Arrays and matrices are vectors with more than one dimension.
+  
+      - Matrices have 2 dimensions.
+      - Arrays could have higher dimensions.
+
+- Lists
+
+  * Lists can contain objects of **different classes**.
+  * Lists can be converted list-matrix or list-array by defining dimensions.
+  * `data.frame` and `tibble` are S3 objects that are lists in tabular form
+
+---
+
+## The R Ecosystem
+### Vectors
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="figures/class2_vector.png" alt="Credit: L. Song" width="1921" /&gt;
+&lt;p class="caption"&gt;Credit: L. Song&lt;/p&gt;
+&lt;/div&gt;
+
+---
+## Let's create some data
+
+- `vector`
+- `matrix`
+- `data.frame`
+- `list`
+---
+## Creating a vector
+
+```r
+v1 &lt;- c(1,2,3,4,5)
+v2 &lt;- 6:10
+print(v1)
+```
+
+```
+## [1] 1 2 3 4 5
+```
+
+```r
+print(v2)
+```
+
+```
+## [1]  6  7  8  9 10
+```
+
+---
+## Combining vectors
+
+
+```r
+v1 &lt;- c(1,2,3,4,5)
+v2 &lt;- 6:10
+v3 &lt;- c(v1, v2)
+print(v3)
+```
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
+```
+
+```r
+print(class(v3))
+```
+
+```
+## [1] "numeric"
+```
+---
+## Combining vectors
+What happens when you combine data types in a vector?
+
+
+```r
+v4 &lt;- c(v1, "test")
+print(v4)
+```
+
+```
+## [1] "1"    "2"    "3"    "4"    "5"    "test"
+```
+
+```r
+print(class(v4))
+```
+
+```
+## [1] "character"
+```
+---
+## Vectorized operations
+
+```r
+v1 &lt;- 1:9
+print(v1)
+```
+
+```
+## [1] 1 2 3 4 5 6 7 8 9
+```
+
+```r
+print(v1 + 5) ## addition applied to each element in vector
+```
+
+```
+## [1]  6  7  8  9 10 11 12 13 14
+```
+
+```r
+print(v1 * 3) ## multiplication applied to each element in vector
+```
+
+```
+## [1]  3  6  9 12 15 18 21 24 27
+```
+
+---
+## Accessing elements in vector
+
+```r
+v1 &lt;- (1:9)*3 
+print(v1)
+```
+
+```
+## [1]  3  6  9 12 15 18 21 24 27
+```
+
+```r
+print(v1[4])
+```
+
+```
+## [1] 12
+```
+
+
+```r
+v1 &lt;- letters[1:7]
+print(paste0("This letter is ", v1)) # paste0 concatenates strings
+```
+
+```
+## [1] "This letter is a" "This letter is b" "This letter is c"
+## [4] "This letter is d" "This letter is e" "This letter is f"
+## [7] "This letter is g"
+```
+
+Question: How would you say "Letter 1 is a", "Letter 2 is b", etc. 
+---
+## Creating a matrix
+
+```r
+v1 &lt;- 1:9
+m1 &lt;- matrix(v1, nrow = 3, byrow = T)
+m2 &lt;- cbind(v1 = 1:3, v2 = 1:3, v3 = 0:0)
+print(m1)
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9
+```
+
+```r
+print(m2)
+```
+
+```
+##      v1 v2 v3
+## [1,]  1  1  0
+## [2,]  2  2  0
+## [3,]  3  3  0
+```
+---
+## Accessing elements in a matrix
+
+```r
+m2 &lt;- cbind(v1 = 1:3, v2 = 1:3, v3 = 0:0)
+print(m2)
+```
+
+```
+##      v1 v2 v3
+## [1,]  1  1  0
+## [2,]  2  2  0
+## [3,]  3  3  0
+```
+
+```r
+print("first row:")
+```
+
+```
+## [1] "first row:"
+```
+
+```r
+print(m2[1, ])
+```
+
+```
+## v1 v2 v3 
+##  1  1  0
+```
+
+```r
+print("second column")
+```
+
+```
+## [1] "second column"
+```
+
+```r
+print(m2[, 2])
+```
+
+```
+## [1] 1 2 3
+```
+
+```r
+print("access by column name")
+```
+
+```
+## [1] "access by column name"
+```
+
+```r
+print(m2[, "v2"])
+```
+
+```
+## [1] 1 2 3
+```
+
+Question: Create a 3 row, 4 column matrix, where the first column is (1, 2, 3), second column is (4, 5, 6 ) etc. 
+
+---
+## Lists
+Lists can mix object of different types. 
+
+
+```r
+l &lt;- list("a", 1, 0.5, TRUE)
+print(l)
+```
+
+```
+## [[1]]
+## [1] "a"
+## 
+## [[2]]
+## [1] 1
+## 
+## [[3]]
+## [1] 0.5
+## 
+## [[4]]
+## [1] TRUE
+```
+
+```r
+print(str(l)) # structure of l
+```
+
+```
+## List of 4
+##  $ : chr "a"
+##  $ : num 1
+##  $ : num 0.5
+##  $ : logi TRUE
+## NULL
+```
+
+---
+## Lists
+Lists can also be nested.
+
+```r
+l1 &lt;- list("a", 1, 0.5, TRUE)
+l2 &lt;- list(l1, "test", matrix(1:9, nrow = 3)) ## first element of l2 is a list.
+print(l2)
+```
+
+```
+## [[1]]
+## [[1]][[1]]
+## [1] "a"
+## 
+## [[1]][[2]]
+## [1] 1
+## 
+## [[1]][[3]]
+## [1] 0.5
+## 
+## [[1]][[4]]
+## [1] TRUE
+## 
+## 
+## [[2]]
+## [1] "test"
+## 
+## [[3]]
+##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9
+```
+Question: what is the length of l1? what is the length of each element of l1? (use `length` function)
+---
+## Accessing elements in lists
+Use double brackets `[[  ]]` to access elements in lists. 
+
+```r
+l1 &lt;- list("a", 1, 0.5, TRUE)
+l2 &lt;- list(l1, "test", matrix(1:9, nrow = 3)) ## first element of l2 is a list.
+print(l2[[1]])
+```
+
+```
+## [[1]]
+## [1] "a"
+## 
+## [[2]]
+## [1] 1
+## 
+## [[3]]
+## [1] 0.5
+## 
+## [[4]]
+## [1] TRUE
+```
+
+```r
+print(l2[[2]])
+```
+
+```
+## [1] "test"
+```
+
+```r
+print(l2[[3]])
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9
+```
+
+Question: The first element of l2 is a list. Access this first element from l2, then the 4th element from l1. 
+
+---
+## Data frames
+We will use data frames A LOT. Data frames are really tables, but they are stored in R as lists, with the following conditions.
+- Each element in the list represents a column.
+- Each element in the list is an atomic vector.
+- The length of each vector is the same (the number of rows)
+
+
+```r
+m1 &lt;- cbind(1:3, letters[1:3])
+print(m1) # a matrix cannot hold multiple data types. 
+```
+
+```
+##      [,1] [,2]
+## [1,] "1"  "a" 
+## [2,] "2"  "b" 
+## [3,] "3"  "c"
+```
+
+```r
+print(class(m1))
+```
+
+```
+## [1] "matrix" "array"
+```
+
+```r
+df &lt;- data.frame(numbers = 1:3, abc = letters[1:3])
+print(df) # a data frame CAN hold multiple data types. 
+```
+
+```
+##   numbers abc
+## 1       1   a
+## 2       2   b
+## 3       3   c
+```
+
+```r
+print(class(df))
+```
+
+```
+## [1] "data.frame"
+```
+
+---
+## Useful functions
+- `print`
+- You can print just about anything, but as a generic function, `print` works differently for different types of objects.
+
+```r
+a &lt;- "test"
+df &lt;- data.frame(numbers = 1:3, abc = letters[1:3])
+print(a) # a data frame CAN hold multiple data types. 
+```
+
+```
+## [1] "test"
+```
+
+```r
+print(df)
+```
+
+```
+##   numbers abc
+## 1       1   a
+## 2       2   b
+## 3       3   c
+```
+
+```r
+methods(print) ## all the different ways to print...
+```
+
+```
+##   [1] print,ANY-method                                    
+##   [2] print,Raster-method                                 
+##   [3] print,Spatial-method                                
+##   [4] print.acf*                                          
+##   [5] print.AES*                                          
+##   [6] print.all_vars*                                     
+##   [7] print.anova*                                        
+##   [8] print.any_vars*                                     
+##   [9] print.aov*                                          
+##  [10] print.aovlist*                                      
+##  [11] print.ar*                                           
+##  [12] print.Arima*                                        
+##  [13] print.arima0*                                       
+##  [14] print.AsIs                                          
+##  [15] print.aspell*                                       
+##  [16] print.aspell_inspect_context*                       
+##  [17] print.bbox*                                         
+##  [18] print.bibentry*                                     
+##  [19] print.Bibtex*                                       
+##  [20] print.bootstrap.lca*                                
+##  [21] print.browseVignettes*                              
+##  [22] print.bslib_fragment*                               
+##  [23] print.bslib_page*                                   
+##  [24] print.by                                            
+##  [25] print.bytes*                                        
+##  [26] print.cache_info*                                   
+##  [27] print.cachem*                                       
+##  [28] print.cell_addr*                                    
+##  [29] print.cell_limits*                                  
+##  [30] print.changedFiles*                                 
+##  [31] print.check_bogus_return*                           
+##  [32] print.check_code_usage_in_package*                  
+##  [33] print.check_compiled_code*                          
+##  [34] print.check_demo_index*                             
+##  [35] print.check_depdef*                                 
+##  [36] print.check_details*                                
+##  [37] print.check_details_changes*                        
+##  [38] print.check_doi_db*                                 
+##  [39] print.check_dotInternal*                            
+##  [40] print.check_make_vars*                              
+##  [41] print.check_nonAPI_calls*                           
+##  [42] print.check_package_code_assign_to_globalenv*       
+##  [43] print.check_package_code_attach*                    
+##  [44] print.check_package_code_data_into_globalenv*       
+##  [45] print.check_package_code_startup_functions*         
+##  [46] print.check_package_code_syntax*                    
+##  [47] print.check_package_code_unload_functions*          
+##  [48] print.check_package_compact_datasets*               
+##  [49] print.check_package_CRAN_incoming*                  
+##  [50] print.check_package_datalist*                       
+##  [51] print.check_package_datasets*                       
+##  [52] print.check_package_depends*                        
+##  [53] print.check_package_description*                    
+##  [54] print.check_package_description_encoding*           
+##  [55] print.check_package_license*                        
+##  [56] print.check_packages_in_dir*                        
+##  [57] print.check_packages_used*                          
+##  [58] print.check_po_files*                               
+##  [59] print.check_pragmas*                                
+##  [60] print.check_Rd_line_widths*                         
+##  [61] print.check_Rd_metadata*                            
+##  [62] print.check_Rd_xrefs*                               
+##  [63] print.check_RegSym_calls*                           
+##  [64] print.check_S3_methods_needing_delayed_registration*
+##  [65] print.check_so_symbols*                             
+##  [66] print.check_T_and_F*                                
+##  [67] print.check_url_db*                                 
+##  [68] print.check_vignette_index*                         
+##  [69] print.checkDocFiles*                                
+##  [70] print.checkDocStyle*                                
+##  [71] print.checkFF*                                      
+##  [72] print.checkRd*                                      
+##  [73] print.checkRdContents*                              
+##  [74] print.checkReplaceFuns*                             
+##  [75] print.checkS3methods*                               
+##  [76] print.checkTnF*                                     
+##  [77] print.checkVignettes*                               
+##  [78] print.citation*                                     
+##  [79] print.classIntervals*                               
+##  [80] print.cli_ansi_html_style*                          
+##  [81] print.cli_ansi_string*                              
+##  [82] print.cli_ansi_style*                               
+##  [83] print.cli_boxx*                                     
+##  [84] print.cli_diff_chr*                                 
+##  [85] print.cli_doc*                                      
+##  [86] print.cli_progress_demo*                            
+##  [87] print.cli_rule*                                     
+##  [88] print.cli_sitrep*                                   
+##  [89] print.cli_spark*                                    
+##  [90] print.cli_spinner*                                  
+##  [91] print.cli_tree*                                     
+##  [92] print.codoc*                                        
+##  [93] print.codocClasses*                                 
+##  [94] print.codocData*                                    
+##  [95] print.col_spec*                                     
+##  [96] print.collector*                                    
+##  [97] print.colorConverter*                               
+##  [98] print.compactPDF*                                   
+##  [99] print.condition                                     
+## [100] print.connection                                    
+## [101] print.CRAN_package_reverse_dependencies_and_views*  
+## [102] print.crayon*                                       
+## [103] print.crossdist*                                    
+## [104] print.crs*                                          
+## [105] print.CRS*                                          
+## [106] print.css*                                          
+## [107] print.data.frame                                    
+## [108] print.Date                                          
+## [109] print.date_names*                                   
+## [110] print.dbplyr_catalog*                               
+## [111] print.dbplyr_schema*                                
+## [112] print.default                                       
+## [113] print.dendrogram*                                   
+## [114] print.density*                                      
+## [115] print.difftime                                      
+## [116] print.dist*                                         
+## [117] print.Dlist                                         
+## [118] print.DLLInfo                                       
+## [119] print.DLLInfoList                                   
+## [120] print.DLLRegisteredRoutines                         
+## [121] print.DMS*                                          
+## [122] print.document_context*                             
+## [123] print.document_position*                            
+## [124] print.document_range*                               
+## [125] print.document_selection*                           
+## [126] print.dplyr_join_by*                                
+## [127] print.dplyr_sel_vars*                               
+## [128] print.drive_user*                                   
+## [129] print.dummy_coef*                                   
+## [130] print.dummy_coef_list*                              
+## [131] print.ecdf*                                         
+## [132] print.eigen                                         
+## [133] print.element*                                      
+## [134] print.factanal*                                     
+## [135] print.factor                                        
+## [136] print.family*                                       
+## [137] print.fclust*                                       
+## [138] print.fileSnapshot*                                 
+## [139] print.findLineNumResult*                            
+## [140] print.flatGridListing*                              
+## [141] print.formula*                                      
+## [142] print.fs_bytes*                                     
+## [143] print.fs_path*                                      
+## [144] print.fs_perms*                                     
+## [145] print.fseq*                                         
+## [146] print.ftable*                                       
+## [147] print.fun_list*                                     
+## [148] print.function                                      
+## [149] print.gargle_oauth_dat*                             
+## [150] print.getAnywhere*                                  
+## [151] print.ggplot*                                       
+## [152] print.ggplot2_bins*                                 
+## [153] print.ggproto*                                      
+## [154] print.ggproto_method*                               
+## [155] print.gknn*                                         
+## [156] print.gList*                                        
+## [157] print.glm*                                          
+## [158] print.glue*                                         
+## [159] print.googlesheets4_spreadsheet*                    
+## [160] print.gpar*                                         
+## [161] print.GridCoords*                                   
+## [162] print.GridGrobCoords*                               
+## [163] print.GridGTreeCoords*                              
+## [164] print.GridTopology*                                 
+## [165] print.grob*                                         
+## [166] print.gtable*                                       
+## [167] print.handle*                                       
+## [168] print.hashtab*                                      
+## [169] print.hcl_palettes*                                 
+## [170] print.hclust*                                       
+## [171] print.help_files_with_topic*                        
+## [172] print.hexmode                                       
+## [173] print.hms*                                          
+## [174] print.HoltWinters*                                  
+## [175] print.hsearch*                                      
+## [176] print.hsearch_db*                                   
+## [177] print.htest*                                        
+## [178] print.html*                                         
+## [179] print.html_dependency*                              
+## [180] print.htmltools.selector*                           
+## [181] print.htmltools.selector.list*                      
+## [182] print.ica*                                          
+## [183] print.ident*                                        
+## [184] print.infl*                                         
+## [185] print.integrate*                                    
+## [186] print.isoreg*                                       
+## [187] print.join_query*                                   
+## [188] print.json*                                         
+## [189] print.key_missing*                                  
+## [190] print.kmeans*                                       
+## [191] print.knitr_kable*                                  
+## [192] print.last_dplyr_warnings*                          
+## [193] print.Latex*                                        
+## [194] print.LaTeX*                                        
+## [195] print.lazy_base_local_query*                        
+## [196] print.lazy_base_remote_query*                       
+## [197] print.lazy_join_query*                              
+## [198] print.lazy_select_query*                            
+## [199] print.lazy_semi_join_query*                         
+## [200] print.lazy_set_op_query*                            
+## [201] print.lca*                                          
+## [202] print.libraryIQR                                    
+## [203] print.lifecycle_warnings*                           
+## [204] print.linterResults*                                
+## [205] print.listof                                        
+## [206] print.lm*                                           
+## [207] print.loadings*                                     
+## [208] print.locale*                                       
+## [209] print.loess*                                        
+## [210] print.logLik*                                       
+## [211] print.ls_str*                                       
+## [212] print.m_range*                                      
+## [213] print.medpolish*                                    
+## [214] print.MethodsFunction*                              
+## [215] print.mixed_units*                                  
+## [216] print.mtable*                                       
+## [217] print.naiveBayes*                                   
+## [218] print.NativeRoutineList                             
+## [219] print.news_db*                                      
+## [220] print.nls*                                          
+## [221] print.noquote                                       
+## [222] print.numeric_version                               
+## [223] print.oauth_app*                                    
+## [224] print.oauth_endpoint*                               
+## [225] print.object_size*                                  
+## [226] print.octmode                                       
+## [227] print.opts_list*                                    
+## [228] print.packageDescription*                           
+## [229] print.packageInfo                                   
+## [230] print.packageIQR*                                   
+## [231] print.packageStatus*                                
+## [232] print.pairdist*                                     
+## [233] print.pairwise.htest*                               
+## [234] print.path*                                         
+## [235] print.permutation*                                  
+## [236] print.person*                                       
+## [237] print.pillar*                                       
+## [238] print.pillar_1e*                                    
+## [239] print.pillar_colonnade*                             
+## [240] print.pillar_ornament*                              
+## [241] print.pillar_shaft*                                 
+## [242] print.pillar_squeezed_colonnade*                    
+## [243] print.pillar_tbl_format_setup*                      
+## [244] print.pillar_vctr*                                  
+## [245] print.pillar_vctr_attr*                             
+## [246] print.POSIXct                                       
+## [247] print.POSIXlt                                       
+## [248] print.power.htest*                                  
+## [249] print.ppr*                                          
+## [250] print.prcomp*                                       
+## [251] print.princomp*                                     
+## [252] print.proc_time                                     
+## [253] print.proj_pipelines*                               
+## [254] print.proxy_registry*                               
+## [255] print.purrr_function_compose*                       
+## [256] print.purrr_function_partial*                       
+## [257] print.purrr_rate_backoff*                           
+## [258] print.purrr_rate_delay*                             
+## [259] print.quosure*                                      
+## [260] print.quosures*                                     
+## [261] print.R6*                                           
+## [262] print.R6ClassGenerator*                             
+## [263] print.ra_ref*                                       
+## [264] print.range_spec*                                   
+## [265] print.raster*                                       
+## [266] print.Rcpp_stack_trace*                             
+## [267] print.Rd*                                           
+## [268] print.recordedplot*                                 
+## [269] print.registry_entry*                               
+## [270] print.registry_field*                               
+## [271] print.rel*                                          
+## [272] print.request*                                      
+## [273] print.resample*                                     
+## [274] print.response*                                     
+## [275] print.restart                                       
+## [276] print.RGBcolorConverter*                            
+## [277] print.rlang_box_done*                               
+## [278] print.rlang_box_splice*                             
+## [279] print.rlang_data_pronoun*                           
+## [280] print.rlang_dict*                                   
+## [281] print.rlang_dyn_array*                              
+## [282] print.rlang_envs*                                   
+## [283] print.rlang_error*                                  
+## [284] print.rlang_fake_data_pronoun*                      
+## [285] print.rlang_lambda_function*                        
+## [286] print.rlang_message*                                
+## [287] print.rlang_trace*                                  
+## [288] print.rlang_warning*                                
+## [289] print.rlang_zap*                                    
+## [290] print.rlang:::list_of_conditions*                   
+## [291] print.rle                                           
+## [292] print.rlib_bytes*                                   
+## [293] print.rlib_error_3_0*                               
+## [294] print.rlib_trace_3_0*                               
+## [295] print.roman*                                        
+## [296] print.root_criterion*                               
+## [297] print.rsconnect_secret*                             
+## [298] print.rvest_field*                                  
+## [299] print.rvest_form*                                   
+## [300] print.rvest_session*                                
+## [301] print.sass*                                         
+## [302] print.sass_bundle*                                  
+## [303] print.sass_layer*                                   
+## [304] print.scalar*                                       
+## [305] print.select_query*                                 
+## [306] print.semi_join_query*                              
+## [307] print.sessionInfo*                                  
+## [308] print.set_op_query*                                 
+## [309] print.sf*                                           
+## [310] print.sf_layers*                                    
+## [311] print.sfc*                                          
+## [312] print.sfg*                                          
+## [313] print.sgbp*                                         
+## [314] print.sheets_id*                                    
+## [315] print.shingle*                                      
+## [316] print.shingleLevel*                                 
+## [317] print.shiny.tag*                                    
+## [318] print.shiny.tag.env*                                
+## [319] print.shiny.tag.list*                               
+## [320] print.shiny.tag.query*                              
+## [321] print.simil*                                        
+## [322] print.simple.list                                   
+## [323] print.smooth.spline*                                
+## [324] print.socket*                                       
+## [325] print.SpatialLines*                                 
+## [326] print.SpatialLinesDataFrame*                        
+## [327] print.SpatialMultiPoints*                           
+## [328] print.SpatialMultiPointsDataFrame*                  
+## [329] print.SpatialPixels*                                
+## [330] print.SpatialPixelsDataFrame*                       
+## [331] print.SpatialPoints*                                
+## [332] print.SpatialPointsDataFrame*                       
+## [333] print.sql*                                          
+## [334] print.sql_variant*                                  
+## [335] print.src*                                          
+## [336] print.srcfile                                       
+## [337] print.srcref                                        
+## [338] print.stepfun*                                      
+## [339] print.stl*                                          
+## [340] print.stringr_view*                                 
+## [341] print.StructTS*                                     
+## [342] print.subdir_tests*                                 
+## [343] print.summarize_CRAN_check_status*                  
+## [344] print.summary.aov*                                  
+## [345] print.summary.aovlist*                              
+## [346] print.summary.ecdf*                                 
+## [347] print.summary.glm*                                  
+## [348] print.summary.GridTopology*                         
+## [349] print.summary.lca*                                  
+## [350] print.summary.lm*                                   
+## [351] print.summary.loess*                                
+## [352] print.summary.manova*                               
+## [353] print.summary.nls*                                  
+## [354] print.summary.packageStatus*                        
+## [355] print.summary.ppr*                                  
+## [356] print.summary.pr_DB*                                
+## [357] print.summary.prcomp*                               
+## [358] print.summary.princomp*                             
+## [359] print.summary.Spatial*                              
+## [360] print.summary.svm*                                  
+## [361] print.summary.table                                 
+## [362] print.summary.trellis*                              
+## [363] print.summary.tune*                                 
+## [364] print.summary.warnings                              
+## [365] print.summaryDefault                                
+## [366] print.svm*                                          
+## [367] print.table                                         
+## [368] print.tables_aov*                                   
+## [369] print.tbl*                                          
+## [370] print.tbl_lazy*                                     
+## [371] print.tbl_sql*                                      
+## [372] print.terms*                                        
+## [373] print.theme*                                        
+## [374] print.tidyverse_conflicts*                          
+## [375] print.tidyverse_logo*                               
+## [376] print.trans*                                        
+## [377] print.trellis*                                      
+## [378] print.trunc_mat*                                    
+## [379] print.ts*                                           
+## [380] print.tskernel*                                     
+## [381] print.TukeyHSD*                                     
+## [382] print.tukeyline*                                    
+## [383] print.tukeysmooth*                                  
+## [384] print.tune*                                         
+## [385] print.undoc*                                        
+## [386] print.uneval*                                       
+## [387] print.unit*                                         
+## [388] print.units*                                        
+## [389] print.vctrs_bytes*                                  
+## [390] print.vctrs_sclr*                                   
+## [391] print.vctrs_unspecified*                            
+## [392] print.vctrs_vctr*                                   
+## [393] print.viewport*                                     
+## [394] print.vignette*                                     
+## [395] print.warnings                                      
+## [396] print.xfun_raw_string*                              
+## [397] print.xfun_rename_seq*                              
+## [398] print.xfun_strict_list*                             
+## [399] print.xgettext*                                     
+## [400] print.xml_document*                                 
+## [401] print.xml_missing*                                  
+## [402] print.xml_namespace*                                
+## [403] print.xml_node*                                     
+## [404] print.xml_nodeset*                                  
+## [405] print.xngettext*                                    
+## [406] print.xtabs*                                        
+## [407] print.z_range*                                      
+## see '?methods' for accessing help and source code
+```
+---
+## Examining objects
+- `ls`, `class`, `str`
+
+```r
+a &lt;- "test"
+df &lt;- data.frame(numbers = 1:3, abc = letters[1:3])
+ls() ## list objects in global environemtn
+```
+
+```
+##  [1] "a"  "df" "f"  "l"  "l1" "l2" "m1" "m2" "v1" "v2" "v3" "v4"
+```
+
+```r
+class(df) ## class
+```
+
+```
+## [1] "data.frame"
+```
+
+
+```r
+str(df) ## structure
+```
+
+```
+## 'data.frame':	3 obs. of  2 variables:
+##  $ numbers: int  1 2 3
+##  $ abc    : chr  "a" "b" "c"
+```
+
+---
+## Sampling
+- Sample without replacement
+
+```r
+set.seed(1234) ## set a random seed
+v &lt;- 1:100
+s &lt;- sample(v, 50)
+print(s)
+```
+
+```
+##  [1] 28 80 22  9  5 38 16  4 86 90 70 79 78 14 56 62 93 84 21 40 92 67 96
+## [24] 66 47 81 48  3 41 32 42 43  2 54 49 99 51  6 77 29 71 85 57  8 26 17
+## [47] 58 91 60 76
+```
+
+```r
+print(sort(s))
+```
+
+```
+##  [1]  2  3  4  5  6  8  9 14 16 17 21 22 26 28 29 32 38 40 41 42 43 47 48
+## [24] 49 51 54 56 57 58 60 62 66 67 70 71 76 77 78 79 80 81 84 85 86 90 91
+## [47] 92 93 96 99
+```
+
+- Sample with replacement
+
+```r
+s2 &lt;- sample(v, 50, replace = T)
+print(sort(s2))
+```
+
+```
+##  [1]  2  3  3  6  6  9 10 17 17 19 20 22 22 25 27 28 30 32 35 36 41 41 48
+## [24] 50 51 55 57 58 58 60 61 63 63 65 66 70 70 71 72 76 77 80 83 85 85 86
+## [47] 86 87 90 96
+```
+
+---
+## Does S2 have duplicates?
+
+```r
+s2_unique &lt;- unique(s2)
+print(length(s2))
+```
+
+```
+## [1] 50
+```
+
+```r
+print(length(s2_unique))
+```
+
+```
+## [1] 40
+```
+
+```r
+print(length(s2) == length(s2_unique))
+```
+
+```
+## [1] FALSE
+```
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
