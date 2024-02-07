@@ -34,5 +34,6 @@
         "additional_source_columns": 0
     },
     "default_project_location": "~",
-    "rmd_chunk_output_inline": false
+    "rmd_chunk_output_inline": false,
+    "new_proj_git_init": true
 }
