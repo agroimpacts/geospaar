@@ -68,9 +68,12 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 6 slides](class6.html)  
   - [Class 7 slides](class7.html)  
 - Week 5 (Feb 12, 14)
+  - [Class 8 slides](class8.html)  
+  - R data structures, OOP, Environments, Control flow  
   - tidyr universe, working with data
   - Assignment 2 due (Unit 1 Modules 2-3)
 - Week 6 (Feb 19, 21)
+  - tidyr universe, working with data
   - regression, plotting
 - Week 7 (Feb 19, 21)
   - more ggplot, intro to vector

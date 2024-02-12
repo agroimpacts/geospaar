@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.19/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class8.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## Class 8
+]
+
+---
+
+
+
+```r
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+data(world.cities, package = "maps")
+
+world &lt;- ne_countries(scale = "medium", returnclass = "sf")
+afr_capitals &lt;- world.cities %&gt;% filter(capital == 1) %&gt;% 
+  st_as_sf(coords = c("long", "lat"), crs = 4326) %&gt;% 
+  st_intersection(., world %&gt;% filter(continent == "Africa"))
+p &lt;- world %&gt;% filter(continent == "Africa") %&gt;% 
+  ggplot() + geom_sf(aes(fill = name), lwd = 0.2) + 
+  geom_sf(data = afr_capitals, col = "blue", size = 0.5) + 
+  scale_fill_grey(guide = FALSE) + theme_minimal()
+ggsave(here::here("external/slides/figures/africa_capitals.png"), 
+       width = 5, height = 4, dpi = 300, bg = "transparent")
+```
+
+---
+
+
+```r
+library(stars)
+tif &lt;- system.file("tif/L7_ETMs.tif", package = "stars")
+x &lt;- read_stars(tif)
+plot(x, axes = TRUE)
+plot(x[, , , 4:2], axes = TRUE)
+
+s3url &lt;- glue::glue("/vsis3/africa-fieldboundary-labels/",
+                    "tiles_prod/cat2/992155_2023-06/",
+                    "image.tif")  # not accessible
+p &lt;- read_stars(s3url, proxy = TRUE)
+plot(p, rgb = 4:2)
+plot(p, rgb = 3:1)
+plot(p[, , , 1:3])
+```
+
+See [here](https://r-spatial.github.io/stars/articles/stars1.html) for more details.
+
+
+---
+&lt;img src="/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs/class8_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+---
+# Programming tip
+
+- Whenever possible, let the computer do your counting for you:
+
+```r
+a &lt;- 1:1001
+a[length(a)]
+```
+
+```
+## [1] 1001
+```
+- Rather than 
+
+```r
+a[1001]
+```
+
+```
+## [1] 1001
+```
+- Imagine this case:
+
+```r
+set.seed(1)
+b &lt;- 1:sample(1:10000, 1)
+b[length(b)]
+```
+
+```
+## [1] 1017
+```
+
+---
+
+## Useful functions
+- `print`
+- You can print just about anything, but as a generic function, `print` works differently for different types of objects.
+
+```r
+a &lt;- "test"
+df &lt;- data.frame(numbers = 1:3, abc = letters[1:3])
+print(a) # a data frame CAN hold multiple data types. 
+```
+
+```
+## [1] "test"
+```
+
+```r
+print(df)
+```
+
+```
+##   numbers abc
+## 1       1   a
+## 2       2   b
+## 3       3   c
+```
+---
+
+```r
+methods(print) ## all the different ways to print...
+```
+
+```
+##   [1] print.acf*                                          
+##   [2] print.AES*                                          
+##   [3] print.all_vars*                                     
+##   [4] print.anova*                                        
+##   [5] print.any_vars*                                     
+##   [6] print.aov*                                          
+##   [7] print.aovlist*                                      
+##   [8] print.ar*                                           
+##   [9] print.Arima*                                        
+##  [10] print.arima0*                                       
+##  [11] print.AsIs                                          
+##  [12] print.aspell*                                       
+##  [13] print.aspell_inspect_context*                       
+##  [14] print.bbox*                                         
+##  [15] print.bibentry*                                     
+##  [16] print.Bibtex*                                       
+##  [17] print.bootstrap.lca*                                
+##  [18] print.browseVignettes*                              
+##  [19] print.bslib_fragment*                               
+##  [20] print.bslib_page*                                   
+##  [21] print.by                                            
+##  [22] print.bytes*                                        
+##  [23] print.cachem*                                       
+##  [24] print.changedFiles*                                 
+##  [25] print.check_bogus_return*                           
+##  [26] print.check_code_usage_in_package*                  
+##  [27] print.check_compiled_code*                          
+##  [28] print.check_demo_index*                             
+##  [29] print.check_depdef*                                 
+##  [30] print.check_details*                                
+##  [31] print.check_details_changes*                        
+##  [32] print.check_doi_db*                                 
+##  [33] print.check_dotInternal*                            
+##  [34] print.check_make_vars*                              
+##  [35] print.check_nonAPI_calls*                           
+##  [36] print.check_package_code_assign_to_globalenv*       
+##  [37] print.check_package_code_attach*                    
+##  [38] print.check_package_code_data_into_globalenv*       
+##  [39] print.check_package_code_startup_functions*         
+##  [40] print.check_package_code_syntax*                    
+##  [41] print.check_package_code_unload_functions*          
+##  [42] print.check_package_compact_datasets*               
+##  [43] print.check_package_CRAN_incoming*                  
+##  [44] print.check_package_datalist*                       
+##  [45] print.check_package_datasets*                       
+##  [46] print.check_package_depends*                        
+##  [47] print.check_package_description*                    
+##  [48] print.check_package_description_encoding*           
+##  [49] print.check_package_license*                        
+##  [50] print.check_packages_in_dir*                        
+##  [51] print.check_packages_used*                          
+##  [52] print.check_po_files*                               
+##  [53] print.check_pragmas*                                
+##  [54] print.check_Rd_line_widths*                         
+##  [55] print.check_Rd_metadata*                            
+##  [56] print.check_Rd_xrefs*                               
+##  [57] print.check_RegSym_calls*                           
+##  [58] print.check_S3_methods_needing_delayed_registration*
+##  [59] print.check_so_symbols*                             
+##  [60] print.check_T_and_F*                                
+##  [61] print.check_url_db*                                 
+##  [62] print.check_vignette_index*                         
+##  [63] print.checkDocFiles*                                
+##  [64] print.checkDocStyle*                                
+##  [65] print.checkFF*                                      
+##  [66] print.checkRd*                                      
+##  [67] print.checkRdContents*                              
+##  [68] print.checkReplaceFuns*                             
+##  [69] print.checkS3methods*                               
+##  [70] print.checkTnF*                                     
+##  [71] print.checkVignettes*                               
+##  [72] print.citation*                                     
+##  [73] print.classIntervals*                               
+##  [74] print.cli_ansi_html_style*                          
+##  [75] print.cli_ansi_string*                              
+##  [76] print.cli_ansi_style*                               
+##  [77] print.cli_boxx*                                     
+##  [78] print.cli_diff_chr*                                 
+##  [79] print.cli_doc*                                      
+##  [80] print.cli_progress_demo*                            
+##  [81] print.cli_rule*                                     
+##  [82] print.cli_sitrep*                                   
+##  [83] print.cli_spark*                                    
+##  [84] print.cli_spinner*                                  
+##  [85] print.cli_tree*                                     
+##  [86] print.codoc*                                        
+##  [87] print.codocClasses*                                 
+##  [88] print.codocData*                                    
+##  [89] print.col_spec*                                     
+##  [90] print.collector*                                    
+##  [91] print.colorConverter*                               
+##  [92] print.compactPDF*                                   
+##  [93] print.condition                                     
+##  [94] print.connection                                    
+##  [95] print.CRAN_package_reverse_dependencies_and_views*  
+##  [96] print.crossdist*                                    
+##  [97] print.crs*                                          
+##  [98] print.css*                                          
+##  [99] print.data.frame                                    
+## [100] print.Date                                          
+## [101] print.date_names*                                   
+## [102] print.default                                       
+## [103] print.dendrogram*                                   
+## [104] print.density*                                      
+## [105] print.difftime                                      
+## [106] print.dimensions*                                   
+## [107] print.dist*                                         
+## [108] print.Dlist                                         
+## [109] print.DLLInfo                                       
+## [110] print.DLLInfoList                                   
+## [111] print.DLLRegisteredRoutines                         
+## [112] print.document_context*                             
+## [113] print.document_position*                            
+## [114] print.document_range*                               
+## [115] print.document_selection*                           
+## [116] print.dplyr_join_by*                                
+## [117] print.dplyr_sel_vars*                               
+## [118] print.dummy_coef*                                   
+## [119] print.dummy_coef_list*                              
+## [120] print.ecdf*                                         
+## [121] print.eigen                                         
+## [122] print.element*                                      
+## [123] print.factanal*                                     
+## [124] print.factor                                        
+## [125] print.family*                                       
+## [126] print.fclust*                                       
+## [127] print.fileSnapshot*                                 
+## [128] print.findLineNumResult*                            
+## [129] print.flatGridListing*                              
+## [130] print.formula*                                      
+## [131] print.fseq*                                         
+## [132] print.ftable*                                       
+## [133] print.fun_list*                                     
+## [134] print.function                                      
+## [135] print.getAnywhere*                                  
+## [136] print.ggplot*                                       
+## [137] print.ggplot2_bins*                                 
+## [138] print.ggproto*                                      
+## [139] print.ggproto_method*                               
+## [140] print.gknn*                                         
+## [141] print.gList*                                        
+## [142] print.glm*                                          
+## [143] print.glue*                                         
+## [144] print.gpar*                                         
+## [145] print.GridCoords*                                   
+## [146] print.GridGrobCoords*                               
+## [147] print.GridGTreeCoords*                              
+## [148] print.grob*                                         
+## [149] print.gtable*                                       
+## [150] print.hashtab*                                      
+## [151] print.hcl_palettes*                                 
+## [152] print.hclust*                                       
+## [153] print.help_files_with_topic*                        
+## [154] print.hexmode                                       
+## [155] print.hms*                                          
+## [156] print.HoltWinters*                                  
+## [157] print.hsearch*                                      
+## [158] print.hsearch_db*                                   
+## [159] print.htest*                                        
+## [160] print.html*                                         
+## [161] print.html_dependency*                              
+## [162] print.htmltools.selector*                           
+## [163] print.htmltools.selector.list*                      
+## [164] print.ica*                                          
+## [165] print.infl*                                         
+## [166] print.integrate*                                    
+## [167] print.isoreg*                                       
+## [168] print.json*                                         
+## [169] print.key_missing*                                  
+## [170] print.kmeans*                                       
+## [171] print.knitr_kable*                                  
+## [172] print.last_dplyr_warnings*                          
+## [173] print.Latex*                                        
+## [174] print.LaTeX*                                        
+## [175] print.lca*                                          
+## [176] print.libraryIQR                                    
+## [177] print.lifecycle_warnings*                           
+## [178] print.linterResults*                                
+## [179] print.listof                                        
+## [180] print.lm*                                           
+## [181] print.loadings*                                     
+## [182] print.locale*                                       
+## [183] print.loess*                                        
+## [184] print.logLik*                                       
+## [185] print.ls_str*                                       
+## [186] print.m_range*                                      
+## [187] print.medpolish*                                    
+## [188] print.MethodsFunction*                              
+## [189] print.mixed_units*                                  
+## [190] print.mtable*                                       
+## [191] print.naiveBayes*                                   
+## [192] print.NativeRoutineList                             
+## [193] print.nc_proxy*                                     
+## [194] print.news_db*                                      
+## [195] print.nls*                                          
+## [196] print.noquote                                       
+## [197] print.numeric_version                               
+## [198] print.object_size*                                  
+## [199] print.octmode                                       
+## [200] print.packageDescription*                           
+## [201] print.packageInfo                                   
+## [202] print.packageIQR*                                   
+## [203] print.packageStatus*                                
+## [204] print.pairdist*                                     
+## [205] print.pairwise.htest*                               
+## [206] print.path*                                         
+## [207] print.person*                                       
+## [208] print.pillar*                                       
+## [209] print.pillar_1e*                                    
+## [210] print.pillar_colonnade*                             
+## [211] print.pillar_ornament*                              
+## [212] print.pillar_shaft*                                 
+## [213] print.pillar_squeezed_colonnade*                    
+## [214] print.pillar_tbl_format_setup*                      
+## [215] print.pillar_vctr*                                  
+## [216] print.pillar_vctr_attr*                             
+## [217] print.POSIXct                                       
+## [218] print.POSIXlt                                       
+## [219] print.power.htest*                                  
+## [220] print.ppr*                                          
+## [221] print.prcomp*                                       
+## [222] print.princomp*                                     
+## [223] print.proc_time                                     
+## [224] print.proj_pipelines*                               
+## [225] print.proxy_registry*                               
+## [226] print.quosure*                                      
+## [227] print.quosures*                                     
+## [228] print.R6*                                           
+## [229] print.R6ClassGenerator*                             
+## [230] print.raster*                                       
+## [231] print.Rcpp_stack_trace*                             
+## [232] print.Rd*                                           
+## [233] print.recordedplot*                                 
+## [234] print.registry_entry*                               
+## [235] print.registry_field*                               
+## [236] print.rel*                                          
+## [237] print.restart                                       
+## [238] print.RGBcolorConverter*                            
+## [239] print.rlang_box_done*                               
+## [240] print.rlang_box_splice*                             
+## [241] print.rlang_data_pronoun*                           
+## [242] print.rlang_dict*                                   
+## [243] print.rlang_dyn_array*                              
+## [244] print.rlang_envs*                                   
+## [245] print.rlang_error*                                  
+## [246] print.rlang_fake_data_pronoun*                      
+## [247] print.rlang_lambda_function*                        
+## [248] print.rlang_message*                                
+## [249] print.rlang_trace*                                  
+## [250] print.rlang_warning*                                
+## [251] print.rlang_zap*                                    
+## [252] print.rlang:::list_of_conditions*                   
+## [253] print.rle                                           
+## [254] print.rlib_bytes*                                   
+## [255] print.rlib_error_3_0*                               
+## [256] print.rlib_trace_3_0*                               
+## [257] print.roman*                                        
+## [258] print.root_criterion*                               
+## [259] print.rsconnect_secret*                             
+## [260] print.sass*                                         
+## [261] print.sass_bundle*                                  
+## [262] print.sass_layer*                                   
+## [263] print.scalar*                                       
+## [264] print.sessionInfo*                                  
+## [265] print.sf*                                           
+## [266] print.sf_layers*                                    
+## [267] print.sfc*                                          
+## [268] print.sfg*                                          
+## [269] print.sgbp*                                         
+## [270] print.shiny.tag*                                    
+## [271] print.shiny.tag.env*                                
+## [272] print.shiny.tag.list*                               
+## [273] print.shiny.tag.query*                              
+## [274] print.simil*                                        
+## [275] print.simple.list                                   
+## [276] print.smooth.spline*                                
+## [277] print.SOCK0node*                                    
+## [278] print.SOCKcluster*                                  
+## [279] print.socket*                                       
+## [280] print.SOCKnode*                                     
+## [281] print.src*                                          
+## [282] print.srcfile                                       
+## [283] print.srcref                                        
+## [284] print.stars*                                        
+## [285] print.stars_proxy*                                  
+## [286] print.stars_raster*                                 
+## [287] print.stepfun*                                      
+## [288] print.stl*                                          
+## [289] print.stringr_view*                                 
+## [290] print.StructTS*                                     
+## [291] print.subdir_tests*                                 
+## [292] print.summarize_CRAN_check_status*                  
+## [293] print.summary.aov*                                  
+## [294] print.summary.aovlist*                              
+## [295] print.summary.ecdf*                                 
+## [296] print.summary.glm*                                  
+## [297] print.summary.lca*                                  
+## [298] print.summary.lm*                                   
+## [299] print.summary.loess*                                
+## [300] print.summary.manova*                               
+## [301] print.summary.nls*                                  
+## [302] print.summary.packageStatus*                        
+## [303] print.summary.ppr*                                  
+## [304] print.summary.pr_DB*                                
+## [305] print.summary.prcomp*                               
+## [306] print.summary.princomp*                             
+## [307] print.summary.svm*                                  
+## [308] print.summary.table                                 
+## [309] print.summary.tune*                                 
+## [310] print.summary.warnings                              
+## [311] print.summaryDefault                                
+## [312] print.svm*                                          
+## [313] print.table                                         
+## [314] print.tables_aov*                                   
+## [315] print.tbl*                                          
+## [316] print.terms*                                        
+## [317] print.theme*                                        
+## [318] print.trans*                                        
+## [319] print.trunc_mat*                                    
+## [320] print.ts*                                           
+## [321] print.tskernel*                                     
+## [322] print.TukeyHSD*                                     
+## [323] print.tukeyline*                                    
+## [324] print.tukeysmooth*                                  
+## [325] print.tune*                                         
+## [326] print.undoc*                                        
+## [327] print.uneval*                                       
+## [328] print.unit*                                         
+## [329] print.units*                                        
+## [330] print.vctrs_bytes*                                  
+## [331] print.vctrs_sclr*                                   
+## [332] print.vctrs_unspecified*                            
+## [333] print.vctrs_vctr*                                   
+## [334] print.viewport*                                     
+## [335] print.vignette*                                     
+## [336] print.warnings                                      
+## [337] print.xfun_raw_string*                              
+## [338] print.xfun_rename_seq*                              
+## [339] print.xfun_strict_list*                             
+## [340] print.xgettext*                                     
+## [341] print.xngettext*                                    
+## [342] print.xtabs*                                        
+## [343] print.z_range*                                      
+## see '?methods' for accessing help and source code
+```
+---
+## Examining objects
+- `ls`, `class`, `str`
+
+```r
+a &lt;- "test"
+df &lt;- data.frame(numbers = 1:3, abc = letters[1:3])
+ls() ## list objects in global environemtn
+```
+
+```
+## [1] "a"     "b"     "d"     "df"    "i"     "p"     "s3url" "tif"  
+## [9] "x"
+```
+
+```r
+class(df) ## class
+```
+
+```
+## [1] "data.frame"
+```
+
+
+```r
+str(df) ## structure
+```
+
+```
+## 'data.frame':	3 obs. of  2 variables:
+##  $ numbers: int  1 2 3
+##  $ abc    : chr  "a" "b" "c"
+```
+
+---
+## Sampling
+- Sample without replacement
+
+```r
+set.seed(1234) ## set a random seed
+v &lt;- 1:100
+s &lt;- sample(v, 50)
+print(s)
+```
+
+```
+##  [1] 28 80 22  9  5 38 16  4 86 90 70 79 78 14 56 62 93 84 21 40 92
+## [22] 67 96 66 47 81 48  3 41 32 42 43  2 54 49 99 51  6 77 29 71 85
+## [43] 57  8 26 17 58 91 60 76
+```
+
+```r
+print(sort(s))
+```
+
+```
+##  [1]  2  3  4  5  6  8  9 14 16 17 21 22 26 28 29 32 38 40 41 42 43
+## [22] 47 48 49 51 54 56 57 58 60 62 66 67 70 71 76 77 78 79 80 81 84
+## [43] 85 86 90 91 92 93 96 99
+```
+
+- Sample with replacement
+
+```r
+s2 &lt;- sample(v, 50, replace = T)
+print(sort(s2))
+```
+
+```
+##  [1]  2  3  3  6  6  9 10 17 17 19 20 22 22 25 27 28 30 32 35 36 41
+## [22] 41 48 50 51 55 57 58 58 60 61 63 63 65 66 70 70 71 72 76 77 80
+## [43] 83 85 85 86 86 87 90 96
+```
+
+---
+## Does S2 have duplicates?
+
+```r
+s2_unique &lt;- unique(s2)
+print(length(s2))
+```
+
+```
+## [1] 50
+```
+
+```r
+print(length(s2_unique))
+```
+
+```
+## [1] 40
+```
+
+```r
+print(length(s2) == length(s2_unique))
+```
+
+```
+## [1] FALSE
+```
+
+
+---
+## In-class exercise
+
+- Create the following:
+  - `a`: a random vector of integers with 10 elements drawn from 1-20:
+    - Use the `sample` function with `set.seed(10)`
+    - Name the elements of `a` with a vector of names starting with "V1" and ending with "V10". 
+      - Use the `paste0` function to create those names.
+      - Create the identical vector of names using the `paste` function.
+  - `b`: Using `a` as an index to select from `letters`
+  - `d`: Use `rnorm` with a mean = 100 and an sd of 20
+    - Use `?rnorm` to see the help guide.
+  - Why did I skip `c`? 
+  - Create a list `l` from `a`, `b`, `d`. 
+    - Assign the names of the vectors in `l` to the `l`'s elements
+
+---
+
+## 2-d structures
+
+- Create the following:
+  - `m`: a matrix with three integer columns named "V1", "V2", "V3"
+    - Create each column first as its own vector, then combine
+    - `V1` = 1:10
+    - `V2` is a random sample between 1:100
+    - `V3` is drawn from a random uniform distribution between 0 and 50     - Use the same `set.seed(50)` as before
+    - Inspect the `str` and `class` of `m`
+  - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
+    - `V4` is a random selection of the letters A-E
+
+---
+
+## Functions
+### Components
+
+
+```r
+function_name &lt;- function(arg1, arg2 = 1:10, 
+                          arg3 = ifelse(arg2 == 2, TRUE, FALSE)) {
+  body
+}
+```
+
+Three components of a function:
+- `formals()`: arguments
+- `body()`, the code, which returns the last object generated, unless specified with `return(x)`.
+- `environment()`, function finds the values
+
+Unnamed functions are **anonymous** functions. (Used in `*apply`)
+
+---
+Using `x` in a function does not change its global value.
+
+```r
+x &lt;- 1:10
+myfun &lt;- function() {
+  x * 10
+}
+myfun()
+```
+
+```
+##  [1]  10  20  30  40  50  60  70  80  90 100
+```
+
+```r
+myfun &lt;- function(x) {
+  x &lt;- x * 10
+  return(x)
+}
+x &lt;- 10
+myfun(x = 20)
+```
+
+```
+## [1] 200
+```
+
+```r
+x
+```
+
+```
+## [1] 10
+```
+
+---
+Each time you run `myfun`, a new function environment is created.
+
+```r
+myfun &lt;- function(x) {
+  x &lt;- x * 10
+  print(environment())
+  return(x)
+}
+myfun(x)
+```
+
+```
+## &lt;environment: 0x7fa30fd5aa30&gt;
+```
+
+```
+## [1] 100
+```
+
+```r
+myfun(x)
+```
+
+```
+## &lt;environment: 0x7fa32e8960a8&gt;
+```
+
+```
+## [1] 100
+```
+
+---
+## Global assignment.
+Use `&lt;&lt;-` to change value of global variable within a function.
+
+
+
+```r
+a &lt;- 10
+myfun &lt;- function(x) {
+  a &lt;&lt;- x * 10   ## note &lt;&lt;- instead of &lt;- 
+  return(a)
+}
+myfun(5)
+```
+
+```
+## [1] 50
+```
+
+```r
+print(a)
+```
+
+```
+## [1] 50
+```
+---
+## Useful functions
+
+- `which` finds indices where a condition is true.
+
+
+```r
+v &lt;- 10:15
+print(v)
+```
+
+```
+## [1] 10 11 12 13 14 15
+```
+
+```r
+a &lt;- which(v %% 3 == 0) ## subset to elements divisible by 3
+print(a) ## shows indices where condition is true.
+```
+
+```
+## [1] 3 6
+```
+
+---
+## Useful functions
+- `which.min` finds index of min value
+
+
+```r
+v &lt;- sample(1:20, 10)
+print(v)
+```
+
+```
+##  [1] 16 11  4  3 10 18  5 20  6 12
+```
+
+```r
+print(which.min(v)) # index of min value
+```
+
+```
+## [1] 4
+```
+
+```r
+print(which.max(v)) # index of max value
+```
+
+```
+## [1] 8
+```
+
+---
+## data.frame vs data.table vs. tibble
+- all 2D structures.
+- data.frame = Base R
+- tibble = `tidyverse`
+- data.table = fast.
+
+For now, we'll stick to data.frame
+---
+
+## data.frame indexing
+
+- `data.frame` uses the following to subset: `[*row conditions, *column conditions]`
+
+
+```r
+df &lt;- data.frame(v1 = 1:5, v2 = 6:10)
+rownames(df) &lt;- LETTERS[1:5]
+print(df)
+```
+
+```
+##   v1 v2
+## A  1  6
+## B  2  7
+## C  3  8
+## D  4  9
+## E  5 10
+```
+
+---
+
+## data.frame indexing
+
+- Index using names. 
+- Empty index `[  ,  'v2]` means "keep all rows"
+
+```r
+df[,'v2'] ## column indexing
+```
+
+```
+## [1]  6  7  8  9 10
+```
+
+```r
+df[c("A", "B", "D"), ] ## row indexing
+```
+
+```
+##   v1 v2
+## A  1  6
+## B  2  7
+## D  4  9
+```
+---
+## data.frame subset
+
+- Logical subset 
+
+```r
+df[df$v1 &gt; 3, ] ## get observations (rows) where first column is larger than 3
+```
+
+```
+##   v1 v2
+## D  4  9
+## E  5 10
+```
+
+---
+## Control structures
+### Branching
+
+- Pay attention to `{ }` placement
+
+```r
+a &lt;- 5
+if(a &gt; 10) {
+  print("Greater than 10!")
+} else {
+  print("Less than or equal to 10")
+}
+```
+
+```
+## [1] "Less than or equal to 10"
+```
+
+---
+### Looping
+
+```r
+b &lt;- 1:3
+for(i in b) print(i)
+```
+
+```
+## [1] 1
+## [1] 2
+## [1] 3
+```
+
+
+```r
+b &lt;- 1:5
+a &lt;- 2
+for(i in b){
+  a &lt;- 2 * a
+  print(a)
+}
+```
+
+```
+## [1] 4
+## [1] 8
+## [1] 16
+## [1] 32
+## [1] 64
+```
+---
+
+### *apply
+- A special form of looping
+- Intended for *applying* a function to data. Uses *anonymous* function.
+- 3 main kinds: `sapply`, `lapply`, `apply`
+
+
+---
+### `sapply`
+- `sapply` iterates over input and returns a vector.
+
+```r
+v &lt;- 1:10
+sapply(v, function(x) x + 10) ## adds 10 to each element in v.
+```
+
+```
+##  [1] 11 12 13 14 15 16 17 18 19 20
+```
+Use `{ }` for more complicated functions. BUT be careful with order of `{ }`, `( )`
+
+```r
+v1 &lt;- 1:10
+v2 &lt;- sapply(v1, function(x){
+  y &lt;- x^2 
+  return(y)
+}) #
+print(v2)
+```
+
+```
+##  [1]   1   4   9  16  25  36  49  64  81 100
+```
+---
+### `sapply`
+If you don't specify `return`, the last object created will be returned.
+
+```r
+v1 &lt;- 1:10
+v2 &lt;- sapply(v1, function(x){
+  y &lt;- x^2  ## y will be returned
+}) #
+print(v2)
+```
+
+```
+##  [1]   1   4   9  16  25  36  49  64  81 100
+```
+---
+
+### `lapply`
+- Similar to `sapply`, except final object is returned as `list`.
+- Useful if you need to store more complex objects (data.frame, plot, raster etc.)
+
+
+```r
+v1 &lt;- 1:10
+v2 &lt;- lapply(v1, function(x){
+  y &lt;- x^2  ## y will be returned
+}) #
+print(v2)
+```
+
+```
+## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 4
+## 
+## [[3]]
+## [1] 9
+## 
+## [[4]]
+## [1] 16
+## 
+## [[5]]
+## [1] 25
+## 
+## [[6]]
+## [1] 36
+## 
+## [[7]]
+## [1] 49
+## 
+## [[8]]
+## [1] 64
+## 
+## [[9]]
+## [1] 81
+## 
+## [[10]]
+## [1] 100
+```
+---
+
+### `apply`
+- `apply` works well for 2D data, when you want to apply function over a row or column. 
+
+
+```r
+v1 &lt;- sample(1:100, 10)
+v2 &lt;- sample(1:100, 10)
+DF &lt;- data.frame(v1, v2) ## data frame columns will take names of vectors
+DF
+```
+
+```
+##    v1 v2
+## 1   9 38
+## 2  43 88
+## 3  19 30
+## 4  22 70
+## 5  46 94
+## 6  40 19
+## 7  29 79
+## 8  57 86
+## 9  16 14
+## 10 66 23
+```
+---
+
+Use `apply` to get column max value. The index 2 means "apply function to columns".
+
+
+```r
+colMax &lt;- apply(DF, 2, FUN = max)
+colMax
+```
+
+```
+## v1 v2 
+## 66 94
+```
+
+---
+
+Use `apply` to get row max value. The index 1 means "apply function to rows".
+
+
+```r
+rowMax &lt;- apply(DF, 1, FUN = max)
+rowMax
+```
+
+```
+##  [1] 38 88 30 70 94 40 79 86 16 66
+```
+
+We can use `apply` or `sapply` to create a new column in a data frame. 
+
+```r
+DF$rowMax &lt;- apply(DF, 1, FUN = max)
+DF
+```
+
+```
+##    v1 v2 rowMax
+## 1   9 38     38
+## 2  43 88     88
+## 3  19 30     30
+## 4  22 70     70
+## 5  46 94     94
+## 6  40 19     40
+## 7  29 79     79
+## 8  57 86     86
+## 9  16 14     16
+## 10 66 23     66
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
