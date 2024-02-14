@@ -111,9 +111,16 @@ f <- filter(v, rep(1 / 5, 5))
 detach("package:dplyr", unload = TRUE)
 search()
 f <- filter(v, rep(1 / 5, 5))
+```
+```{r, eval=FALSE}
 plot(1:100, v, type = "l")
 lines(1:100, f, col = "red")
 ```
+```{r, echo=FALSE, out.width="45%", fig.align='center'}
+knitr::include_graphics("figures/ts-filter.png")
+
+```
+
 
 
 ---

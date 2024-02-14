@@ -114,7 +114,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7fef9e6eedc0&gt;
+## &lt;environment: 0x7fefad81e3c8&gt;
 ```
 
 ```
@@ -126,7 +126,7 @@ myfun(x)
 ```
 
 ```
-## &lt;environment: 0x7fef9e698ce0&gt;
+## &lt;environment: 0x7fef9efbe068&gt;
 ```
 
 ```
@@ -165,6 +165,32 @@ print(a)
 
 ```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:terra':
+## 
+##     intersect, union
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 search()
 ```
 
@@ -201,11 +227,14 @@ search()
 
 ```r
 f &lt;- filter(v, rep(1 / 5, 5))
+```
+
+```r
 plot(1:100, v, type = "l")
 lines(1:100, f, col = "red")
 ```
+&lt;img src="figures/ts-filter.png" width="45%" style="display: block; margin: auto;" /&gt;
 
-&lt;img src="/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs/class9_files/figure-html/unnamed-chunk-7-1.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
