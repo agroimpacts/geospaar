@@ -295,6 +295,7 @@ DF$rowMax <- apply(DF, 1, FUN = max)
 DF
 ```
 
+---
 ## Data generation
 
 Create the following:
