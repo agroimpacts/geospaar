@@ -1,4 +1,4 @@
-#' @import raster
+#' @import terra
 #' @import sf
 #' @import tidyverse
 

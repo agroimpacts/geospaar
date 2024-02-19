@@ -12,23 +12,26 @@ output:
 ---
 
 ```{r, eval=FALSE}
+library(tidyverse)
 library(sf)
-library(dplyr)
-library(ggplot2)
-library(rnaturalearth)
-library(rnaturalearthdata)
-data(world.cities, package = "maps")
-
-world <- ne_countries(scale = "medium", returnclass = "sf")
-afr_capitals <- world.cities %>% filter(capital == 1) %>% 
-  st_as_sf(coords = c("long", "lat"), crs = 4326) %>% 
-  st_intersection(., world %>% filter(continent == "Africa"))
-p <- world %>% filter(continent == "Africa") %>% 
-  ggplot() + geom_sf(aes(fill = name), lwd = 0.2) + 
-  geom_sf(data = afr_capitals, col = "blue", size = 0.5) + 
-  scale_fill_grey(guide = FALSE) + theme_minimal()
-ggsave(here::here("external/slides/figures/africa_capitals.png"), 
-       width = 5, height = 4, dpi = 300, bg = "transparent")
+library(geospaar)
+districts <- read_sf(
+  system.file("extdata", "districts.geojson", package = "geospaar")
+)
+farmers <- read_csv(
+  system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+) %>% group_by(uuid) %>% 
+  summarize(x = mean(x), y = mean(y), n = n()) %>%
+  filter(y > -18) #%>% st_as_sf(coords = c("x", "y"), crs = 4326)
+p <- ggplot() + 
+  geom_sf(data = districts, lwd = 0.1) + 
+  geom_point(data = farmers, 
+             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+  scale_color_viridis_c(guide = FALSE) + theme_void() + 
+  theme(legend.position = c(0.85, 0.2)) +
+  scale_size(range = c(0.1, 5), name = "N reports/week")
+ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "grey")
 ```
 
 ---

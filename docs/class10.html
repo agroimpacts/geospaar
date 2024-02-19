@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.19/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class10.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## Class 10
+]
+
+---
+
+
+
+
+```r
+library(terra)
+library(geospaar)
+# data(dem)
+topo &lt;- lapply(c("TRI", "flowdir"), function(x) terrain(rast(dem), x))
+png(here::here("docs/figures/zambia_topo.png"), 
+       width = 7, height = 2.5, res = 300, units = "in", bg = "grey")
+par(mfrow = c(1, 2))#, mar = c(0, 1, 2, 4), oma = c(0, 1, 0, 2))
+plot(topo[[1]], mar = c(0.5, 1, 1, 4), main = "TRI", axes = FALSE)
+plot(topo[[2]], mar = c(0.5, 1, 1, 4), main = "Flow Direction", axes = FALSE)
+dev.off()
+```
+
+---
+## Data generation
+
+Create the following:
+- `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`, where:
+  - `V1` = 1:20
+  - `V2` is a random sample between 1:100
+  - `V3` is drawn from a random uniform distribution between 0 and 50     
+  - `V4` is a random selection of the letters A-E
+  - Use `set.seed(50)`
+- Do this all at once (i.e. wrap the creation of V1-V4 in the `data.frame` call, precede it with `set.seed()`)
+
+---
+
+## Exercises
+
+- Use a `for` to iterate over each row of `dat` and calculate it's `sum`
+- Do the same with `lapply` and `sapply`
+- Do the same using `rowSums`
+- Select rows from `dat` containing the letter "E" in `V4`, and take the mean of values from the result in column `V3`
+
+
+---
+## In-class
+
+- Using an `lapply`, create an output list of 3 `data.frame`s in which the first `data.frame` has it's `V2` column multiplied by 5, the second `data.frame` has `V2` multiplied by 10, and the third has `V2` multipled by 20. Use `dat` as the starting `data.frame`.  
+- Make a `data.frame` called `dat2` that is a copy of `dat`. Update `dat2` so that its `V3` is set to 40 in the places where values &gt; 40 
+
+---
+## Reading and writing data
+
+## File paths
+
+Let's read in a csv a few different ways.
+
+Full path - clear for you, bad for code sharing.
+
+
+```r
+data_tib &lt;- read.csv(
+  "/Users/lestes/Dropbox/teaching/geog246346/geospaar/inst/extdata/cdf_corn.csv"
+)
+str(data_tib)
+```
+
+```
+## 'data.frame':	5999 obs. of  20 variables:
+##  $ tenant      : chr  "planet" "planet" "planet" "planet" ...
+##  $ site_id     : chr  "UNLEN_CSP1_IMZ1" "UNLEN_CSP1_IMZ1" "UNLEN_CSP1_IMZ1" "UNLEN_CSP1_IMZ1" ...
+##  $ local       : chr  "2020-06-05 10:00:00-05:00" "2020-06-06 10:00:00-05:00" "2020-06-07 10:00:00-05:00" "2020-06-08 10:00:00-05:00" ...
+##  $ lat         : num  41.2 41.2 41.2 41.2 41.2 ...
+##  $ long        : num  -96.5 -96.5 -96.5 -96.5 -96.5 ...
+##  $ site_group  : chr  "Lincoln" "Lincoln" "Lincoln" "Lincoln" ...
+##  $ Tair        : num  27.4 25.5 29.6 27.7 26.7 ...
+##  $ Tabove      : num  27.93 17.43 9.18 8.58 18.71 ...
+##  $ Tbelow      : num  28 24.3 27 25.9 26.6 ...
+##  $ CGDD        : int  345 363 381 393 402 414 425 439 455 471 ...
+##  $ b1r         : num  0.098 0.052 0.0493 0.0484 0.0452 ...
+##  $ b2r         : num  0.0822 0.0762 0.0739 0.0722 0.0676 ...
+##  $ b3r         : num  0.2013 0.0911 0.0863 0.0848 0.0803 ...
+##  $ b4r         : num  0.1447 0.1001 0.0991 0.0958 0.0899 ...
+##  $ b5r         : num  0.0946 0.225 0.2378 0.246 0.2434 ...
+##  $ b6r         : num  0.139 0.282 0.332 0.348 0.334 ...
+##  $ b7r         : num  0.123 0.233 0.259 0.265 0.259 ...
+##  $ NDVI        : num  -0.0209 0.4754 0.54 0.5686 0.5755 ...
+##  $ CropType    : chr  "Corn" "Corn" "Corn" "Corn" ...
+##  $ PlantingDate: chr  "04/20/2020" "04/20/2020" "04/20/2020" "04/20/2020" ...
+```
+
+---
+
+```r
+data_tib &lt;- readr::read_csv(
+  "/Users/lestes/Dropbox/teaching/geog246346/geospaar/inst/extdata/cdf_corn.csv"
+)
+```
+
+```
+## Rows: 5999 Columns: 20
+## ── Column specification ────────────────────────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr   (5): tenant, site_id, site_group, CropType, PlantingDate
+## dbl  (14): lat, long, Tair, Tabove, Tbelow, CGDD, b1r, b2r, b3r, b4r, b5r, b6r, b7r, NDVI
+## dttm  (1): local
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+str(data_tib)
+```
+
+```
+## spc_tbl_ [5,999 × 20] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ tenant      : chr [1:5999] "planet" "planet" "planet" "planet" ...
+##  $ site_id     : chr [1:5999] "UNLEN_CSP1_IMZ1" "UNLEN_CSP1_IMZ1" "UNLEN_CSP1_IMZ1" "UNLEN_CSP1_IMZ1" ...
+##  $ local       : POSIXct[1:5999], format: "2020-06-05 15:00:00" "2020-06-06 15:00:00" "2020-06-07 15:00:00" ...
+##  $ lat         : num [1:5999] 41.2 41.2 41.2 41.2 41.2 ...
+##  $ long        : num [1:5999] -96.5 -96.5 -96.5 -96.5 -96.5 ...
+##  $ site_group  : chr [1:5999] "Lincoln" "Lincoln" "Lincoln" "Lincoln" ...
+##  $ Tair        : num [1:5999] 27.4 25.5 29.6 27.7 26.7 ...
+##  $ Tabove      : num [1:5999] 27.93 17.43 9.18 8.58 18.71 ...
+##  $ Tbelow      : num [1:5999] 28 24.3 27 25.9 26.6 ...
+##  $ CGDD        : num [1:5999] 345 363 381 393 402 414 425 439 455 471 ...
+##  $ b1r         : num [1:5999] 0.098 0.052 0.0493 0.0484 0.0452 ...
+##  $ b2r         : num [1:5999] 0.0822 0.0762 0.0739 0.0722 0.0676 ...
+##  $ b3r         : num [1:5999] 0.2013 0.0911 0.0863 0.0848 0.0803 ...
+##  $ b4r         : num [1:5999] 0.1447 0.1001 0.0991 0.0958 0.0899 ...
+##  $ b5r         : num [1:5999] 0.0946 0.225 0.2378 0.246 0.2434 ...
+##  $ b6r         : num [1:5999] 0.139 0.282 0.332 0.348 0.334 ...
+##  $ b7r         : num [1:5999] 0.123 0.233 0.259 0.265 0.259 ...
+##  $ NDVI        : num [1:5999] -0.0209 0.4754 0.54 0.5686 0.5755 ...
+##  $ CropType    : chr [1:5999] "Corn" "Corn" "Corn" "Corn" ...
+##  $ PlantingDate: chr [1:5999] "04/20/2020" "04/20/2020" "04/20/2020" "04/20/2020" ...
+##  - attr(*, "spec")=
+##   .. cols(
+##   ..   tenant = col_character(),
+##   ..   site_id = col_character(),
+##   ..   local = col_datetime(format = ""),
+##   ..   lat = col_double(),
+##   ..   long = col_double(),
+##   ..   site_group = col_character(),
+##   ..   Tair = col_double(),
+##   ..   Tabove = col_double(),
+##   ..   Tbelow = col_double(),
+##   ..   CGDD = col_double(),
+##   ..   b1r = col_double(),
+##   ..   b2r = col_double(),
+##   ..   b3r = col_double(),
+##   ..   b4r = col_double(),
+##   ..   b5r = col_double(),
+##   ..   b6r = col_double(),
+##   ..   b7r = col_double(),
+##   ..   NDVI = col_double(),
+##   ..   CropType = col_character(),
+##   ..   PlantingDate = col_character()
+##   .. )
+##  - attr(*, "problems")=&lt;externalptr&gt;
+```
+
+---
+## Working directory `"."`
+
+- Working directory. Use `getwd()` (from console)  
+- Usually set to project folder.  
+
+
+```r
+getwd() ## if in an RMD, this will show the folder of the RMD
+```
+
+```
+## [1] "/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs"
+```
+
+Use `.` to start a file path from the working directory
+
+
+```r
+list.files(".") ## 
+```
+
+
+```r
+data_tib &lt;- readr::read_csv("./inst/extdata/cdf_corn.csv")
+```
+
+- Use ".." to go up one folder level
+
+```r
+list.files(".") ## files in working directory
+list.files("..") ## files in folder one level up
+```
+---
+## User directory `"~"`
+
+- Set by environment variable
+- Use command below to see value
+
+
+```r
+path.expand("~")
+```
+
+```
+## [1] "/Users/lestes"
+```
+
+
+
+```r
+data_tib &lt;- readr::read_csv(
+  "~/Dropbox/teaching/geog246346/geospaar/inst/extdata/cdf_corn.csv"
+)
+```
+
+---
+## Writing files
+
+- Use `write.csv` or `readr::write_csv` to write
+
+
+```r
+readr::write_csv(data_tib, file = "temp.csv") ## by default writes to wd()
+```
+
+---
+## Saving/loading files
+- If you want to save an R object, like a `data.frame`, `tibble` etc.
+- Use save, and `.rda` extension
+
+
+```r
+save(data_tib, file = "temp.rda") ## by default writes to wd()
+```
+
+
+```r
+data_tib &lt;- NULL
+load(file = "temp.rda") ## loads file back to environment
+```
+
+---
+## Dates with `lubridate`
+
+- The main function you want to use is `as_date`, which can convert a character to date format. 
+
+
+```r
+library(lubridate)
+date1 &lt;- as_date("2022-03-01") ## date in standard YYYY-MM-DD format
+print(date1)
+```
+
+```
+## [1] "2022-03-01"
+```
+---
+## Dates with `lubridate`
+
+- More challenging with unclear date formats.
+
+
+```r
+date2 &lt;- as_date("3/1/22") ## is month or date first?
+```
+
+```
+## Warning: All formats failed to parse. No formats found.
+```
+
+```r
+date2
+```
+
+```
+## [1] NA
+```
+
+Include format as shown below. See [formats in this link](https://epirhandbook.com/en/working-with-dates.html)
+
+```r
+date2 &lt;- as_date("3/1/22", format = "%m/%d/%y" )
+date2
+```
+
+```
+## [1] "2022-03-01"
+```
+
+We can also write dates in desired format
+
+```r
+date2_char &lt;- as.character(date2, format = "%A %B %d, %Y")
+date2_char
+```
+
+```
+## [1] "Tuesday March 01, 2022"
+```
+---
+## Date formats
+
+&lt;img src="figures/class10_date_formats.png" width="100%" style="display: block; margin: auto;" /&gt;
+---
+How can we read in this date?
+
+```r
+date3 &lt;- as_date("Apr 3, 1999", format = "...")
+date3
+```
+
+```
+## [1] NA
+```
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
