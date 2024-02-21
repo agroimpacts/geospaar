@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-02-19
+Updated on: 2024-02-21
 
 <center>
 
@@ -67,7 +67,8 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - R data structures, OOP, Environments, Control flow  
   - Assignment 2 due (Unit 1 Modules 2-3)
 - Week 6 (Feb 19, 21)
-  - [Class 10 slides](class10.html)  
+  - [Class 10 slides](class10.html)
+  - [Class 11 slides](class11.html)
   - tidyr universe, working with data
   - regression, plotting
 - Week 7 (Feb 19, 21)
