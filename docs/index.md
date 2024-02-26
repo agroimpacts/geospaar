@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-02-21
+Updated on: 2024-02-26
 
 <center>
 
@@ -72,6 +72,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - tidyr universe, working with data
   - regression, plotting
 - Week 7 (Feb 19, 21)
+  - [Class 12 slides](class12.html)
   - more ggplot, intro to vector
   - Assignment 3 due (Unit 1 Module 4)
 - Spring Break

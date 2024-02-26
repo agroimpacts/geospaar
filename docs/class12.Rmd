@@ -1,0 +1,89 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 12
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class14plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, message=FALSE, eval=FALSE, warning=FALSE}
+library(leaflet)
+library(sf)
+library(dplyr)
+districts <- read_sf(
+  system.file("extdata/districts.geojson", package = "geospaar")
+)
+bb <- unname(st_bbox(districts))
+xy <- st_centroid(districts) %>% st_coordinates() %>% 
+  bind_cols(name = districts$distName, .)
+slist <- list("color" = "white")
+label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'center',
+                           textOnly = TRUE, textsize = "5px")
+
+m <- leaflet() %>% 
+  addProviderTiles("Esri.WorldImagery") %>% 
+  fitBounds(bb[1], bb[2], bb[3], bb[4]) %>% 
+  addPolygons(data = districts, fill = FALSE, color = "white", 
+              group = "Districts", weight = 1) %>% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
+                      labelOptions = label_opts) %>%
+  addLayersControl(overlayGroups = c("Districts", "Names"),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
+```
+
+```{r, eval=FALSE, echo=FALSE}
+library(htmlwidgets) 
+saveWidget(m, "docs/figures/zambialeaflet.html")
+```
+
+
+---
+
+<iframe seamless src="figures/zambialeaflet.html" width="100%" 
+height="500"></iframe>
+
+---
+## Homework review
+
+- Use `lapply` to make three `data.frame`s captured in a list `l`, each composed of one randomly sampled column `v1` (selecting from integers 1:10, with length = 20), and the second being `v2` composed of lowercase letters, randomly selected using `sample`, also of length 20.  
+- The iterator in the `lapply` should be 10, 20, 30, which become the random seeds for the sampling (in the body of the `lapply`)
+- After making `l`, use a `for` loop to iterate through each element of `l`, writing each out to a folder `external/data/` in your project. 
+- Change the name of each as part of the iteration, so that `l[[1]]` is written out as `external/data/dataset1.csv`, etc. Hint: you can use `paste0` to make each file path and name.  
+- After writing these out, use another `lapply` to read back in the three datasets into a new list `l2`.  Bonus: Use `dir` to programmatically read in the file paths from your `external/data` folder.  
+
+---
+
+## Working with data
+
+### `do.call`
+```{r, eval=FALSE}
+csv_files <- list.files(here::here("external/data/"), pattern = ".csv", 
+                        full.names = TRUE)
+l <- lapply(csv_files, readr::read_csv)
+
+do.call(rbind, l)
+```
+
+
+---
+### Manipulating and analyzing data
+
+- reshape
+- mutate
+- select
+- filter
+- split-apply-combine
+
+
+
+
+
+
+
+
