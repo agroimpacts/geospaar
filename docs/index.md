@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-02-26
+Updated on: 2024-02-28
 
 <center>
 
@@ -69,25 +69,26 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Week 6 (Feb 19, 21)
   - [Class 10 slides](class10.html)
   - [Class 11 slides](class11.html)
-  - tidyr universe, working with data
+  - `tidyverse`, working with data
   - regression, plotting
 - Week 7 (Feb 19, 21)
   - [Class 12 slides](class12.html)
-  - more ggplot, intro to vector
-  - Assignment 3 due (Unit 1 Module 4)
+  - [Class 13 slides](class13.html)  
+  - `tidyverse`, data manipulation
 - Spring Break
 - Week 8 (Feb 26, 28)
-  - Vector operations
+  - `tidyverse`, data manipulation
+  - Assignment 3 due (Unit 1 Module 4)
 - Week 9 (Mar 11, 13)
-  - Raster basics
+  - Working with vectors
+- Week 10 (Mar 18, 20)
+  - More on vectors
   - Assignment 4 due (Unit 2 Module 1)
-- Week 11 (Mar 18, 20)
-  - Raster analysis, neighborhoods
-  - Mar 27 project prep (AAG)
-- Week 12 (Mar 25, 27)
-  - Raster algebra, terrain, modeling
+- Week 11 (Mar 25, 27)
+  - Rasters algebra, terrain, modeling
+- Week 12 (April 1, 3)
   - Assignment 5 (Unit 2 Module 2)
-- Week 13-15 (April)
-  - Project Overview due (beginning week 13)
+- Week 13-15 (April 8, 11, 15, 17, 22, 24, 29)
+  - Project Overview due (end week 13)
 - Final Projects due
-  - May 5
+  - May 6
