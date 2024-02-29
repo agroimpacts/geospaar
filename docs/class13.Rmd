@@ -79,9 +79,9 @@ for(i in 1:3) {
   set.seed(i)
   d <- data.frame(
     id = 1:sz,
-    v1 = sample(2:12, size = sz, replace = TRUE),
+    v1 = runif(sz, min = 2, max = 12),
     grp = paste0("g", i)
-  ) %>% mutate(v2 = v1 + rnorm(sz, mean = 2, sd = 1)) %>% 
+  ) %>% mutate(v2 = v1 + rnorm(sz, mean = 2, sd = 2)) %>% 
     select(id, v1, v2, grp)
   readr::write_csv(d, file = file.path(tempdir(), paste0("dataset", i, ".csv")))
 }
@@ -90,6 +90,8 @@ for(i in 1:3) {
 fs <- list.files(tempdir(), pattern = "dataset.*.csv", full.names = TRUE)
 # dat <- do.call(rbind, lapply(fs, readr::read_csv))
 dat <- bind_rows(lapply(fs, readr::read_csv))
+
+plot(dat$v1, dat$v2)
 ```
 
 
@@ -105,6 +107,8 @@ dat <- bind_rows(lapply(fs, readr::read_csv))
 - regression
 
 ---
+
+## Reshape
 ```{r, eval=FALSE}
 dat %>% 
   pivot_wider(names_from = grp, values_from = v1:v2)
@@ -112,5 +116,44 @@ dat %>%
 dat %>% 
   select(-v1) %>%
   pivot_wider(names_from = grp, values_from = v2)
+
+dat_wide <- dat %>% 
+  select(id, v2, grp) %>%
+  pivot_wider(names_from = grp, values_from = v2)
+
+dat_long <- dat_wide %>% 
+  pivot_longer(g1:g3, names_to = "grp", values_to = "v2") %>% 
+  arrange(grp)
+
+dat_long2 <- dat_wide %>% 
+  pivot_longer(g1:g3, names_to = "grp", values_to = "v2") 
+
+cbind(dat, dat_long) %>% head()
+bind_cols(dat, dat_long) 
+
+cbind(dat, dat_long2) %>% head()
+# bind_cols(dat, dat_long) 
+
+dat %>% left_join(dat_long2)
+dat_long2 %>% 
+  rename(grp2 = grp) %>%
+  select(id, grp2, v2) %>% 
+  left_join(dat, ., by = c("id", "v2", "grp" = "grp2"))
+
+dat_long2 %>% 
+  rename(grp2 = grp) %>%
+  select(id, grp2, v2) %>% 
+  left_join(dat %>% select(-v2), ., by = c("id", "grp" = "grp2")) %>% 
+  select(id:v1, v2, grp)
+
+# full_join()
+
 ```
+
+---
+```{r, eval=FALSE}
+
+```
+
+
 

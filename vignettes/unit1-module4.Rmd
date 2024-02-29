@@ -777,11 +777,14 @@ This arrangement is similar to what we were doing in Chunk 25b, using nested `la
 There is a pure tidyverse way of doing this, which is the last thing to look at here.  It is more involved than previous examples, because the non-tabular (list) output from `lm` prevents use of `lm` within `dplyr::summarise`:
 ```{r, eval = FALSE}
 # Chunk 39
-crop_ylds %>% group_by(crop, country) %>% 
-  do(prod_ha_lm = lm(prod ~ harv_area, data = .)) %>% 
-  broom::tidy(., prod_ha_lm)
+# note: replacement for old variant suggested by answer here:
+# https://stackoverflow.com/questions/62972843/retreiving-tidy-
+# results-from-regression-by-group-with-broom
+crop_ylds %>% 
+  nest_by(crop, country) %>% 
+  mutate(prod_ha_lm = list(lm(prod ~ harv_area, data = data))) %>%
+  reframe(broom::tidy(prod_ha_lm))
 #> # A tibble: 12 x 7
-#> # Groups:   crop, country [6]
 #>    crop    country term             estimate    std.error statistic  p.value
 #>    <chr>   <chr>   <chr>               <dbl>        <dbl>     <dbl>    <dbl>
 #>  1 maize   ZAF     (Intercept)  13149213.    1767217.         7.44  7.16e-10
@@ -1288,7 +1291,7 @@ There are no package functions to create for this assignment. All work is to be 
   - `full_join`
   - `inner_join`
 
-2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 19, and 21 are your guides. 
+2. Recreate the `crop_ylds` dataset, using 1) an `lapply` to read in each .csv file from the package `extdata/` folder, and 2) the `dplyr` steps necessary to `*_join` the data and make the necessary `mutate`-ations. Chunks 1, 11, 16, 19, and 21 are your guides. 
 
 3. Use `dplyr` verbs to select the 5 top-ranked years for **total harvested area** for South African maize. Do the same for South African maize **yields**. To do this, you will need to use `filter`, `arrange`, and `slice`. The outputs for each test should be the 5 rows of `crop_ylds` that meet these criteria.
 
