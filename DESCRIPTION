@@ -33,4 +33,4 @@ VignetteBuilder: knitr
 URL: https://github.com/agroimpacts/geospaar
 BugReports: https://github.com/agroimpacts/geospaar/issues/
 LazyLoad: yes
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1

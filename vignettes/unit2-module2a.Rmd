@@ -686,8 +686,6 @@ knitr::include_graphics("fig/u2m2_farmersrnas.png")
 
 This shows that there are no places where there are 0 farmers--because the original data contributing to `farmersr` (the second layer in `s`) was derived from point locations representing the approximate locations of where farmers were interviewed. The data thus have no points where there were 0 farmers interviewed (it would be silly to conduct an interview with no subject), thus everywhere outside of interview locations is assigned a no data value. These are not analyzed in raster operations. So we have to fix this if we want to have the full area of Zambia in the second layer of our stack.
 
-**NOTE: This vignette is being updated from `raster` to `terra`**
-
 ```{r fixnas, eval=FALSE}
 s$farmer_count[is.na(s$farmer_count)] <- 0
 s$farmer_count <- mask(s$farmer_count, s$rain)
@@ -720,19 +718,26 @@ The most basic analyses to perform on rasters is to calculate global summary sta
 
 ```{r cellstats, eval=FALSE}
 # Chunk 26
-cellStats(x = chirpsz[[1]], stat = "mean")  # for a single date
-cellStats(x = chirpsz[[c(5, 7, 14)]], stat = "mean")
+global(x = chirpsz[[1]], stat = "mean", na.rm = TRUE)  # for a single date
+#>             mean
+#> Y16299 0.7139887
+global(x = chirpsz[[c(5, 7, 14)]], stat = "mean", na.rm = TRUE)
+#>             mean
+#> Y16303 0.4047794
+#> Y16305 0.9029626
+#> Y16312 0.5260241
 summary(chirpsz[[1:3]])
-#>              Y16299      Y16300       Y16301
-#> Min.        0.00000     0.00000     0.000000
-#> 1st Qu.     0.00000     0.00000     0.000000
-#> Median      0.00000     0.00000     0.000000
-#> 3rd Qu.     0.00000     0.00000     0.000000
-#> Max.       18.00534    17.76521     8.853778
-#> NA's    20995.00000 20995.00000 20995.000000
+#>     Y16299           Y16300           Y16301     
+#> Min.   : 0.000   Min.   : 0.000   Min.   :0.000  
+#> 1st Qu.: 0.000   1st Qu.: 0.000   1st Qu.:0.000  
+#> Median : 0.000   Median : 0.000   Median :0.000  
+#> Mean   : 0.714   Mean   : 0.633   Mean   :0.114  
+#> 3rd Qu.: 0.000   3rd Qu.: 0.000   3rd Qu.:0.000  
+#> Max.   :18.005   Max.   :17.765   Max.   :9.344  
+#> NA's   :20408    NA's   :20408    NA's   :20408 
 ```
 
-`cellStats` lets you calculate specific statistics from the cell values of a lone `RasterLayer`, or for a single, multiple, or all layers in a `RasterStackBrick`. `summary` (a generic) returns the quintile values and counts the number of `NA` or no data cells. Both functions by default remove NA values (which are in many if not most rasters), which is something that usually has to be specified when trying to apply these statistical functions to an ordinary vector, e.g. 
+`global` lets you calculate specific statistics from the cell values of a lone `SpatRaster`, or for a single, multiple, or all layers in a `SpatRaster` layer. `summary` (a generic) returns the quintile values and counts the number of `NA` or no data cells. Both functions by default remove NA values (which are in many if not most rasters), which is something that usually has to be specified when trying to apply these statistical functions to an ordinary vector, e.g. 
 
 ```{r rastervalues, eval=FALSE}
 # Chunk 27
@@ -740,7 +745,7 @@ v <- values(chirpsz[[1]])
 mean(v) 
 #> [1] NA
 mean(v, na.rm = TRUE)
-#> [1] 0.6971701
+#> [1] 0.7139887
 ```
 
 `v` is a vector of all of the values from the first layer in the rainfall brick, including its NA values. `mean` returns an `NA` if you don't tell the function to remove `NA` values first. This is important to remember, because both spatial and non-spatial data often have missing values, so you will have to deal with them explicitly in many cases. 
@@ -750,14 +755,19 @@ Here's a more programmatic way of using `cellStats`:
 ```{r cellstats2, eval=FALSE}
 # Chunk 28
 # #1
+cv <- function(x, na.rm) {
+  cv <- sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm) * 100
+  return(cv)
+}
 rain_stats <- lapply(list(mean, sum, sd, cv), function(x) {
-  cellStats(x = chirpsz, stat = x)
+  global(x = chirpsz, fun = eval(x), na.rm = TRUE)
 })
 names(rain_stats) <- c("mean", "sum", "sd", "cv")
 
 # #2
 rain_statsf <- do.call(cbind, rain_stats) %>% data.frame %>% 
-  mutate(date = as.Date(gsub("Y", "", row.names(.)), "%y%j"))
+  mutate(date = as.Date(gsub("Y", "", row.names(.)), "%y%j")) %>% 
+  rename(cv = global)
 # do.call(cbind, rain_stats) %>% data.frame
 # do.call(cbind, rain_stats) %>% row.names %>% gsub("Y", "", .)
 # do.call(cbind, rain_stats) %>% row.names %>% gsub("Y", "", .) %>%
@@ -776,21 +786,21 @@ knitr::include_graphics("fig/u2m2_cellstats2.png")
 
 In #1 we use `lapply` to calculate 4 different statistics over all dates in `chirpsz`, meaning that we get a time series for each statistic as calculated over all of Zambia. 
 
-In #2, we use a pipeline to bind the summary time series vectors into a `data.frame` (one statistic per column), and then do some gymnastics to convert the row names of the `data.frame`, which are constructed from the layer names of `chirpsz` (which are stored as "Y16XXX", where XXX is the julian day) to a vector of dates. Work through the commented out code below this line, which breaks down the steps used to create the *date* variable.   `gsub` first replaces the "Y" in each name, and then `as.Date` parses the remaining numbers into an actual date. The "%y%j" construction tells `as.Date` which parts of the character string relate to which part of a date: %y = two digit year; %j = julian day; placed next to one another %y%j means these two elements are immediately adjacent to one another in the string. 
+In #2, we use a pipeline to bind the summary time series vectors into a `data.frame` (one statistic per column), and then do some gymnastics to convert the row names of the `data.frame`, which are constructed from the layer names of `chirpsz` (which are stored as "Y16XXX", where XXX is the julian day) to a vector of dates. Work through the commented out code below this line, which breaks down the steps used to create the *date* variable. `gsub` first replaces the "Y" in each name, and then `as.Date` parses the remaining numbers into an actual date. The "%y%j" construction tells `as.Date` which parts of the character string relate to which part of a date: %y = two digit year; %j = julian day; placed next to one another %y%j means these two elements are immediately adjacent to one another in the string. 
 
 We use `lapply` to set up four `ggplot` objects in #3 (note the use of `aes_string` rather than `aes`, which allows the variable names to be passed as string, rather than unquoted), and then use `cowplot::plot_grid` to put those plots in a grid, using the "plotlist" argument to receive the input list of `ggplot`s. 
 
-The results in the plot above are actually quite interesting. The top two panels show when the rainy season gets underway in earnest (just after Nov 8). The bottom two panels show two measures of variability, the standard deviation (SD) and coefficient of variation (CV, i.e. SD / mean). These two measures summarize the spatial variability of rainfall falling across Zambia on each day--SD increases as the amount of rain increases (which is expected--SD is usually positively correlated with the mean), whereas CV declines as rainfall increases, indicating that a progressively larger area of the country receives rainfall as the month progresses, so there is less spatial variability. There is a big spike in CV on November 8, which corresponds to a drop in mean and total rainfall. However, that drop masks the fact that there are a few small patches that received a decent amount of rainfall, thus leading to a high CV (see next plot below).  
+The results in the plot above are actually quite interesting. The top two panels show when the rainy season gets underway in earnest (just after Nov 8). The bottom two panels show two measures of variability, the standard deviation (SD) and coefficient of variation (CV, i.e. SD / mean). These two measures summarize the spatial variability of rainfall falling across Zambia on each day--SD increases as the amount of rain increases (which is expected--SD is often positively correlated with the mean), whereas CV declines as rainfall increases, indicating that a progressively larger area of the country receives rainfall as the month progresses, so there is less spatial variability. There is a big spike in CV on November 8, which corresponds to a drop in mean and total rainfall. However, that drop masks the fact that there are a few small patches that received a decent amount of rainfall, thus leading to a high CV (see next plot below).  
 
 ```{r cvplot, eval=FALSE}
 # Chunk 29
-plot_noaxes(chirpsz[[15]], main = paste("CV =", round(rain_stats$cv[15])))
+plot_noaxes(chirpsz[[15]], main = paste("CV =", round(rain_stats$cv[15, ])))
 ```
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_cvplot.png")
 ```
 
-Another way to summarize raster data is visually, using a histogram (raster has a generic `hist` function)
+Another way to summarize raster data is visually, using a histogram (`terra` has a generic `hist` function)
 ```{r histogram, eval=FALSE}
 # Chunk 30
 par(mfrow = c(1, 3))
@@ -800,32 +810,31 @@ hist(chirpsz[[15:17]], col = "blue", xlab = "mm")
 knitr::include_graphics("fig/u2m2_histogram.png")
 ```
 
-This variant plots a histogram per layer in the `Raster*` object (but we told it to plot 1 row, 3 columns, instead of the default (2 rows, 2 columns)).  
+This variant plots a histogram per layer in the `SpatRaster` object (but we told it to plot 1 row, 3 columns, instead of the default (2 rows, 2 columns)).  
 
 `freq` is another way to summarize raster values that is similar to `hist` but without the automatic plot.
 ```{r freq, eval=FALSE}
 # Chunk 31
 f <- freq(chirpsz[[1]]) %>% print()
-#>       value count
-#>  [1,]     0 21053
-#>  [2,]     1   234
-#>  [3,]     2   698
-#>  [4,]     3   817
-#>  [5,]     4   660
-#>  [6,]     5   544
-#>  [7,]     6   432
-#>  [8,]     7   306
-#>  [9,]     8   175
-#> [10,]     9    59
-#> [11,]    10    42
-#> [12,]    11    41
-#> [13,]    12    27
-#> [14,]    13     7
-#> [15,]    14     3
-#> [16,]    15     2
-#> [17,]    16     2
-#> [18,]    18     1
-#> [19,]    NA 20995
+#> 1      1     0 21464
+#> 2      1     1   243
+#> 3      1     2   720
+#> 4      1     3   845
+#> 5      1     4   683
+#> 6      1     5   578
+#> 7      1     6   451
+#>    layer value count
+#> 8      1     7   324
+#> 9      1     8   187
+#> 10     1     9    66
+#> 11     1    10    46
+#> 12     1    11    41
+#> 13     1    12    27
+#> 14     1    13     7
+#> 15     1    14     3
+#> 16     1    15     2
+#> 17     1    16     2
+#> 18     1    18     1
 ```
 
 Here we apply `freq` to a dataset with continuous values, although this function is probably best reserved for categorical rasters. However, it produces reasonable results here.
@@ -844,33 +853,34 @@ One way local statistics can be calculated is by defining zones and then calcula
 # zonemu <- zonal(x = chirpsz, z = distsr, fun = "mean")  # fails b/c extent
 
 # #2
-distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
-zonemu <- zonal(x = chirpsz, z = distsr_rs, fun = "mean")
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "near")  # match extent
+zonemu <- zonal(x = chirpsz, z = distsr_rs, fun = "mean", na.rm = TRUE)
 head(zonemu)[, 1:5]
-#>      zone     Y16299    Y16300    Y16301    Y16302
-#> [1,]    1 0.00000000 0.0000000 0.0000000 1.8976312
-#> [2,]    2 0.01322501 0.0000000 0.0000000 0.0000000
-#> [3,]    3 6.04584049 1.8021238 0.0000000 4.4494707
-#> [4,]    4 0.00000000 0.3011147 0.0201552 0.0000000
-#> [5,]    5 6.25742351 3.6532615 1.0868976 0.4739815
-#> [6,]    6 0.00000000 0.0000000 0.0000000 0.0000000
+#>   ID      Y16299    Y16300     Y16301    Y16302
+#> 1  1 0.000000000 0.0000000 0.00000000 2.2846139
+#> 2  2 0.003991558 0.0000000 0.00000000 0.0000000
+#> 3  3 5.953492256 1.8929411 0.00000000 4.5056428
+#> 4  4 0.000000000 0.2888773 0.02768079 0.0000000
+#> 5  5 6.192370279 3.5039883 1.26554866 0.5046411
+#> 6  6 0.000000000 0.0000000 0.00000000 0.0000000
 ```
 
-That creates a matrix (truncated here to show the first 6 rows and 5 columns) of mean rainfall within each zone ( district), by date. The first attempt to run `zonal` (#1) would have failed because of mismatched extents (and therefore was commented out so it wouldn't run), so we used `resample` in #2 to align extents before re-running `zonal`. 
+That creates a `data.frame` (truncated here to show the first 6 rows and 5 columns) of mean rainfall within each zone ( district), by date. The first attempt to run `zonal` (#1) would have failed because of mismatched extents (and therefore was commented out so it wouldn't run), so we used `resample` in #2 to align extents before re-running `zonal`. 
 
 To map zonal statistics back onto their zones, we need to use another function, `subs`.
 
 ```{r subs, eval=FALSE}
 # Chunk 33
-distr_rfmu <- zonemu %>% data.frame %>% dplyr::select(1:2) %>% 
-  subs(x = distsr_rs, y = ., by = "zone")
+subsmat <- zonemu %>% dplyr::select(1:2)
+distr_rfmu <- subst(x = distsr_rs, from = subsmat[, 1], to = subsmat[, 2])
 plot_noaxes(distr_rfmu)
 ```
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_subs.png")
 ```
 
-`subs` replaces the values in a raster by other values contained within a `data.frame` (we converted `zonemu` from `matrix` and selected the first two columns, with column containing the zone number) that correspond to a variable that has the same values as those in the raster (in this case the district IDs). `subs` can be slow-ish on big rasters. 
+`subst` replaces the values in a raster by other values contained within a `matrix`  that correspond to a variable that has the same values as those in the raster (in this case the district IDs). 
+
 
 #### Focal
 Another way of calculating image statistics is to use a moving window/neighborhood approach. This is done with the `focal` function, which can be used to calculate a large number of different statistics. Here's we'll just show you the mean (also known as a low pass filter), with a few permutations to illustrate the concept. **Disclaimer:** This section assumes that you have applied moving window functions/low pass/high pass filters in your GIS/remote sensing classes so far, and thus are familiar with the calculations. If not, please be sure to ask about this in class.  
@@ -879,11 +889,11 @@ Another way of calculating image statistics is to use a moving window/neighborho
 # Chunk 34
 # #1
 wmat <- matrix(1 / 9, nrow = 3, ncol = 3) 
-chirps1_focmu1 <- focal(x = chirpsz[[1]], w = wmat) 
+chirps1_focmu1 <- focal(x = chirpsz[[1]], w = wmat)
 
 # #2
 wmat <- matrix(1, nrow = 3, ncol = 3) 
-chirps1_focmu2 <- focal(x = chirpsz[[1]], w = wmat, fun = mean) 
+chirps1_focmu2 <- focal(x = chirpsz[[1]], w = wmat, fun = mean)
 
 # #3
 wmat <- matrix(1, nrow = 5, ncol = 5) 
@@ -913,12 +923,12 @@ knitr::include_graphics("fig/u2m2_focal.png")
 We have 5 variants above. In #1, we calculate the focal mean the recommended way, which is to: 
 
 - Define a matrix (`wmat`) that contains the weights that `focal` applies to each pixel when making neighborhood calculations.  In this case, the matrix is 3X3, which is the size of our moving window, and the weights are distributed equally across all pixels and sum to 1 (each gets a weight of 1/9)
-- `focal` then passes over each image pixel, and multiplies those weights by each pixel value in the neighborhood, and then sums those to get the mean 
+- `focal` then passes over each pixel, and multiplies those weights by each pixel value in the neighborhood, and then sums those to get the mean 
 - It sums the values because `sum` is the default value of the argument "fun" in the function `focal`, which is why we have not even specified the argument "fun" in Block 1
 
 Note that the way `focal` is coded here does not remove NA pixels, thus any neighborhood having even a single NA pixel is itself turned into NA, i.e. all 9 pixels in the neighborhood. Thus the entire boundary of Zambia is trimmed down accordingly (by 2 pixels). This result is illustrated in the upper left panel of the plot above. 
 
-The code in #2 is a slower way of doing the same thing. It passes the `mean` function to `focal`'s "fun" argument. The weights matrix in this case has 1s throughout; since we are not using the default "fun=sum" in `focal` and `mean` is doing the work, we can't modify (by weighting) the pixel values if we want the correct mean. We also do not remove NA values from the calculation, so the results are identical (and thus not plotted). 
+The code in #2 does the same thing. It passes the `mean` function to `focal`'s "fun" argument. The weights matrix in this case has 1s throughout; since we are not using the default "fun=sum" in `focal` and `mean` is doing the work, we can't modify (by weighting) the pixel values if we want the correct mean. We also do not remove NA values from the calculation, so the results are nearly identical (and thus not plotted), except for very minor rounding issues (see section 1 of the [R Inferno](https://www.burns-stat.com/pages/Tutor/R_inferno_090109.pdf) for more about this). 
 
 In #3, we use the same approach as in #2, but expand the neighborhood to 5X5. You will see in the upper right plot that Zambia shrank even more (by 4 pixels). 
 
@@ -928,19 +938,19 @@ The improper way of removing NAs from focal calculations is shown in #5, this ti
 
 ### Analyzing the Z dimension
 
-If we have a `RasterStackBrick`, we have three dimensions (x, y, z). Often we want to analyze the values in the Z dimension (which may represent time, spectral bands, or unrelated spatial predictors in a model) without altering the x and y dimensions. 
+If we have a `SpatRaster` with more than one layer, we have three dimensions (x, y, z). Often we want to analyze the values in the Z dimension (which may represent time, spectral bands, or unrelated spatial predictors in a model) without altering the x and y dimensions. 
 
-The workhorse for doing this sort of analysis is `calc`, which allows you to apply pretty much any function to the Z-dimension of a `RasterStackBrick`. 
+The workhorse for doing this sort of analysis is `app`, which allows you to apply pretty much any function to the Z-dimension of a multi-layer `SpatRaster`. 
 
 ```{r calc, eval=FALSE}
 # Chunk 35
 # #1
-rain_zmu <- calc(x = chirpsz, fun = mean)
-rain_zsd <- calc(x = chirpsz, fun = sd)
-rain_zrng <- calc(x = chirpsz, fun = range)
+rain_zmu <- app(x = chirpsz, fun = mean)
+rain_zsd <- app(x = chirpsz, fun = sd)
+rain_zrng <- app(x = chirpsz, fun = range)
 
 # #2
-rain_zstack <- stack(rain_zmu, rain_zsd, rain_zrng)
+rain_zstack <- c(rain_zmu, rain_zsd, rain_zrng)
 names(rain_zstack) <- c("Mean", "StDev", "Min", "Max")
 
 plot_noaxes(rain_zstack)
@@ -950,7 +960,7 @@ plot_noaxes(rain_zstack)
 knitr::include_graphics("fig/u2m2_calc.png")
 ```
 
-In #1 we pass `mean`, `sd`, and `range` to "fun" in `calc`. Note that `range` always returns two values, so `calc` conveniently returns a two-layer brick that contains the minimum in the first layer and the maximum in the second. 
+In #1 we pass `mean`, `sd`, and `range` to "fun" in `app`. Note that `range` always returns two values, so `app` conveniently returns a two-layer `SpatRaster` that contains the minimum in the first layer and the maximum in the second. 
 
 In #2 we then stack the three outputs, and rename the layers something meaningful so that `plot_noaxes` can plot them all at once. 
 
@@ -958,11 +968,11 @@ You will see from the resulting plot that "Min" has only one value, 0, which mak
 
 ## Practice
 ### Questions
-1. How do `cellStats`, `focal`, and `zonal` differ from one another? 
+1. How do `global`, `focal`, and `zonal` differ from one another? 
 
 2. How do you `disaggregate` a raster with interpolation? 
 
-3. How do you run `calc` on images with different resolutions or extents? 
+3. How do you run `app` on images with different resolutions or extents? 
 
 ### Code
 1. Run `as.Date("10-11-2017", "%m-%d-%Y")`, `as.Date("10-11-17", "%m-%d-%y")`,
@@ -971,13 +981,13 @@ You will see from the resulting plot that "Min" has only one value, 0, which mak
 
 2. Convert `farmers` to a 0.1 degree raster (`farmersr2`) that contains the count of farmers per grid cell.  Use `distsr` as the target raster so that the extents align. 
 
-3. Use `zonal` on `farmersr2` to calculate the total number of farmers per district (use `distsr` to provide the zones), and then map them back onto the districts/zones using `subs`. Plot the result. 
+3. Use `zonal` on `farmersr2` to calculate the total number of farmers per district (use `distsr` to provide the zones), and then map them back onto the districts/zones using `subst`. Plot the result. 
 
-4. Use `focal` to calculate for `chirpsz[[20]]` the i) standard deviation within a 3X3 and 5X5 window, and ii) the maximum value in each 3X3 and 5X5 neighborhood. Do not remove NAs. Combine the results in a `stack`, as above, and then plot them  using `plot_noaxes`. 
+4. Use `focal` to calculate for `chirpsz[[20]]` the i) standard deviation within a 3X3 and 5X5 window, and ii) the maximum value in each 3X3 and 5X5 neighborhood. Do not remove NAs. Combine the results in a multi-layer `SpatRaster`, as above, and then plot them  using `plot_noaxes`. 
 
 5. Crop `chirpsz[[1]]` using the extent of `districts[57, ]`, and disaggregate it to 0.01 resolution using both the default and bilinear methods. Plot the results side by side using `plot_noaxes`.
 
-6. Use `calc` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot with meaningful titles using `plot_noaxes` (hint: name the layers of the `stack`), outputting plots on 1 row with 3 columns. 
+6. Use `app` with `chirpsz` to calculate the total rainfall in the time series, the coefficient of variation, and the median. Stack the results and plot with meaningful titles using `plot_noaxes` (hint: name the layers of the multi-layer `SpatRaster`), outputting plots on 1 row with 3 columns. 
 
 
 ***
