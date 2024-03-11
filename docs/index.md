@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-02-28
+Updated on: 2024-03-11
 
 <center>
 
@@ -78,6 +78,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - Assignment 3 due (Unit 1 Module 4)
 - Spring Break
 - Week 9 (Mar 11, 13)
+  - [Class 13 slides](class14.html)  
   - Working with vectors
 - Week 10 (Mar 18, 20)
   - More on vectors
