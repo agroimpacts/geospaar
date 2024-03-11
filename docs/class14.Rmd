@@ -1,0 +1,505 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 14
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class14plus.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, message=FALSE, eval=FALSE, warning=FALSE}
+library(leaflet)
+library(sf)
+library(dplyr)
+farmersn <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  readr::read_csv() %>% group_by(uuid) %>% 
+  summarize(x = mean(x), y = mean(y), n = n()) %>% 
+  st_as_sf(coords = c("x", "y"), crs = 4326)
+districts <- read_sf(system.file("extdata/districts.geojson", 
+                                 package = "geospaar"))
+farmersn <- st_join(farmersn, districts, left = FALSE)
+bb <- unname(st_bbox(districts))
+xy <- st_centroid(districts) %>% st_coordinates() %>% 
+  bind_cols(name = districts$distName, .)
+slist <- list("color" = "white")
+label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'center',
+                           textOnly = TRUE, textsize = "5px")
+qpal <- colorQuantile("RdYlBu", farmersn$n, n = 5)
+
+m <- leaflet() %>% 
+  addProviderTiles("Esri.WorldImagery") %>% 
+  fitBounds(bb[1], bb[2], bb[3], bb[4]) %>% 
+  addPolygons(data = districts, fill = FALSE, color = "white", 
+              group = "Districts", weight = 1) %>% 
+  addCircles(data = farmersn, popup = as.character(farmersn$n), 
+             color = ~qpal(n), group = "Farmers") %>% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
+                      labelOptions = label_opts) %>%
+  addLayersControl(overlayGroups = c("Districts", "Names", "Farmers"),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
+```
+
+```{r, eval=FALSE, echo=FALSE}
+library(htmlwidgets) 
+saveWidget(m, "docs/figures/zambialeaflet2.html")
+```
+
+---
+
+<iframe seamless src="figures/zambialeaflet2.html" width="100%" 
+height="500"></iframe>
+
+---
+## Today
+- Finish up:
+  - split-apply-combine
+  - plotting
+  - regression
+- Intro to spatial 
+
+---
+```{r, message = FALSE}
+library(sf)
+library(dplyr)
+sz <- 100
+dat <- lapply(1:3, function(x) {
+  set.seed(x)
+  d <- data.frame(
+    id = 1:sz,
+    v1 = runif(sz, min = 2, max = 12),
+    grp = paste0("g", x)
+  ) %>% mutate(v2 = v1 + rnorm(sz, mean = 2, sd = 2)) %>% 
+    select(id, v1, v2, grp)
+}) %>% bind_rows()
+```
+
+---
+```{r}
+plot(dat$v1, dat$v2)
+```
+
+---
+
+## SAC
+### `tidyverse`
+```{r, eval=FALSE}
+dat %>% 
+  group_by(grp) %>% 
+  summarize(..)
+```
+
+### base
+```{r, eval=FALSE}
+sapply(unique(dat$grp), function(x) {
+  head(dat[dat$grp == x, ])
+})
+
+```
+
+---
+## Graphical SAC
+
+```{r, eval=FALSE}
+ggplot(dat) + 
+  geom_point(aes(x = v1, y = v2, color = grp))
+```
+
+---
+```{r, eval=FALSE}
+ggplot(dat) + 
+  geom_point(aes(x = v1, y = v2)) + 
+  facet_wrap(~grp)
+```
+
+---
+## Regression
+
+### Base
+```{r, eval=FALSE}
+reg <- lm(v2 ~ v1, data = dat)
+summary(reg)
+
+plot(dat$v1, dat$v2)
+abline(reg, col = "red")
+```
+
+### `ggplot`
+
+```{r, eval=FALSE}
+ggplot(dat) + 
+  geom_point(aes(x = v1, y = v2)) + 
+  geom_smooth(aes(x = v1, y = v2), method = "lm")
+```
+
+---
+## SAC + Regression
+
+```{r, eval=FALSE}
+# ? thoughts
+
+```
+
+
+
+
+
+---
+## Spatial data
+### Reading
+
+- Create spatial points from csv
+```{r, message=FALSE, }
+library(tidyverse)
+library(sf)
+## read in csv
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() 
+
+## convert tibble to 'sf'
+farmers_sf <- st_as_sf(farmers, coords = c("x", "y"), crs = 4326)
+```
+
+---
+
+### Reading
+- Reading geojsons
+- Both `st_read` and `read_sf` work
+
+```{r, message = FALSE}
+districts <- read_sf(system.file("extdata/districts.geojson", 
+                                 package = "geospaar"))
+roads <- st_read(system.file("extdata/roads.geojson", package = "geospaar"))
+```
+
+---
+### Writing
+- `st_write` works as expected
+- Use '.geojson' (only one file)
+```{r, eval = FALSE}
+#st_write(districts, "districts_out.shp")
+st_write(districts, "districts2.geojson")
+```
+
+---
+## Projections (crs)
+- Geographic coordinates are: `4326`
+```{r, message = FALSE}
+st_crs(farmers_sf) <- 4326
+farmers_sf %>% st_crs()
+# or
+farmers_sf %>% st_set_crs(NA)
+farmers_sf %>% st_set_crs(4326)
+```
+
+
+---
+## projections (use existing)
+- you can set projections based on another layer
+- but the two layers MUST have the same crs (e.g. geographic)
+```{r, message = FALSE}
+farmers <- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                package = "geospaar"))
+farmers <- st_as_sf(farmers, coords = c("x", "y")) %>% 
+  st_set_crs(st_crs(districts))
+
+farmers %>% st_crs() ## print new crs
+```
+
+---
+## projections (transform)
+- Use `st_transform()` to project from one crs to another
+```{r, message = FALSE}
+roads <- st_transform(x = roads, crs = st_crs(districts))
+st_crs(roads)
+```
+
+
+---
+## Features from scratch
+```{r, message = FALSE}
+pt <- st_point(x = c(28, -14))
+pt
+#> POINT (28 -14)
+#
+# #2
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts
+#> MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))
+#
+# #3
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline
+#> LINESTRING (27 -15, 27.5 -15.5, 28 -16)
+#
+# #4
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol
+```
+
+---
+### Plotting
+- `sf`'s generic `plot()` (use `add = TRUE`)
+```{r, message = FALSE}
+par(mar = c(0, 0, 0, 0))
+plot(districts %>% st_geometry(), col = "grey")
+plot(pt, add = TRUE, col = "red", pch = 20)
+plot(pts, add = TRUE, col = "blue", pch = 20)
+plot(sline, add = TRUE, col = "cyan", lwd = 2)
+plot(pol, add = TRUE, col = "orange", lwd = 2)
+```
+
+
+---
+## Plotting (ggplot)
+- Use `geom_sf()`
+```{r, message = FALSE}
+ggplot(districts) + geom_sf() +
+  geom_sf(data = roads, col = "red") + 
+  geom_sf(data = farmers_sf, col = "blue")
+```
+
+---
+## Area and Length
+- `st_area()`, `st_length`. Default units are in meters
+- How many square m in a square km?
+```{r, message = FALSE}
+dist_areas <- districts %>% st_area()
+dist_areas
+dist_areas %>% units::set_units("km^2")
+```
+
+---
+## Add area as column
+```{r, message = FALSE}
+districts <- districts %>% 
+  mutate(area = st_area(.) %>% units::set_units("km^2") %>% as.numeric()) 
+districts
+```
+
+---
+## Plot districts (exercise)
+- Use `geom_sf()` to plot area
+- Fill districts based on area column.
+- Use `scale_fill_continuous` , with `type = 'viridis'`
+```{r, message = FALSE}
+
+```
+
+---
+## ggplot steps
+- Start with `ggplot()`. You can include data if you're only using one data set.
+- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
+- Add aesthetics in `aes()`. These are columns used for plotting. 
+- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
+- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
+
+
+
+```{r, message = FALSE}
+
+```
+
+---
+## Answer
+```{r, message = FALSE}
+ggplot(districts) + 
+  geom_sf(aes(fill = area )) +
+  scale_fill_continuous(type = 'viridis')
+```
+
+
+---
+## Calculate length (exercise)
+- Use `st_length()` to add colummn 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
+- Then plot roads based on length (use `scale_color_continuous()` )
+- Plot roads with line width 1 (`lwd = 1`)
+- Use `theme_bw()`
+
+```{r, message = FALSE}
+
+```
+
+
+---
+## Answer
+```{r, message = FALSE}
+roads <- roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km")))
+ggplot() +
+  geom_sf(data = districts, col = 'black', fill = NA)  +
+  geom_sf(data = roads, aes(col = road_length), lwd = 1) + 
+  scale_color_continuous(type = 'viridis') + theme_bw()
+
+```
+
+---
+
+## Spatial Operations
+Data setup
+```{r, message = FALSE}
+coords <- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
+                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
+#
+# #2
+pol <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+roads_rpj <- st_transform(roads, crs = st_crs(districts))
+
+```
+
+---
+## Plotting
+```{r, message = FALSE}
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(pol, col = "purple", add = TRUE)
+plot(roads_rpj, col = 'red', add = TRUE)
+```
+
+
+---
+## `st_intersects`
+- Similar to "Select by Spatial Location"
+- Finds indices of second object that intersect each element of first object
+```{r, message = FALSE}
+st_intersects(x = roads_rpj, y = districts)
+```
+
+---
+## `st_intersects`
+```{r, message = FALSE}
+highway <- roads_rpj[401, ]
+dists_int <- districts %>% 
+  slice(st_intersects(x = highway, y = districts)[[1]])
+#> although coordinates are longitude/latitude, st_intersects assumes that they are planar
+dists_int
+plot(st_geometry(dists_int), col = 'grey')
+plot(highway, col = 'red', add = TRUE)
+```
+
+
+---
+## `st_intersection()`
+- finds intersecting pairs between two objects
+- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
+```{r, message = FALSE}
+pol_int_dists <- st_intersection(x = pol, y = districts)
+
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
+     add = TRUE)
+```
+
+---
+## `st_difference`
+- Similar to "erase" in ArcGIS
+- Returns first object without second object. 
+```{r, message = FALSE}
+d1 <- st_difference(x = districts, y = pol)
+d2 <- st_difference(x = pol, y = districts)
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+d1 %>% st_geometry %>% plot(col = "grey")
+d2 %>% st_geometry %>% plot(col = "grey")
+```
+
+
+---
+## `st_union`
+- Combines objects without resolving borders. 
+- Really takes all possible combinations of first and 2nd object
+- Switching order of inputs changes column order
+```{r, message = FALSE}
+uni1 <- st_union(x = pol, y = districts)
+uni1
+
+uni2 <- st_union(x = districts, y = pol)
+uni2
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
+plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
+```
+
+---
+## `st_buffer()`
+- Best to use projected coordinates (e.g. Albers)
+```{r, message = FALSE}
+## project everything to Albers
+farmers_alb <- farmers_sf %>% st_transform(st_crs(roads))
+long_roads <- roads %>% filter(as.numeric(st_length(.)) > 500000)
+districts_alb <- districts %>% st_transform(st_crs(roads))
+
+roads_buff_20km = st_buffer(long_roads, 20000)
+plot(st_geometry(districts_alb), col = "grey")
+plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
+plot(st_geometry(long_roads), col = "red", add = TRUE)
+```
+
+---
+## `st_sample`
+
+```{r, message = FALSE}
+par(mar = rep(0, 4))
+districts %>% st_union %>% plot(col = "grey")
+set.seed(1)
+districts %>% st_union %>% st_sample(size = 100, exact = TRUE) %>% 
+  plot(pch = 20, add = TRUE)
+```
+
+
+---
+## Exercise
+Find all districts within 50 km of sampled points. 
+
+```{r, message = FALSE}
+
+```
+
+---
+## Exercise
+Of the sampled farmers, how many are within 100km of one of the "long roads"?
+```{r, message = FALSE}
+
+```
+
+
+---
+### Further Exercises
+
+#### Round 1
+- Calculate the length of roads in kilometers
+- Buffer roads > 100 km by 30 kilometers, save as new object
+- Buffer roads > 100 km 10 kilometers, save as new object
+- Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
+- Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
+
+```{r, eval=FALSE}
+# code to adapt
+roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
+  filter(km > 200) %>% 
+  st_buffer(dist = 20000) %>% 
+  st_transform(crs = 4326)
+st_difference(larger_object, smaller_object)
+ggplot() + geom_sf
+
+```
+
+---
+
+#### Round 2
+- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
+- Plot the 30 km buffer (red) the points in it (blue) over the districts
+
+```{r, eval=FALSE}
+buffered_object %>% st_sample()
+```
+

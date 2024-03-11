@@ -55,7 +55,7 @@ cong %&gt;%
   scale_x_continuous(breaks = seq(1859, 2019, 10), expand = c(0, 2))
 ```
 
-
+---
 ## Working with data, continued
 
 ### `do.call` / `bind_rows`
@@ -66,9 +66,9 @@ for(i in 1:3) {
   set.seed(i)
   d &lt;- data.frame(
     id = 1:sz,
-    v1 = sample(2:12, size = sz, replace = TRUE),
+    v1 = runif(sz, min = 2, max = 12),
     grp = paste0("g", i)
-  ) %&gt;% mutate(v2 = v1 + rnorm(sz, mean = 2, sd = 1)) %&gt;% 
+  ) %&gt;% mutate(v2 = v1 + rnorm(sz, mean = 2, sd = 2)) %&gt;% 
     select(id, v1, v2, grp)
   readr::write_csv(d, file = file.path(tempdir(), paste0("dataset", i, ".csv")))
 }
@@ -77,6 +77,8 @@ for(i in 1:3) {
 fs &lt;- list.files(tempdir(), pattern = "dataset.*.csv", full.names = TRUE)
 # dat &lt;- do.call(rbind, lapply(fs, readr::read_csv))
 dat &lt;- bind_rows(lapply(fs, readr::read_csv))
+
+plot(dat$v1, dat$v2)
 ```
 
 
@@ -86,12 +88,14 @@ dat &lt;- bind_rows(lapply(fs, readr::read_csv))
 - reshape
 - mutate
 - select
-- filter
+- joins
 - split-apply-combine
 - plotting
 - regression
 
 ---
+
+## Reshape
 
 ```r
 dat %&gt;% 
@@ -100,7 +104,45 @@ dat %&gt;%
 dat %&gt;% 
   select(-v1) %&gt;%
   pivot_wider(names_from = grp, values_from = v2)
+
+dat_wide &lt;- dat %&gt;% 
+  select(id, v2, grp) %&gt;%
+  pivot_wider(names_from = grp, values_from = v2)
+
+dat_long &lt;- dat_wide %&gt;% 
+  pivot_longer(g1:g3, names_to = "grp", values_to = "v2") %&gt;% 
+  arrange(grp)
+
+dat_long2 &lt;- dat_wide %&gt;% 
+  pivot_longer(g1:g3, names_to = "grp", values_to = "v2") 
+
+cbind(dat, dat_long) %&gt;% head()
+bind_cols(dat, dat_long) 
 ```
+
+---
+## Joins
+
+
+```r
+cbind(dat, dat_long2) %&gt;% head()
+# bind_cols(dat, dat_long) 
+
+dat %&gt;% left_join(dat_long2)
+dat_long2 %&gt;% 
+  rename(grp2 = grp) %&gt;%
+  select(id, grp2, v2) %&gt;% 
+  left_join(dat, ., by = c("id", "v2", "grp" = "grp2"))
+
+dat_long2 %&gt;% 
+  rename(grp2 = grp) %&gt;%
+  select(id, grp2, v2) %&gt;% 
+  left_join(dat %&gt;% select(-v2), ., by = c("id", "grp" = "grp2")) %&gt;% 
+  select(id:v1, v2, grp)
+```
+
+- Note: understand the differences between `full_join`, `inner_join`, `right_join`, and `left_join`. 
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
