@@ -105,15 +105,17 @@ plot(dat$v1, dat$v2)
 ```r
 dat %&gt;% 
   group_by(grp) %&gt;% 
-  summarize(..)
+  # summarize(v2 = mean(v2)) %&gt;%
+  # summarize(across(v1:v2, mean)) %&gt;%
+  summarize(across(v1:v2, list("mu" = mean, "sd" = sd)))
 ```
 
 ### base
 
 ```r
-sapply(unique(dat$grp), function(x) {
-  head(dat[dat$grp == x, ])
-})
+t(sapply(unique(dat$grp), function(x) {
+  colMeans(dat[dat$grp == x, c("v1", "v2")])
+}))
 ```
 
 ---
@@ -131,6 +133,15 @@ ggplot(dat) +
 ggplot(dat) + 
   geom_point(aes(x = v1, y = v2)) + 
   facet_wrap(~grp)
+  # facet_wrap(~grp, nrow = 2, ncol = 2)
+```
+
+
+```r
+par(mfrow = c(1, 3))
+for(i in unique(dat$grp)) {
+  plot(v2 ~ v1, data = dat[dat$grp == i, ])
+}
 ```
 
 ---
@@ -161,9 +172,19 @@ ggplot(dat) +
 
 ```r
 # ? thoughts
+ggplot(dat) + 
+  geom_point(aes(x = v1, y = v2, color = grp)) + 
+  geom_smooth(aes(x = v1, y = v2), method = "lm") + 
+  # geom_smooth(aes(x = v1, y = v2, color = grp), method = "lm") #+
+  facet_wrap(~grp)
 ```
 
 
+---
+## Homework
+
+- Use base `R` functions to repeat the operation performed in the plot in the preceding slide, i.e. split `dat` by group, apply an `lm` to each split, and plot each split as one of three panels in a plot, with the regression line plotted over the points using `abline`.  
+- If you want to go a bit further, figure out how to adorn each plot so that each series gets a different color (as with `ggplot`). 
 
 
 
@@ -412,7 +433,7 @@ plot(sline, add = TRUE, col = "cyan", lwd = 2)
 plot(pol, add = TRUE, col = "orange", lwd = 2)
 ```
 
-![](class14_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](class14_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -425,460 +446,7 @@ ggplot(districts) + geom_sf() +
   geom_sf(data = farmers_sf, col = "blue")
 ```
 
-![](class14_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
-
----
-## Area and Length
-- `st_area()`, `st_length`. Default units are in meters
-- How many square m in a square km?
-
-```r
-dist_areas &lt;- districts %&gt;% st_area()
-dist_areas
-```
-
-```
-## Units: [m^2]
-##  [1]  2550935366 17469693572  4599663199 13478544490  3791816946  1014001877
-##  [7]  4339475638  1729519245 15512644024  6200831837  7048374145 12045315895
-## [13]  3911004624  8888864165 15764111906 14585226161  1544556596  5799390245
-## [19] 17252307329 13982957127  1037282269 23065630072 17081749634 12791445182
-## [25] 10549445663 21595457052  3916954726  9260951216 18339971197   793591581
-## [31]   735058720  3883612370   925324702 11453506960 15817396242 14083721656
-## [37]   421992832  9873166086  5926862767  9697983348  3575010630  6767089945
-## [43]  8576979139  6212291945 17710196297  9955317247  4852944584 40249723718
-## [49]  8538121537 12015199892 10040956679  1265742489 19322630011 21572196432
-## [55]  9856883262  6802189469 20870273438  4722220050  5688065867  4334582601
-## [61]   977954640 10598023896  8315144160 10068806510 15592347732 23678362272
-## [67] 29938030720 16268253746  3938300200  4791000054 30183878337 14123799828
-```
-
-```r
-dist_areas %&gt;% units::set_units("km^2")
-```
-
-```
-## Units: [km^2]
-##  [1]  2550.9354 17469.6936  4599.6632 13478.5445  3791.8169  1014.0019
-##  [7]  4339.4756  1729.5192 15512.6440  6200.8318  7048.3741 12045.3159
-## [13]  3911.0046  8888.8642 15764.1119 14585.2262  1544.5566  5799.3902
-## [19] 17252.3073 13982.9571  1037.2823 23065.6301 17081.7496 12791.4452
-## [25] 10549.4457 21595.4571  3916.9547  9260.9512 18339.9712   793.5916
-## [31]   735.0587  3883.6124   925.3247 11453.5070 15817.3962 14083.7217
-## [37]   421.9928  9873.1661  5926.8628  9697.9833  3575.0106  6767.0899
-## [43]  8576.9791  6212.2919 17710.1963  9955.3172  4852.9446 40249.7237
-## [49]  8538.1215 12015.1999 10040.9567  1265.7425 19322.6300 21572.1964
-## [55]  9856.8833  6802.1895 20870.2734  4722.2201  5688.0659  4334.5826
-## [61]   977.9546 10598.0239  8315.1442 10068.8065 15592.3477 23678.3623
-## [67] 29938.0307 16268.2537  3938.3002  4791.0001 30183.8783 14123.7998
-```
-
----
-## Add area as column
-
-```r
-districts &lt;- districts %&gt;% 
-  mutate(area = st_area(.) %&gt;% units::set_units("km^2") %&gt;% as.numeric()) 
-districts
-```
-
-```
-## Simple feature collection with 72 features and 2 fields
-## Geometry type: POLYGON
-## Dimension:     XY
-## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
-## Geodetic CRS:  WGS 84
-## # A tibble: 72 × 3
-##    distName                                                      geometry   area
-##  * &lt;chr&gt;                                                    &lt;POLYGON [°]&gt;  &lt;dbl&gt;
-##  1 Chadiza       ((32.3076 -14.3128, 32.31928 -14.22275, 32.28473 -14.16…  2551.
-##  2 Chama         ((33.6875 -10.57932, 33.68479 -10.60804, 33.65166 -10.6… 17470.
-##  3 Chavuma       ((22.00014 -13.4776, 21.99978 -13.00616, 22.43356 -13.0…  4600.
-##  4 Chibombo      ((28.89229 -14.79981, 28.96829 -14.83748, 28.99061 -14.… 13479.
-##  5 Chiengi       ((29.1088 -9.079298, 29.05089 -9.1575, 29.00485 -9.1589…  3792.
-##  6 Chililabombwe ((28.06755 -12.35262, 28.08029 -12.40576, 28.06825 -12.…  1014.
-##  7 Chilubi       ((30.61853 -11.25163, 30.64427 -11.28379, 30.63371 -11.…  4339.
-##  8 Chingola      ((27.51766 -12.29848, 27.51231 -12.32162, 27.53024 -12.…  1730.
-##  9 Chinsali      ((32.34814 -9.745779, 32.39081 -9.757746, 32.44521 -9.7… 15513.
-## 10 Chipata       ((32.95348 -13.26367, 32.9231 -13.35447, 32.9156 -13.40…  6201.
-## # ℹ 62 more rows
-```
-
----
-## Plot districts (exercise)
-- Use `geom_sf()` to plot area
-- Fill districts based on area column.
-- Use `scale_fill_continuous` , with `type = 'viridis'`
-
-
----
-## ggplot steps
-- Start with `ggplot()`. You can include data if you're only using one data set.
-- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
-- Add aesthetics in `aes()`. These are columns used for plotting. 
-- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
-- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
-
-
-
-
-
----
-## Answer
-
-```r
-ggplot(districts) + 
-  geom_sf(aes(fill = area )) +
-  scale_fill_continuous(type = 'viridis')
-```
-
-![](class14_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
-
-
----
-## Calculate length (exercise)
-- Use `st_length()` to add colummn 'road_length' to `roads`
-- 'road_length' should be in km
-- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
-- Then plot roads based on length (use `scale_color_continuous()` )
-- Plot roads with line width 1 (`lwd = 1`)
-- Use `theme_bw()`
-
-
-
-
----
-## Answer
-
-```r
-roads &lt;- roads %&gt;% 
-  mutate(road_length = as.numeric(units::set_units(st_length(.), "km")))
-ggplot() +
-  geom_sf(data = districts, col = 'black', fill = NA)  +
-  geom_sf(data = roads, aes(col = road_length), lwd = 1) + 
-  scale_color_continuous(type = 'viridis') + theme_bw()
-```
-
-![](class14_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
-
----
-
-## Spatial Operations
-Data setup
-
-```r
-coords &lt;- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
-                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
-#
-# #2
-pol &lt;- st_polygon(x = list(coords)) %&gt;% st_sfc %&gt;% st_sf(ID = 1, crs = 4326)
-roads_rpj &lt;- st_transform(roads, crs = st_crs(districts))
-```
-
----
-## Plotting
-
-```r
-par(mar = rep(0, 4))
-plot(st_geometry(districts), col = "grey")
-plot(pol, col = "purple", add = TRUE)
-plot(roads_rpj, col = 'red', add = TRUE)
-```
-
-```
-## Warning in plot.sf(roads_rpj, col = "red", add = TRUE): ignoring all but the
-## first attribute
-```
-
-![](class14_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
-
-
----
-## `st_intersects`
-- Similar to "Select by Spatial Location"
-- Finds indices of second object that intersect each element of first object
-
-```r
-st_intersects(x = roads_rpj, y = districts)
-```
-
-```
-## Sparse geometry binary predicate list of length 473, where the
-## predicate was `intersects'
-## first 10 elements:
-##  1: 43, 58
-##  2: 55
-##  3: 43
-##  4: 43
-##  5: 9, 14, 25, 55
-##  6: 25, 50, 51
-##  7: 24, 50
-##  8: 24
-##  9: 50
-##  10: 38
-```
-
----
-## `st_intersects`
-
-```r
-highway &lt;- roads_rpj[401, ]
-dists_int &lt;- districts %&gt;% 
-  slice(st_intersects(x = highway, y = districts)[[1]])
-#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar
-dists_int
-```
-
-```
-## Simple feature collection with 13 features and 2 fields
-## Geometry type: POLYGON
-## Dimension:     XY
-## Bounding box:  xmin: 26.82275 ymin: -16.67104 xmax: 33.6875 ymax: -9.083201
-## Geodetic CRS:  WGS 84
-## # A tibble: 13 × 3
-##    distName                                                      geometry   area
-##    &lt;chr&gt;                                                    &lt;POLYGON [°]&gt;  &lt;dbl&gt;
-##  1 Chibombo      ((28.89229 -14.79981, 28.96829 -14.83748, 28.99061 -14.… 13479.
-##  2 Chinsali      ((32.34814 -9.745779, 32.39081 -9.757746, 32.44521 -9.7… 15513.
-##  3 Isoka         ((33.6875 -10.57932, 33.64154 -10.61133, 33.61895 -10.5…  8889.
-##  4 Kabwe         ((28.62611 -14.35334, 28.56405 -14.39707, 28.53172 -14.…  1545.
-##  5 Kafue         ((28.21828 -15.32924, 28.19965 -15.37978, 28.21785 -15.…  5799.
-##  6 Kapiri Mposhi ((28.89229 -14.79981, 28.87305 -14.79676, 28.8408 -14.7… 17082.
-##  7 Lusaka        ((28.4325 -15.49861, 28.41655 -15.48415, 28.33609 -15.4…   422.
-##  8 Mazabuka      ((27.79194 -15.65721, 27.82913 -15.66165, 27.8341 -15.7…  6767.
-##  9 Mkushi        ((29.80904 -13.45655, 29.79202 -13.51482, 29.83907 -13.… 17710.
-## 10 Mpika         ((31.10328 -10.96646, 31.11047 -10.99688, 31.15785 -11.… 40250.
-## 11 Nakonde       ((33.05925 -9.634867, 33.04477 -9.717537, 33.05045 -9.7…  4722.
-## 12 Serenje       ((31.43724 -13.42509, 31.41359 -13.46214, 31.37249 -13.… 23678.
-## 13 Siavonga      ((28.92478 -15.94845, 28.84758 -16.05104, 28.85917 -16.…  3938.
-```
-
-```r
-plot(st_geometry(dists_int), col = 'grey')
-plot(highway, col = 'red', add = TRUE)
-```
-
-```
-## Warning in plot.sf(highway, col = "red", add = TRUE): ignoring all but the
-## first attribute
-```
-
-![](class14_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
-
-
----
-## `st_intersection()`
-- finds intersecting pairs between two objects
-- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
-
-```r
-pol_int_dists &lt;- st_intersection(x = pol, y = districts)
-```
-
-```
-## Warning: attribute variables are assumed to be spatially constant throughout
-## all geometries
-```
-
-```r
-par(mar = rep(0, 4))
-plot(st_geometry(districts), col = "grey")
-plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
-     add = TRUE)
-```
-
-![](class14_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
-
----
-## `st_difference`
-- Similar to "erase" in ArcGIS
-- Returns first object without second object. 
-
-```r
-d1 &lt;- st_difference(x = districts, y = pol)
-```
-
-```
-## Warning: attribute variables are assumed to be spatially constant throughout
-## all geometries
-```
-
-```r
-d2 &lt;- st_difference(x = pol, y = districts)
-```
-
-```
-## Warning: attribute variables are assumed to be spatially constant throughout
-## all geometries
-```
-
-```r
-par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-d1 %&gt;% st_geometry %&gt;% plot(col = "grey")
-d2 %&gt;% st_geometry %&gt;% plot(col = "grey")
-```
-
-![](class14_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
-
-
----
-## `st_union`
-- Combines objects without resolving borders. 
-- Really takes all possible combinations of first and 2nd object
-- Switching order of inputs changes column order
-
-```r
-uni1 &lt;- st_union(x = pol, y = districts)
-```
-
-```
-## Warning: attribute variables are assumed to be spatially constant throughout
-## all geometries
-```
-
-```r
-uni1
-```
-
-```
-## Simple feature collection with 72 features and 3 fields
-## Geometry type: MULTIPOLYGON
-## Dimension:     XY
-## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
-## Geodetic CRS:  WGS 84
-## First 10 features:
-##     ID      distName      area                              .
-## 1    1       Chadiza  2550.935 MULTIPOLYGON (((26.4 -15.6,...
-## 1.1  1         Chama 17469.694 MULTIPOLYGON (((26.4 -15.6,...
-## 1.2  1       Chavuma  4599.663 MULTIPOLYGON (((26.4 -15.6,...
-## 1.3  1      Chibombo 13478.544 MULTIPOLYGON (((26.4 -15.6,...
-## 1.4  1       Chiengi  3791.817 MULTIPOLYGON (((26.4 -15.6,...
-## 1.5  1 Chililabombwe  1014.002 MULTIPOLYGON (((26.4 -15.6,...
-## 1.6  1       Chilubi  4339.476 MULTIPOLYGON (((26.4 -15.6,...
-## 1.7  1      Chingola  1729.519 MULTIPOLYGON (((26.4 -15.6,...
-## 1.8  1      Chinsali 15512.644 MULTIPOLYGON (((26.4 -15.6,...
-## 1.9  1       Chipata  6200.832 MULTIPOLYGON (((26.4 -15.6,...
-```
-
-```r
-uni2 &lt;- st_union(x = districts, y = pol)
-```
-
-```
-## Warning: attribute variables are assumed to be spatially constant throughout
-## all geometries
-```
-
-```r
-uni2
-```
-
-```
-## Simple feature collection with 72 features and 3 fields
-## Geometry type: MULTIPOLYGON
-## Dimension:     XY
-## Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
-## Geodetic CRS:  WGS 84
-## # A tibble: 72 × 4
-##    distName        area    ID                                           geometry
-##  * &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;                                 &lt;MULTIPOLYGON [°]&gt;
-##  1 Chadiza        2551.     1 (((32.45056 -14.28611, 32.65876 -14.1972, 33.0001…
-##  2 Chama         17470.     1 (((33.64154 -10.61133, 33.61895 -10.58417, 33.583…
-##  3 Chavuma        4600.     1 (((22.042 -13.50042, 22.07372 -13.49779, 22.13168…
-##  4 Chibombo      13479.     1 (((28.87305 -14.79676, 28.8408 -14.75284, 28.8232…
-##  5 Chiengi        3792.     1 (((29.14024 -9.039982, 29.16764 -9.04765, 29.1719…
-##  6 Chililabombwe  1014.     1 (((28.01253 -12.35119, 27.98945 -12.34021, 27.962…
-##  7 Chilubi        4339.     1 (((30.40208 -11.14174, 30.39746 -11.11073, 30.470…
-##  8 Chingola       1730.     1 (((27.4628 -12.27935, 27.44569 -12.24882, 27.3945…
-##  9 Chinsali      15513.     1 (((32.30827 -9.753086, 32.29436 -9.7779, 32.25595…
-## 10 Chipata        6201.     1 (((32.90448 -13.24411, 32.89845 -13.22351, 32.843…
-## # ℹ 62 more rows
-```
-
-```r
-par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
-plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
-```
-
-![](class14_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
-
----
-## `st_buffer()`
-- Best to use projected coordinates (e.g. Albers)
-
-```r
-## project everything to Albers
-farmers_alb &lt;- farmers_sf %&gt;% st_transform(st_crs(roads))
-long_roads &lt;- roads %&gt;% filter(as.numeric(st_length(.)) &gt; 500000)
-districts_alb &lt;- districts %&gt;% st_transform(st_crs(roads))
-
-roads_buff_20km = st_buffer(long_roads, 20000)
-plot(st_geometry(districts_alb), col = "grey")
-plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
-plot(st_geometry(long_roads), col = "red", add = TRUE)
-```
-
-![](class14_files/figure-html/unnamed-chunk-35-1.png)&lt;!-- --&gt;
-
----
-## `st_sample`
-
-
-```r
-par(mar = rep(0, 4))
-districts %&gt;% st_union %&gt;% plot(col = "grey")
-set.seed(1)
-districts %&gt;% st_union %&gt;% st_sample(size = 100, exact = TRUE) %&gt;% 
-  plot(pch = 20, add = TRUE)
-```
-
-![](class14_files/figure-html/unnamed-chunk-36-1.png)&lt;!-- --&gt;
-
-
----
-## Exercise
-Find all districts within 50 km of sampled points. 
-
-
-
----
-## Exercise
-Of the sampled farmers, how many are within 100km of one of the "long roads"?
-
-
-
----
-### Further Exercises
-
-#### Round 1
-- Calculate the length of roads in kilometers
-- Buffer roads &gt; 100 km by 30 kilometers, save as new object
-- Buffer roads &gt; 100 km 10 kilometers, save as new object
-- Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
-- Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
-
-
-```r
-# code to adapt
-roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;% 
-  filter(km &gt; 200) %&gt;% 
-  st_buffer(dist = 20000) %&gt;% 
-  st_transform(crs = 4326)
-st_difference(larger_object, smaller_object)
-ggplot() + geom_sf
-```
-
----
-
-#### Round 2
-- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
-- Plot the 30 km buffer (red) the points in it (blue) over the districts
-
-
-```r
-buffered_object %&gt;% st_sample()
-```
+![](class14_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
