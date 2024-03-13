@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-03-11
+Updated on: 2024-03-13
 
 <center>
 
@@ -79,6 +79,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Spring Break
 - Week 9 (Mar 11, 13)
   - [Class 14 slides](class14.html)  
+  - [Class 15 slides](class15.html)  
   - Working with vectors
 - Week 10 (Mar 18, 20)
   - More on vectors
