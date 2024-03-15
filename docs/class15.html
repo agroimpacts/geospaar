@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -22,7 +22,7 @@ class: center, middle, inverse, title-slide
 
 ---
 
-&lt;img src="https://github.com/agroimpacts/activemapper/blob/main/inst/manuscript/figures/figure6.png?raw=true" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="https://github.com/agroimpacts/activemapper/blob/main/inst/manuscript/figures/figure6.png?raw=true" width="90%" /&gt;
 
 ---
 [Code for figure](https://github.com/agroimpacts/activemapper/blob/e1c238a741fd8b590e21ef1e77b89fe90a25ae4f/inst/manuscript/figures.Rmd#L454-L619)
@@ -44,19 +44,6 @@ class: center, middle, inverse, title-slide
 - If you want to go a bit further, figure out how to adorn each plot so that each series gets a different color (as with `ggplot`). 
 
 ---
-## Solution
-
-
-
-```r
-par(mfrow = c(1, 3))
-for(i in unique(dat$grp)) {
-  plot(v2 ~ v1, data = dat[dat$grp == i, ])
-}
-```
-
-
----
 
 ```r
 library(sf)
@@ -72,6 +59,60 @@ dat &lt;- lapply(1:3, function(x) {
     select(id, v1, v2, grp)
 }) %&gt;% bind_rows()
 ```
+---
+
+
+
+```r
+ggplot(dat) + 
+  geom_point(aes(x = v1, y = v2)) + 
+  geom_smooth(aes(x = v1, y = v2), method = "lm") + 
+  facet_wrap(~grp)
+```
+---
+
+## Solution
+
+
+```r
+# answer 1
+par(mfrow = c(1, 3))
+for(i in unique(dat$grp)) {
+  plot(v2 ~ v1, data = dat[dat$grp == i, ])
+  abline(lm(v2 ~ v1, data = dat[dat$grp == i, ]), col = "red")
+}
+
+# answer 2
+layout(matrix(c(1,2,3), 1, 3, byrow = TRUE))
+#code for individual plots
+grouplist &lt;- c("g1", "g2", "g3")
+for(i in grouplist) {
+  if(i == "g1") {
+    selectedcolor &lt;- "red"
+  }
+  if(i == "g2") {
+    selectedcolor &lt;- "green"
+  }
+  if(i == "g3") {
+    selectedcolor &lt;- "blue"
+  }
+  plot(x = dat$v1[dat$grp == i], y = dat$v2[dat$grp == i],
+       abline(lm(dat$v2[dat$grp == i] ~ dat$v1[dat$grp == i],
+                 data = dat)), col = selectedcolor)
+}
+```
+---
+
+Answer 2, made more compact
+
+```r
+par(mfrow = c(1, 3))
+for(i in 1:3) {
+  plot(v2 ~ v1, data = dat[dat$grp == unique(dat$grp)[i], ], 
+       col = c("red", "green", "blue")[i], pch = 16) 
+  abline(lm(v2 ~ v1, data = dat[dat$grp == unique(dat$grp)[i], ]))
+}
+```
 
 ---
 ## Spatial continued
@@ -79,6 +120,8 @@ dat &lt;- lapply(1:3, function(x) {
 
 
 ```r
+districts &lt;- st_read(system.file("extdata/districts.geojson", 
+                                 package = "geospaar"))
 farmers_sf &lt;- read_csv(system.file("extdata/farmer_spatial.csv", 
                                    package = "geospaar"))
 farmers_s &lt;- st_as_sf(farmers, coords = c("x", "y")) %&gt;% 
@@ -131,209 +174,25 @@ districts
 - Use `scale_fill_continuous` , with `type = 'viridis'`
 
 
----
-## ggplot steps
-- Start with `ggplot()`. You can include data if you're only using one data set.
-- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
-- Add aesthetics in `aes()`. These are columns used for plotting. 
-- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
-- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
-
-
----
-## Answer
-
-
-
----
-## Calculate length (exercise)
-- Use `st_length()` to add colummn 'road_length' to `roads`
-- 'road_length' should be in km
-- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
-- Then plot roads based on length (use `scale_color_continuous()` )
-- Plot roads with line width 1 (`lwd = 1`)
-- Use `theme_bw()`
-
-
----
-## Answer
-
-
----
-
-## Spatial Operations
-Data setup
-
 ```r
-coords &lt;- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
-                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
-#
-# #2
-pol &lt;- st_polygon(x = list(coords)) %&gt;% st_sfc %&gt;% st_sf(ID = 1, crs = 4326)
-roads_rpj &lt;- st_transform(roads, crs = st_crs(districts))
-
+ggplot(districts) + geom_sf(aes(fill = area)) + 
+  scale_fill_continuous(type = "viridis")
 ```
 
 ---
-## Plotting
-
-```r
-par(mar = rep(0, 4))
-plot(st_geometry(districts), col = "grey")
-plot(pol, col = "purple", add = TRUE)
-plot(roads_rpj, col = 'red', add = TRUE)
-```
-
-
----
-## `st_intersects`
-- Similar to "Select by Spatial Location"
-- Finds indices of second object that intersect each element of first object
-
-```r
-st_intersects(x = roads_rpj, y = districts)
-```
-
----
-## `st_intersects`
-
-```r
-highway &lt;- roads_rpj[401, ]
-dists_int &lt;- districts %&gt;% 
-  slice(st_intersects(x = highway, y = districts)[[1]])
-#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar
-dists_int
-plot(st_geometry(dists_int), col = 'grey')
-plot(highway, col = 'red', add = TRUE)
-```
-
-
----
-## `st_intersection()`
-- finds intersecting pairs between two objects
-- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
-
-```r
-pol_int_dists &lt;- st_intersection(x = pol, y = districts)
-
-par(mar = rep(0, 4))
-plot(st_geometry(districts), col = "grey")
-plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
-     add = TRUE)
-```
-
----
-## `st_difference`
-- Similar to "erase" in ArcGIS
-- Returns first object without second object. 
-
-```r
-d1 &lt;- st_difference(x = districts, y = pol)
-d2 &lt;- st_difference(x = pol, y = districts)
-
-par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-d1 %&gt;% 
-  st_geometry %&gt;% 
-  plot(col = "grey")
-d2 %&gt;% 
-  st_geometry %&gt;%
-  plot(col = "grey")
-```
-
-
----
-## `st_union`
-- Combines objects without resolving borders. 
-- Really takes all possible combinations of first and 2nd object
-- Switching order of inputs changes column order
-
-```r
-uni1 &lt;- st_union(x = pol, y = districts)
-uni1
-
-uni2 &lt;- st_union(x = districts, y = pol)
-uni2
-
-par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
-plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
-```
-
----
-## `st_buffer()`
-- Best to use projected coordinates (e.g. Albers)
-
-```r
-## project everything to Albers
-farmers_alb &lt;- farmers_sf %&gt;% st_transform(st_crs(roads))
-long_roads &lt;- roads %&gt;% filter(as.numeric(st_length(.)) &gt; 500000)
-districts_alb &lt;- districts %&gt;% st_transform(st_crs(roads))
-
-roads_buff_20km = st_buffer(long_roads, 20000)
-plot(st_geometry(districts_alb), col = "grey")
-plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
-plot(st_geometry(long_roads), col = "red", add = TRUE)
-```
-
----
-## `st_sample`
+## Compare areas
 
 
 ```r
-par(mar = rep(0, 4))
-districts %&gt;% st_union %&gt;% plot(col = "grey")
-set.seed(1)
-districts %&gt;% 
-  st_union %&gt;% 
-  st_sample(size = 100, exact = TRUE) %&gt;% 
-  plot(pch = 20, add = TRUE)
+districts &lt;- districts %&gt;% 
+  st_transform("ESRI:102022") %&gt;% 
+  mutate(area2 = as.numeric(st_area(.) / 10000)) %&gt;% 
+  st_transform(4326)
+
+ggplot(districts) + 
+  geom_histogram(aes(x = area - area2))
 ```
 
-
----
-## Exercise
-Find all districts within 50 km of sampled points. 
-
-
-
----
-## Exercise
-Of the sampled farmers, how many are within 100km of one of the "long roads"?
-
-
-
----
-## Further Exercises
-
-### Round 1
-- Calculate the length of roads in kilometers
-- Buffer roads &gt; 100 km by 30 kilometers, save as new object
-- Buffer roads &gt; 100 km 10 kilometers, save as new object
-- Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
-- Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
-
-
-```r
-# code to adapt
-roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;% 
-  filter(km &gt; 200) %&gt;% 
-  st_buffer(dist = 20000) %&gt;% 
-  st_transform(crs = 4326)
-st_difference(larger_object, smaller_object)
-ggplot() + geom_sf
-
-```
-
----
-
-### Round 2
-- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
-- Plot the 30 km buffer (red) the points in it (blue) over the districts
-
-
-```r
-buffered_object %&gt;% st_sample()
-```
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
