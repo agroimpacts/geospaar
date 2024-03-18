@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-03-13
+Updated on: 2024-03-18
 
 <center>
 
@@ -82,6 +82,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - [Class 15 slides](class15.html)  
   - Working with vectors
 - Week 10 (Mar 18, 20)
+  - [Class 16 slides](class16.html)  
   - More on vectors
   - Assignment 4 due (Unit 2 Module 1)
 - Week 11 (Mar 25, 27)
