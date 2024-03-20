@@ -1,6 +1,6 @@
 ---
 title: "Geospatial Analysis with R"
-subtitle: Class 16
+subtitle: Class 17
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -34,84 +34,22 @@ pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5),
 ```
 
 ---
-## Add area as column
-```{r, eval = FALSE, message = FALSE}
-districts <- districts %>% 
-  mutate(area = as.numeric(units::set_units(st_area(.), "km^2")))
-districts
-```
 
----
-## Plot districts (exercise)
-- Use `geom_sf()` to plot area
-- Fill districts based on area column.
-- Use `scale_fill_continuous` , with `type = 'viridis'`
+## Follow-up from last class
 
-```{r, eval = FALSE, message = FALSE}
-ggplot(districts) + geom_sf(aes(fill = area)) + 
-  scale_fill_continuous(type = "viridis")
-```
-
----
-## Compare areas
-
-```{r, eval=FALSE}
-districts <- districts %>% 
-  st_transform("ESRI:102022") %>% 
-  mutate(area2 = as.numeric(st_area(.) / 10000 / 100)) %>% 
-  st_transform(4326)
-
-ggplot(districts) + 
-  geom_histogram(aes(x = area - area2))
-
-ggplot(districts) + 
-  geom_point(aes(x = area, y = area - area2))
-
-# calculate (area - area2) as a percent of area, and assignn it to a new variable areadiff. Plot areadiff against area in a scatterplot using ggplot
-
-```
----
-```{r, eval=FALSE}
-districts <- districts %>%
-  mutate(areadiff = (area - area2) / area * 100)
-
-ggplot(districts) +
-  geom_point(aes(x = area2, y = areadiff))
-
-districts %>%
-  mutate(areadiff = ((area - area2) / area) * 100) %>%
-  ggplot() + geom_point(aes(x = area2, y = areadiff))
-
-districts %>%
-  mutate(areadiff = ((area - area2) / area) * 100) %>% 
-  summarize(mu = mean(areadiff))
-```
-
----
-```{r, eval=FALSE}
-districts %>%
-  mutate(areadiff = ((area - area2) / area) * 100) %>%
-  ggplot() + geom_sf(aes(fill = areadiff))
-
-districts %>%
-  mutate(areadiff = ((area - area2) / area) * 100) %>% 
-  summarize(mu = mean(areadiff)) %>% 
-  ggplot() + geom_sf(aes(fill = mu))
-
-districts %>%
-  mutate(areadiff = ((area - area2) / area) * 100) %>% 
-  st_drop_geometry() %>% 
-  summarize(mu = mean(areadiff)) #%>% 
-  # ggplot() + geom_sf(aes(fill = mu))
-
-districts %>%
-  mutate(areadiff = ((area - area2) / area) * 100) %>% 
-  as_tibble() %>% 
-  summarize(mu = mean(areadiff)) #%>%
-```
+### Calculate length (exercise)
+- Use `st_length()` to add column 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
+- Then plot roads based on length (use `scale_color_continuous()` )
+- Plot roads with line width 1 (`lwd = 1`)
+- Use `theme_bw()`
 
 ---
 
+- Mixing `%>%` and `+` in `ggplot` 
+
+- Previously
 ```{r, eval=FALSE}
 roads <- st_read(
   system.file("extdata/roads.geojson", package = "geospaar")
@@ -121,26 +59,19 @@ roads <- roads %>%
 ggplot() +
   geom_sf(data = districts, color = "black", fill = NA) +
   geom_sf(data = roads, aes(color = road_length), lwd = 1) + 
-  scale_color_viridis_c() + 
-  theme_minimal()
+  scale_color_continuous(type = "viridis") + 
+  theme_bw()
 ```
 
----
-## ggplot steps
-- Start with `ggplot()`. You can include data if you're only using one data set.
-- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
-- Add aesthetics in `aes()`. These are columns used for plotting. 
-- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
-- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
-
----
-## Calculate length (exercise)
-- Use `st_length()` to add column 'road_length' to `roads`
-- 'road_length' should be in km
-- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
-- Then plot roads based on length (use `scale_color_continuous()` )
-- Plot roads with line width 1 (`lwd = 1`)
-- Use `theme_bw()`
+- Single pipeline
+```{r, eval=FALSE}
+ggplot(districts) + geom_sf() +
+  st_read(system.file("extdata/roads.geojson", package = "geospaar")) %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
+  geom_sf(data = ., aes(color = road_length), lwd = 1) + 
+  scale_color_continuous(type = "viridis") +
+  theme_minimal()
+```
 
 ---
 
@@ -259,22 +190,21 @@ districts %>% st_union %>% plot(col = "grey")
 set.seed(1)
 districts %>% 
   st_union %>% 
-  st_sample(size = 100, exact = TRUE) %>% 
+  st_sample(size = 25, exact = TRUE) %>% 
   plot(pch = 20, add = TRUE)
 ```
 
 
 ---
 ## Exercise
-Find all districts within 50 km of sampled points. 
+Find all districts within 50 km of sampled points? 
 
 ```{r, eval = FALSE, message = FALSE}
-
 ```
 
 ---
 ## Exercise
-Of the sampled farmers, how many are within 100km of one of the "long roads"?
+How many farmers are within 100km of one of the "long roads"?
 ```{r, eval = FALSE, message = FALSE}
 
 ```
