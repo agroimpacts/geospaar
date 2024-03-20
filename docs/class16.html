@@ -36,7 +36,7 @@ farmers_sf &lt;- read_csv(
 ) %&gt;% st_as_sf(coords = c("x", "y")) %&gt;% 
   st_set_crs(st_crs(districts))
 
-roads &lt;- st_read(system.file("extdata/roads.geojson", package = "geospaar")) %&gt;% 
+roads &lt;- st_read(system.file("extdata/roads.geojson", package = "geospaar")) %&gt;%   
   st_transform(crs = st_crs(districts))
 
 pt &lt;- st_point(x = c(28, -14))
@@ -74,20 +74,58 @@ ggplot(districts) + geom_sf(aes(fill = area)) +
 ```r
 districts &lt;- districts %&gt;% 
   st_transform("ESRI:102022") %&gt;% 
-  mutate(area2 = as.numeric(st_area(.) / 10000)) %&gt;% 
+  mutate(area2 = as.numeric(st_area(.) / 10000 / 100)) %&gt;% 
   st_transform(4326)
 
 ggplot(districts) + 
   geom_histogram(aes(x = area - area2))
+
+ggplot(districts) + 
+  geom_point(aes(x = area, y = area - area2))
+
+# calculate (area - area2) as a percent of area, and assignn it to a new variable areadiff. Plot areadiff against area in a scatterplot using ggplot
+```
+---
+
+```r
+districts &lt;- districts %&gt;%
+  mutate(areadiff = (area - area2) / area * 100)
+
+ggplot(districts) +
+  geom_point(aes(x = area2, y = areadiff))
+
+districts %&gt;%
+  mutate(areadiff = ((area - area2) / area) * 100) %&gt;%
+  ggplot() + geom_point(aes(x = area2, y = areadiff))
+
+districts %&gt;%
+  mutate(areadiff = ((area - area2) / area) * 100) %&gt;% 
+  summarize(mu = mean(areadiff))
 ```
 
 ---
-## ggplot steps
-- Start with `ggplot()`. You can include data if you're only using one data set.
-- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
-- Add aesthetics in `aes()`. These are columns used for plotting. 
-- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
-- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
+
+```r
+districts %&gt;%
+  mutate(areadiff = ((area - area2) / area) * 100) %&gt;%
+  ggplot() + geom_sf(aes(fill = areadiff))
+
+districts %&gt;%
+  mutate(areadiff = ((area - area2) / area) * 100) %&gt;% 
+  summarize(mu = mean(areadiff)) %&gt;% 
+  ggplot() + geom_sf(aes(fill = mu))
+
+districts %&gt;%
+  mutate(areadiff = ((area - area2) / area) * 100) %&gt;% 
+  st_drop_geometry() %&gt;% 
+  summarize(mu = mean(areadiff)) #%&gt;% 
+  # ggplot() + geom_sf(aes(fill = mu))
+
+districts %&gt;%
+  mutate(areadiff = ((area - area2) / area) * 100) %&gt;% 
+  as_tibble() %&gt;% 
+  summarize(mu = mean(areadiff)) #%&gt;%
+```
 
 ---
 ## Calculate length (exercise)
@@ -100,177 +138,27 @@ ggplot(districts) +
 
 ---
 
-## Spatial Operations
-Data setup
 
 ```r
-coords &lt;- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
-                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
-pol &lt;- st_polygon(x = list(coords)) %&gt;% 
-  st_sfc %&gt;% 
-  st_sf(ID = 1, crs = 4326)
-roads_rpj &lt;- st_transform(roads, crs = st_crs(districts))
+roads &lt;- st_read(
+  system.file("extdata/roads.geojson", package = "geospaar")
+) 
+roads &lt;- roads %&gt;% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) 
+ggplot() +
+  geom_sf(data = districts, color = "black", fill = NA) +
+  geom_sf(data = roads, aes(color = road_length), lwd = 1) + 
+  scale_color_viridis_c() + 
+  theme_minimal()
 ```
 
 ---
-## Plotting
-
-```r
-par(mar = rep(0, 4))
-plot(st_geometry(districts), col = "grey")
-plot(pol, col = "purple", add = TRUE)
-plot(roads_rpj, col = 'red', add = TRUE)
-```
-
-
----
-## `st_intersects`
-- Similar to "Select by Spatial Location"
-- Finds indices of second object that intersect each element of first object
-
-```r
-st_intersects(x = roads_rpj, y = districts)
-```
-
----
-## `st_intersects`
-
-```r
-highway &lt;- roads_rpj[401, ]
-dists_int &lt;- districts %&gt;% 
-  slice(st_intersects(x = highway, y = districts)[[1]])
-#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar
-dists_int
-plot(st_geometry(dists_int), col = 'grey')
-plot(highway, col = 'red', add = TRUE)
-```
-
-
----
-## `st_intersection()`
-- finds intersecting pairs between two objects
-- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
-
-```r
-pol_int_dists &lt;- st_intersection(x = pol, y = districts)
-
-par(mar = rep(0, 4))
-plot(st_geometry(districts), col = "grey")
-plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
-     add = TRUE)
-```
-
----
-## `st_difference`
-- Similar to "erase" in ArcGIS
-- Returns first object without second object. 
-
-```r
-d1 &lt;- st_difference(x = districts, y = pol)
-d2 &lt;- st_difference(x = pol, y = districts)
-
-par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-d1 %&gt;% 
-  st_geometry %&gt;% 
-  plot(col = "grey")
-d2 %&gt;% 
-  st_geometry %&gt;%
-  plot(col = "grey")
-```
-
-
----
-## `st_union`
-- Combines objects without resolving borders. 
-- Really takes all possible combinations of first and 2nd object
-- Switching order of inputs changes column order
-
-```r
-uni1 &lt;- st_union(x = pol, y = districts)
-uni1
-
-uni2 &lt;- st_union(x = districts, y = pol)
-uni2
-
-par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
-plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
-plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
-```
-
----
-## `st_buffer()`
-- Best to use projected coordinates (e.g. Albers)
-
-```r
-## project everything to Albers
-farmers_alb &lt;- farmers_sf %&gt;% st_transform(st_crs(roads))
-long_roads &lt;- roads %&gt;% filter(as.numeric(st_length(.)) &gt; 500000)
-districts_alb &lt;- districts %&gt;% st_transform(st_crs(roads))
-
-roads_buff_20km = st_buffer(long_roads, 20000)
-plot(st_geometry(districts_alb), col = "grey")
-plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
-plot(st_geometry(long_roads), col = "red", add = TRUE)
-```
-
----
-## `st_sample`
-
-
-```r
-par(mar = rep(0, 4))
-districts %&gt;% st_union %&gt;% plot(col = "grey")
-set.seed(1)
-districts %&gt;% 
-  st_union %&gt;% 
-  st_sample(size = 100, exact = TRUE) %&gt;% 
-  plot(pch = 20, add = TRUE)
-```
-
-
----
-## Exercise
-Find all districts within 50 km of sampled points. 
-
-
-
----
-## Exercise
-Of the sampled farmers, how many are within 100km of one of the "long roads"?
-
-
-
----
-## Further Exercises
-
-### Round 1
-- Calculate the length of roads in kilometers
-- Buffer roads &gt; 100 km by 30 kilometers, save as new object
-- Buffer roads &gt; 100 km 10 kilometers, save as new object
-- Take the difference between the 30 km and 10 km buffers, i.e. erase/difference the two
-- Plot the resulting difference using `ggplot` with the difference in red over Zambia's districts
-
-
-```r
-# code to adapt
-roads %&gt;% mutate(km = as.numeric(st_length(.)) / 1000) %&gt;% 
-  filter(km &gt; 200) %&gt;% 
-  st_buffer(dist = 20000) %&gt;% 
-  st_transform(crs = 4326)
-st_difference(larger_object, smaller_object)
-ggplot() + geom_sf
-```
-
----
-
-### Round 2
-- Randomly sample 100 points within the 30 km road buffer (use a seed of 1)
-- Plot the 30 km buffer (red) the points in it (blue) over the districts
-
-
-```r
-buffered_object %&gt;% st_sample()
-```
+## ggplot steps
+- Start with `ggplot()`. You can include data if you're only using one data set.
+- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
+- Add aesthetics in `aes()`. These are columns used for plotting. 
+- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
+- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
