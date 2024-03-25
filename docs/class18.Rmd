@@ -1,0 +1,367 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 17
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r, echo=FALSE, out.width="50%", results='hold'}
+dem1 <- "figures/zam_dem_raster.png"
+dem2 <- "figures/zam_dem_stars.png"
+knitr::include_graphics(c(dem1, dem2))
+```
+
+---
+
+## Today
+
+- `terra` (raster) intro
+  - classes
+  - dummy rasters
+  - reading and writing
+  - rasterize, raster to vector
+  - agg/disagg, masking
+  - assigning values
+  - zonal
+  - focal
+  - global
+
+---
+- Load data
+```{r, eval=FALSE}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% 
+  st_as_sf(coords = c("x", "y"))
+districts <- st_read(
+  system.file("extdata/districts.geojson", package = "geospaar")
+)
+roads <- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
+mypoly <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                                y = c(-15.5, -16.5, -17, -16, -15.5)))) %>%
+  st_sfc(crs = 4326) %>% st_intersection(., districts) %>% st_as_sf() %>% 
+  mutate(ID = seq(1:nrow(.)))
+#st_crs(mypoly) <- 4326
+smallest_centroid <- districts %>% 
+  filter(distName == "Lusaka") %>% 
+  st_centroid()
+```
+
+---
+### A quick demo of multi-panel plots
+- gridExtra
+```{r, eval=FALSE}
+library(ggplot2)
+
+p <- ggplot(districts) + geom_sf() + 
+  geom_sf(data = smallest_centroid, color = "red")
+
+p1 <- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),
+                  fill = "transparent") + labs(color = "ID")
+# small_pol2 <- pol %>% st_sfc() %>% st_sf(crs = 4326) %>% mutate(ID = 1)
+p2 <- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),  
+                  fill = "transparent") + labs(color = "ID")
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+
+---
+- cowplot::plot_grid
+```{r, eval=FALSE}
+g1 <- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
+                         p2 + theme(legend.position = "none"))
+cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
+
+```
+
+---
+
+### `patchwork`
+```{r, eval=FALSE}
+library(patchwork)
+
+p1 + p2
+p1 + p2 + plot_layout(guides = "collect")
+
+p1 + p1 / p 
+
+```
+
+---
+
+## terra objects
+- `SpatRaster` object - 1 layer to many layers, from multiple or single file sources
+- `SpatVector` object - Vector data
+
+---
+## accessing bands
+- use list `[[ ... ]]` notation
+```{r, eval=FALSE}
+chirps <- rast(system.file("extdata/chirps.tif", package = "geospaar"))
+chirps[[3]] ## access by index
+#chirps[["Y16301"]] ## access by band name
+```
+
+```{r}
+plot(chirps[[3]])
+```
+
+---
+
+## Creating raster from scratch
+
+- how does `extent` work?
+```{r, eval = FALSE}
+library(terra)
+r <- rast(ext(30, 31, -14, -13), resolution = 0.1, crs = "EPSG:4326")
+values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+
+par(mar = c(0, 0, 0, 0))
+plot(districts %>% st_geometry)
+plot(r, add = TRUE)
+```
+
+---
+- Creating multi-layer stack
+
+```{r, eval=FALSE}
+s <- c(r, log10(r))
+names(s) <- c("dummy", "log10dummy")
+plot(s)
+print(class(s))
+```
+
+
+---
+- Creating multi-layer brick
+- what are the dimensions of this raster? resolution?
+- how are the values filled?
+
+```{r, eval = FALSE}
+
+b2 <- lapply(1:10, function(x) {
+  r <- rast(ext(30, 31, -14, -13), resolution = 0.1, 
+            crs = "EPSG:4326")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% do.call(c, .)
+plot(b2)
+```
+
+---
+### A large brick
+- how does this differ from above?
+```{r, eval = FALSE}
+b3 <- lapply(1:10, function(x) {
+  r <- rast(ext(30, 31, -14, -13), resolution = 0.001, 
+              crs = "EPSG:4326")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% do.call(c, .)
+plot(b3)
+plot(b3[[1]])
+plot(b3[[10]])
+plot(b3[[c(1, 10)]])
+
+```
+
+---
+## read and write
+
+```{r, eval=FALSE}
+## write raster
+writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
+dir(tempdir())
+
+## read in raster
+r <- rast(file.path(tempdir(), "mydummy.tif"))
+plot(r)
+```
+
+---
+## read and write
+
+- `brick` function can be used both to read and write
+```{r, eval=FALSE}
+## write file
+writeRaster(s, filename = file.path(tempdir(), "mybrick.tif"), overwrite = TRUE)
+
+## read file
+newbrick <- rast("mybrick.tif")
+```
+
+---
+
+## Projecting
+- `project` 
+- similar to `st_transform()`, use crs of existing layer to project
+- need to define resolution with `res` argument
+```{r, eval = FALSE}
+roads <- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+chirpsz_alb <- project(x = chirpsz, y = crs(roads), res = 5000) 
+chirpsz_alb %>% print()
+```
+
+---
+## Vector <--> Raster
+- `rasterize` converts to raster. Need to pass argument that gives raster dimensions.
+- In below example, we use `chirpsz` for dimensions
+```{r, eval = FALSE}
+distsr <- rasterize(districts, chirpsz, field = "distName")
+distsr %>% plot_noaxes
+str(distsr)
+# stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
+
+```
+
+---
+## Vector <--> Raster
+- `rasterToPolygons`, use dissolve to merge common raster values
+```{r, eval=FALSE}
+distsr_pol <- as.polygons(distsr, dissolve = TRUE)
+distsr_pol %>% 
+  st_as_sf %>% 
+  st_geometry %>% 
+  plot
+distsr_pol %>% 
+  st_as_sf %>% 
+  slice(49) %>% 
+  plot(add = TRUE)
+```
+
+
+---
+## Plotting
+- run examples below individually
+```{r, eval = FALSE}
+plot(b)
+plot(b2)
+plot_noaxes(b)
+plot_noaxes(b2, main = paste("Random", 1:10))
+plot(b2, main = paste("Random", 1:10))
+plot_noaxes(b, legend = FALSE)
+```
+
+---
+```{r, eval = FALSE}
+
+plot_noaxes(b[[1]], legend = FALSE)
+legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
+       bty = "n")
+```
+
+---
+```{r, eval = FALSE}
+# plotting with larger datasets
+plot_noaxes(b3, main = paste("Random", 1:10))
+plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
+```
+
+---
+- rasterVis package includes additional plot options
+```{r, eval = FALSE}
+rasterVis::levelplot(b3)#, #names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b[[1]])
+rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
+  scale_fill_viridis_c()
+```
+
+---
+- ggplot() works with `geom_raster()`
+```{r, eval = FALSE}
+ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
+  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
+  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+```
+
+
+---
+- stars package
+
+```{r, eval = FALSE}
+stars::st_as_stars(b) %>% plot(col = viridis::viridis(10))
+stars::st_as_stars(b) %>% plot()
+```
+
+---
+## Raster to other types
+```{r, eval=FALSE}
+plot(b)
+b[1:10]
+b[1:ncell(b)]
+as.matrix(b)
+as.data.frame(b) %>% as_tibble()
+```
+
+
+---
+## Pre-processing
+- Aggregating/disaggregating
+- what is default method for aggregating?
+```{r, eval = FALSE}
+plot(b, main = paste0("Brick ", 1:2) )
+aggregate(b, fact = 2) %>% plot(., main = paste0("Brick agg", 1:2) )
+# aggregate(b, fun = min, fact = 2) %>% plot
+# aggregate(b, fun = sd, fact = 2) %>% plot
+```
+
+---
+
+## Pre-processing
+- what is default method for disaggregating?
+```{r, eval = FALSE}
+plot(b, main = paste0("Brick ", 1:2) )
+disaggregate(b, fact = 2) %>% plot(., main = paste0("Brick disagg", 1:2) )
+disaggregate(b, fact = 2, method = 'bilinear') %>% plot(., main = paste0("Brick disagg bilinear", 1:2) )
+```
+
+
+
+---
+- Masking
+- `mask` makes values `NA` outside of mask area.
+```{r, eval = FALSE}
+library(geospaar)
+data(chirps)
+plot_noaxes(chirps[[1]])
+chirpsz <- mask(chirps, districts)
+plot_noaxes(chirpsz[[1]])
+plot(st_geometry(districts), add = TRUE)
+# rasterVis::levelplot(chirpsz[[1:5]])
+```
+
+---
+
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+
+---
+## Calculations
+- math operations work cell-wise
+```{r, eval=FALSE}
+rf1 <- chirpsz[[1]] + chirpsz[[2]]
+rf2 <- chirpsz[[1]] * 5
+```
+
+```{r, eval = FALSE}
+
+# dev.off()
+plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
+
+```
+

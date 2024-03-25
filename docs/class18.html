@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geospatial Analysis with R</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="themes/class18.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Geospatial Analysis with R
+]
+.subtitle[
+## Class 17
+]
+
+---
+
+
+&lt;img src="figures/zam_dem_raster.png" width="50%" /&gt;&lt;img src="figures/zam_dem_stars.png" width="50%" /&gt;
+
+---
+
+## Today
+
+- `terra` (raster) intro
+  - classes
+  - dummy rasters
+  - reading and writing
+  - rasterize, raster to vector
+  - agg/disagg, masking
+  - assigning values
+  - zonal
+  - focal
+  - global
+
+---
+- Load data
+
+```r
+library(geospaar)
+farmers &lt;- system.file("extdata/farmer_spatial.csv", package = "geospaar") %&gt;% 
+  read_csv() %&gt;% 
+  st_as_sf(coords = c("x", "y"))
+districts &lt;- st_read(
+  system.file("extdata/districts.geojson", package = "geospaar")
+)
+roads &lt;- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
+mypoly &lt;- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                                y = c(-15.5, -16.5, -17, -16, -15.5)))) %&gt;%
+  st_sfc(crs = 4326) %&gt;% st_intersection(., districts) %&gt;% st_as_sf() %&gt;% 
+  mutate(ID = seq(1:nrow(.)))
+#st_crs(mypoly) &lt;- 4326
+smallest_centroid &lt;- districts %&gt;% 
+  filter(distName == "Lusaka") %&gt;% 
+  st_centroid()
+```
+
+---
+### A quick demo of multi-panel plots
+- gridExtra
+
+```r
+library(ggplot2)
+
+p &lt;- ggplot(districts) + geom_sf() + 
+  geom_sf(data = smallest_centroid, color = "red")
+
+p1 &lt;- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),
+                  fill = "transparent") + labs(color = "ID")
+# small_pol2 &lt;- pol %&gt;% st_sfc() %&gt;% st_sf(crs = 4326) %&gt;% mutate(ID = 1)
+p2 &lt;- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),  
+                  fill = "transparent") + labs(color = "ID")
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+
+---
+- cowplot::plot_grid
+
+```r
+g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
+                         p2 + theme(legend.position = "none"))
+cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
+```
+
+---
+
+### `patchwork`
+
+```r
+library(patchwork)
+
+p1 + p2
+p1 + p2 + plot_layout(guides = "collect")
+
+p1 + p1 / p 
+```
+
+---
+
+## terra objects
+- `SpatRaster` object - 1 layer to many layers, from multiple or single file sources
+- `SpatVector` object - Vector data
+
+---
+## accessing bands
+- use list `[[ ... ]]` notation
+
+```r
+chirps &lt;- rast(system.file("extdata/chirps.tif", package = "geospaar"))
+chirps[[3]] ## access by index
+#chirps[["Y16301"]] ## access by band name
+```
+
+
+```r
+plot(chirps[[3]])
+```
+
+![](/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs/class18_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+
+## Creating raster from scratch
+
+- how does `extent` work?
+
+```r
+library(terra)
+r &lt;- rast(ext(30, 31, -14, -13), resolution = 0.1, crs = "EPSG:4326")
+values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+
+par(mar = c(0, 0, 0, 0))
+plot(districts %&gt;% st_geometry)
+plot(r, add = TRUE)
+```
+
+---
+- Creating multi-layer stack
+
+
+```r
+s &lt;- c(r, log10(r))
+names(s) &lt;- c("dummy", "log10dummy")
+plot(s)
+print(class(s))
+```
+
+
+---
+- Creating multi-layer brick
+- what are the dimensions of this raster? resolution?
+- how are the values filled?
+
+
+```r
+b2 &lt;- lapply(1:10, function(x) {
+  r &lt;- rast(ext(30, 31, -14, -13), resolution = 0.1, 
+            crs = "EPSG:4326")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %&gt;% do.call(c, .)
+plot(b2)
+```
+
+---
+### A large brick
+- how does this differ from above?
+
+```r
+b3 &lt;- lapply(1:10, function(x) {
+  r &lt;- rast(ext(30, 31, -14, -13), resolution = 0.001, 
+              crs = "EPSG:4326")
+  set.seed(x)
+  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %&gt;% do.call(c, .)
+plot(b3)
+plot(b3[[1]])
+plot(b3[[10]])
+plot(b3[[c(1, 10)]])
+```
+
+---
+## read and write
+
+
+```r
+## write raster
+writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
+dir(tempdir())
+
+## read in raster
+r &lt;- rast(file.path(tempdir(), "mydummy.tif"))
+plot(r)
+```
+
+---
+## read and write
+
+- `brick` function can be used both to read and write
+
+```r
+## write file
+writeRaster(s, filename = file.path(tempdir(), "mybrick.tif"), overwrite = TRUE)
+
+## read file
+newbrick &lt;- rast("mybrick.tif")
+```
+
+---
+
+## Projecting
+- `project` 
+- similar to `st_transform()`, use crs of existing layer to project
+- need to define resolution with `res` argument
+
+```r
+roads &lt;- read_sf(system.file("extdata/roads.shp", package = "geospaar"))
+chirpsz_alb &lt;- project(x = chirpsz, y = crs(roads), res = 5000) 
+chirpsz_alb %&gt;% print()
+```
+
+---
+## Vector &lt;--&gt; Raster
+- `rasterize` converts to raster. Need to pass argument that gives raster dimensions.
+- In below example, we use `chirpsz` for dimensions
+
+```r
+distsr &lt;- rasterize(districts, chirpsz, field = "distName")
+distsr %&gt;% plot_noaxes
+str(distsr)
+# stack(distsr, chirpsz[[1:2]]) %&gt;% plotRGB(stretch = "lin")
+```
+
+---
+## Vector &lt;--&gt; Raster
+- `rasterToPolygons`, use dissolve to merge common raster values
+
+```r
+distsr_pol &lt;- as.polygons(distsr, dissolve = TRUE)
+distsr_pol %&gt;% 
+  st_as_sf %&gt;% 
+  st_geometry %&gt;% 
+  plot
+distsr_pol %&gt;% 
+  st_as_sf %&gt;% 
+  slice(49) %&gt;% 
+  plot(add = TRUE)
+```
+
+
+---
+## Plotting
+- run examples below individually
+
+```r
+plot(b)
+plot(b2)
+plot_noaxes(b)
+plot_noaxes(b2, main = paste("Random", 1:10))
+plot(b2, main = paste("Random", 1:10))
+plot_noaxes(b, legend = FALSE)
+```
+
+---
+
+```r
+plot_noaxes(b[[1]], legend = FALSE)
+legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
+       bty = "n")
+```
+
+---
+
+```r
+# plotting with larger datasets
+plot_noaxes(b3, main = paste("Random", 1:10))
+plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
+```
+
+---
+- rasterVis package includes additional plot options
+
+```r
+rasterVis::levelplot(b3)#, #names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
+rasterVis::levelplot(b[[1]])
+rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
+  scale_fill_viridis_c()
+```
+
+---
+- ggplot() works with `geom_raster()`
+
+```r
+ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
+  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
+  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+```
+
+
+---
+- stars package
+
+
+```r
+stars::st_as_stars(b) %&gt;% plot(col = viridis::viridis(10))
+stars::st_as_stars(b) %&gt;% plot()
+```
+
+---
+## Raster to other types
+
+```r
+plot(b)
+b[1:10]
+b[1:ncell(b)]
+as.matrix(b)
+as.data.frame(b) %&gt;% as_tibble()
+```
+
+
+---
+## Pre-processing
+- Aggregating/disaggregating
+- what is default method for aggregating?
+
+```r
+plot(b, main = paste0("Brick ", 1:2) )
+aggregate(b, fact = 2) %&gt;% plot(., main = paste0("Brick agg", 1:2) )
+# aggregate(b, fun = min, fact = 2) %&gt;% plot
+# aggregate(b, fun = sd, fact = 2) %&gt;% plot
+```
+
+---
+
+## Pre-processing
+- what is default method for disaggregating?
+
+```r
+plot(b, main = paste0("Brick ", 1:2) )
+disaggregate(b, fact = 2) %&gt;% plot(., main = paste0("Brick disagg", 1:2) )
+disaggregate(b, fact = 2, method = 'bilinear') %&gt;% plot(., main = paste0("Brick disagg bilinear", 1:2) )
+```
+
+
+
+---
+- Masking
+- `mask` makes values `NA` outside of mask area.
+
+```r
+library(geospaar)
+data(chirps)
+plot_noaxes(chirps[[1]])
+chirpsz &lt;- mask(chirps, districts)
+plot_noaxes(chirpsz[[1]])
+plot(st_geometry(districts), add = TRUE)
+# rasterVis::levelplot(chirpsz[[1:5]])
+```
+
+---
+
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+
+---
+## Calculations
+- math operations work cell-wise
+
+```r
+rf1 &lt;- chirpsz[[1]] + chirpsz[[2]]
+rf2 &lt;- chirpsz[[1]] * 5
+```
+
+
+```r
+# dev.off()
+plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

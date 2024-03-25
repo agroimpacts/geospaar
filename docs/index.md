@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-03-20
+Updated on: 2024-03-25
 
 <center>
 
@@ -105,6 +105,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 ### Week 11 (Mar 25, 27)
 
+- [Class 18 slides](class18.html)  
 - Raster algebra, terrain, modeling
 
 ### Week 12 (April 1, 3)

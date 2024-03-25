@@ -65,13 +65,36 @@ ggplot() +
 
 - Single pipeline
 ```{r, eval=FALSE}
-ggplot(districts) + geom_sf() +
+ggplot(districts) + geom_sf(color = "black", fill = NA) +
   st_read(system.file("extdata/roads.geojson", package = "geospaar")) %>% 
   mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
   geom_sf(data = ., aes(color = road_length), lwd = 1) + 
   scale_color_continuous(type = "viridis") +
-  theme_minimal()
+  theme_bw()
 ```
+
+---
+- Calculate length of roads in km
+- select roads between 50 and 500 km length
+- plot the selected roads over districts using ggplot. Make the roads red
+
+```{r, eval=FALSE}
+p <- ggplot(districts) + geom_sf()
+p + 
+  roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
+  filter(., road_length <= 500 & road_length > 49) %>% 
+  geom_sf(data = ., color = 'red') + theme_minimal()
+
+roads_ss <- roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
+  filter(., road_length <= 500 & road_length > 49)
+
+p + geom_sf(data = roads_ss, color = 'red') + 
+  theme_minimal()
+
+```
+
 
 ---
 
@@ -91,6 +114,8 @@ roads_rpj <- st_transform(roads, crs = st_crs(districts))
 ## Plotting
 ```{r, eval = FALSE, message = FALSE}
 par(mar = rep(0, 4))
+# plot(districts)
+# plot(districts$geometry, col = "grey")
 plot(st_geometry(districts), col = "grey")
 plot(pol, col = "purple", add = TRUE)
 plot(roads_rpj, col = 'red', add = TRUE)
@@ -110,7 +135,8 @@ st_intersects(x = roads_rpj, y = districts)
 ```{r, eval = FALSE, message = FALSE}
 highway <- roads_rpj[401, ]
 dists_int <- districts %>% 
-  slice(st_intersects(x = highway, y = districts)[[1]])
+  slice(st_intersects(x = highway, y = .)[[1]])
+# unlist(st_intersects(x = highway, y = districts))
 #> although coordinates are longitude/latitude, st_intersects assumes that they are planar
 dists_int
 plot(st_geometry(dists_int), col = 'grey')
@@ -125,10 +151,15 @@ plot(highway, col = 'red', add = TRUE)
 ```{r, eval = FALSE, message = FALSE}
 pol_int_dists <- st_intersection(x = pol, y = districts)
 
-par(mar = rep(0, 4))
+par(mfrow = c(1, 2), mar = rep(0, 4))
 plot(st_geometry(districts), col = "grey")
 plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
      add = TRUE)
+plot(st_geometry(districts), col = "grey")
+districts %>% 
+  slice(unlist(st_intersects(x = pol, y = .))) %>% 
+  plot(add = TRUE)
+
 ```
 
 ---
@@ -175,7 +206,7 @@ farmers_alb <- farmers_sf %>% st_transform(st_crs(roads))
 long_roads <- roads %>% filter(as.numeric(st_length(.)) > 500000)
 districts_alb <- districts %>% st_transform(st_crs(roads))
 
-roads_buff_20km = st_buffer(long_roads, 20000)
+roads_buff_20km <- st_buffer(long_roads, 20000)
 plot(st_geometry(districts_alb), col = "grey")
 plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
 plot(st_geometry(long_roads), col = "red", add = TRUE)
@@ -193,6 +224,17 @@ districts %>%
   st_sample(size = 25, exact = TRUE) %>% 
   plot(pch = 20, add = TRUE)
 ```
+
+```{r}
+par(mar = rep(0, 4))
+districts %>% st_geometry %>% plot(col = "grey")
+# set.seed(1)
+districts %>% 
+  st_sample(size = rep(5, nrow(.)), by_polygon = TRUE) %>% 
+  plot(pch = 20, add = TRUE)
+
+```
+
 
 
 ---
