@@ -25,45 +25,43 @@ library(geospaar)
 options(width = 100)
 ```
 
-\hline
-**NOTE: This vignette will be updated from `raster` to `terra`**
-\hline
-
 # Algebra, categorizing, and sampling
 
 Let's move on and look at some additional raster-based analyses. The next few sections depend on objects created in the previous sections (Unit 2 Module 2a). The code to recreate those is here:
 
 ```{r, eval=FALSE}
 library(geospaar)
-data("chirps")
-districts <- system.file("extdata/districts.shp", package = "geospaar") %>% 
-  st_read %>% mutate(ID = 1:nrow(.))
+chirps <- rast(system.file("extdata/chirps.tif", package = "geospaar"))
+districts <- system.file("extdata/districts.geojson", package = "geospaar") %>%   st_read %>% mutate(ID = 1:nrow(.))
 chirpsz <- mask(x = chirps, mask = districts)
 
-zamr <- raster(x = extent(districts), crs = crs(districts), res = 0.1)
+zamr <- rast(x = ext(districts), crs = crs(districts), res = 0.1)
 values(zamr) <- 1:ncell(zamr)
-zamr2 <- raster(x = extent(districts), crs = crs(districts), res = 0.25)
+zamr2 <- rast(x = ext(districts), crs = crs(districts), res = 0.25)
 values(zamr2) <- 1:ncell(zamr2)
 
 distsr <- rasterize(x = districts, y = zamr, field = "ID")
-distsr_rs <- resample(x = distsr, y = chirpsz, method = "ngb")  # match extent
+distsr_rs <- resample(x = distsr, y = chirpsz, method = "near")  # match extent
 
 farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
   read_csv
-farmersr <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  dplyr::select(x, y) %>% mutate(count = 1) %>% 
+farmersr <- farmers %>% 
+  distinct(uuid, .keep_all = TRUE) %>% 
+  dplyr::select(x, y) %>%
+  mutate(count = 1) %>% 
   st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
-  rasterize(x = ., y = zamr2, field = "count", fun = sum) %>% print()
-#> class      : RasterLayer 
-#> dimensions : 39, 47, 1833  (nrow, ncol, ncell)
-#> resolution : 0.25, 0.25  (x, y)
-#> extent     : 21.99978, 33.74978, -17.97621, -8.226213  (xmin, xmax, ymin, ymax)
-#> crs        : ++proj=longlat +datum=WGS84 +no_defs 
-#> source     : memory
-#> names      : layer 
-#> values     : 1, 152  (min, max)
-
-roads <- system.file("extdata/roads.shp", package = "geospaar") %>% st_read
+  rasterize(x = ., y = zamr2, field = "count", fun = sum) %>% 
+  print()
+#> class       : SpatRaster 
+#> dimensions  : 39, 47, 1  (nrow, ncol, nlyr)
+#> resolution  : 0.25, 0.25  (x, y)
+#> extent      : 21.99978, 33.74978, -18.0751, -8.325097  (xmin, xmax, ymin, ymax)
+#> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
+#> source(s)   : memory
+#> name        : sum 
+#> min value   :   1 
+#> max value   : 168 
+roads <- st_read(system.file("extdata/roads.geojson", package = "geospaar"))
 ```
 
 ## Algebra and selection
@@ -76,7 +74,7 @@ r2 <- chirpsz[[1]] + chirpsz[[2]]
 r3 <- chirpsz[[1]] - chirpsz[[2]]
 r4 <- chirpsz[[1]] * chirpsz[[2]]
 
-s <- stack(r1, r2, r3, r4)
+s <- c(r1, r2, r3, r4)
 names(s) <- c("divide", "sum", "subtract", "multiply")
 plot_noaxes(s)
 ```
@@ -89,8 +87,12 @@ As you have seen in the previous section, we can also perform logical operations
 ```{r algebra2, eval=FALSE}
 # Chunk 37
 # #1
-raintot <- calc(chirpsz, fun = sum)
-raincv <- calc(chirpsz, fun = cv)
+cv <- function(x, na.rm) {
+  cv <- sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm) * 100
+  return(cv)
+}
+raintot <- app(chirpsz, fun = sum)
+raincv <- app(chirpsz, fun = cv, na.rm = TRUE)
 
 # #2
 highrain_highcv <- raintot > 80 & raincv > 200  
@@ -102,12 +104,12 @@ distrain[dist54 == 0] <- NA  # c
 # distrain <- mask(raintot, dist54, maskvalue = 0)  # d
 
 # #4
-meandistrain <- distrain > cellStats(distrain, mean)
+meandistrain <- distrain > unlist(global(distrain, mean, na.rm = TRUE))
 
 # #5
-rain_gt_mu <- raintot > cellStats(raintot, mean)
+rain_gt_mu <- raintot > unlist(global(raintot, mean, na.rm = TRUE))
 
-s <- stack(raintot, raincv, highrain_highcv, distrain, meandistrain, rain_gt_mu)
+s <- c(raintot, raincv, highrain_highcv, distrain, meandistrain, rain_gt_mu)
 titles <- c("Total rain", "Rain CV", "High rain, high CV", "Dist 54 rain", 
             "Dist 54 rain > mean", "Rain > mean")
 plot_noaxes(s, main = titles)  
@@ -116,11 +118,11 @@ plot_noaxes(s, main = titles)
 knitr::include_graphics("fig/u2m2_algebra2.png")
 ```
 
-In #1, we use `calc` to sum rainfall and calculate its CV across the 28 days in `chirpsz`. Then, in #2, we identify which cells have both high rainfall (>80 mm) and high rainfall variability (CV > 200) during the 28 day time period. 
+In #1, we use `app` to sum rainfall and calculate its CV across the 28 days in `chirpsz`. Then, in #2, we identify which cells have both high rainfall (>80 mm) and high rainfall variability (CV > 200) during the 28 day time period. 
 
 In #3, we examine total rainfall within district 54. This is done in several steps. First (line a), we create a mask, where cells in district 54 are 1, and everywhere else 0. Next (line b), we multiply this mask by `raintot`, thereby masking out rainfall values outside the district. At this point, if we calculated any subsequent statistics on district 54 rainfall, they would be invalid because there would be a lot of 0 values for rainfall outside of district 54 that would be included in the calculation (run `plot(distrain)` right after line b to see). This would result in a very low mean rainfall, for example. Therefore, in line c, we identify the indices of the cells in `dist54` that have 0s (`dist54 == 0`), and use those indices to set all the values in `distrain` to NA. Lines b and c show the raster algebraic way of doing what could also be achieved with `mask`, shown in the commented out line d.  
 
-Having made `distrain` safe for calculating statistics, in #4 we then identify the areas in district 54 that received more rainfall than the district mean rainfall during the 28 days. In #5, we do the same thing, but for all of Zambia.  
+Having made `distrain` safe for calculating statistics, in #4 we then identify the areas in district 54 that received more rainfall than the district mean (extracted using `global`, wihch returns a `data.frame` with a single value, which we get by `unlist`ing) rainfall during the 28 days. In #5, we do the same thing, but for all of Zambia.  
 
 ## Categorizing
 Sometimes you will want to create a categorical raster from a continous one. We will look at two different ways of doing that. 
@@ -128,8 +130,9 @@ Sometimes you will want to create a categorical raster from a continous one. We 
 Method 1:
 ```{r cutfig, eval=FALSE}
 # Chunk 38
-qtiles <- quantile(raintot, probs = seq(0, 1, 1 / 3))
-raintotcut <- cut(x = raintot, breaks = qtiles, include.lowest = TRUE)
+qtiles <- global(raintot,
+                 function(x) quantile(x, probs = seq(0, 1, 1/3), na.rm = TRUE))
+raintotcut <- classify(x = raintot, rcl = unlist(qtiles), include.lowest = TRUE)
 
 cols <- c("tan", "yellow3", "green4")
 plot_noaxes(raintotcut, legend = FALSE, main = "Total Rainfall", col = cols, 
@@ -142,18 +145,18 @@ knitr::include_graphics("fig/u2m2_cutfig.png")
 ```
 
 
-Using the `cut`-based approach is perhaps the easiest way of categorizing a continuous raster. `cut` is a raster-based implementation of base `R` function designed for converting numeric vectors to factors. We first define the tercile values (i.e 33.3rd, 66.6th, and 100th percentiles) for `raintot`, and pass those into the "breaks" argument of `cut`. We pass the argument `include.lowest = TRUE` because we want to include all values that are greater than or equal to the lowest value in each category. Our plot of the results has a customized legend, which we chose because we have a categorical raster and thus wanted a categorical, rather than continuous (the default for `raster::plot`, and thus `plot_noaxes`), legend.
+This approach using so-called `cut`s, perhaps the easiest way of categorizing a continuous raster. This use the function `quantile`, passed through an anonymous function in the `app` function, to get the tercile values (i.e 33.3rd, 66.6th, and 100th percentiles) for `raintot`. The resulting `data.frame` is vectorized, and these become cuts passed into the `rcl` argument of `terra::classify`. We pass the argument `include.lowest = TRUE` because we want to include all values that are greater than or equal to the lowest value in each category. Our plot of the results has a customized legend, which we chose because we have a categorical raster and thus wanted a categorical, rather than continuous (the default for `terra::plot`, and thus `plot_noaxes`), legend.
 
 Method 2 is somewhat more involved:
 ```{r reclassify, eval=FALSE}
 # Chunk 39
-rclmat <- cbind(qtiles[1:3], qtiles[2:4], 1:3)
+rclmat <- cbind(unlist(qtiles[1:3]), unlist(qtiles[2:4]), 1:3)
 rclmat
-#>               [,1]      [,2] [,3]
-#> 0%        10.39840  40.42806    1
-#> 33.33333% 40.42806  55.41104    2
-#> 66.66667% 55.41104 158.54463    3
-raintotrcl <- reclassify(x = raintot, rcl = rclmat, include.lowest = TRUE)
+#>                [,1]      [,2] [,3]
+#> X0.        10.39840  40.42806    1
+#> X33.33333. 40.42806  55.41104    2
+#> X66.66667. 55.41104 158.54463    3
+raintotrcl <- classify(x = raintot, rcl = rclmat, include.lowest = TRUE)
 
 plot_noaxes(raintotrcl, legend = FALSE, main = "Total Rainfall", col = cols, 
             mar = c(0, 0, 1, 0))
@@ -163,7 +166,7 @@ legend(x = "bottomright", legend = c("High", "Intermediate", "Low"),
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_reclassify.png")
 ```
-In the first step, we reuse the previously calculated terciles to create a reclassification matrix (`rclmat`). This matrix contains the lower bound of the range of the category in column 1, the upper bound in column 2, and then the new class value that will be assigned in column 3. There are three rows, one per category. This matrix is passed to the `rcl` argument of `reclassify`, in which we also specify the same `include.lowest = TRUE` argument. 
+In the first step, we reuse the previously calculated terciles to create a reclassification matrix (`rclmat`). This matrix contains the lower bound of the range of the category in column 1, the upper bound in column 2, and then the new class value that will be assigned in column 3. There are three rows, one per category. This matrix is passed to the `rcl` argument of `classify`, in which we also specify the same `include.lowest = TRUE` argument. 
 
 This approach requires slightly more work, but there are cases where you might need to use it, e.g. to reclassify another categorical raster using non-sequential categories. 
 
@@ -182,10 +185,13 @@ Here we will use points and polygons:
 ```{r extract, eval=FALSE}
 # Chunk 40
 # #1
-farmers_env <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  dplyr::select(uuid, x, y) %>% st_as_sf(coords = c("x", "y")) %>% 
-  mutate(rain = raster::extract(x = raintot, y = .)) %>%
-  mutate(district = raster::extract(x = distsr_rs, y = .)) %>% print
+farmers_env <- farmers %>% 
+  distinct(uuid, .keep_all = TRUE) %>% 
+  dplyr::select(uuid, x, y) %>% 
+  st_as_sf(coords = c("x", "y")) %>% 
+  mutate(rain = terra::extract(x = raintot, y = .)[, 2]) %>%
+  mutate(district = terra::extract(x = distsr_rs, y = .)[, 2]) %>% 
+  print
 #> Simple feature collection with 793 features and 3 fields
 #> geometry type:  POINT
 #> dimension:      XY
@@ -207,54 +213,66 @@ farmers_env <- farmers %>% distinct(uuid, .keep_all = TRUE) %>%
 #> # … with 783 more rows
 
 # #2
-farmdistid <- farmers_env %>% drop_na %>% distinct(district) %>% pull
-distrain <- districts %>% filter(ID %in% farmdistid) %>% 
-  raster::extract(x = raintot, y = ., fun = mean) %>% print
-#>           [,1]
-#>  [1,] 58.35027
-#>  [2,] 36.46143
-#>  [3,] 67.99078
-#>  [4,] 45.12769
-#>  [5,] 44.12176
-#>  [6,] 69.70491
-#>  [7,] 41.09122
-#>  [8,] 44.15476
-#>  [9,] 54.94505
-#> [10,] 63.98032
-#> [11,] 52.09214
-#> [12,] 49.01939
-#> [13,] 51.98236
-#> [14,] 46.55391
-#> [15,] 61.68815
-#> [16,] 53.98820
-#> [17,] 60.90310
+farmdistid <- farmers_env %>% 
+  drop_na %>%
+  distinct(district) %>%
+  pull
+distrain <- districts %>% 
+  filter(ID %in% farmdistid) %>% 
+  raster::extract(x = raintot, y = ., fun = mean) %>% 
+  rename(rain = sum) %>% 
+  print
+#>    ID      sum
+#> 1   1 58.35027
+#> 2   2 36.46143
+#> 3   3 67.99078
+#> 4   4 44.12176
+#> 5   5 69.70491
+#> 6   6 41.09122
+#> 7   7 44.15476
+#> 8   8 54.94505
+#> 9   9 63.98032
+#> 10 10 49.01939
+#> 11 11 51.98236
+#> 12 12 46.55391
+#> 13 13 61.68815
+#> 14 14 53.98820
+#> 15 15 60.90310
 
 # #3
 rain_stats <- bind_rows(
-  farmers_env %>% drop_na %>% dplyr::select(rain) %>% mutate(dat = "Farmers"), 
-  tibble(rain = distrain, dat = "Districts")
+  farmers_env %>% 
+    drop_na %>% 
+    dplyr::select(rain) %>% 
+    st_drop_geometry() %>% 
+    mutate(dat = "Farmers"), 
+  distrain %>%
+    dplyr::select(rain) %>% 
+    mutate(dat = "Districts")
 )
 
 # #4
-bp_theme <- theme(legend.title = element_blank(), axis.text.x = element_blank(),
+bp_theme <- theme(legend.title = element_blank(), 
+                  axis.text.x = element_blank(),
                   axis.ticks.x = element_blank(), 
                   panel.grid.major.x = element_blank(), 
                   panel.grid.minor.x = element_blank(), 
                   panel.background = element_rect(fill = "grey95"))
-rain_stats %>% ggplot() +
+ggplot(rain_stats) +
   geom_boxplot(mapping = aes(y = rain, fill = dat), position = "dodge2") +
   scale_fill_manual(values = c("steelblue", "cadetblue")) + 
-  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + bp_theme
+  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + 
+  bp_theme
 ```
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_extract.png")
 ```
 
-In #1, we use a pipeline to create a new `farmer_env` `sf` (first selecting just the unique *uuid* and corresponding *x* and *y*), and we pass that to the "y" argument of `raster::extract`. The first `extract` is done from the `raintot` raster, the second from the `dists_rs` raster. Both extractions are wrapped in `mutate`, in order to create two new variables for `farmers_env`. Note that we have to specify `raster::extract` because it is masked by `dplyr::extract`, as `geospaar` loads `tidyverse` after `raster` (remember section 1.2.2 in Unit 1 Module 2). The resulting `sf` contains rainfall sum (over the 28 days) and district numbers for each farmer's location. 
+In #1, we use a pipeline to create a new `farmer_env` `sf` (first selecting just the unique *uuid* and corresponding *x* and *y*), and we pass that to the "y" argument of `terra::extract`. The first `extract` is done from the `raintot` raster, the second from the `dists_rs` raster. Both extractions are wrapped in `mutate`, in order to create two new variables for `farmers_env`. Note that we have to specify `terra::extract` because it is masked by `dplyr::extract`, as `geospaar` loads `tidyverse` after `raster` (remember section 1.2.2 in Unit 1 Module 2). The resulting `sf` contains rainfall sum (over the 28 days) and district numbers for each farmer's location. 
 
-In #2, we first pull out of `farmer_env` a vector of the distinct district IDs. Because `farmers` contains a few bad coordinates that fall outside of Zambia, and there had `NA` values, we inserted `drop_na` into the pipeline to get rid of those. We then used `farmdistid` to filter out the districts the farmers live in from `districts`, and used the result to extract from `raintot` the mean rainfall from the pixels of `raintot` falling within each selected district. When using `raster::extract` with polygons, if you don't pass a value to the "fun" argument, a list is returned, in which each element contains the extracted pixel values corresponding to a particular polyon. If you give "fun" an argument (e.g. `mean`, as in this case), you get back a vector or matrix (if your function gives back more than one value, e.g. `range`) containing the resulting statistic(s) for each polygon. 
+In #2, we first pull out of `farmer_env` a vector of the distinct district IDs. Because `farmers` contains a few bad coordinates that fall outside of Zambia, and there had `NA` values, we inserted `drop_na` into the pipeline to get rid of those. We then used `farmdistid` to filter out the districts the farmers live in from `districts`, and used the result to extract from `raintot` the mean rainfall from the pixels of `raintot` falling within each selected district. When using `terra::extract` with polygons, if you don't pass a value to the "fun" argument, a list is returned, in which each element contains the extracted pixel values corresponding to a particular polyon. If you give "fun" an argument (e.g. `mean`, as in this case), you get back a `data.frame` containing the resulting statistic(s) for each polygon. 
 
-In #3, we do some gymnastics in preparation for setting up `ggplot` boxplots (#4) that compare the distributions of rainfall values. That is, we set up a tibble that binds by row the extracted district and farmer rainfall values, which allows `ggplot` to automatically create side-by-side boxplots using `fill = dat`. We create some theme options for `ggplot` ahead of that `bp_theme`, so that we can recycle these in the next example. The plot shows that the rainfall data selected at farmer locations provide a biased estimate of district mean rainfall.  
+In #3, we do some gymnastics in preparation for setting up `ggplot` boxplots (#4) that compare the distributions of rainfall values. That is, we set up a tibble that binds by row the extracted district and farmer rainfall values, which allows `ggplot` to automatically create side-by-side boxplots using `fill = dat`. We create some theme options for `ggplot` ahead of that (`bp_theme`), so that we can recycle these in the next example. The plot shows that the rainfall data selected at farmer locations provide a biased estimate of district mean rainfall.  
 
 ### Random sampling
 Alternatively, you might want to draw a random sample directly from a raster, without all the trials and tribulations of field work (field logistics often make it hard to capture truly randomized, and thus representative, samples). `raster` has functions for this, and we will build off the previous example to demonstrate them. 
@@ -268,53 +286,59 @@ distsrfarm <- mask(x = distsr_rs, mask = farmdistsr, maskvalue = 0)
 
 # #2
 set.seed(1)
-distsamp <- sampleRandom(x = distsrfarm, size = nrow(farmers_env), cells = TRUE)
+distsamp <- spatSample(x = distsrfarm, size = nrow(farmers_env), 
+                       cells = TRUE, na.rm = TRUE)
 randrain <- raintot[distsamp[, 1]]
 
 # #3
 set.seed(1)
-distsamp_str <- sampleStratified(x = distsrfarm, 
-                                 size = nrow(farmers_env) / length(farmdistid),                                  cells = TRUE)
+distsamp_str <- spatSample(x = distsrfarm, method = "stratified", 
+                           size = nrow(farmers_env) / length(farmdistid),                                   cells = TRUE)
 stratrandrain <- raintot[distsamp_str[, 1]]
 
 # #4
 rand_rain_stats <- bind_rows(
-  tibble(rain = distrain, dat = "Districts"),
-  tibble(rain = randrain, dat = "Simple"),
-  tibble(rain = stratrandrain, dat = "Stratified")
+  tibble(distrain %>% dplyr::select(rain), dat = "Districts"),
+  tibble(randrain %>% rename(rain = sum), dat = "Simple"),
+  tibble(stratrandrain %>% rename(rain = sum), dat = "Stratified")
 ) %>% drop_na
 
-rand_rain_stats %>% ggplot() +
+ggplot(rand_rain_stats) +
   geom_boxplot(mapping = aes(y = rain, fill = dat), position = "dodge2") +
   scale_fill_manual(values = c("lightblue", "steelblue", "cadetblue")) + 
-  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + bp_theme
+  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + 
+  bp_theme
 ```
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_samplestrat.png")
 ```
 
-In this case, we first (#1) mask the raster to exclude districts having no farmers (you can run the commented-out code to see the map). #2 uses the function `raster::sampleRandom` to take a straight random sample from the farmer-hosting districts. We set the "size" argument so that it is equal to `nrow(farmers_env)`, i.e. our sample is equal to the number of farmers in `farmers_env` (793). We use the argument `cells = TRUE` to select the cell numbers, which is what we are really interested in (if we didn't, we would just get the values of those cells, i.e. the district IDs). We then use those cell ids (the first column of `distsamp`) to extract the rainfall values from `raintot`. We can use the cell IDs selected from one raster to extract values from another only if the two rasters have an identical number of cells and extents, as is the case here. You can confirm that this is the case for `distsrfarm` and `raintot` by running `identical(ncell(raintot), ncell(distsrfarm))` and `identical(extent(raintot), extent(distsrfarm))`.
+\hline
+**NOTE: This vignette will be updated from `raster` to `terra`**
+\hline
 
-In #3 we apply the more correct way of collecting a representative sample from units of varying size, which is to stratify the sample by districts.  To do this, we uses the function `sampleStratified`, which uses the district IDs in `distsrfarm` to create the strata, and the "size" argument specifies the size of the sample that should be drawn from __each stratum__ (i.e. district). To estimate that size, we divide `nrow(farmers_env)` by the number of farmer-hosting districts, so that we end up with a total sample equal to `r nrow(farmers_env)`. Note that this function merely ensures that the same sample size is drawn from each stratum (district), and does not make the sample size in each stratum proportional to its area. 
+In this case, we first (#1) mask the raster to exclude districts having no farmers (you can run the commented-out code to see the map). #2 uses the function `terra::spatSample` to take a straight random sample from the farmer-hosting districts. We set the "size" argument so that it is equal to `nrow(farmers_env)`, i.e. our sample is equal to the number of farmers in `farmers_env` (793). We use the argument `cells = TRUE` to select the cell numbers, which is what we are really interested in (if we didn't, we would just get the values of those cells, i.e. the district IDs). We then use those cell ids (the first column of `distsamp`) to extract the rainfall values from `raintot`. We can use the cell IDs selected from one raster to extract values from another only if the two rasters have an identical number of cells and extents, as is the case here. You can confirm that this is the case for `distsrfarm` and `raintot` by running `identical(ncell(raintot), ncell(distsrfarm))` and `ext(raintot) ==  ext(distsrfarm)`.
 
-In #4, we redo the boxplots, showing the results from the two approaches to random sampling alongside the distribution of district mean rainfall values (extracted in Chunk 40). Both approaches produce statistics that are quite representative of the district rainfall. The stratified approach is closest, as the median aligns more closely with that of `distrain`. 
+In #3 we apply the more correct way of collecting a representative sample from units of varying size, which is to stratify the sample by districts.  To do this, we uses the function `spatSample` again with "method" set to "stratified", which uses the district IDs in `distsrfarm` to create the strata, and the "size" argument specifies the size of the sample that should be drawn from __each stratum__ (i.e. district). To estimate that size, we divide `nrow(farmers_env)` by the number of farmer-hosting districts, so that we end up with a total sample equal to `r nrow(farmers_env)`. Note that this function merely ensures that the same sample size is drawn from each stratum (district), and does not make the sample size in each stratum proportional to its area. 
+
+In #4, we redo the boxplots, showing the results from the two approaches to random sampling alongside the distribution of district mean rainfall values (extracted in Chunk 40). Both approaches produce statistics that are quite representative of the district rainfall. The stratified approach is closest, as the median aligns more closely with that of `distrain` (the boxplot for "Districts" in the plot). 
 
 ## Practice
 ### Questions
 1. What are two ways of converting a continous to categorical raster? 
 
-2. What are two methods of sampling from a `raster`? Are the others (a look in `raster`s help files will be informative)?
+2. What are two methods of sampling from a `spatRaster`? Are the others (a look in `terra`s help files will be informative)?
 
 ### Code
-1. Use `calc` to find the standard deviation of rainfall for each cell in `chirpsz`. 
+1. Use `app` to find the standard deviation of rainfall for each cell in `chirpsz`. 
 
 2. Use raster algebra to find the country-wide average standard deviation, and then identify which areas of Zambia have values **less** than that. 
 
-3. Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries together with `cut`. Use `plot_noaxes` to show the result. 
+3. Create a new categorical raster from `raintot`, using the quintiles to define the new category boundaries together with the cut method applied to `classify`. Use `plot_noaxes` to show the result. 
 
 4. Create a new sub-sample of rasterized districts, `randdistsr`, totalling 15 districts randomly selected using `dplyr::sample_n` (use a seed of 11) from `districts`. Use `raintot` as the rasterization target. Mask `raintot` so that it is confined to those districts (with NAs values replacing the values in the other districts). Call it `newrandrain`. 
 
-5. Use `sampleRandom` with a size of 300 to get a random sample of rainfall values from `newrandrain` (use a seed of 1), saving the result as `randsamp`. Use `sampleStratified` with `cell = TRUE` to get a sample of 300 / 15 samples from `randdistsr`. Use the cell IDs to extract the rainfall values from `newrandrain`, saving the output vector as `stratsamp`. Create a tibble that binds these two vectors by row (as in Chunk 41 #4), and then plot the two results as side-by-side boxplots with `ggplot`. 
+5. Use `spatSample` with a size of 300 to get a random sample of rainfall values from `newrandrain` (use a seed of 1), saving the result as `randsamp`. Use `spatSample` with `cell = TRUE` to get a sample of 300 / 15 samples from `randdistsr`. Use the cell IDs to extract the rainfall values from `newrandrain`, saving the output vector as `stratsamp`. Create a tibble that binds these two vectors by row (as in Chunk 41 #4), and then plot the two results as side-by-side boxplots with `ggplot`. 
 
 # Terrain analysis, interpolation, and modeling
 
@@ -324,43 +348,47 @@ We'll round out this module with some additional raster-based analyses and a bit
 
 We'll start off this section doing some terrain analysis, with a few little asides on the way to illustrate pixel area and some more plotting skills. 
 
-First we need a digital elevation model. `raster` has a very nice function that allows us to download several different gridded geographic datasets, which includes DEMs:
+First we need a digital elevation model. The package `geodata` (note, you will likely have to install this using `install.packages("geodata")`) provides several very nice functions that allows us to download several different gridded geographic datasets, which includes DEMs:
 
 ```{r dem, eval=FALSE}
 # Chunk 42
-dem <- getData(name = "alt", country = "ZMB", path = tempdir())
-plot_noaxes(dem, main = "Zambia DEM", legend.args = list(text = "meters"))
+dem <- geodata::elevation_30s(country = "ZMB", path = tempdir())
+plot_noaxes(dem, main = "Zambia DEM", plg = list(title = "meters"))
 ```
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_dem.png")
 ```
 
-The help file for `getData` tells us the following datasets are available:
+The help file for `geodata::elevation_30s` tells us the following datasets are available:
 
-> Data set name, currently supported are 'GADM', 'countries', 'SRTM', 'alt', and 'worldclim'. See Details for more info
+> Elevation data for any country. The main data source is Shuttle Radar Topography Mission (SRTM) , specifically the hole-filled CGIAR-SRTM (90 m resolution) from https://srtm.csi.cgiar.org/. These data are only available for latitudes between -60 and 60.
 
-You can explore those further at your leisure. In our example, we choose the aggregated version of the SRTM DEM, and specify that we want it for Zambia. 
+> The 1 km (30 arc seconds) data were aggregated from SRTM 90 m resolution data and supplemented with the GTOP30 data for high latitudes (>60 degrees).
+
+There are two other version (`..._3s` and `..._global`), representing different resolutions and extents, which you can explore further at your leisure. In our example, we choose the coarser 1 km aggregated version of the SRTM DEM, for ease of download, and specify that we want it for Zambia. `geodata` has functions for many other datasets also. 
 
 ### Pixel resolution/area 
 
-The DEM we downloaded is in decimal degrees with a resolution of 0.008333333&deg;, which means the area of each pixel varies through Zambia. To illustrate that, we use a nice function that `raster` provides, which lets you calculate the pixel areas, even when the raster is in geographic coordinates:
+The DEM we downloaded is in decimal degrees with a resolution of 0.008333333&deg;, which means the area of each pixel varies through Zambia. To illustrate that, we use a nice function that `terra` provides, which lets you calculate the pixel areas, even when the raster is in geographic coordinates:
 
 ```{r demarea, eval=FALSE}
 # Chunk 43
-demarea <- area(dem)
-plot_noaxes(demarea, legend.args = list(text = expression("km"^2)), 
-            main = paste("DEM pixel area, mean = ", 
-                         round(cellStats(demarea, mean), 3)))
-districts %>% st_geometry %>% plot(add = TRUE)
+demarea <- cellSize(dem, unit = "ha")
+plot_noaxes(demarea, plg = list(title = "ha"), 
+            main = paste0("DEM pixel area, mean = ", 
+                         round(global(demarea, mean), 1)))
+plot(st_geometry(districts), add = TRUE)
 ```
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_demarea.png")
 ```
 
-The result is in km$^2$, and you can see that the area of each pixel falls as the distance from the equator increases (this is why we use equal area projections to calculate area). 
+The result is in hectares (as specified in the argument to `cellArea`), and you can see that the area of each pixel falls as the distance from the equator increases (this is why we use equal area projections to calculate area). 
 
 ### An aside on plot annotation
-Although we covered graphics in the previous unit, let's look a bit more at plot adornments for a second. Notice in the last two plots how we use the "legend.args" argument in `plot_noaxes` to put a title over the legend bar. And in the last one, we use `expression` to turn km2 into km$^2$. `expression` and several other functions can be used to annotate plots with more complex mathematical expressions:
+Although we covered graphics in the previous unit, let's look a bit more at plot adornments for a second. Notice in the last two plots how we use the "plg" argument in `plot_noaxes` to put a title over the legend bar. 
+
+There are some other things we can do to plots to add symbols to text within the plots: `expression` and several other functions can be used to annotate plots with more complex mathematical formulae:
 
 ```{r fancylabels1, eval=FALSE}
 # Chunk 44
@@ -386,11 +414,11 @@ knitr::include_graphics("fig/u2m2_fancylabels1.png")
 lab1 <- bquote(sigma == .(mumu))
 ggplot(tibble(mu, sdev)) + geom_point(aes(mu, sdev)) + 
   ggtitle(expression(paste("Mean (", mu, ") versus StDev (", sigma, ")"))) + 
-  # geom_text(aes(x = 20, y = 10, 
+  # geom_text(aes(x = 20, y = 10,
   #               label = paste("Overall", "m", "=", mumu)), parse = TRUE)
   annotate("text", x = 20, y = 10,
-           label = bquote(sigma == .(mumu)), parse = TRUE)
-           label = substitute(paste("Overall", mu, "=", a), list(a = mumu)))
+           label = lab1,
+           label = substitute(paste("Overall", mu, "=", m, list(m = mumu))))
 ```
 
 
@@ -398,25 +426,24 @@ The example above shows how more advanced plot annotations can be done. It also 
 
 ### Basic terrain variables
 
-`raster::terrain` allows us to calculate five different terrain variables, four of which we show below: 
+`terra::terrain` allows us to calculate five different terrain variables, four of which we show below: 
 ```{r terrain, eval=FALSE}
 # Chunk 45
 # #1
-zamr <- raster(x = extent(districts), crs = crs(districts), res = res(dem))
+zamr <- rast(x = ext(districts), crs = crs(districts), res = res(dem))
 values(zamr) <- 1:ncell(zamr)
-zamr_alb <- projectRaster(from = zamr, res = 1000, crs = crs(roads), 
-                          method = "ngb")
-demalb <- projectRaster(from = dem, to = zamr_alb)  # default is bilinear
+zamr_alb <- project(x = zamr, y = crs(roads), res = 1000, method = "near")
+demalb <- project(x = dem, y = zamr_alb)  # default is bilinear
 
 # #2
-# slope <- terrain(x = demalb, opt = 'slope', unit = 'degrees')  # slope
-# aspect <- terrain(x = demalb, opt = 'aspect', unit = 'degrees')  # aspect
-# flowdir <- terrain(x = demalb, opt = 'flowdir')  # flow direction
-# tri <- terrain(x = demalb, opt = 'tri')  # topographic roughness index
-vars <- c("slope", "aspect", "flowdir", "tri")
-terrvars <- stack(lapply(1:length(vars), function(x) {
-  tv <- terrain(x = demalb, opt = vars[x], unit = "degrees")
-}))
+# slope <- terrain(x = demalb, v = 'slope', unit = 'degrees')  # slope
+# aspect <- terrain(x = demalb, v = 'aspect', unit = 'degrees')  # aspect
+# flowdir <- terrain(x = demalb, v = 'flowdir')  # flow direction
+# tri <- terrain(x = demalb, v = 'TRI')  # topographic roughness index
+vars <- c("slope", "aspect", "flowdir", "TRI")
+terrvars <-  lapply(1:length(vars), function(x) {
+  tv <- terrain(x = demalb, v = vars[x], unit = "degrees")
+}) %>% do.call(c, .)
 names(terrvars) <- vars
 
 plot_noaxes(terrvars)
@@ -425,13 +452,16 @@ plot_noaxes(terrvars)
 knitr::include_graphics("fig/u2m2_terrainvars.png")
 ```
 
-We need the DEM in a projected coordinate system for `terrain` to work, per the help file: 
-
-> Compute slope, aspect and other terrain characteristics from a raster with elevation data. The elevation data should be in map units (typically meter) for projected (planar) raster data. They should be in meters when the coordinate reference system (CRS) is longitude/latitude.
+We place the DEM in a projected coordinate system for `terrain`, although they could be in a planar system, provided elevation is given in m, per the help file: 
+> Compute terrain characteristics from elevation data. The elevation values should be in the same units as the map units (typically meter) for projected (planar) raster data. They should be in meter when the coordinate reference system is longitude/latitude.
 
 So we create (#1) a 1 km projected version of the DEM, allowing the default bilinear interpolation to do its work during reprojection. 
 
 In #2 we calculate slope, aspect, flow direction, and the topographic ruggedness index. The commented out code illustrates how each of these variables can be calculated separately, although we prefer to do the job using `lapply`. Note that in the `lapply` we pass the "unit" argument into the calculation of all four variables, even though it only is used for slope and aspect; this is fine, because `terrain` simply ignores the argument value in calculating flow direction or TRI. 
+
+\hline
+**NOTE: This vignette will be updated from `raster` to `terra`**
+\hline
 
 ## Interpolation
 

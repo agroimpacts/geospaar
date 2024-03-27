@@ -97,7 +97,8 @@ The class materials were designed by Lyndon Estes and Lei Song.
   - Assignment 4 due (Unit 2 Module 1)
 
 ### Week 11 (Mar 25, 27)
-  - [Class 18 slides](class18.html)  
+  - [Class 18 slides](class18.html)
+  - [Class 19 slides](class19.html)
   - Raster algebra, terrain, modeling
 
 ### Week 12 (April 1, 3)

@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Geospatial Analysis with R
 ]
 .subtitle[
-## Class 18
+## Class 19
 ]
 
 ---
@@ -62,52 +62,6 @@ smallest_centroid &lt;- districts %&gt;%
   st_centroid()
 ```
 
----
-### A quick demo of multi-panel plots
-- gridExtra
-
-```r
-library(ggplot2)
-
-p &lt;- ggplot(districts) + 
-  geom_sf() + 
-  geom_sf(data = smallest_centroid, color = "red")
-
-p1 &lt;- p + geom_sf(data = mypoly, aes(color = as.factor(ID)),
-                  fill = "transparent") + labs(color = "ID")
-# small_pol2 &lt;- pol %&gt;% st_sfc() %&gt;% st_sf(crs = 4326) %&gt;% mutate(ID = 1)
-p2 &lt;- p + geom_sf(data = mypoly, aes(color = as.factor(ID)), 
-                  fill = "transparent") + 
-  labs(color = "ID")
-
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-```
-
----
-- cowplot::plot_grid
-
-```r
-g1 &lt;- cowplot::plot_grid(p1 + theme(legend.position = "none"), 
-                         p2 + theme(legend.position = "none"))
-cowplot::plot_grid(g1, cowplot::get_legend(p1), rel_widths = c(2, 0.3))
-```
----
-
-### `patchwork`
-
-```r
-library(patchwork)
-
-p1 + p2
-
-p1 + p2 + plot_layout(guides = "collect")
-
-p1 + p1 / p
-(p1 + p2) / (p1 + p2) + plot_layout(guides = "collect")
-```
-
----
-
 ## terra objects
 - `SpatRaster` object - 1 layer to many layers, from multiple or single file sources
 - `SpatVector` object - Vector data
@@ -127,7 +81,7 @@ chirps[[3]] ## access by index
 plot(chirps[[3]])
 ```
 
-&lt;img src="/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs/class18_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs/class19_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -145,9 +99,6 @@ values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
 par(mar = c(0, 0, 0, 0))
 plot(districts %&gt;% st_geometry)
 plot(r, add = TRUE)
-
-# plot(vect(districts))
-# plot(districts)
 ```
 
 ---
@@ -169,18 +120,16 @@ print(class(s))
 
 
 ```r
-
-b2 &lt;- lapply(1:10, function(x) {
+b &lt;- lapply(1:10, function(x) {
   r &lt;- rast(ext(30, 31, -14, -13), resolution = 0.1, 
             crs = "EPSG:4326")
   set.seed(x)
   values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
   r
 }) %&gt;% do.call(c, .)
-names(b2) &lt;- paste0("b", 1:10)
+names(b) &lt;- paste0("b", 1:10)
 
-plot(chirps[[1:10]])
-# plot(b2)
+plot(b)
 ```
 
 ---
@@ -188,18 +137,18 @@ plot(chirps[[1:10]])
 - how does this differ from above?
 
 ```r
-b3 &lt;- lapply(1:10, function(x) {
+b2 &lt;- lapply(1:10, function(x) {
   r &lt;- rast(ext(30, 31, -14, -13), resolution = 0.001, 
               crs = "EPSG:4326")
   set.seed(x)
   values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
   r
 }) %&gt;% do.call(c, .)
-names(b3) &lt;- paste0("b", 1:10)
-plot(b3)
-plot(b3[[1]])
-plot(b3[[10]])
-plot(b3[[c(1, 10)]])
+names(b2) &lt;- paste0("b", 1:10)
+plot(b2)
+plot(b2[[1]])
+plot(b2[[10]])
+plot(b2[[c(1, 10)]])
 
 ```
 
@@ -259,7 +208,7 @@ str(distsr)
 
 ---
 ## Vector &lt;--&gt; Raster
-- `rasterToPolygons`, use dissolve to merge common raster values
+- `as.polygons`, use dissolve to merge common raster values
 
 ```r
 distsr_pol &lt;- as.polygons(distsr, dissolve = TRUE)
@@ -290,7 +239,6 @@ plot_noaxes(b, legend = FALSE)
 ---
 
 ```r
-
 plot_noaxes(b[[1]], legend = FALSE)
 legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
        bty = "n")
@@ -304,16 +252,6 @@ plot_noaxes(b3, main = paste("Random", 1:10))
 plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
 ```
 
----
-- rasterVis package includes additional plot options
-
-```r
-rasterVis::levelplot(b3)#, #names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b[[1]])
-rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
-  scale_fill_viridis_c()
-```
 
 ---
 - ggplot() works with `geom_raster()`
@@ -321,7 +259,7 @@ rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) +
 ```r
 ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
   # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
-  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
+  geom_raster(aes(x = x, y = y, fill = b1)) + scale_fill_viridis_c()
 ```
 
 
@@ -365,8 +303,10 @@ aggregate(b, fact = 2) %&gt;% plot(., main = paste0("Brick agg", 1:2) )
 
 ```r
 plot(b, main = paste0("Brick ", 1:2) )
-disaggregate(b, fact = 2) %&gt;% plot(., main = paste0("Brick disagg", 1:2) )
-disaggregate(b, fact = 2, method = 'bilinear') %&gt;% plot(., main = paste0("Brick disagg bilinear", 1:2) )
+disagg(b, fact = 2) %&gt;% 
+  plot(., main = paste0("Brick disagg", 1:2) )
+disagg(b, fact = 2, method = 'bilinear') %&gt;% 
+  plot(., main = paste0("Brick disagg bilinear", 1:2) )
 ```
 
 
@@ -376,8 +316,6 @@ disaggregate(b, fact = 2, method = 'bilinear') %&gt;% plot(., main = paste0("Bri
 - `mask` makes values `NA` outside of mask area.
 
 ```r
-library(geospaar)
-data(chirps)
 plot_noaxes(chirps[[1]])
 chirpsz &lt;- mask(chirps, districts)
 plot_noaxes(chirpsz[[1]])
