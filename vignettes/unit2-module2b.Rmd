@@ -293,7 +293,8 @@ randrain <- raintot[distsamp[, 1]]
 # #3
 set.seed(1)
 distsamp_str <- spatSample(x = distsrfarm, method = "stratified", 
-                           size = nrow(farmers_env) / length(farmdistid),                                   cells = TRUE)
+                           size = nrow(farmers_env) / length(farmdistid),
+                           cells = TRUE)
 stratrandrain <- raintot[distsamp_str[, 1]]
 
 # #4
@@ -312,10 +313,6 @@ ggplot(rand_rain_stats) +
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics("fig/u2m2_samplestrat.png")
 ```
-
-\hline
-**NOTE: This vignette will be updated from `raster` to `terra`**
-\hline
 
 In this case, we first (#1) mask the raster to exclude districts having no farmers (you can run the commented-out code to see the map). #2 uses the function `terra::spatSample` to take a straight random sample from the farmer-hosting districts. We set the "size" argument so that it is equal to `nrow(farmers_env)`, i.e. our sample is equal to the number of farmers in `farmers_env` (793). We use the argument `cells = TRUE` to select the cell numbers, which is what we are really interested in (if we didn't, we would just get the values of those cells, i.e. the district IDs). We then use those cell ids (the first column of `distsamp`) to extract the rainfall values from `raintot`. We can use the cell IDs selected from one raster to extract values from another only if the two rasters have an identical number of cells and extents, as is the case here. You can confirm that this is the case for `distsrfarm` and `raintot` by running `identical(ncell(raintot), ncell(distsrfarm))` and `ext(raintot) ==  ext(distsrfarm)`.
 

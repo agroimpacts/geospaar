@@ -79,12 +79,19 @@ plot(chirps[[3]])
 library(terra)
 r <- rast(ext(30, 31, -14, -13), resolution = 0.1, crs = "EPSG:4326")
 values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+r2 <- r
+# values(r2) <- rnorm(n = 10)
+values(r2) <- rnorm(n = ncell(r2))
 # values(r) <- 1:15
 # plot(r)
 
 par(mar = c(0, 0, 0, 0))
 plot(districts %>% st_geometry)
-plot(r, add = TRUE)
+# plot(r, add = TRUE)
+# plot(r2, add = TRUE)
+# plot(r - r2, add = TRUE)
+
+plot(r - r2)
 ```
 
 ---
@@ -128,10 +135,13 @@ b2 <- lapply(1:10, function(x) {
   r
 }) %>% do.call(c, .)
 names(b2) <- paste0("b", 1:10)
+
 plot(b2)
 plot(b2[[1]])
 plot(b2[[10]])
 plot(b2[[c(1, 10)]])
+plot(b2[["b3"]])
+plot(b2["b3"])
 
 ```
 
@@ -141,6 +151,8 @@ plot(b2[[c(1, 10)]])
 ```{r, eval=FALSE}
 ## write raster
 writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
+writeRaster(r, filename = file.path(tempdir(), "mydummy2.tif"), 
+            overwrite = TRUE, datatype = "INT1U")
 dir(tempdir())
 
 ## read in raster
@@ -178,9 +190,11 @@ plot(chirpsz_alb[[1:10]])
 - `rasterize` converts to raster. Need to pass argument that gives raster dimensions.
 - In below example, we use `chirpsz` for dimensions
 ```{r, eval = FALSE}
-distsr <- rasterize(districts, chirpsz, field = "distName")
+distsr <- rasterize(districts, chirps, field = "distName")
 distsr %>% plot_noaxes
 str(distsr)
+values(distsr)
+ext(distsr)
 # stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
 
 ```
@@ -189,7 +203,9 @@ str(distsr)
 ## Vector <--> Raster
 - `as.polygons`, use dissolve to merge common raster values
 ```{r, eval=FALSE}
-distsr_pol <- as.polygons(distsr, dissolve = TRUE)
+distsr_pol <- as.polygons(distsr)
+# plot(as.polygons(distsr))
+# plot(distsr_pol)
 distsr_pol %>% 
   st_as_sf %>% 
   st_geometry %>% 
@@ -206,25 +222,28 @@ distsr_pol %>%
 - run examples below individually
 ```{r, eval = FALSE}
 plot(b)
-plot(b2)
+# plot(b2)
 plot_noaxes(b)
-plot_noaxes(b2, main = paste("Random", 1:10))
+plot_noaxes(b, main = paste("Random", 1:10))
 plot(b2, main = paste("Random", 1:10))
 plot_noaxes(b, legend = FALSE)
 ```
 
 ---
 ```{r, eval = FALSE}
-plot_noaxes(b[[1]], legend = FALSE)
-legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
-       bty = "n")
+# png("external/mydem.png", width = 6, height = 4, res = 300, units = "in")
+# plot_noaxes(b[[1]], legend = FALSE, mar = c(0, 0, 0, 6), oma = c(0, 0, 0, 4))
+plot_noaxes(b[[1]], legend = "bottom", mar = c(1, 1, 1, 6), oma = c(0, 0, 0, 4))
+# add_legend(x = 30.5, y = -13.5, legend = 1:10, fill = terrain.colors(10), 
+#            border = FALSE, bty = "n")
+# dev.off()
 ```
 
 ---
 ```{r, eval = FALSE}
 # plotting with larger datasets
-plot_noaxes(b3, main = paste("Random", 1:10))
-plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
+plot_noaxes(b2, main = paste("Random", 1:10))
+plot_noaxes(b2, nc = 2, nr = 5, main = paste("Random", 1:10))
 ```
 
 
@@ -232,7 +251,6 @@ plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
 - ggplot() works with `geom_raster()`
 ```{r, eval = FALSE}
 ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
-  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
   geom_raster(aes(x = x, y = y, fill = b1)) + scale_fill_viridis_c()
 ```
 
@@ -243,7 +261,17 @@ ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) +
 ```{r, eval = FALSE}
 stars::st_as_stars(b) %>% plot(col = viridis::viridis(10))
 stars::st_as_stars(b) %>% plot()
+
+ggplot(stars::st_as_stars(b[[1]])) + geom_stars()
 ```
+
+---
+```{r}
+quantile(values(chirps[[1]]))
+plot(terra::classify(chirps[[1]], rcl = c(0, 5, 10, 25)))
+
+```
+
 
 ---
 ## Raster to other types
