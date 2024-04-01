@@ -415,15 +415,15 @@ plot_noaxes(newrandrain)
 5. 
 ```{r, eval = FALSE}
 set.seed(1)
-randsamp <- spatSample(x = newrandrain, size = 300, na.rm = TRUE, xy = TRUE)
+randsamp <- spatSample(x = newrandrain, size = 300, na.rm = TRUE)
 
 set.seed(1)
-ind <- sampleStratified(x = randdistsr, size = 300 / 15, cells = TRUE)
+ind <- spatSample(x = randdistsr, size = 300 / 15, cells = TRUE, na.rm = TRUE)
 stratsamp <- newrandrain[ind[, 1]]
 
 rand_rain_stats <- bind_rows(
-  tibble(rain = randsamp, dat = "Simple"),
-  tibble(rain = stratsamp, dat = "Stratified"),
+  tibble(rain = randsamp$sum, dat = "Simple"),
+  tibble(rain = stratsamp$sum, dat = "Stratified"),
 ) %>% drop_na
 
 bp_theme <- theme(legend.title = element_blank(), axis.text.x = element_blank(),
@@ -438,6 +438,10 @@ rand_rain_stats %>% ggplot() +
   ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + bp_theme
 
 ```
+
+######
+## Below still in raster format
+######
 
 ## Practice 4
 ### Questions

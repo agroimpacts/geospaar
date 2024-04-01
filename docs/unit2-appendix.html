@@ -1329,16 +1329,18 @@ margin-left: 0 !important;
       <li><a href="#questions-5" id="toc-questions-5"><span class="toc-section-number">2.3.1</span> Questions</a></li>
       <li><a href="#code-5" id="toc-code-5"><span class="toc-section-number">2.3.2</span> Code</a></li>
       </ul></li>
-      <li><a href="#practice-4" id="toc-practice-4"><span class="toc-section-number">2.4</span> Practice 4</a>
+      <li><a href="#below-still-in-raster-format" id="toc-below-still-in-raster-format"><span class="toc-section-number">2.4</span> Below still in raster
+      format</a></li>
+      <li><a href="#practice-4" id="toc-practice-4"><span class="toc-section-number">2.5</span> Practice 4</a>
       <ul>
-      <li><a href="#questions-6" id="toc-questions-6"><span class="toc-section-number">2.4.1</span> Questions</a></li>
-      <li><a href="#code-6" id="toc-code-6"><span class="toc-section-number">2.4.2</span> Code</a></li>
+      <li><a href="#questions-6" id="toc-questions-6"><span class="toc-section-number">2.5.1</span> Questions</a></li>
+      <li><a href="#code-6" id="toc-code-6"><span class="toc-section-number">2.5.2</span> Code</a></li>
       </ul></li>
       </ul></li>
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-01-17
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-04-01
 <a href="index.html">Back to home</a></p>
           </div>
    </div>
@@ -1437,12 +1439,20 @@ levels that creating tertiles of area.</p></li>
 <li></li>
 </ol>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>districts <span class="sc">%&gt;%</span> <span class="fu">sample_n</span>(<span class="dv">20</span>) <span class="sc">%&gt;%</span> <span class="fu">st_area</span>() <span class="sc">%&gt;%</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;ha&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">mean</span>()</span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>districts <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">st_area</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;ha&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li></li>
 </ol>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>roads <span class="sc">%&gt;%</span> <span class="fu">sample_n</span>(<span class="dv">100</span>) <span class="sc">%&gt;%</span> <span class="fu">st_length</span>() <span class="sc">%&gt;%</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;km&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">mean</span>()</span></code></pre></div>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>roads <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="fu">st_length</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;km&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li></li>
 </ol>
@@ -1527,31 +1537,44 @@ argument appear first.</p></li>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Try compare the</span></span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>farmers_alb <span class="sc">%&gt;%</span> <span class="fu">filter</span>(season <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="at">dist =</span> <span class="dv">30000</span>) <span class="sc">%&gt;%</span> st_geometry <span class="sc">%&gt;%</span> <span class="fu">plot</span>()</span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co"># With </span></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>farmers_alb <span class="sc">%&gt;%</span> <span class="fu">filter</span>(season <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="at">dist =</span> <span class="dv">30000</span>) <span class="sc">%&gt;%</span> st_geometry <span class="sc">%&gt;%</span> <span class="fu">plot</span>()</span></code></pre></div>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="fu">st_buffer</span>(<span class="at">dist =</span> <span class="dv">30000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  st_geometry <span class="sc">%&gt;%</span> </span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>  <span class="fu">plot</span>()</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co"># With </span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>farmers_alb <span class="sc">%&gt;%</span> </span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>  <span class="fu">filter</span>(season <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>  <span class="fu">st_buffer</span>(<span class="at">dist =</span> <span class="dv">30000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>  st_geometry <span class="sc">%&gt;%</span> </span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>roads_gt400 <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">st_length</span>(.)) <span class="sc">/</span> <span class="dv">1000</span> <span class="sc">&gt;</span> <span class="dv">400</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">st_transform</span>(districts, <span class="fu">st_crs</span>(roads)) <span class="sc">%&gt;%</span> st_geometry <span class="sc">%&gt;%</span> </span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">main =</span> <span class="cn">NULL</span>)</span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>roads_gt400 <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="dv">25000</span>) <span class="sc">%&gt;%</span> <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;green&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>roads_gt400 <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> </span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">st_length</span>(.)) <span class="sc">/</span> <span class="dv">1000</span> <span class="sc">&gt;</span> <span class="dv">400</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">st_transform</span>(districts, <span class="fu">st_crs</span>(roads)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  st_geometry <span class="sc">%&gt;%</span> </span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">main =</span> <span class="cn">NULL</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>roads_gt400 <span class="sc">%&gt;%</span> </span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>  <span class="fu">st_buffer</span>(<span class="dv">25000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;green&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <ol start="7" style="list-style-type: decimal">
 <li></li>
 </ol>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">st_transform</span>(districts, <span class="fu">st_crs</span>(roads)) <span class="sc">%&gt;%</span> st_geometry <span class="sc">%&gt;%</span> </span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">main =</span> <span class="cn">NULL</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>roads_gt400 <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="dv">25000</span>) <span class="sc">%&gt;%</span> <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;tan&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>roads_gt400 <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="dv">25000</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="fu">rep</span>(<span class="dv">20</span>, <span class="fu">nrow</span>(.)), <span class="at">exact =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">st_transform</span>(districts, <span class="fu">st_crs</span>(roads)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  st_geometry <span class="sc">%&gt;%</span> </span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">main =</span> <span class="cn">NULL</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>roads_gt400 <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="dv">25000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;tan&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>roads_gt400 <span class="sc">%&gt;%</span> <span class="fu">st_buffer</span>(<span class="dv">25000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="fu">rep</span>(<span class="dv">20</span>, <span class="fu">nrow</span>(.)), <span class="at">exact =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">pch =</span> <span class="dv">20</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -1564,19 +1587,20 @@ answers</h1>
 <div id="questions-3" class="section level3" number="2.1.1">
 <h3><span class="header-section-number">2.1.1</span> Questions</h3>
 <ol style="list-style-type: decimal">
-<li><p><code>raster</code> uses the S4 object-oriented system, where
-<code>sf</code> uses S4. Slots in S4 objects are accessed using the
+<li><p><code>terra</code> uses the S4 object-oriented system, where
+<code>sf</code> uses S3. Slots in S4 objects are accessed using the
 <code>@</code> operator.</p></li>
-<li><p><code>brick</code>, because <code>raster</code> only allows you
-to read and write a single layer.</p></li>
-<li><p><code>stack</code> organizes multiple rasters that might be
-stored in separation locations into a single multi-layer object, whereas
-<code>brick</code> requires a single file on disk. <code>bricks</code>
-take longer to create, but are faster to work with once they
-exist.</p></li>
-<li><p>The output of <code>raster</code>’s vectorization functions are
-<code>sp</code> objects, so you have to convert them to <code>sf</code>
-objects using <code>st_as_sf</code>.</p></li>
+<li><p><code>terra::rast</code>, the same function you would use for
+reading and writing a single-layer raster.</p></li>
+<li><p>stack and brick are terms leftover from the <code>raster</code>
+package, which had separate functions fo r these. For
+<code>terra</code>, a stack might be still thought of as a
+<code>spatRaster</code> made from multiple rasters stored in separation
+locations on disk into a single multi-layer object, whereas a brick is
+read from, or written to, a single file on disk.</p></li>
+<li><p>The output of <code>terra</code>’s vectorization functions are
+<code>vect</code> objects, so you have to convert them to
+<code>sf</code> objects using <code>st_as_sf</code>.</p></li>
 </ol>
 </div>
 <div id="code-3" class="section level3" number="2.1.2">
@@ -1585,8 +1609,8 @@ objects using <code>st_as_sf</code>.</p></li>
 <li></li>
 </ol>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># recreate r, r2, r3</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">extent</span>(<span class="fu">c</span>(<span class="st">&quot;xmin&quot;</span> <span class="ot">=</span> <span class="dv">27</span>, <span class="st">&quot;xmax&quot;</span> <span class="ot">=</span> <span class="dv">29</span>, <span class="st">&quot;ymin&quot;</span> <span class="ot">=</span> <span class="sc">-</span><span class="dv">16</span>, <span class="st">&quot;ymax&quot;</span> <span class="ot">=</span> <span class="sc">-</span><span class="dv">14</span>))  </span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">x =</span> e, <span class="at">res =</span> <span class="fl">0.25</span>, <span class="at">crs =</span> <span class="fu">crs</span>(districts))</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">ext</span>(<span class="fu">c</span>(<span class="st">&quot;xmin&quot;</span> <span class="ot">=</span> <span class="dv">27</span>, <span class="st">&quot;xmax&quot;</span> <span class="ot">=</span> <span class="dv">29</span>, <span class="st">&quot;ymin&quot;</span> <span class="ot">=</span> <span class="sc">-</span><span class="dv">16</span>, <span class="st">&quot;ymax&quot;</span> <span class="ot">=</span> <span class="sc">-</span><span class="dv">14</span>))  </span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="at">x =</span> e, <span class="at">res =</span> <span class="fl">0.25</span>, <span class="at">crs =</span> <span class="fu">crs</span>(districts))</span>
 <span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)  </span>
 <span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="fu">values</span>(r) <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">size =</span> <span class="fu">ncell</span>(r), <span class="at">replace =</span> <span class="cn">TRUE</span>)  <span class="co"># 3</span></span>
 <span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>r2 <span class="ot">&lt;-</span> r <span class="sc">&gt;</span> <span class="dv">50</span></span>
@@ -1600,47 +1624,59 @@ objects using <code>st_as_sf</code>.</p></li>
 <span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="fu">values</span>(r4) <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">ncell</span>(r4), <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>r5 <span class="ot">&lt;-</span> r4 <span class="sc">&gt;</span> <span class="fl">0.5</span></span>
 <span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a></span>
-<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fu">list</span>(r, r2, r3, r4, r5) <span class="sc">%&gt;%</span> stack</span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fu">c</span>(r, r2, r3, r4, r5)</span>
 <span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="fu">names</span>(s2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;r&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>, <span class="st">&quot;r4&quot;</span>, <span class="st">&quot;r5&quot;</span>)</span>
 <span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a><span class="fu">plot</span>(s2)</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>We use <code>tempdir()</code> here, but you should use your
 <code>notebooks/data</code> folder.</li>
 </ol>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">brick</span>(s2, <span class="at">file =</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;b2.tif&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">writeRaster</span>(s2, <span class="at">file =</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;b2.tif&quot;</span>))</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>zamr3 <span class="ot">&lt;-</span> <span class="fu">raster</span>(<span class="at">x =</span> <span class="fu">extent</span>(districts), <span class="at">crs =</span> <span class="fu">crs</span>(districts), <span class="at">res =</span> <span class="fl">0.2</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">values</span>(zamr3) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncell</span>(zamr3)</span>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>zamr <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="at">x =</span> <span class="fu">ext</span>(districts), <span class="at">crs =</span> <span class="fu">crs</span>(districts), <span class="at">res =</span> <span class="fl">0.2</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">values</span>(zamr) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncell</span>(zamr)</span>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>farmersr <span class="ot">&lt;-</span> farmers <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(uuid, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(x, y) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">count =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">rasterize</span>(<span class="at">x =</span> ., <span class="at">y =</span> zamr3, <span class="at">field =</span> <span class="st">&quot;count&quot;</span>, <span class="at">fun =</span> sum)</span>
-<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>))</span>
-<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>districts <span class="sc">%&gt;%</span> st_union <span class="sc">%&gt;%</span> <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="fu">plot</span>(farmersr, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>farmersr <span class="ot">&lt;-</span> farmers <span class="sc">%&gt;%</span> </span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="fu">distinct</span>(uuid, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">select</span>(x, y) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">count =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>  <span class="fu">rasterize</span>(<span class="at">x =</span> ., <span class="at">y =</span> zamr, <span class="at">field =</span> <span class="st">&quot;count&quot;</span>, <span class="at">fun =</span> sum)</span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>))</span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_union</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">plot</span>(farmersr, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>zamr_alb <span class="ot">&lt;-</span> <span class="fu">projectRaster</span>(<span class="at">from =</span> zamr, <span class="at">res =</span> <span class="dv">20000</span>, <span class="at">crs =</span> <span class="fu">crs</span>(roads), </span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>                          <span class="at">method =</span> <span class="st">&quot;ngb&quot;</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>farmersr_alb <span class="ot">&lt;-</span> <span class="fu">projectRaster</span>(<span class="at">from =</span> farmersr, <span class="at">to =</span> zamr_alb, </span>
-<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>                              <span class="at">method =</span> <span class="st">&quot;bilinear&quot;</span>)</span>
-<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a></span>
-<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>), <span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>districts <span class="sc">%&gt;%</span> st_union <span class="sc">%&gt;%</span> <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="fu">plot</span>(farmersr, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>districts <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(<span class="fu">crs</span>(roads)) <span class="sc">%&gt;%</span> st_union <span class="sc">%&gt;%</span> </span>
-<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a><span class="fu">plot</span>(farmersr_alb, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>zamr_alb <span class="ot">&lt;-</span> <span class="fu">project</span>(<span class="at">x =</span> zamr, <span class="at">y =</span> <span class="fu">crs</span>(roads), <span class="at">res =</span> <span class="dv">20000</span>, <span class="at">method =</span> <span class="st">&quot;near&quot;</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>farmersr_alb <span class="ot">&lt;-</span> <span class="fu">project</span>(<span class="at">x =</span> farmersr, <span class="at">y =</span> zamr_alb, <span class="at">method =</span> <span class="st">&quot;bilinear&quot;</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>), <span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_union</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="fu">plot</span>(farmersr, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_transform</span>(<span class="fu">st_union</span>(districts), <span class="fu">crs</span>(roads)), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, </span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a><span class="fu">plot</span>(farmersr_alb, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a><span class="co"># Note currently there is a bug in terra::plot when mixed with `sf` plots. A </span></span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a><span class="co"># workaround is to coerse districts to vect and plot. </span></span>
+<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>), <span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">vect</span>(<span class="fu">st_union</span>(districts)), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a><span class="fu">plot</span>(farmersr, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">vect</span>(<span class="fu">st_transform</span>(<span class="fu">st_union</span>(districts), <span class="fu">crs</span>(roads))), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, </span>
+<span id="cb22-17"><a href="#cb22-17" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-18"><a href="#cb22-18" tabindex="-1"></a><span class="fu">plot</span>(farmersr_alb, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li></li>
 </ol>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>farmersr <span class="sc">%&gt;%</span> <span class="fu">rasterToPolygons</span>(<span class="at">dissolve =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> st_as_sf <span class="sc">%&gt;%</span> </span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">main =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>farmersr <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="fu">as.polygons</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>  st_as_sf <span class="sc">%&gt;%</span> </span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">main =</span> <span class="cn">NULL</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="practice-2-1" class="section level2" number="2.2">
@@ -1648,13 +1684,14 @@ objects using <code>st_as_sf</code>.</p></li>
 <div id="questions-4" class="section level3" number="2.2.1">
 <h3><span class="header-section-number">2.2.1</span> Questions</h3>
 <ol style="list-style-type: decimal">
-<li><p><code>cellStats</code> provides summary statistics over an entire
+<li><p><code>global</code> provides summary statistics over an entire
 layer; <code>zonal</code> calculates statistics within pre-defined
 zones; <code>focal</code> calculates statistics within a moving
 window.</p></li>
 <li><p>Use <code>method = bilinear</code>.</p></li>
 <li><p>You don’t. You have to resample them to a common resolution and
-extent first. And then you have to <code>stack</code> them.</p></li>
+extent first. And then you have to stack them (with
+<code>c</code>).</p></li>
 </ol>
 </div>
 <div id="code-4" class="section level3" number="2.2.2">
@@ -1671,41 +1708,46 @@ extent first. And then you have to <code>stack</code> them.</p></li>
 <ol start="2" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>farmersr2 <span class="ot">&lt;-</span> farmers <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(uuid, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">count =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(x, y, count) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>  <span class="fu">rasterize</span>(., distsr, <span class="at">field =</span> <span class="st">&quot;count&quot;</span>, <span class="at">fun =</span> sum)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>farmersr2 <span class="ot">&lt;-</span> farmers <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="fu">distinct</span>(uuid, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">count =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>  <span class="fu">select</span>(x, y, count) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>  <span class="fu">rasterize</span>(., distsr, <span class="at">field =</span> <span class="st">&quot;count&quot;</span>, <span class="at">fun =</span> sum)</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">zonal</span>(farmersr2, distsr, <span class="at">fun =</span> sum) <span class="sc">%&gt;%</span> data.frame <span class="sc">%&gt;%</span> </span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="fu">subs</span>(distsr, .) <span class="sc">%&gt;%</span> plot_noaxes</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>subtab <span class="ot">&lt;-</span> <span class="fu">zonal</span>(farmersr2, distsr, <span class="at">fun =</span> sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">subst</span>(distsr, <span class="at">from =</span> subtab<span class="sc">$</span>ID, <span class="at">to =</span> subtab<span class="sc">$</span>sum) <span class="sc">%&gt;%</span> plot_noaxes</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li></li>
 </ol>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>wmat3 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">ncol =</span> <span class="dv">3</span>) </span>
 <span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>wmat5 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">ncol =</span> <span class="dv">5</span>) </span>
-<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>fstack <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">sd3 =</span> <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat3, <span class="at">fun =</span> sd), </span>
-<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>               <span class="at">sd5 =</span> <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat5, <span class="at">fun =</span> sd),</span>
-<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>               <span class="at">max3 =</span> <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat3, <span class="at">fun =</span> max), </span>
-<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>               <span class="at">max5 =</span> <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat5, <span class="at">fun =</span> max)) <span class="sc">%&gt;%</span> stack</span>
-<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>fstack <span class="sc">%&gt;%</span> plot_noaxes</span></code></pre></div>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>fstack <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat3, <span class="at">fun =</span> sd), </span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>            <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat5, <span class="at">fun =</span> sd),</span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>            <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat3, <span class="at">fun =</span> max), </span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>            <span class="fu">focal</span>(<span class="at">x =</span> chirpsz[[<span class="dv">20</span>]], <span class="at">w =</span> wmat5, <span class="at">fun =</span> max)) </span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="fu">names</span>(fstack) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;sd3&quot;</span>, <span class="st">&quot;sd5&quot;</span>, <span class="st">&quot;max3&quot;</span>, <span class="st">&quot;max5&quot;</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a><span class="fu">plot_noaxes</span>(fstack)</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>chirps_d57 <span class="ot">&lt;-</span> chirpsz[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> <span class="fu">crop</span>(., <span class="fu">extent</span>(districts[<span class="dv">57</span>, ]))</span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">d1 =</span> <span class="fu">disaggregate</span>(chirps_d57, <span class="at">fact =</span> <span class="dv">5</span>), </span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>          <span class="at">d2 =</span> <span class="fu">disaggregate</span>(chirps_d57, <span class="at">fact =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">&quot;bilinear&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>  stack</span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="fu">plot_noaxes</span>(s)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>chirps_d57 <span class="ot">&lt;-</span> chirpsz[[<span class="dv">1</span>]] <span class="sc">%&gt;%</span> </span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  <span class="fu">crop</span>(., <span class="fu">ext</span>(districts[<span class="dv">57</span>, ]))</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">disagg</span>(chirps_d57, <span class="at">fact =</span> <span class="dv">5</span>), </span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>       <span class="fu">disagg</span>(chirps_d57, <span class="at">fact =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">&quot;bilinear&quot;</span>))</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="fu">names</span>(s) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;d1&quot;</span>, <span class="st">&quot;d2&quot;</span>)</span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a><span class="fu">plot_noaxes</span>(s)</span></code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">list</span>(mean, cv, median), <span class="cf">function</span>(x) {</span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>  <span class="fu">calc</span>(chirpsz, <span class="at">fun =</span> x)  </span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>}) <span class="sc">%&gt;%</span> stack</span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a><span class="fu">names</span>(s) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;CV&quot;</span>, <span class="st">&quot;Median&quot;</span>)</span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="fu">plot_noaxes</span>(s, <span class="at">nr =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sd</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">list</span>(mean, cv, median), <span class="cf">function</span>(x) {</span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>  <span class="fu">app</span>(chirpsz, <span class="at">fun =</span> x)  </span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>}) <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(c, .)</span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="fu">names</span>(s) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Mean&quot;</span>, <span class="st">&quot;CV&quot;</span>, <span class="st">&quot;Median&quot;</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="fu">plot_noaxes</span>(s, <span class="at">nr =</span> <span class="dv">1</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="practice-3-1" class="section level2" number="2.3">
@@ -1713,11 +1755,12 @@ extent first. And then you have to <code>stack</code> them.</p></li>
 <div id="questions-5" class="section level3" number="2.3.1">
 <h3><span class="header-section-number">2.3.1</span> Questions</h3>
 <ol style="list-style-type: decimal">
-<li><p>Using <code>cut</code> with vector of breakpoints
-(e.g. quantiles), or use <code>reclassify</code> with a reclassification
+<li><p>Using the cut approach,with vector of breakpoints
+(e.g. quantiles) passed to <code>classify</code>, or a reclassification
 matrix.</p></li>
-<li><p><code>sampleRandom</code>, <code>sampleStratified</code>. There
-is also <code>sampleRegular</code>.</p></li>
+<li><p><code>spatSample</code>, using either the “random” or
+“stratified” methods. There is also “regular” as an option, and you can
+pass a weights vector when method is “stratified”.</p></li>
 </ol>
 </div>
 <div id="code-5" class="section level3" number="2.3.2">
@@ -1725,38 +1768,42 @@ is also <code>sampleRegular</code>.</p></li>
 <ol style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>chirps_sd <span class="ot">&lt;-</span> <span class="fu">calc</span>(chirpsz, <span class="at">fun =</span> sd)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>chirps_sd <span class="ot">&lt;-</span> <span class="fu">app</span>(chirpsz, <span class="at">fun =</span> sd)</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>(chirps_sd <span class="sc">&lt;</span> <span class="fu">cellStats</span>(chirps_sd, mean)) <span class="sc">%&gt;%</span> plot</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>(chirps_sd <span class="sc">&lt;</span> <span class="fu">unlist</span>(<span class="fu">global</span>(chirps_sd, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span> plot</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li></li>
 </ol>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">quantile</span>(raintot, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">%&gt;%</span> <span class="fu">cut</span>(raintot, .) <span class="sc">%&gt;%</span> </span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>  plot_noaxes</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>qtiles <span class="ot">&lt;-</span> <span class="fu">global</span>(raintot, <span class="cf">function</span>(x) {</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>  <span class="fu">quantile</span>(x, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>}) </span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="fu">plot_noaxes</span>(<span class="fu">classify</span>(raintot, <span class="at">rcl =</span> <span class="fu">unlist</span>(qtiles)))</span></code></pre></div>
 <ol start="4" style="list-style-type: decimal">
 <li></li>
 </ol>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>randdistsr <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> <span class="fu">sample_n</span>(<span class="at">size =</span> <span class="dv">15</span>) <span class="sc">%&gt;%</span> <span class="fu">rasterize</span>(., raintot)</span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="fu">plot_noaxes</span>(randdistsr)</span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>newrandrain <span class="ot">&lt;-</span> <span class="fu">mask</span>(raintot, randdistsr)</span>
-<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>newrandrain <span class="sc">%&gt;%</span> plot_noaxes</span></code></pre></div>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>randdistsr <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="at">size =</span> <span class="dv">15</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>  <span class="fu">rasterize</span>(., raintot)</span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a><span class="fu">plot_noaxes</span>(randdistsr)</span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>newrandrain <span class="ot">&lt;-</span> <span class="fu">mask</span>(raintot, randdistsr)</span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a><span class="fu">plot_noaxes</span>(newrandrain)</span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li></li>
 </ol>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>randsamp <span class="ot">&lt;-</span> <span class="fu">sampleRandom</span>(<span class="at">x =</span> newrandrain, <span class="at">size =</span> <span class="dv">300</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>randsamp <span class="ot">&lt;-</span> <span class="fu">spatSample</span>(<span class="at">x =</span> newrandrain, <span class="at">size =</span> <span class="dv">300</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a></span>
 <span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">sampleStratified</span>(<span class="at">x =</span> randdistsr, <span class="at">size =</span> <span class="dv">300</span> <span class="sc">/</span> <span class="dv">15</span>, <span class="at">cells =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>ind <span class="ot">&lt;-</span> <span class="fu">spatSample</span>(<span class="at">x =</span> randdistsr, <span class="at">size =</span> <span class="dv">300</span> <span class="sc">/</span> <span class="dv">15</span>, <span class="at">cells =</span> <span class="cn">TRUE</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb34-6"><a href="#cb34-6" tabindex="-1"></a>stratsamp <span class="ot">&lt;-</span> newrandrain[ind[, <span class="dv">1</span>]]</span>
 <span id="cb34-7"><a href="#cb34-7" tabindex="-1"></a></span>
 <span id="cb34-8"><a href="#cb34-8" tabindex="-1"></a>rand_rain_stats <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">rain =</span> randsamp, <span class="at">dat =</span> <span class="st">&quot;Simple&quot;</span>),</span>
-<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">rain =</span> stratsamp, <span class="at">dat =</span> <span class="st">&quot;Stratified&quot;</span>),</span>
+<span id="cb34-9"><a href="#cb34-9" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">rain =</span> randsamp<span class="sc">$</span>sum, <span class="at">dat =</span> <span class="st">&quot;Simple&quot;</span>),</span>
+<span id="cb34-10"><a href="#cb34-10" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">rain =</span> stratsamp<span class="sc">$</span>sum, <span class="at">dat =</span> <span class="st">&quot;Stratified&quot;</span>),</span>
 <span id="cb34-11"><a href="#cb34-11" tabindex="-1"></a>) <span class="sc">%&gt;%</span> drop_na</span>
 <span id="cb34-12"><a href="#cb34-12" tabindex="-1"></a></span>
 <span id="cb34-13"><a href="#cb34-13" tabindex="-1"></a>bp_theme <span class="ot">&lt;-</span> <span class="fu">theme</span>(<span class="at">legend.title =</span> <span class="fu">element_blank</span>(), <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
@@ -1769,12 +1816,22 @@ is also <code>sampleRegular</code>.</p></li>
 <span id="cb34-20"><a href="#cb34-20" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">y =</span> rain, <span class="at">fill =</span> dat), <span class="at">position =</span> <span class="st">&quot;dodge2&quot;</span>) <span class="sc">+</span></span>
 <span id="cb34-21"><a href="#cb34-21" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;lightblue&quot;</span>, <span class="st">&quot;steelblue&quot;</span>)) <span class="sc">+</span> </span>
 <span id="cb34-22"><a href="#cb34-22" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Rainfall distributions&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="cn">NULL</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&quot;mm&quot;</span>) <span class="sc">+</span> bp_theme</span></code></pre></div>
+<div id="section" class="section level6" number="2.3.2.0.0.1">
+<h6><span class="header-section-number">2.3.2.0.0.1</span> </h6>
 </div>
 </div>
-<div id="practice-4" class="section level2" number="2.4">
-<h2><span class="header-section-number">2.4</span> Practice 4</h2>
-<div id="questions-6" class="section level3" number="2.4.1">
-<h3><span class="header-section-number">2.4.1</span> Questions</h3>
+</div>
+<div id="below-still-in-raster-format" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Below still in raster
+format</h2>
+<div id="section-1" class="section level6" number="2.4.0.0.0.1">
+<h6><span class="header-section-number">2.4.0.0.0.1</span> </h6>
+</div>
+</div>
+<div id="practice-4" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Practice 4</h2>
+<div id="questions-6" class="section level3" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> Questions</h3>
 <ol style="list-style-type: decimal">
 <li><p>The <code>area</code> function is your friend for this.</p></li>
 <li><p>Use <code>expression</code> together combined with
@@ -1783,8 +1840,8 @@ is also <code>sampleRegular</code>.</p></li>
 used by the model.</p></li>
 </ol>
 </div>
-<div id="code-6" class="section level3" number="2.4.2">
-<h3><span class="header-section-number">2.4.2</span> Code</h3>
+<div id="code-6" class="section level3" number="2.5.2">
+<h3><span class="header-section-number">2.5.2</span> Code</h3>
 <ol style="list-style-type: decimal">
 <li></li>
 </ol>

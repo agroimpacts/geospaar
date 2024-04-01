@@ -36,7 +36,6 @@ districts <- st_read(
 roads <- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
 
 chirps <- terra::rast(system.file("extdata/chirps.tif", package = "geospaar"))
-
 ```
 
 
@@ -81,11 +80,16 @@ as.data.frame(b) %>% as_tibble()
 ```
 
 ---
+
 ## Classification
 
 ```{r, eval=FALSE}
-chirpsz <- mask(chirpsz, districts)
+plot(chirps)
+chirpsz <- mask(chirps, districts)
+plot(chirpsz[[1:4]])
 raintot <- app(chirpsz, sum)
+plot(raintot)
+
 qtiles <- unlist(global(raintot, quantile, na.rm = TRUE))
 plot(terra::classify(raintot, rcl = qtiles))
 
@@ -93,18 +97,32 @@ rclmat <- rbind(c(10, 37, 1),
                 c(37, 48, 2), 
                 c(48, 60, 3), 
                 c(60, 160, 4))
-plot(terra::classify(raintot, rcl = rclmat))
+rcldat <- data.frame(rclmat)
+rcldat$X3 <- letters[1:4]
+
+rclmat <- cbind(qtiles[-length(qtiles)], 
+                qtiles[-1], 1:(length(qtiles) - 1))
+
+plot(terra::classify(raintot, rcl = rclmat, include.lowest = TRUE))
+# plot(terra::classify(raintot, rcl = rcldat))
 ```
 
+---
 
+```{r, eval=FALSE}
+r1 <- raintot < 50
+r2 <- (raintot > 50 & raintot < 100) * 2
+r3 <- (raintot > 100) * 3
+plot(app(c(r1, r2, r3), sum))
+```
 
 ---
 ## Pre-processing
 - Aggregating/disaggregating
 - what is default method for aggregating?
 ```{r, eval = FALSE}
-plot(b, main = paste0("Brick ", 1:2) )
-aggregate(b, fact = 2) %>% plot(., main = paste0("Brick agg", 1:2) )
+plot(b, main = paste0("Brick ", 1:10))
+aggregate(b, fact = 2) %>% plot(., main = paste0("Brick agg", 1:10))
 # aggregate(b, fun = min, fact = 2) %>% plot
 # aggregate(b, fun = sd, fact = 2) %>% plot
 ```
@@ -114,14 +132,12 @@ aggregate(b, fact = 2) %>% plot(., main = paste0("Brick agg", 1:2) )
 ## Pre-processing
 - what is default method for disaggregating?
 ```{r, eval = FALSE}
-plot(b, main = paste0("Brick ", 1:2) )
+plot(b, main = paste0("Brick ", 1:10))
 disagg(b, fact = 2) %>% 
-  plot(., main = paste0("Brick disagg", 1:2) )
+  plot(., main = paste0("Brick disagg", 1:10))
 disagg(b, fact = 2, method = 'bilinear') %>% 
-  plot(., main = paste0("Brick disagg bilinear", 1:2) )
+  plot(., main = paste0("Brick disagg bilinear", 1:10))
 ```
-
-
 
 ---
 - Masking
@@ -149,6 +165,7 @@ plot(st_geometry(districts), add = TRUE)
 ```{r, eval=FALSE}
 rf1 <- chirpsz[[1]] + chirpsz[[2]]
 rf2 <- chirpsz[[1]] * 5
+plot(c(rf1, rf2), main = paste0("r", 1:2))
 ```
 
 ```{r, eval = FALSE}
@@ -156,15 +173,18 @@ rf2 <- chirpsz[[1]] * 5
 # dev.off()
 plot(rf1 / 1000)
 plot(((log10(rf1 + 1) * 10) / 5)^2)
+plot(((log10(chirps[[1:5]] + 1) * 10) / 5)^2)
 
 ```
 
-
+---
 ## Terrain analysis with zonal statistics
 
 ```{r, eval=FALSE}
 districts <- districts %>% mutate(ID = 1:nrow(.))
-distsr <- districts %>% rasterize(x = ., y = raintot, field = "ID") %>% print()
+distsr <- districts %>% 
+  rasterize(x = ., y = raintot, field = "ID") %>% 
+  print()
 plot(distsr)
 
 # Download DEM
@@ -177,6 +197,7 @@ plot(slope)
 
 # calculate mean by district
 distsr_rs <- resample(x = distsr, y = slope, method = "near")
+plot(distsr_rs)
 zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean", na.rm = TRUE)
 hist(zoneslope[, 2])
 zoneelevation <- zonal(x = dem, z = distsr_rs, fun = "mean", na.rm = TRUE)
@@ -193,6 +214,7 @@ distr_elevzone <- subst(x = distsr_rs, from = zoneelevation$ID,
                         to = zoneelevation$ZMB_elv_msk)
 
 # plot
+plot(s[[2]])
 s <- c(distr_elevzone, distr_slopes)
 titles <- c("Elevation", "Slope")
 par(mfrow = c(1, 2))

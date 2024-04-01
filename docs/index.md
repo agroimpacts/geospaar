@@ -3,7 +3,7 @@
 
 ## Spring 2024
 
-Updated on: 2024-03-27
+Updated on: 2024-04-01
 
 <center>
 
@@ -111,6 +111,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 ### Week 12 (April 1, 3)
 
+- [Class 20 slides](class20.html)
 - Assignment 5 (Unit 2 Module 2)
 
 ### Week 13-15 (April 8, 11, 15, 17, 22, 24, 29)
