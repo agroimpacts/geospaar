@@ -79,13 +79,21 @@ plot(pts, add = TRUE, col = "orange", pch = 16)
 1. 
 ```{r, eval = FALSE}
 set.seed(1)
-districts %>% sample_n(20) %>% st_area() %>% units::set_units("ha") %>% mean()
+districts %>% 
+  sample_n(20) %>% 
+  st_area() %>% 
+  units::set_units("ha") %>% 
+  mean()
 ```
 
 2. 
 ```{r, eval = FALSE}
 set.seed(1)
-roads %>% sample_n(100) %>% st_length() %>% units::set_units("km") %>% mean()
+roads %>% 
+  sample_n(100) %>% 
+  st_length() %>% 
+  units::set_units("km") %>% 
+  mean()
 ```
 
 3. 
@@ -166,29 +174,42 @@ st_difference(districts, pol2)[2] %>% plot(col = "grey", main = NULL)
 # Try compare the
 set.seed(1)
 farmers_alb %>% filter(season == 2) %>%
-  sample_n(size = 5) %>% st_buffer(dist = 30000) %>% st_geometry %>% plot()
+  sample_n(size = 5) %>% 
+  st_buffer(dist = 30000) %>% 
+  st_geometry %>% 
+  plot()
 
 # With 
 set.seed(1)
-farmers_alb %>% filter(season == 2) %>%
-  st_sample(size = 5) %>% st_buffer(dist = 30000) %>% st_geometry %>% plot()
+farmers_alb %>% 
+  filter(season == 2) %>%
+  st_sample(size = 5) %>%
+  st_buffer(dist = 30000) %>% 
+  st_geometry %>% 
+  plot()
 ```
 
 6.
 ```{r, eval = FALSE}
-roads_gt400 <- roads %>% filter(as.numeric(st_length(.)) / 1000 > 400)
+roads_gt400 <- roads %>% 
+  filter(as.numeric(st_length(.)) / 1000 > 400)
 par(mar = rep(0, 4))
-st_transform(districts, st_crs(roads)) %>% st_geometry %>% 
+st_transform(districts, st_crs(roads)) %>%
+  st_geometry %>% 
   plot(col = "grey", main = NULL)
-roads_gt400 %>% st_buffer(25000) %>% plot(col = "green", add = TRUE)
+roads_gt400 %>% 
+  st_buffer(25000) %>%
+  plot(col = "green", add = TRUE)
 ```
 
 7.
 ```{r, eval = FALSE}
 par(mar = rep(0, 4))
-st_transform(districts, st_crs(roads)) %>% st_geometry %>% 
+st_transform(districts, st_crs(roads)) %>% 
+  st_geometry %>% 
   plot(col = "grey", main = NULL)
-roads_gt400 %>% st_buffer(25000) %>% plot(col = "tan", add = TRUE)
+roads_gt400 %>% st_buffer(25000) %>% 
+  plot(col = "tan", add = TRUE)
 set.seed(1)
 roads_gt400 %>% st_buffer(25000) %>% 
   st_sample(size = rep(20, nrow(.)), exact = TRUE) %>% 
@@ -199,20 +220,20 @@ roads_gt400 %>% st_buffer(25000) %>%
 # Module 2 practice answers
 ## Practice 1
 ### Questions
-1. `raster` uses the S4 object-oriented system, where `sf` uses S4. Slots in S4 objects are accessed using the `@` operator. 
+1. `terra` uses the S4 object-oriented system, where `sf` uses S3. Slots in S4 objects are accessed using the `@` operator. 
 
-2. `brick`, because `raster` only allows you to read and write a single layer.  
+2. `terra::rast`, the same function you would use for reading and writing a single-layer raster.  
 
-3. `stack` organizes multiple rasters that might be stored in separation locations into a single multi-layer object, whereas `brick` requires a single file on disk. `bricks` take longer to create, but are faster to work with once they exist. 
+3. stack and brick are terms leftover from the `raster` package, which had separate functions fo r these. For `terra`, a stack might be still thought of as a `spatRaster` made from multiple rasters stored in separation locations on disk into a single multi-layer object, whereas a brick is read from, or written to, a single file on disk. 
 
-4. The output of `raster`'s vectorization functions are `sp` objects, so you have to convert them to `sf` objects using `st_as_sf`. 
+4. The output of `terra`'s vectorization functions are `vect` objects, so you have to convert them to `sf` objects using `st_as_sf`. 
 
 ### Code
 1. 
 ```{r, eval=FALSE}
 # recreate r, r2, r3
-e <- extent(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  
-r <- raster(x = e, res = 0.25, crs = crs(districts))
+e <- ext(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  
+r <- rast(x = e, res = 0.25, crs = crs(districts))
 set.seed(1)  
 values(r) <- sample(1:100, size = ncell(r), replace = TRUE)  # 3
 r2 <- r > 50
@@ -226,7 +247,7 @@ set.seed(1)
 values(r4) <- runif(n = ncell(r4), 0, 1)
 r5 <- r4 > 0.5
 
-s2 <- list(r, r2, r3, r4, r5) %>% stack
+s2 <- c(r, r2, r3, r4, r5)
 names(s2) <- c("r", "r2", "r3", "r4", "r5")
 plot(s2)
 
@@ -234,52 +255,66 @@ plot(s2)
 
 2. We use `tempdir()` here, but you should use your `notebooks/data` folder.
 ```{r, eval = FALSE}
-b <- brick(s2, file = file.path(tempdir(), "b2.tif"))
+b <- writeRaster(s2, file = file.path(tempdir(), "b2.tif"))
 ```
 
 3. 
 ```{r, eval = FALSE}
-zamr3 <- raster(x = extent(districts), crs = crs(districts), res = 0.2)
-values(zamr3) <- 1:ncell(zamr3)
+zamr <- rast(x = ext(districts), crs = crs(districts), res = 0.2)
+values(zamr) <- 1:ncell(zamr)
 
-farmersr <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% select(x, y) %>% 
-  mutate(count = 1) %>% st_as_sf(coords = c("x", "y")) %>% 
-  rasterize(x = ., y = zamr3, field = "count", fun = sum)
+farmersr <- farmers %>% 
+  distinct(uuid, .keep_all = TRUE) %>% 
+  select(x, y) %>% 
+  mutate(count = 1) %>% 
+  st_as_sf(coords = c("x", "y")) %>% 
+  rasterize(x = ., y = zamr, field = "count", fun = sum)
 
 par(mar = c(0, 0, 1, 4))
-districts %>% st_union %>% plot(col = "grey", border = "grey")
-plot(farmersr, add = TRUE)
+plot(st_union(districts), col = "grey", border = "grey")
+terra::plot(farmersr, add = TRUE)
+
 ```
 
 4. 
 ```{r, eval = FALSE}
-zamr_alb <- projectRaster(from = zamr, res = 20000, crs = crs(roads), 
-                          method = "ngb")
-farmersr_alb <- projectRaster(from = farmersr, to = zamr_alb, 
-                              method = "bilinear")
+zamr_alb <- project(x = zamr, y = crs(roads), res = 20000, method = "near")
+farmersr_alb <- project(x = farmersr, y = zamr_alb, method = "bilinear")
 
 par(mar = c(0, 0, 1, 4), mfrow = c(1, 2))
-districts %>% st_union %>% plot(col = "grey", border = "grey")
+plot(st_union(districts), col = "grey", border = "grey")
 plot(farmersr, add = TRUE)
-districts %>% st_transform(crs(roads)) %>% st_union %>% 
-  plot(col = "grey", border = "grey")
+plot(st_transform(st_union(districts), crs(roads)), col = "grey", 
+     border = "grey")
 plot(farmersr_alb, add = TRUE)
+
+# Note currently there is a bug in terra::plot when mixed with `sf` plots. A 
+# workaround is to coerse districts to vect and plot. 
+par(mar = c(0, 0, 1, 4), mfrow = c(1, 2))
+plot(vect(st_union(districts)), col = "grey", border = "grey", axes = FALSE)
+plot(farmersr, add = TRUE)
+plot(vect(st_transform(st_union(districts), crs(roads))), col = "grey", 
+     border = "grey", axes = FALSE)
+plot(farmersr_alb, add = TRUE)
+
 ```
 
 5. 
 ```{r, eval = FALSE}
 par(mar = c(0, 0, 0, 0))
-farmersr %>% rasterToPolygons(dissolve = TRUE) %>% st_as_sf %>% 
+farmersr %>% 
+  as.polygons() %>% 
+  st_as_sf %>% 
   plot(main = NULL)
 ```
 
 ## Practice 2
 ### Questions
-1. `cellStats` provides summary statistics over an entire layer; `zonal` calculates statistics within pre-defined zones; `focal` calculates statistics within a moving window. 
+1. `global` provides summary statistics over an entire layer; `zonal` calculates statistics within pre-defined zones; `focal` calculates statistics within a moving window. 
 
 2. Use `method = bilinear`.
 
-3. You don't. You have to resample them to a common resolution and extent first. And then you have to `stack` them. 
+3. You don't. You have to resample them to a common resolution and extent first. And then you have to stack them (with `c`). 
 
 ### Code
 1. 
@@ -294,84 +329,93 @@ lubridate::as_date("20171011")
 
 2. 
 ```{r, eval = FALSE}
-farmersr2 <- farmers %>% distinct(uuid, .keep_all = TRUE) %>% 
-  mutate(count = 1) %>% select(x, y, count) %>% 
+farmersr2 <- farmers %>% 
+  distinct(uuid, .keep_all = TRUE) %>% 
+  mutate(count = 1) %>% 
+  select(x, y, count) %>% 
   st_as_sf(coords = c("x", "y")) %>% 
   rasterize(., distsr, field = "count", fun = sum)
 ```
 
 3. 
 ```{r, eval = FALSE}
-zonal(farmersr2, distsr, fun = sum) %>% data.frame %>% 
-  subs(distsr, .) %>% plot_noaxes
+subtab <- zonal(farmersr2, distsr, fun = sum, na.rm = TRUE)
+subst(distsr, from = subtab$ID, to = subtab$sum) %>% plot_noaxes
 ```
 
 4.
 ```{r, eval=FALSE}
 wmat3 <- matrix(1, nrow = 3, ncol = 3) 
 wmat5 <- matrix(1, nrow = 5, ncol = 5) 
-fstack <- list(sd3 = focal(x = chirpsz[[20]], w = wmat3, fun = sd), 
-               sd5 = focal(x = chirpsz[[20]], w = wmat5, fun = sd),
-               max3 = focal(x = chirpsz[[20]], w = wmat3, fun = max), 
-               max5 = focal(x = chirpsz[[20]], w = wmat5, fun = max)) %>% stack
-fstack %>% plot_noaxes
+fstack <- c(focal(x = chirpsz[[20]], w = wmat3, fun = sd), 
+            focal(x = chirpsz[[20]], w = wmat5, fun = sd),
+            focal(x = chirpsz[[20]], w = wmat3, fun = max), 
+            focal(x = chirpsz[[20]], w = wmat5, fun = max)) 
+names(fstack) <- c("sd3", "sd5", "max3", "max5")
+plot_noaxes(fstack)
 ```
 
 5. 
 ```{r, eval = FALSE}
-chirps_d57 <- chirpsz[[1]] %>% crop(., extent(districts[57, ]))
-s <- list(d1 = disaggregate(chirps_d57, fact = 5), 
-          d2 = disaggregate(chirps_d57, fact = 5, method = "bilinear")) %>% 
-  stack
+chirps_d57 <- chirpsz[[1]] %>% 
+  crop(., ext(districts[57, ]))
+s <- c(disagg(chirps_d57, fact = 5), 
+       disagg(chirps_d57, fact = 5, method = "bilinear"))
+names(s) <- c("d1", "d2")
 plot_noaxes(s)
 ```
 
 6. 
 ```{r, eval = FALSE}
+cv <- function(x) sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE)
 s <- lapply(list(mean, cv, median), function(x) {
-  calc(chirpsz, fun = x)  
-}) %>% stack
+  app(chirpsz, fun = x)  
+}) %>% do.call(c, .)
 names(s) <- c("Mean", "CV", "Median")
 plot_noaxes(s, nr = 1)
 ```
 
 ## Practice 3
 ### Questions
-1. Using `cut` with vector of breakpoints (e.g. quantiles), or use `reclassify` with a reclassification matrix.
+1. Using the cut approach,with vector of breakpoints (e.g. quantiles) passed to `classify`, or a reclassification matrix.
 
-2. `sampleRandom`, `sampleStratified`. There is also `sampleRegular`. 
+2. `spatSample`, using either the "random" or "stratified" methods. There is also "regular" as an option, and you can pass a weights vector when method is "stratified". 
 
 ### Code
 1. 
 ```{r, eval = FALSE}
-chirps_sd <- calc(chirpsz, fun = sd)
+chirps_sd <- app(chirpsz, fun = sd)
 ```
 
 2. 
 ```{r, eval = FALSE}
-(chirps_sd < cellStats(chirps_sd, mean)) %>% plot
+(chirps_sd < unlist(global(chirps_sd, mean, na.rm = TRUE))) %>% plot
 ```
 
 3. 
 ```{r, eval = FALSE}
-quantile(raintot, probs = seq(0, 1, 0.2)) %>% cut(raintot, .) %>% 
-  plot_noaxes
+qtiles <- global(raintot, function(x) {
+  quantile(x, probs = seq(0, 1, 0.2), na.rm = TRUE)
+}) 
+plot_noaxes(classify(raintot, rcl = unlist(qtiles)))
 ```
 
 4. 
 ```{r, eval = FALSE}
 set.seed(11)
-randdistsr <- districts %>% sample_n(size = 15) %>% rasterize(., raintot)
+randdistsr <- districts %>% 
+  sample_n(size = 15) %>% 
+  rasterize(., raintot)
 plot_noaxes(randdistsr)
 
 newrandrain <- mask(raintot, randdistsr)
-newrandrain %>% plot_noaxes
+plot_noaxes(newrandrain)
 ```
 
 5. 
 ```{r, eval = FALSE}
 set.seed(1)
-randsamp <- sampleRandom(x = newrandrain, size = 300)
+randsamp <- spatSample(x = newrandrain, size = 300, na.rm = TRUE, xy = TRUE)
 
 set.seed(1)
 ind <- sampleStratified(x = randdistsr, size = 300 / 15, cells = TRUE)

@@ -37,7 +37,8 @@ The material in this section assumes that the reader is familiar with standard r
 We'll use the following datasets in this section:
 ```{r datasets, message=FALSE, warning=FALSE}
 library(geospaar)
-farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%     read_csv(show_col_types = FALSE) 
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%     
+  read_csv(show_col_types = FALSE) 
 roads <- system.file("extdata/roads.geojson", package = "geospaar") %>% st_read
 districts <- system.file("extdata/districts.geojson", package = "geospaar") %>% 
   st_read
@@ -970,7 +971,7 @@ You will see from the resulting plot that "Min" has only one value, 0, which mak
 ### Questions
 1. How do `global`, `focal`, and `zonal` differ from one another? 
 
-2. How do you `disaggregate` a raster with interpolation? 
+2. How do you `disagg` a raster with interpolation? 
 
 3. How do you run `app` on images with different resolutions or extents? 
 
