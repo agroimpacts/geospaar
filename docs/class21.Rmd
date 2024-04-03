@@ -1,0 +1,89 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: Class 20
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "lucy", "middlebury-fonts", "themes/class18.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+---
+
+## Today
+
+- `terra` (raster) intro
+  - agg/disagg, masking
+  - assigning values
+  - zonal
+  - focal
+  - global
+  - terrain
+
+---
+- Load data
+```{r, eval=FALSE}
+library(geospaar)
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% 
+  st_as_sf(coords = c("x", "y"))
+districts <- st_read(
+  system.file("extdata/districts.geojson", package = "geospaar")
+)
+roads <- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
+
+chirps <- terra::rast(system.file("extdata/chirps.tif", package = "geospaar"))
+```
+
+---
+```{r, eval=FALSE}
+districts <- districts %>% mutate(ID = 1:nrow(.))
+distsr <- districts %>% 
+  rasterize(x = ., y = raintot, field = "ID") %>% 
+  print()
+
+chirpsz <- mask(chirps, districts) 
+raintot <- app(chirpsz, sum)
+```
+
+
+---
+## Climate data summaries and zonal stats
+
+```{r, eval=FALSE}
+tmax <- geodata::worldclim_country("Zambia", var = "tmax", path = tempdir())
+dt <- as.Date(gsub("Y", "", names(chirpsz)), format = "%y%j")
+dt <- lubridate::parse_date_time(gsub("Y", "", names(chirpsz)), orders = "yj")
+wk <- lubridate::week(dt)
+weekly_rainfall <- lapply(unique(wk), function(x) {
+  which(wk == x)
+  app(chirpsz[[which(wk == x)]], sum)
+}) %>% do.call(c, .)
+names(weekly_rainfall) <- paste0("wk", unique(wk))
+
+rflim <- range(global(weekly_rainfall, range, na.rm = TRUE))
+plot(weekly_rainfall, zlim = rflim)
+```
+
+---
+## Distance
+- plot distance from points
+- points must be in same projection as model raster
+```{r, message = F}
+set.seed(1)
+randsamp <- spatSample(raintot, size = 10, xy = TRUE, na.rm = TRUE) %>%
+  st_as_sf(coords = c("x", "y"), crs = 4326)
+
+ptdistr <- distance(raintot, vect(randsamp))
+ptdistrmsk <- mask(ptdistr, raintot)
+plot(ptdistrmsk)
+
+```
+
+
+
+
+
