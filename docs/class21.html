@@ -3,7 +3,7 @@
   <head>
     <title>Geospatial Analysis with R</title>
     <meta charset="utf-8" />
-    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.26/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/lucy.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/middlebury-fonts.css" rel="stylesheet" />
@@ -62,6 +62,69 @@ distsr &lt;- districts %&gt;%
 chirpsz &lt;- mask(chirps, districts) 
 raintot &lt;- app(chirpsz, sum)
 ```
+---
+
+## Plotting issue
+
+```r
+rain_dist20 &lt;- mask(crop(raintot, districts[20, ]), districts[20, ])
+
+par(mar = rep(0, 4))
+plot(districts$geometry)
+plot(districts %&gt;% slice(20) %&gt;% st_geometry, add = TRUE, border = "red", 
+     lwd = 4)
+plot(rain_dist20, add = TRUE)
+
+
+par(mar = rep(0, 4))
+# plot(vect(districts), axes = FALSE)  # solution 1
+plot(districts$geometry, axes = FALSE)  # solution 2
+# plot(districts %&gt;% slice(20) %&gt;% vect(.), # solution 1
+#      add = TRUE, border = "red",
+#      lwd = 4)
+plot(districts %&gt;% slice(20), add = TRUE, border = "red", lwd = 4) # solution 2
+plot(rain_dist20, add = TRUE, ext = districts)
+
+
+par(mar = rep(0, 4))
+plot(districts$geometry, axes = FALSE)  # solution 2
+plot(districts %&gt;% slice(20), add = TRUE, border = "red", lwd = 4) # solution 2
+plot(rain_dist20, add = TRUE, ext = districts)
+```
+
+---
+## Mosaic
+
+
+```r
+districts %&gt;% 
+  st_union() %&gt;% 
+  st_centroid() %&gt;% 
+  st_buffer(dist = 50000) %&gt;% 
+  st_intersects(., districts) %&gt;% 
+  unlist(.) %&gt;% 
+  slice(districts, .) -&gt; districts_ss
+
+plot(districts$geometry)
+plot(districts_ss$geometry, add = TRUE, col = "blue")
+districts %&gt;% 
+  st_union() %&gt;% 
+  st_centroid() %&gt;% 
+  st_buffer(dist = 50000) %&gt;% plot(add = TRUE, border = "red")
+
+rainlist &lt;- lapply(districts_ss$geometry, function(x) {
+  terra::crop(raintot, x)
+})
+
+# par(mfrow = c(2, 2))
+par(mar = rep(0, 4))
+plot(vect(districts))
+for(i in rainlist) plot(i, add = TRUE, legend = FALSE)
+
+plot(mosaic(sprc(rainlist)))
+plot(districts_ss$geometry, add = TRUE)
+```
+
 
 
 ---
@@ -94,21 +157,9 @@ randsamp &lt;- spatSample(raintot, size = 10, xy = TRUE, na.rm = TRUE) %&gt;%
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
 ptdistr &lt;- distance(raintot, vect(randsamp))
-```
-
-```
-## 
-|---------|---------|---------|---------|
-=========================================
-                                          
-```
-
-```r
 ptdistrmsk &lt;- mask(ptdistr, raintot)
 plot(ptdistrmsk)
 ```
-
-![](/home/rstudio/geospaar/docs/class21_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
 
 
 

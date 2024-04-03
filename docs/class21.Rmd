@@ -48,6 +48,67 @@ distsr <- districts %>%
 chirpsz <- mask(chirps, districts) 
 raintot <- app(chirpsz, sum)
 ```
+---
+
+## Plotting issue
+```{r, eval=FALSE}
+rain_dist20 <- mask(crop(raintot, districts[20, ]), districts[20, ])
+
+par(mar = rep(0, 4))
+plot(districts$geometry)
+plot(districts %>% slice(20) %>% st_geometry, add = TRUE, border = "red", 
+     lwd = 4)
+plot(rain_dist20, add = TRUE)
+
+
+par(mar = rep(0, 4))
+# plot(vect(districts), axes = FALSE)  # solution 1
+plot(districts$geometry, axes = FALSE)  # solution 2
+# plot(districts %>% slice(20) %>% vect(.), # solution 1
+#      add = TRUE, border = "red",
+#      lwd = 4)
+plot(districts %>% slice(20), add = TRUE, border = "red", lwd = 4) # solution 2
+plot(rain_dist20, add = TRUE, ext = districts)
+
+
+par(mar = rep(0, 4))
+plot(districts$geometry, axes = FALSE)  # solution 2
+plot(districts %>% slice(20), add = TRUE, border = "red", lwd = 4) # solution 2
+plot(rain_dist20, add = TRUE, ext = districts)
+```
+
+---
+## Mosaic
+
+```{r, eval=FALSE}
+districts %>% 
+  st_union() %>% 
+  st_centroid() %>% 
+  st_buffer(dist = 50000) %>% 
+  st_intersects(., districts) %>% 
+  unlist(.) %>% 
+  slice(districts, .) -> districts_ss
+
+plot(districts$geometry)
+plot(districts_ss$geometry, add = TRUE, col = "blue")
+districts %>% 
+  st_union() %>% 
+  st_centroid() %>% 
+  st_buffer(dist = 50000) %>% plot(add = TRUE, border = "red")
+
+rainlist <- lapply(districts_ss$geometry, function(x) {
+  terra::crop(raintot, x)
+})
+
+# par(mfrow = c(2, 2))
+par(mar = rep(0, 4))
+plot(vect(districts))
+for(i in rainlist) plot(i, add = TRUE, legend = FALSE)
+
+plot(mosaic(sprc(rainlist)))
+plot(districts_ss$geometry, add = TRUE)
+```
+
 
 
 ---
@@ -72,7 +133,7 @@ plot(weekly_rainfall, zlim = rflim)
 ## Distance
 - plot distance from points
 - points must be in same projection as model raster
-```{r, message = F}
+```{r, eval=FALSE}
 set.seed(1)
 randsamp <- spatSample(raintot, size = 10, xy = TRUE, na.rm = TRUE) %>%
   st_as_sf(coords = c("x", "y"), crs = 4326)
