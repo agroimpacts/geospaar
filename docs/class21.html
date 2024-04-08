@@ -157,9 +157,15 @@ randsamp &lt;- spatSample(raintot, size = 10, xy = TRUE, na.rm = TRUE) %&gt;%
   st_as_sf(coords = c("x", "y"), crs = 4326)
 
 ptdistr &lt;- distance(raintot, vect(randsamp))
+#&gt; 
+|---------|---------|---------|---------|
+=========================================
+                                          
 ptdistrmsk &lt;- mask(ptdistr, raintot)
 plot(ptdistrmsk)
 ```
+
+&lt;img src="/Users/lestes/Dropbox/teaching/geog246346/geospaar/docs/class21_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
 
 
 

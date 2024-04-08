@@ -133,7 +133,7 @@ plot(weekly_rainfall, zlim = rflim)
 ## Distance
 - plot distance from points
 - points must be in same projection as model raster
-```{r, eval=FALSE}
+```{r, message = F}
 set.seed(1)
 randsamp <- spatSample(raintot, size = 10, xy = TRUE, na.rm = TRUE) %>%
   st_as_sf(coords = c("x", "y"), crs = 4326)

@@ -219,7 +219,7 @@ farmdistid <- farmers_env %>%
   pull
 distrain <- districts %>% 
   filter(ID %in% farmdistid) %>% 
-  raster::extract(x = raintot, y = ., fun = mean) %>% 
+  terra::extract(x = raintot, y = ., fun = mean) %>% 
   rename(rain = sum) %>% 
   print
 #>    ID      sum

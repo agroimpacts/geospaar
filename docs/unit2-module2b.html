@@ -1345,7 +1345,7 @@ margin-left: 0 !important;
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-04-03
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2024-04-08
 <a href="index.html">Back to home</a></p>
           </div>
    </div>
@@ -1574,7 +1574,7 @@ values.</p>
 <span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>  pull</span>
 <span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>distrain <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
 <span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>  <span class="fu">filter</span>(ID <span class="sc">%in%</span> farmdistid) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>  raster<span class="sc">::</span><span class="fu">extract</span>(<span class="at">x =</span> raintot, <span class="at">y =</span> ., <span class="at">fun =</span> mean) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">extract</span>(<span class="at">x =</span> raintot, <span class="at">y =</span> ., <span class="at">fun =</span> mean) <span class="sc">%&gt;%</span> </span>
 <span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">rain =</span> sum) <span class="sc">%&gt;%</span> </span>
 <span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>  print</span>
 <span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt;    ID      sum</span></span>
