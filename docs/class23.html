@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 # Geospatial Analysis with R
 ]
 .subtitle[
-## Class 22
+## Class 23
 ]
 
 ---
@@ -114,24 +114,15 @@ Look at Rmd file to see code use to make prediction map for crop types.
 
 &lt;img src="figures/crop_probs.png" width="60%" style="display: block; margin: auto;" /&gt;
 ---
+
 ## Advanced - parallelization
 
-```r
-library(parallel)
-# detectCores()
-# cross-platform
-cl &lt;- makeCluster(4)
-clusterEvalQ(cl, library(raster))
-system.time(b &lt;- parLapply(cl, 1:2000, function(x) {  # x &lt;- 1
-  r &lt;- raster::raster(extent(30, 31, -14, -13), res = 0.01, 
-                      crs = "+proj=longlat +datum=WGS84") 
-  set.seed(x)
-  values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}))
-stopCluster(cl)
+From last class, we looked at `raster`
 
-# *nix only
+
+
+```r
+# raster equivalent
 library(terra)
 system.time(bmc &lt;- mclapply(1:2000, function(x) {
   
@@ -143,83 +134,31 @@ system.time(bmc &lt;- mclapply(1:2000, function(x) {
 }, mc.cores = 4))
 
 ```
+
 ---
 
+Here is a `terra` based approach.  Note the use of `wrap` and `unwrap` to serialize the `spatRaster` object so it can be passed between cores. See [here](https://github.com/rspatial/terra/issues/36) for discussion.
 
 ```r
-# serial
-system.time(b2 &lt;- lapply(1:2000, function(x) {
-  r &lt;- raster(extent(30, 31, -14, -13), res = 0.01, 
-              crs = "+proj=longlat +datum=WGS84")
-  set.seed(x)
+library(parallel)
+
+# terra
+r &lt;- rast(ext(30, 31, -14, -13), res = 0.01, 
+          crs = "+proj=longlat +datum=WGS84")
+values(r) &lt;- 1:ncell(r)
+
+rp &lt;- terra::wrap(r)
+system.time(b &lt;- mclapply(1:2000, function(x, r = rp) {
+  r &lt;- unwrap(r)
   values(r) &lt;- sample(1:10, size = ncell(r), replace = TRUE)
-  stack(r, r * runif(n = ncell(r), 0.9, 1.2), r * runif(n = ncell(r), 0.8, 1.3))
-}))
+  set.seed(x)
+  r3 &lt;- r2 &lt;- r
+  values(r2) &lt;- values(r) * runif(n = ncell(r), 0.9, 1.2)
+  values(r3) &lt;- values(r) * runif(n = ncell(r), 0.8, 1.3)
+  wrap(c(r3, r2, r))
+}) %&gt;% lapply(., unwrap))
 ```
 
-## Advanced plotting
-
----
-### mapView
-
-```r
-library(mapview)
-mapview(districts)
-chirps &lt;- terra::rast(system.file("extdata/chirps.tif", package = "geospaar"))
-
-viewRGB(x = terra::as.raster(chirps[[1:3]]))
-# mapView(districts, alpha.regions = 1, legend = FALSE)
-mapView(districts, alpha.regions = 0, legend = FALSE) + mapview(raintot) 
-
-kili_data &lt;- system.file("extdata", "kiliNDVI.tif", package = "mapview") %&gt;%
-  raster::stack(.)
-mapview(kili_data[[c(1, 10, 23)]])
-```
-
----
-### tmap
-
-```r
-library(tmap)
-data(World)
-# tmaptools::palette_explorer()
-tm_shape(raintot) + tm_raster(palette = "magma", breaks = seq(0, 200, 25)) +
-  tm_shape(districts) + tm_borders() + 
-  tm_layout(bg.color = "grey", inner.margins = 0.1) # +
-  # tm_shape(World) + tm_borders()
-```
----
-
-### leaflet
-
-```r
-
-library(leaflet)
-m &lt;- leaflet() %&gt;% addTiles()
-# # m  # a map with the default OSM tile layer
-# 
-m %&gt;% addProviderTiles("Esri.WorldImagery")
-# 
-# # set bounds
-# m %&gt;% fitBounds(0, 40, 10, 50)
-# #
-# # # move the center to Snedecor Hall
-# m &lt;- m %&gt;% setView(-93.65, 42.0285, zoom = 17)
-# m
-# #
-# # popup
-# # m %&gt;% addPopups(-93.65, 42.0285,
-# #                 "Here is the &lt;b&gt;Department of Statistics&lt;/b&gt;, ISU")
-rand_lng &lt;- function(n = 10) rnorm(n, -93.65, .01)
-rand_lat &lt;- function(n = 10) rnorm(n, 42.0285, .01)
-
-# use automatic bounds derived from lng/lat data
-m &lt;- m %&gt;% clearBounds()
-
-# popup
-m %&gt;% addPopups(rand_lng(), rand_lat(), "Random popups")
-```
----
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
