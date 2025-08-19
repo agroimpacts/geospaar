@@ -1,9 +1,15 @@
 # Latest image from rocker: https://rocker-project.org/
-FROM rocker/geospatial:4.3.2
+FROM rocker/geospatial:latest
 
 RUN apt-get clean all && \
     apt-get update && \
-    apt-get upgrade -y
+    apt-get upgrade -y && \
+    apt-get install -y \
+        libv8-dev \
+        build-essential \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        libxml2-dev
 
 # Install R packages
 RUN install2.r --error \

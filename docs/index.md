@@ -1,16 +1,16 @@
 
-# Geospatial Analysis with R <img src="https://s28151.pcdn.co/offices/marketing-and-communications/wp-content/blogs.dir/3/files/sites/106/2019/08/CU_Seal_Red_SM_60_75_v4-768x768.png" align="right" width="120" />
+# Geospatial Analysis with R <img src="https://s28151.pcdn.co/offices/marketing-and-communications/wp-content/blogs.dir/3/files/sites/106/2019/08/CU_Seal_Red_SM_60_75_v4-768x768.png" align="right" width="120"/>
 
-## Spring 2024
+## Fall 2025
 
-Updated on: 2024-04-08
+Updated on: 2025-08-19
 
 <center>
 
-|                    |              |
-|:-------------------|:-------------|
-| Instructor         | Lyndon Estes |
-| Teaching assistant | Vanchy Li    |
+|                    |                   |
+|:-------------------|:------------------|
+| Instructor         | Lyndon Estes      |
+| Teaching assistant | Elisabeth Tappert |
 
 </center>
 
@@ -45,80 +45,57 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 ## Course content
 
-### Week 1 (Jan 17)
+### Week 1 (Aug 25)
 
 - Setup
-- [Class 1 slides](class1.html)
 
-### Week 2 (Jan 22, 24)
+### Week 2 (Sept 3)
 
 - Using git and Github; R packages;
-- [Class 2 slides](class2.html)
-- [Class 3 slides](class3.html)
 
-### Week 3 (Jan 29, Jan 31)
+### Week 3 (Sept 8)
 
 - Continued setup work, RMarkdown, R ecosystem
-- [Class 4 slides](class4.html)
-- [Class 5 slides](class5.html)  
 - Assignment 1 due (Unit 1 Module 1)
 
-### Week 4 (Feb 5, 7)
+### Week 4 (Sept 15)
 
 - R data structures, OOP, Environments, Control flow
-- [Class 6 slides](class6.html)  
-- [Class 7 slides](class7.html)
 
-### Week 5 (Feb 12, 14)
+### Week 5 (Sept 22)
 
-- [Class 8 slides](class8.html)  
-- [Class 9 slides](class9.html)  
-- R data structures, OOP, Environments, Control flow  
+- R data structures, OOP, Environments, Control flow
 - Assignment 2 due (Unit 1 Modules 2-3)
 
-### Week 6 (Feb 19, 21)
+### Week 6 (Sept 29)
 
-- [Class 10 slides](class10.html)
-- [Class 11 slides](class11.html)
 - tidyverse, working with data
 - regression, plotting
 
-### Week 7 (Feb 26, 28)
+### Week 7 (Oct 6)
 
-- [Class 12 slides](class12.html)
-- [Class 13 slides](class13.html)  
 - tidyverse, data manipulation
 - Assignment 3 due (Unit 1 Module 4)
 
-### Week 9 (Mar 11, 13)
+### Week 9 (Oct 15)
 
-- [Class 14 slides](class14.html)  
-- [Class 15 slides](class15.html)  
 - Working with vectors
 
-### Week 10 (Mar 18, 20)
+### Week 10 (Oct 20)
 
-- [Class 16 slides](class16.html)  
-- [Class 17 slides](class17.html)  
 - More on vectors
 - Assignment 4 due (Unit 2 Module 1)
 
-### Week 11 (Mar 25, 27)
+### Week 11 (Oct 27)
 
-- [Class 18 slides](class18.html)
-- [Class 19 slides](class19.html)
 - Raster algebra, terrain, modeling
 
-### Week 12 (April 1, 3)
+### Week 12 (Nov 3)
 
-- [Class 20 slides](class20.html)
-- [Class 21 slides](class21.html)
 - Assignment 5 (Unit 2 Module 2)
+- Exam
 
-### Week 13-15 (April 8, 11, 15, 17, 22, 24, 29)
-
-- [Class 22 slides](class22.html)
+### Week 13-15 (Nov 10 onwards)
 
 - Project Overview due (end week 13)
-
-- Final Projects due May 6
+- Final Projects due Dec 15
