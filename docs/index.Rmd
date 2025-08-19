@@ -108,6 +108,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 ### Week 13-15 (April 8, 11, 15, 17, 22, 24, 29)
   - [Class 22 slides](class22.html)
+  - [Class 23 slides](class23.html)
   - Project Overview due (end week 13)
 
 - Final Projects due May 6
