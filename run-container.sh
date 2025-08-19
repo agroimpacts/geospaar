@@ -1,8 +1,8 @@
 #!/bin/bash
-
 # Adapted from
 # https://github.com/davetang/learning_docker/blob/main/rstudio/run_docker.sh
 # Optimized with input from chatGPT 3.5
+
 
 set -euo pipefail
 
