@@ -128,7 +128,7 @@ The following is an overview of the course structure, broken down by Unit, with 
 
 ## Unit 1. An introduction to R and related reproducibility skills
 
-In this first part of the course, we will learn the basics of working with `R`, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis.  including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
+In this first part of the course, we will learn the basics of working with `R`, starting with non-spatial data. We will also learn some additional skills that foster ___reproducibility___, which can be loosely defined as the ability for you and others to *easily* repeat the steps of your analysis, including the use of `git` and [github](https://github.com), how to create an R package, and the use of `Rmarkdown` to document and present your analyses. 
 
 The detailed readings and assignments for each week and day can be found in the accompanying [Unit 1 vignette](unit1.html), as well as the overall learning goals for the unit.  
 
@@ -197,6 +197,7 @@ The following are some helpful resources that you may wish to follow-up on as yo
 - [Change point detection](https://www.r-bloggers.com/change-point-detection-in-time-series-with-r-and-tableau/)
 - [Deep learning in R, 1](https://blog.rstudio.com/2018/02/06/tensorflow-for-r/)
 - [Deep learning in R, 2](https://datascienceplus.com/deep-learning-with-r/)
+- [R and DuckDB](https://borkar.substack.com/p/r-workflows-with-duckdb)
 
 ### Reproducibility
 - [Add citations to an Rmarkdown document](https://www.rdocumentation.org/packages/citr/versions/0.2.0)

@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-08-19
+Updated on: 2025-08-21
 
 <center>
 

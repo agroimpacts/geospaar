@@ -14,22 +14,22 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
 
-***
-<center>
-[Back to **vignette index**](toc.html)
-</center>
-***
 
+------------------------------------------------------------------------
 
-# Overall Grades{#grading}
+<center>[Back to **vignette index**](toc.html)</center>
+
+------------------------------------------------------------------------
+
+# Overall Grades {#grading}
 
 Final letter grades will be assigned as follows
+
 ```{r, echo = FALSE}
 gr <- rbind(c(94, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60, 0), 
             c(100, 94, 90, 88, 83, 80, 78, 73, 70, 68, 63, 60))
@@ -41,12 +41,9 @@ kable(DF)
 
 # Participation
 
-Participation is worth 10% of your final grade and has two components.
-- Attendance. You are expected to attend each class. If you cannot make it for some reason, please arrange ahead of time. 
-- Engagement with the course material, including any coding work assigned for homework. It is essential to read and work through the class material between classes. You will not be able to learn everything just from class. Additionally, you will at times be asked to work on practical problems between classes, for which you should be prepared to share your code and provide examples of errors/obstacles. 
-- Reading quizzes. Periodically, short quizzes may be given on core concepts from readings. These quizzes will be closed-book and not exceed 10 minutes. (e.g. explain in general terms how an apply function works). Students receiving 60% or higher on a quiz receive a "Complete" grade.
+Participation is worth 10% of your final grade and has two components. - Attendance. You are expected to attend each class. If you cannot make it for some reason, please arrange ahead of time. - Engagement with the course material, including any coding work assigned for homework. It is essential to read and work through the class material between classes. You will not be able to learn everything just from class. Additionally, you will at times be asked to work on practical problems between classes, for which you should be prepared to share your code and provide examples of errors/obstacles. - Reading quizzes. Periodically, short quizzes may be given on core concepts from readings. These quizzes will be closed-book and not exceed 10 minutes. (e.g. explain in general terms how an apply function works). Students receiving 60% or higher on a quiz receive a "Complete" grade.
 
-# For assignments
+# Assignments
 
 Assessment: Can we load the data you used, run your code, and arrive at the same result you reported? Does your code conform to the style guide (note: we are a little obsessive about this)
 
@@ -85,16 +82,17 @@ for(i in colnames(DF)[c(2, 4, 6)]) DF[, i] <- as.numeric(DF[, i])
 kable(DF, align = "r")
 ```
 
-***
-<center>
-[Back to top](#grading) || [Back to **vignette index**](toc.html)
-</center>
-***
+------------------------------------------------------------------------
+
+<center>[Back to top](#grading) \|\| [Back to **vignette index**](toc.html)</center>
+
+------------------------------------------------------------------------
 
 # Final project overview
+
 For the project overview assignment, assessment will be out of 50 points using simplified and somewhat different categories than the unit assignments, as shown below. The required content for this particular assignment in the [Final Projects section](projects.html).
 
-Note that the minimum number of points assigned per category assume that the final project overview was completed and handed in. 
+Note that the minimum number of points assigned per category assume that the final project overview was completed and handed in.
 
 ```{r, echo=FALSE}
 quality <- c(
@@ -138,22 +136,22 @@ for(i in colnames(DF)[c(2, 4, 6)]) DF[, i] <- as.numeric(DF[, i])
 kable(DF, align = "r")
 ```
 
+------------------------------------------------------------------------
 
-***
-<center>
-[Back to top](#grading) || [Back to **vignette index**](toc.html)
-</center>
-***
+<center>[Back to top](#grading) \|\| [Back to **vignette index**](toc.html)</center>
+
+------------------------------------------------------------------------
 
 # Final project
-Assessment is out of 70 pts (note that there a minimum points floor, which assumes that a final project has been submitted), and will be based on four categories: 
 
-- **Quality** evaluates the **content** of the material in your package, focusing on the information and ideas conveyed in your descriptions, figures, and tables. How well did you understand and execute the project, and how well did you convey what you did? 
-- **Progress** evaluates whether you achieved the objectives put forward in your Assignment 6 and final presentation, focusing more on the latter due to course corrections (and incorporating any necessary changes we discussed)
-- **Clarity** examines the clarity of the writing (is it easy to understand, no typos or missed words), the visual aspects of figures (does the color choice make sense, legend sensible, size appropriate, text readable?), formatting (did html lists end up as lists? do headings make sense?), and code syntax. This basically covers the stylistic components of your vignettes and code.
-- **Reproducibility** relates to the now familiar criteria about whether your package builds for another user without error, and with browsable vignettes.  
+Assessment is out of 70 pts (note that there a minimum points floor, which assumes that a final project has been submitted), and will be based on four categories:
 
-Note that the minimum number of points assigned per category assume that the final project was completed and handed in. 
+-   **Quality** evaluates the **content** of the material in your package, focusing on the information and ideas conveyed in your descriptions, figures, and tables. How well did you understand and execute the project, and how well did you convey what you did?
+-   **Progress** evaluates whether you achieved the objectives put forward in your Assignment 6 and final presentation, focusing more on the latter due to course corrections (and incorporating any necessary changes we discussed)
+-   **Clarity** examines the clarity of the writing (is it easy to understand, no typos or missed words), the visual aspects of figures (does the color choice make sense, legend sensible, size appropriate, text readable?), formatting (did html lists end up as lists? do headings make sense?), and code syntax. This basically covers the stylistic components of your vignettes and code.
+-   **Reproducibility** relates to the now familiar criteria about whether your package builds for another user without error, and with browsable vignettes.
+
+Note that the minimum number of points assigned per category assume that the final project was completed and handed in.
 
 ```{r, echo = FALSE, message = FALSE}
 # library(dplyr)
@@ -229,8 +227,8 @@ kableExtra::column_spec(y, column = 1:8, width = "10em")
 # kable(DF, align = "r") 
 ```
 
-***
-<center>
-[Back to top](#grading) || [Back to **vignette index**](toc.html)
-</center>
-***
+------------------------------------------------------------------------
+
+<center>[Back to top](#grading) \|\| [Back to **vignette index**](toc.html)</center>
+
+------------------------------------------------------------------------
