@@ -3,16 +3,12 @@
 
 ## Fall 2025
 
-Updated on: 2025-08-21
-
-<center>
+Updated on: 2025-08-22
 
 |                    |                   |
 |:-------------------|:------------------|
 | Instructor         | Lyndon Estes      |
 | Teaching assistant | Elisabeth Tappert |
-
-</center>
 
 ## Resources
 

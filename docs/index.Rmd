@@ -8,14 +8,10 @@ output: github_document
 
 Updated on: `r Sys.Date()`
 
-<center>
-
 |                    |                   |
 |:-------------------|:------------------|
 | Instructor         | Lyndon Estes      |
 | Teaching assistant | Elisabeth Tappert |
-
-</center>
 
 ## Resources
 
