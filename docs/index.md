@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-08-22
+Updated on: 2025-08-25
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -44,6 +44,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 ### Week 1 (Aug 25)
 
 - Setup
+- [Class 1 slides](class1.html)
 
 ### Week 2 (Sept 3)
 

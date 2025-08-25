@@ -41,7 +41,17 @@ kable(DF)
 
 # Participation
 
-Participation is worth 10% of your final grade and has two components. - Attendance. You are expected to attend each class. If you cannot make it for some reason, please arrange ahead of time. - Engagement with the course material, including any coding work assigned for homework. It is essential to read and work through the class material between classes. You will not be able to learn everything just from class. Additionally, you will at times be asked to work on practical problems between classes, for which you should be prepared to share your code and provide examples of errors/obstacles. - Reading quizzes. Periodically, short quizzes may be given on core concepts from readings. These quizzes will be closed-book and not exceed 10 minutes. (e.g. explain in general terms how an apply function works). Students receiving 60% or higher on a quiz receive a "Complete" grade.
+Participation is worth 10% of your final grade and has two components. 
+
+- Attendance. You are expected to attend each class. If you cannot make it for some reason, please arrange ahead of time. 
+
+- Engagement with the course material, including any coding work assigned for homework. It is essential to read and work through the class material between classes. You will not be able to learn everything just from class. Additionally, you will at times be asked to work on practical problems between classes, for which you should be prepared to share your code and provide examples of errors/obstacles. 
+
+- Reading quizzes. Periodically, short quizzes may be given on core concepts from readings. These quizzes will be closed-book and not exceed 10 minutes. (e.g. explain in general terms how an apply function works). Students receiving 60% or higher on a quiz receive a "Complete" grade.
+
+# Exam
+
+There will be an end of coursework coding concepts exam, worth 15% of the total grade. 
 
 # Assignments
 
