@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Adapted from
 # https://github.com/davetang/learning_docker/blob/main/rstudio/run_docker.sh
-# Optimized and unified for Unix/macOS and Git Bash (Windows) by GPT5
+# Optimized and unified for Unix/macOS and Git Bash (Windows) by GPT-5
 
 set -euo pipefail
 
@@ -142,5 +142,3 @@ echo "Open:  http://localhost:${port}"
 echo "Username: rstudio"
 echo "Password: password"
 echo "To stop: docker stop geospaar_rstudio"
-
-
