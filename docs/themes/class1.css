@@ -1,31 +1,36 @@
-.title-slide {
-  background-image: url(../figures/ghana-dem.png);
-	background-position: center;
-	background-size: 50%;
-}
-.title-slide h1 {
+/* Title slide text sizing */
+.reveal .title-slide h1 {
   font-size: 300%;
+  color: white;
 }
-.title-slide h2, h3 {
+
+.reveal .title-slide h2,
+.reveal .title-slide h3 {
   font-size: 250%;
   color: #FAF0E6;
   line-height: 1.5em;
 }
-.vlarge { font-size: 200% }
-.large { font-size: 130% }
-.large2 { font-size: 80% }
-.small { font-size: 70% }
-.verysmall { font-size: 50% }
-li {
- font-size: 20px;
+
+/* Custom text classes */
+.vlarge  { font-size: 200%; }
+.large    { font-size: 130%; }
+.large2   { font-size: 80%; }
+.small    { font-size: 70%; }
+.verysmall { font-size: 50%; }
+
+/* List items */
+.reveal li {
+  font-size: 20px;
   margin: 18px 0;
 }
-.remark-inline-code{
-  background: #272626; /* lighter */
-  color: #FE0909; /* darker */
+
+/* Inline code */
+.reveal code {
+  background: #272626;
+  color: #FE0909;
   border-radius: 0px;
-  padding: 1px;
+  padding: 1px 3px;
 }
 
+/* Utility text color */
 .red { color: red; }
-/*../../slides/clark/training_data_workshop/figures/*/

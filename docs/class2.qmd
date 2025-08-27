@@ -1,0 +1,92 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: "Class 2"
+format:
+  revealjs:
+    theme: night
+    highlight-style: github
+    highlight-lines: true
+    incremental: false    
+    title-slide-attributes:
+      data-background-image: figures/clark.png
+      data-background-position: center
+      data-background-size: 40%
+    css: ["themes/class1.css"]
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r}
+#| eval: FALSE
+
+library(ggmap)
+load(here::here("external/data/gkey.rda"))
+m <- get_googlemap(center = c(-71.8229, 42.2511), zoom = 17, maptype = "hybrid",
+                   key = gkey)
+mp <- ggmap(m, extent = "device")
+ggsave(filename = "docs/figures/clark.png", plot = mp, 
+       bg = "transparent", width = 4, height = 4, units = "in", dpi = 300)
+```
+---
+
+## Class overview
+
+- Installation progress/trouble-shooting
+- `R` packages
+- `git` / GitHub
+- Tips and tricks for productivity
+
+---
+
+## R packages
+
+- File structure
+- Where packages live
+- library versus package
+- Exported functions, loading packages
+
+---
+
+## Types of packages
+
+```{r}
+#| out.width: 70%
+#| echo: FALSE
+#| fig.align: 'center'
+#| fig.cap: "http://r-pkgs.had.co.nz/package.html"
+
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
+```
+
+---
+
+## Installing packages
+
+```{r}
+#| echo: FALSE
+#| out.width: 70%
+#| fig.align: 'center'
+#| fig.cap: "https://r-pkgs.org/diagrams/install-load.png"
+  
+knitr::include_graphics("https://r-pkgs.org/diagrams/install-load.png") 
+```
+
+---
+
+## git / GitHub
+
+- Commits, pushes, pulls
+- Branching
+- Merging
+
+---
+
+## Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+

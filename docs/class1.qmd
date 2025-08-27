@@ -1,0 +1,101 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: "Class 1"
+format:
+  revealjs:
+    theme: night                     # dark theme
+    highlight-style: github
+    highlight-lines: true
+    incremental: false    
+    title-slide-attributes:
+      data-background-image: figures/ghana-dem.png
+      data-background-position: center
+      data-background-size: 40%
+    css: ["themes/class1.css"]
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+#| eval: FALSE
+  
+library(terra)
+library(viridis)
+ghana_dem <- geodata::elevation_30s(country = "GHA", path = tempdir())
+png("docs/figures/ghana-dem.png", bg = "transparent", height = 4, 
+    width = 3, res = 300, units = "in")
+par(mar = c(0, 0, 0, 0))
+plot(ext(ghana_dem), lty = 0, axes = FALSE)
+plot(ghana_dem, col = magma(100), add = TRUE, axes = FALSE, box = FALSE, 
+     legend = "bottom", 
+     plg = list(title = "Elevation (m)", cex = 0.7, col = "white", lwd = 2, 
+                title.col = "white", title.cex = 0.7))
+dev.off()
+```
+
+---
+
+## Class Overview
+
+- By the end of this class, you should:
+    - Be comfortable in working with R, including most common geospatial functions
+    - Have a good sense of where R is headed as a language
+    - Know where to look when don't know how to do something
+    - Be using R as part of a ___reproducible___ workflow
+
+- Course approach
+    - (Largely) flipped model and emphasis on problem solving
+        - Programming should be fun! (or at least intriguing)
+    - Lab and office hours as help sessions
+
+---
+
+## Reproducibility 1
+
+```{r}
+#| out.width: 70%
+#| echo: false
+#| fig.align: center
+knitr::include_graphics("figures/class1_1.png")
+```
+
+---
+
+## Reproducibility 2
+```{r}
+#| out.width: 50%
+#| echo: false
+#| fig.align: center
+knitr::include_graphics("figures/class1_2.png")
+```
+---
+
+## Course Requirements
+
+- Let's have a look at the [Syllabus](syllabus.html)
+- Basic policies
+
+    - Attendance and communication
+    - Attention to detail
+
+---
+
+## Projects
+- Projects [page](projects.html)
+
+---
+
+## Getting Set Up/Homework
+
+- [README](https://github.com/agroimpacts/geospaar)
+- Get yourself a GitHub account, if you haven't
+- Send us your GitHub name (**!!**)
+- Install all necessary software on your local computer(s).
+- Set up your [personal access token](https://agroimpacts.github.io/geospaar/git-github.html)
+- **Read** Unit1-Module 1 before section 3.2.1, section 1.7 Style in Syllabus, and cheatsheet of RStudio and R markdown.
+
+
+
+
+
