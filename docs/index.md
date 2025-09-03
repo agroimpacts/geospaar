@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-08-27
+Updated on: 2025-09-03
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -50,6 +50,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 ### Week 2 (Sept 3)
 
 - Using git and Github; R packages;
+- [Class 3 slides](class3.html)
 
 ### Week 3 (Sept 8)
 
