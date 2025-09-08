@@ -3,15 +3,18 @@ title: "Geospatial Analysis with R"
 subtitle: "Class 2"
 format:
   revealjs:
-    theme: night
+    theme: night                     # dark theme
     highlight-style: github
     highlight-lines: true
     incremental: false    
-    title-slide-attributes:
-      data-background-image: figures/clark.png
-      data-background-position: center
-      data-background-size: 40%
-    css: ["themes/class1.css"]
+    embed-resources: true
+resources:
+  - figures/clark.png
+title-slide-attributes:
+  data-background-image: figures/clark.png
+  data-background-position: center
+  data-background-size: 40%
+css: ["themes/class1.css"]
 editor_options: 
   chunk_output_type: console
 ---

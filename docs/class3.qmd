@@ -8,14 +8,18 @@ format:
     highlight-style: github
     highlight-lines: true
     incremental: false    
-    title-slide-attributes:
-      data-background-image: figures/random-raster.png
-      data-background-position: center
-      data-background-size: 40%
-    css: ["themes/class1.css"]
+    embed-resources: true
+resources:
+  - figures/random-raster.png
+title-slide-attributes:
+  data-background-image: figures/random-raster.png
+  data-background-position: center
+  data-background-size: 40%
+css: ["themes/class1.css"]
 editor_options: 
   chunk_output_type: console
 ---
+
 
 ```{r}
 #| echo: TRUE
@@ -73,7 +77,6 @@ dev.off()
 
 ---
 
-
 ## Types of packages
 
 ```{r}
@@ -84,3 +87,138 @@ dev.off()
 
 knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
 ```
+
+## Installing packages
+
+```{r}
+#| echo: false
+#| fig-cap: "http://r-pkgs.had.co.nz/package.html"
+#| fig-align: center
+#| out-width: 90%
+
+knitr::include_graphics("https://r-pkgs.org/diagrams/install-load.png") 
+```
+---
+
+## `git` / GitHub
+
+- Commits, pushes, pulls
+- Branching
+- Merging
+
+---
+
+```{r}
+#| echo: false
+#| fig-cap: "kevintshoemaker.github.io/StatsChats/GIT_tutorial"
+#| fig-align: center
+#| out-width: 70%
+
+knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT1.png")
+```
+---
+
+```{r}
+#| echo: false
+#| fig-cap: "kevintshoemaker.github.io/StatsChats/GIT_tutorial"
+#| fig-align: center
+#| out-width: 70%
+
+knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT2.png")
+```
+
+---
+
+
+## Our Branching Model
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| out-width: 70%
+
+knitr::include_graphics("figures/class3_1.png")
+```
+
+---
+
+## Keeping current
+
+- Using `git` and GitHub
+- Following [4.3.4.](https://agroimpacts.github.io/geospaar/unit1-module1.html#cloning-the-remote-repo) of Unit 1 - Module 1
+
+---
+
+## [Assignment 1]("https://agroimpacts.github.io/geospaar/unit1-module1.html#unit-assignment")
+
+- Due Monday (29th) 
+
+---
+
+## Tips and Tricks
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+
+---
+
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+
+## Search Engine Science
+
+- Sometimes you just need the error message
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| out-width: 90%
+
+knitr::include_graphics("figures/class3_4.jpeg")
+```
+
+---
+
+## Search Engine Science
+
+- Sometimes you need to search
+
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+
+- How you search matters
+
+---
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| out-width: 90%
+
+knitr::include_graphics("figures/class3_5.png")
+```
+
+---
+
+## Listserves
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| out-width: 90%
+
+knitr::include_graphics("figures/class3_3.png")
+```
+
