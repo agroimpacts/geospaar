@@ -126,6 +126,7 @@ fi
 # --- Run ---
 echo "Launching from platform: ${OS}"
 docker run --rm -d -p "${port}:8787" -e PASSWORD=password \
+  -e USERID="$(id -u)" -e GROUPID="$(id -g)" \
   --name geospaar_rstudio \
   -v "$(docker_path "${full_d}")":/home/rstudio \
   -v "$(docker_path "${r_package_dir}")":/packages \
