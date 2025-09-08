@@ -7,11 +7,14 @@ format:
     highlight-style: github
     highlight-lines: true
     incremental: false    
-    title-slide-attributes:
-      data-background-image: figures/ghana-dem.png
-      data-background-position: center
-      data-background-size: 40%
-    css: ["themes/class1.css"]
+    embed-resources: true
+resources:
+  - figures/ghana-dem.png
+title-slide-attributes:
+  data-background-image: figures/ghana-dem.png
+  data-background-position: center
+  data-background-size: 40%
+css: ["themes/class1.css"]
 editor_options: 
   chunk_output_type: console
 ---
