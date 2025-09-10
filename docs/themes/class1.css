@@ -20,8 +20,13 @@
 
 /* List items */
 .reveal li {
-  font-size: 16px; /* Reduced from 20px */
+  font-size: 18px; /* Reduced from 20px */
   margin: 18px 0;
+}
+
+/* styles.css */
+.reveal p {
+  font-size: 0.6em;
 }
 
 /* Inline code */
@@ -31,6 +36,11 @@
   border-radius: 0px;
   padding: 1px 3px;
   font-size: 0.7em; /* Reduced from 1em */
+}
+
+/* shrink code output */
+.reveal .cell-output pre {
+  font-size: 0.4em;
 }
 
 /* Utility text color */

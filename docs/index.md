@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-09-08
+Updated on: 2025-09-10
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -57,6 +57,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Continued setup work, RMarkdown, R ecosystem
 - Assignment 1 due (Unit 1 Module 1)
 - [Class 4 slides](class4.html)
+- [Class 5 slides](class5.html)
 
 ### Week 4 (Sept 15)
 
