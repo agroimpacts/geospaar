@@ -67,16 +67,30 @@ abspath() {
   esac
 }
 
+# docker_path() {
+#   local p="$1"
+#   case "$OS" in
+#     gitbash) ( cd "$p" && pwd -W ) ;;
+#     *) echo "$p" ;;
+#   esac
+# }
 docker_path() {
   local p="$1"
   case "$OS" in
-    gitbash) ( cd "$p" && pwd -W ) ;;
-    *) echo "$p" ;;
+    gitbash)
+      if [[ -d "$p" ]]; then
+        (cd "$p" && pwd -W)
+      else
+        (cd "$(dirname "$p")" && echo "$(pwd -W)/$(basename "$p")")
+      fi
+      ;;
+    *)
+      echo "$p"
+      ;;
   esac
 }
 
 # --- Main prep ---
-
 full_d="$(abspath "$d")"
 if [[ ! -d "$full_d" ]]; then
   >&2 echo "Error: Directory ${full_d} does not exist."
@@ -131,8 +145,9 @@ docker run --rm -d -p "${port}:8787" -e PASSWORD=password \
   -v "$(docker_path "${full_d}")":/home/rstudio \
   -v "$(docker_path "${r_package_dir}")":/packages \
   -v "$(docker_path "${config_dir}")":/home/rstudio/.config/rstudio \
-  -v "$(docker_path "${rprofile}")":/home/rstudio/.Rprofile:rw \
+  -v "${rprofile}":/home/rstudio/.Rprofile:rw \
   "${rstudio_image}"
+
 
 echo "geospaar_rstudio listening on port ${port}"
 echo "Open:  http://localhost:${port}"
