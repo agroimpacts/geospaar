@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-09-10
+Updated on: 2025-09-15
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -61,7 +61,8 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 ### Week 4 (Sept 15)
 
-- R data structures, OOP, Environments, Control flow
+- R ecosystem, R data structures, OOP, Environments, Control flow
+- [Class 6 slides](class6.html)
 
 ### Week 5 (Sept 22)
 
