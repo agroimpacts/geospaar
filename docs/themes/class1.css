@@ -11,7 +11,7 @@
   line-height: 1.5em;
 }
 
-/* Custom text classes */
+/* Custom text classes*/
 .vlarge  { font-size: 150%; } /* Reduced from 200% */
 .large    { font-size: 100%; } /* Reduced from 130% */
 .large2   { font-size: 70%; }

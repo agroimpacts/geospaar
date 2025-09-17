@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-09-15
+Updated on: 2025-09-17
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -63,6 +63,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 - R ecosystem, R data structures, OOP, Environments, Control flow
 - [Class 6 slides](class6.html)
+- [Class 7 slides](class7.html)
 
 ### Week 5 (Sept 22)
 
