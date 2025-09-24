@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-09-22
+Updated on: 2025-09-24
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -70,6 +70,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - R data structures, OOP, Environments, Control flow
 - Assignment 2 due (Unit 1 Modules 2-3)
 - [Class 8 slides](class8.html)
+- [Class 9 slides](class9.html)
 
 ### Week 6 (Sept 29)
 
