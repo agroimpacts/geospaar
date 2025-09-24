@@ -12,6 +12,7 @@ format:
 resources:
   - figures/zambia_farmer_repsperweek.png
 title-slide-attributes:
+  style: "color: blue"
   data-background-image: figures/zambia_farmer_repsperweek.png
   data-background-position: center
   data-background-size: 70%
@@ -41,12 +42,12 @@ farmers <- read_csv(
 p <- ggplot() + 
   geom_sf(data = districts, lwd = 0.1) + 
   geom_point(data = farmers, 
-             aes(x = x, y = y, size = n, color = n), alpha = 0.9) +
+             aes(x = x, y = y, size = n * 0.8, color = n), alpha = 0.9) +
   scale_color_viridis_c(guide = FALSE) + theme_void() + 
   theme(legend.position = c(0.85, 0.2)) +
   scale_size(range = c(0.1, 5), name = "N reports/week")
-ggsave(here::here("external/slides/figures/zambia_farmer_repsperweek.png"), 
-       width = 6, height = 4, dpi = 300, bg = "grey")
+ggsave(here::here("docs/figures/zambia_farmer_repsperweek.png"), 
+       width = 6, height = 4, dpi = 300, bg = "transparent")
 ```
 
 ---
