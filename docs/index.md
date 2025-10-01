@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-09-29
+Updated on: 2025-10-01
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -77,6 +77,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - tidyverse, working with data
 - regression, plotting
 - [Class 10 slides](class10.html)
+- [Class 11 slides](class11.html)
 
 ### Week 7 (Oct 6)
 
