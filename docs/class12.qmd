@@ -1,0 +1,110 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: "Class 12"
+format:
+  revealjs:
+    code-block-height: 650px
+    theme: night
+    highlight-style: github
+    highlight-lines: true
+    incremental: false    
+    embed-resources: true
+resources:
+  - figures/consensus1.png
+title-slide-attributes:
+  style: "color: blue"
+  data-background-image: figures/zam-road-buff.png
+  data-background-position: center
+  data-background-size: 70%
+css: ["themes/class1.css"]
+editor_options: 
+  chunk_output_type: console
+execute:
+    echo: true
+---
+
+```{r, message=FALSE, eval=FALSE, warning=FALSE}
+library(leaflet)
+library(sf)
+library(dplyr)
+districts <- read_sf(
+  system.file("extdata/districts.geojson", package = "geospaar")
+)
+bb <- unname(st_bbox(districts))
+xy <- st_centroid(districts) %>% st_coordinates() %>% 
+  bind_cols(name = districts$distName, .)
+slist <- list("color" = "white")
+label_opts <- labelOptions(noHide = TRUE, style = slist, direction = 'center',
+                           textOnly = TRUE, textsize = "5px")
+
+m <- leaflet() %>% 
+  addProviderTiles("Esri.WorldImagery") %>% 
+  fitBounds(bb[1], bb[2], bb[3], bb[4]) %>% 
+  addPolygons(data = districts, fill = FALSE, color = "white", 
+              group = "Districts", weight = 1) %>% 
+  addLabelOnlyMarkers(xy$X, xy$Y, label = xy$name, group = "Names",
+                      labelOptions = label_opts) %>%
+  addLayersControl(overlayGroups = c("Districts", "Names"),
+                   options = layersControlOptions(collapsed = FALSE,
+                                                  autoZIndex = FALSE))
+```
+
+```{r, eval=FALSE, echo=FALSE}
+library(htmlwidgets) 
+saveWidget(m, "docs/figures/zambialeaflet.html", selfcontained = TRUE)
+```
+
+
+---
+
+<iframe seamless src="figures/zambialeaflet.html" width="100%" 
+height="500"></iframe>
+
+---
+
+
+## Split-apply-combine
+
+```{r}
+#| eval: FALSE
+#| 
+set.seed(10)
+dat <- data.frame(v1 = 1:100, v2 = sample(0:10, size = 100, replace = TRUE), 
+                  grp = sample(letters[1:3], size = 100, replace = TRUE))
+
+sapply(sort(unique(dat$grp)), function(x) {
+  colMeans(dat[dat$grp == x, c("v1", "v2")])
+})
+
+dat %>% 
+  group_by(grp) %>% 
+  summarise(across(c(v1, v2), mean))
+
+```
+
+## Reading, reshaping, analyzing, plotting
+
+```{r, eval=FALSE}
+dat <- readr::read_csv(
+  system.file("extdata/FAOSTAT_maize.csv", package = "geospaar")
+)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

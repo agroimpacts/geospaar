@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-10-01
+Updated on: 2025-10-06
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -83,6 +83,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 - tidyverse, data manipulation
 - Assignment 3 due (Unit 1 Module 4)
+- [Class 12 slides](class12.html)
 
 ### Week 9 (Oct 15)
 
