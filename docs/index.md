@@ -1,5 +1,5 @@
 
-# Geospatial Analysis with R <img src="https://s28151.pcdn.co/offices/marketing-and-communications/wp-content/blogs.dir/3/files/sites/106/2019/08/CU_Seal_Red_SM_60_75_v4-768x768.png" align="right" width="120"/>
+# Geospatial Analysis with R <img src="https://www.neche.org/wp-content/uploads/2023/06/CU_Seal_Red_SM-768x768.webp" align="right" width="120"/>
 
 ## Fall 2025
 
