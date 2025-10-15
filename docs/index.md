@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-10-06
+Updated on: 2025-10-15
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -88,6 +88,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 ### Week 9 (Oct 15)
 
 - Working with vectors
+- [Class 13 slides](class13.html)
 
 ### Week 10 (Oct 20)
 
