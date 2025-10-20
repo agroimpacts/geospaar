@@ -1,0 +1,199 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: "Class 14"
+format:
+  revealjs:
+    code-block-height: 650px
+    theme: night
+    highlight-style: github
+    highlight-lines: true
+    incremental: false    
+    embed-resources: true
+resources:
+  - figures/consensus1.png
+title-slide-attributes:
+  style: "color: blue"
+  data-background-image: figures/zam-road-buff.png
+  data-background-position: center
+  data-background-size: 70%
+css: ["themes/class1.css"]
+editor_options: 
+  chunk_output_type: console
+execute:
+    echo: true
+---
+
+<div style="background-color: #ffffff; color: #000; padding: 20px;">
+```{r, out.width="70%", echo=FALSE}
+knitr::include_graphics(
+  glue::glue("https://github.com/agroimpacts/activemapper/blob/main/",
+             "inst/manuscript/figures/figure6.png?raw=true")
+)
+```
+</div>
+
+---
+
+[Code for figure](https://github.com/agroimpacts/activemapper/blob/e1c238a741fd8b590e21ef1e77b89fe90a25ae4f/inst/manuscript/figures.Rmd#L454-L619)
+
+- Optional: examine the code and identify which parts of the code make each component of the figure. 
+
+---
+
+
+## Spatial continued
+### Data
+
+```{r, eval = FALSE, message = FALSE}
+districts <- st_read(system.file("extdata/districts.geojson", 
+                                 package = "geospaar"))
+farmers_sf <- read_csv(system.file("extdata/farmer_spatial.csv", 
+                                   package = "geospaar"))
+farmers_s <- st_as_sf(farmers, coords = c("x", "y")) %>% 
+  st_set_crs(st_crs(districts))
+
+roads <- st_read(system.file("extdata/roads.geojson", package = "geospaar")) %>% 
+  st_transform(x = roads, crs = st_crs(districts))
+
+pt <- st_point(x = c(28, -14))
+pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                             y = c(-15.5, -16.5, -17, -16, -15.5))))
+```
+
+---
+
+## Plotting (ggplot)
+
+- Use `geom_sf()`
+```{r, eval = FALSE, message = FALSE}
+ggplot(districts) + geom_sf() +
+  geom_sf(data = roads, col = "red") + 
+  geom_sf(data = farmers_sf, col = "blue")
+```
+
+---
+
+## Area and Length
+
+- `st_area()`, `st_length`. Default units are in meters
+- How many square m in a square km?
+```{r, eval = FALSE, message = FALSE}
+dist_areas <- districts %>% st_area()
+dist_areas
+dist_areas %>% units::set_units("km^2")
+```
+
+---
+
+## Add area as column
+```{r, eval = FALSE, message = FALSE}
+districts <- districts %>% 
+  mutate(area = st_area(.) %>% units::set_units("km^2") %>% as.numeric()) 
+districts
+```
+
+---
+
+## Plot districts (exercise)
+- Use `geom_sf()` to plot area
+- Fill districts based on area column.
+- Use `scale_fill_continuous` , with `type = 'viridis'`
+
+```{r, eval = FALSE, message = FALSE}
+ggplot(districts) + geom_sf(aes(fill = area)) + 
+  scale_fill_continuous(type = "viridis")
+```
+
+---
+
+## Compare areas
+
+```{r, eval=FALSE}
+districts <- districts %>% 
+  st_transform("ESRI:102022") %>% 
+  mutate(area2 = as.numeric(st_area(.) / 10000)) %>% 
+  st_transform(4326)
+
+ggplot(districts) + 
+  geom_histogram(aes(x = area - area2))
+```
+
+
+---
+
+```{r, eval=FALSE}
+districts <- districts %>%
+  mutate(areadiff = (area - area2) / area * 100)
+
+ggplot(districts) +
+  geom_point(aes(x = area2, y = areadiff))
+
+districts %>%
+  mutate(areadiff = ((area - area2) / area) * 100) %>%
+  ggplot() + geom_point(aes(x = area2, y = areadiff))
+
+districts %>%
+  mutate(areadiff = ((area - area2) / area) * 100) %>% 
+  summarize(mu = mean(areadiff))
+```
+
+---
+
+```{r, eval=FALSE}
+districts %>%
+  mutate(areadiff = ((area - area2) / area) * 100) %>%
+  ggplot() + geom_sf(aes(fill = areadiff))
+
+districts %>%
+  mutate(areadiff = ((area - area2) / area) * 100) %>% 
+  summarize(mu = mean(areadiff)) %>% 
+  ggplot() + geom_sf(aes(fill = mu))
+
+districts %>%
+  mutate(areadiff = ((area - area2) / area) * 100) %>% 
+  st_drop_geometry() %>% 
+  summarize(mu = mean(areadiff)) #%>% 
+  # ggplot() + geom_sf(aes(fill = mu))
+
+districts %>%
+  mutate(areadiff = ((area - area2) / area) * 100) %>% 
+  as_tibble() %>% 
+  summarize(mu = mean(areadiff)) #%>%
+```
+
+---
+
+## Calculate length (exercise)
+- Use `st_length()` to add column 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
+- Then plot roads based on length (use `scale_color_continuous()` )
+- Plot roads with line width 1 (`lwd = 1`)
+- Use `theme_bw()`
+
+---
+
+```{r, eval=FALSE}
+roads <- st_read(
+  system.file("extdata/roads.geojson", package = "geospaar")
+) 
+roads <- roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) 
+ggplot() +
+  geom_sf(data = districts, color = "black", fill = NA) +
+  geom_sf(data = roads, aes(color = road_length), lwd = 1) + 
+  scale_color_viridis_c() + 
+  theme_minimal()
+```
+
+---
+
+## ggplot steps
+- Start with `ggplot()`. You can include data if you're only using one data set.
+- Add plot type (`geom_point`, `geom_line`, `geom_sf`, `geom_histogram`)
+- Add aesthetics in `aes()`. These are columns used for plotting. 
+- For `geom_point`, `geom_line` you need 'x' and 'y' aesthetics. 
+- For `geom_sf`, spatial context used for 'x' and 'y'. But you might want 'fill' or 'color'
+

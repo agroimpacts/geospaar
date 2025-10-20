@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-10-15
+Updated on: 2025-10-20
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -94,6 +94,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 - More on vectors
 - Assignment 4 due (Unit 2 Module 1)
+- [Class 14 slides](class14.html)
 
 ### Week 11 (Oct 27)
 
