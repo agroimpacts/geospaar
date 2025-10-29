@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-10-27
+Updated on: 2025-10-29
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -101,6 +101,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 
 - Raster algebra, terrain, modeling
 - [Class 16 slides](class16.html)
+- [Class 17 slides](class17.html)
 
 ### Week 12 (Nov 3)
 
