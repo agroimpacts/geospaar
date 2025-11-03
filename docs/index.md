@@ -106,7 +106,7 @@ The class materials were designed by Lyndon Estes and Lei Song.
 ### Week 12 (Nov 3)
 
 - Assignment 5 (Unit 2 Module 2)
-- [Class 17 slides](class17.html)
+- [Class 1 slides](class18.html)
 
 ### Week 13-15 (Nov 10 onwards)
 
