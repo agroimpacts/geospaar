@@ -1380,9 +1380,10 @@ margin-right: 0; }
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href></a><span class="fu">plot</span>(b, <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick &quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span>
-<span id="cb19-2"><a href></a><span class="fu">aggregate</span>(b, <span class="at">fact =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> <span class="fu">plot</span>(., <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick agg&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span>
-<span id="cb19-3"><a href></a><span class="co"># aggregate(b, fun = min, fact = 2) %&gt;% plot</span></span>
-<span id="cb19-4"><a href></a><span class="co"># aggregate(b, fun = sd, fact = 2) %&gt;% plot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-2"><a href></a><span class="fu">aggregate</span>(b, <span class="at">fact =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-3"><a href></a>  <span class="fu">plot</span>(., <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick agg&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span>
+<span id="cb19-4"><a href></a><span class="co"># aggregate(b, fun = min, fact = 2) %&gt;% plot</span></span>
+<span id="cb19-5"><a href></a><span class="co"># aggregate(b, fun = sd, fact = 2) %&gt;% plot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="pre-processing-1" class="slide level2">
@@ -1392,8 +1393,10 @@ margin-right: 0; }
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href></a><span class="fu">plot</span>(b, <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick &quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span>
-<span id="cb20-2"><a href></a><span class="fu">disaggregate</span>(b, <span class="at">fact =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> <span class="fu">plot</span>(., <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick disagg&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span>
-<span id="cb20-3"><a href></a><span class="fu">disaggregate</span>(b, <span class="at">fact =</span> <span class="dv">2</span>, <span class="at">method =</span> <span class="st">&#39;bilinear&#39;</span>) <span class="sc">%&gt;%</span> <span class="fu">plot</span>(., <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick disagg bilinear&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-2"><a href></a><span class="fu">disaggregate</span>(b, <span class="at">fact =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href></a>  <span class="fu">plot</span>(., <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick disagg&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span>
+<span id="cb20-4"><a href></a><span class="fu">disaggregate</span>(b, <span class="at">fact =</span> <span class="dv">2</span>, <span class="at">method =</span> <span class="st">&#39;bilinear&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-5"><a href></a>  <span class="fu">plot</span>(., <span class="at">main =</span> <span class="fu">paste0</span>(<span class="st">&quot;Brick disagg bilinear&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
@@ -1410,110 +1413,6 @@ margin-right: 0; }
 <span id="cb21-5"><a href></a><span class="fu">plot_noaxes</span>(chirpsz[[<span class="dv">1</span>]])</span>
 <span id="cb21-6"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb21-7"><a href></a><span class="co"># rasterVis::levelplot(chirpsz[[1:5]])</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="calculations" class="slide level2">
-<h2>Calculations</h2>
-<ul>
-<li>raster algebra</li>
-<li>statistics</li>
-<li>z dimension stats</li>
-</ul>
-</section>
-<section id="calculations-1" class="slide level2">
-<h2>Calculations</h2>
-<ul>
-<li>math operations work cell-wise</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href></a>rf1 <span class="ot">&lt;-</span> chirpsz[[<span class="dv">1</span>]] <span class="sc">+</span> chirpsz[[<span class="dv">2</span>]]</span>
-<span id="cb22-2"><a href></a>rf2 <span class="ot">&lt;-</span> chirpsz[[<span class="dv">1</span>]] <span class="sc">*</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href></a><span class="co"># dev.off()</span></span>
-<span id="cb23-2"><a href></a><span class="fu">plot</span>(rf1 <span class="sc">/</span> <span class="dv">1000</span>)</span>
-<span id="cb23-3"><a href></a><span class="fu">plot</span>(((<span class="fu">log10</span>(rf1 <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">/</span> <span class="dv">5</span>)<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="terrain-analysis-with-zonal-statistics" class="slide level2">
-<h2>Terrain analysis with zonal statistics</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.))</span>
-<span id="cb24-2"><a href></a>distsr <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
-<span id="cb24-3"><a href></a>  <span class="fu">rasterize</span>(<span class="at">x =</span> ., <span class="at">y =</span> raintot, <span class="at">field =</span> <span class="st">&quot;ID&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb24-4"><a href></a>  <span class="fu">print</span>()</span>
-<span id="cb24-5"><a href></a><span class="fu">plot</span>(distsr)</span>
-<span id="cb24-6"><a href></a></span>
-<span id="cb24-7"><a href></a><span class="co"># Download DEM</span></span>
-<span id="cb24-8"><a href></a><span class="co"># dem &lt;- getData(name = &quot;alt&quot;, country = &quot;ZMB&quot;, path = tempdir())</span></span>
-<span id="cb24-9"><a href></a>dem <span class="ot">&lt;-</span> geodata<span class="sc">::</span><span class="fu">elevation_30s</span>(<span class="at">country =</span> <span class="st">&quot;Zambia&quot;</span>,  <span class="at">path =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb24-10"><a href></a></span>
-<span id="cb24-11"><a href></a><span class="co"># calculate slope</span></span>
-<span id="cb24-12"><a href></a>slope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(<span class="at">x =</span> dem, <span class="at">v =</span> <span class="st">&#39;slope&#39;</span>, <span class="at">unit =</span> <span class="st">&#39;degrees&#39;</span>)</span>
-<span id="cb24-13"><a href></a><span class="fu">plot</span>(slope)</span>
-<span id="cb24-14"><a href></a></span>
-<span id="cb24-15"><a href></a><span class="co"># calculate mean by district</span></span>
-<span id="cb24-16"><a href></a>distsr_rs <span class="ot">&lt;-</span> <span class="fu">resample</span>(<span class="at">x =</span> distsr, <span class="at">y =</span> slope, <span class="at">method =</span> <span class="st">&quot;near&quot;</span>)</span>
-<span id="cb24-17"><a href></a><span class="fu">plot</span>(distsr_rs)</span>
-<span id="cb24-18"><a href></a>zoneslope <span class="ot">&lt;-</span> <span class="fu">zonal</span>(<span class="at">x =</span> slope, <span class="at">z =</span> distsr_rs, <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb24-19"><a href></a><span class="fu">hist</span>(zoneslope[, <span class="dv">2</span>])</span>
-<span id="cb24-20"><a href></a>zoneelevation <span class="ot">&lt;-</span> <span class="fu">zonal</span>(<span class="at">x =</span> dem, <span class="at">z =</span> distsr_rs, <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb24-21"><a href></a><span class="fu">hist</span>(zoneelevation[, <span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="subst" class="slide level2">
-<h2>Subst</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href></a><span class="co"># map zonal statistics</span></span>
-<span id="cb25-2"><a href></a>distr_slopes <span class="ot">&lt;-</span> <span class="fu">subst</span>(<span class="at">x =</span> distsr_rs, <span class="at">from =</span> zoneslope<span class="sc">$</span>ID, </span>
-<span id="cb25-3"><a href></a>                      <span class="at">to =</span> zoneslope<span class="sc">$</span>slope)</span>
-<span id="cb25-4"><a href></a>distr_elevzone <span class="ot">&lt;-</span> <span class="fu">subst</span>(<span class="at">x =</span> distsr_rs, <span class="at">from =</span> zoneelevation<span class="sc">$</span>ID, </span>
-<span id="cb25-5"><a href></a>                        <span class="at">to =</span> zoneelevation<span class="sc">$</span>ZMB_elv_msk)</span>
-<span id="cb25-6"><a href></a></span>
-<span id="cb25-7"><a href></a><span class="co"># plot</span></span>
-<span id="cb25-8"><a href></a><span class="fu">plot</span>(s[[<span class="dv">2</span>]])</span>
-<span id="cb25-9"><a href></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(distr_elevzone, distr_slopes)</span>
-<span id="cb25-10"><a href></a>titles <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Elevation&quot;</span>, <span class="st">&quot;Slope&quot;</span>)</span>
-<span id="cb25-11"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb25-12"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(s)) {</span>
-<span id="cb25-13"><a href></a>  <span class="fu">plot_noaxes</span>(s[[i]], <span class="at">main =</span> titles[i])</span>
-<span id="cb25-14"><a href></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="climate-data-summaries-and-zonal-stats" class="slide level2">
-<h2>Climate data summaries and zonal stats</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href></a>rainfall <span class="ot">&lt;-</span> <span class="fu">getData</span>(<span class="at">name =</span> <span class="st">&quot;worldclim&quot;</span>, <span class="at">res =</span> <span class="dv">10</span>, <span class="at">var =</span> <span class="st">&#39;tmax&#39;</span>,</span>
-<span id="cb26-2"><a href></a>                    <span class="at">path =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb26-3"><a href></a>dt <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">gsub</span>(<span class="st">&quot;Y&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(chirpsz)), <span class="at">format =</span> <span class="st">&quot;%y%j&quot;</span>)</span>
-<span id="cb26-4"><a href></a>dt <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">parse_date_time</span>(<span class="fu">gsub</span>(<span class="st">&quot;Y&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(chirpsz)), <span class="at">orders =</span> <span class="st">&quot;yj&quot;</span>)</span>
-<span id="cb26-5"><a href></a>wk <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">week</span>(dt)</span>
-<span id="cb26-6"><a href></a>weekly_rainfall <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">unique</span>(wk), <span class="cf">function</span>(x) {</span>
-<span id="cb26-7"><a href></a>  <span class="fu">which</span>(wk <span class="sc">==</span> x)</span>
-<span id="cb26-8"><a href></a>  <span class="fu">calc</span>(chirpsz[[<span class="fu">which</span>(wk <span class="sc">==</span> x)]], sum)</span>
-<span id="cb26-9"><a href></a>}) <span class="sc">%&gt;%</span> <span class="fu">stack</span>(.)</span>
-<span id="cb26-10"><a href></a><span class="fu">names</span>(weekly_rainfall) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;wk&quot;</span>, <span class="fu">unique</span>(wk))</span>
-<span id="cb26-11"><a href></a></span>
-<span id="cb26-12"><a href></a>rflim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">cellStats</span>(weekly_rainfall, range))</span>
-<span id="cb26-13"><a href></a><span class="fu">plot</span>(<span class="fu">stack</span>(weekly_rainfall), <span class="at">zlim =</span> rflim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="distance" class="slide level2">
-<h2>Distance</h2>
-<ul>
-<li>plot distance from points</li>
-<li>points must be in same projection as model raster</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb27-2"><a href></a>randsamp <span class="ot">&lt;-</span> <span class="fu">sampleRandom</span>(raintotalb, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">xy =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a href></a>  as_tibble <span class="sc">%&gt;%</span></span>
-<span id="cb27-4"><a href></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</span>
-<span id="cb27-5"><a href></a><span class="fu">st_crs</span>(randsamp) <span class="ot">&lt;-</span> <span class="fu">crs</span>(raintotalb)</span>
-<span id="cb27-6"><a href></a><span class="co"># #2</span></span>
-<span id="cb27-7"><a href></a>ptdistr <span class="ot">&lt;-</span> <span class="fu">distanceFromPoints</span>(<span class="at">object =</span> raintotalb, <span class="at">xy =</span> <span class="fu">as_Spatial</span>(randsamp))</span>
-<span id="cb27-8"><a href></a>ptdistrmsk <span class="ot">&lt;-</span> <span class="fu">mask</span>(ptdistr, raintotalb)</span>
-<span id="cb27-9"><a href></a><span class="fu">plot</span>(ptdistrmsk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 </section>

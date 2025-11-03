@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-10-29
+Updated on: 2025-11-03
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -106,9 +106,10 @@ The class materials were designed by Lyndon Estes and Lei Song.
 ### Week 12 (Nov 3)
 
 - Assignment 5 (Unit 2 Module 2)
-- Exam
+- [Class 17 slides](class17.html)
 
 ### Week 13-15 (Nov 10 onwards)
 
+- Exam
 - Project Overview due (end week 13)
 - Final Projects due Dec 15

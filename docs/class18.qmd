@@ -1,0 +1,197 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: "Class 17"
+format:
+  revealjs:
+    code-block-height: 650px
+    theme: night
+    highlight-style: github
+    highlight-lines: true
+    incremental: false    
+    embed-resources: true
+resources:
+  - figures/zam_dem_raster.png
+title-slide-attributes:
+  style: "color: blue"
+  data-background-image: figures/zam_dem_raster.png
+  data-background-position: center
+  data-background-size: 70%
+css: ["themes/class1.css"]
+editor_options: 
+  chunk_output_type: console
+execute:
+    echo: true
+---
+
+```{r, echo=FALSE, out.width="40%", results='hold', fig.align='center'}
+dem1 <- "figures/zam_dem_raster.png"
+dem2 <- "figures/zam_dem_stars.png"
+knitr::include_graphics(c(dem1, dem2))
+```
+
+---
+
+
+```{r}
+#| eval: True
+#| message: False
+#| echo: false
+
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(readr)
+library(geospaar)
+
+```
+
+## Today
+
+- `terra` (raster) intro
+  - calculations
+  - zonal
+  - focal
+  - global
+  - terrain
+
+---
+  
+```{r, eval = FALSE}
+
+b <- lapply(1:10, function(x) {
+  r <- rast(ext(30, 31, -14, -13), resolution = 0.1, 
+            crs = "EPSG:4326")
+  set.seed(x)
+  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
+  r
+}) %>% do.call(c, .)
+names(b) <- paste0("b", 1:10)
+```
+
+---
+
+
+```{r, eval = FALSE}
+library(geospaar)
+chirps <- rast(
+  system.file("extdata/chirps.tif", package = "geospaar")
+) 
+plot_noaxes(chirps[[1]])
+chirpsz <- mask(chirps, districts)
+plot_noaxes(chirpsz[[1]])
+plot(st_geometry(districts), add = TRUE)
+# rasterVis::levelplot(chirpsz[[1:5]])
+```
+
+---
+
+## Calculations
+
+- raster algebra
+- statistics
+- z dimension stats
+
+
+---
+
+## Calculations
+- math operations work cell-wise
+```{r, eval=FALSE}
+rf1 <- chirpsz[[1]] + chirpsz[[2]]
+rf2 <- chirpsz[[1]] * 5
+```
+
+```{r, eval = FALSE}
+
+# dev.off()
+plot(rf1 / 1000)
+plot(((log10(rf1 + 1) * 10) / 5)^2)
+
+```
+
+---
+
+## Terrain analysis with zonal statistics
+
+```{r, eval=FALSE}
+districts <- st_read(
+  system.file("extdata/districts.geojson", package = "geospaar")
+) 
+districts <- districts %>% 
+  mutate(ID = 1:nrow(.))
+distsr <- rasterize(x = districts, y = raintot, field = "ID") 
+
+# Download DEM
+# dem <- getData(name = "alt", country = "ZMB", path = tempdir())
+dem <- geodata::elevation_30s(country = "Zambia",  path = tempdir())
+
+# calculate slope
+slope <- terrain(x = dem, v = 'slope', unit = 'degrees')
+plot(slope)
+
+# calculate mean by district
+distsr_rs <- resample(x = distsr, y = slope, method = "near")
+plot(distsr_rs)
+zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean", na.rm = TRUE)
+hist(zoneslope[, 2])
+zoneelevation <- zonal(x = dem, z = distsr_rs, fun = "mean", na.rm = TRUE)
+hist(zoneelevation[, 2])
+```
+---
+
+## Subst
+```{r, eval=FALSE}
+# map zonal statistics
+distr_slopes <- subst(x = distsr_rs, from = zoneslope$ID, 
+                      to = zoneslope$slope)
+distr_elevzone <- subst(x = distsr_rs, from = zoneelevation$ID, 
+                        to = zoneelevation$ZMB_elv_msk)
+
+# plot
+plot(s[[2]])
+s <- c(distr_elevzone, distr_slopes)
+titles <- c("Elevation", "Slope")
+par(mfrow = c(1, 2))
+for(i in 1:length(s)) {
+  plot_noaxes(s[[i]], main = titles[i])
+}
+```
+
+---
+
+## Climate data summaries and zonal stats
+
+```{r, eval=FALSE}
+dt <- as.Date(gsub("Y", "", names(chirpsz)), format = "%y%j")
+dt <- lubridate::parse_date_time(gsub("Y", "", names(chirpsz)), orders = "yj")
+wk <- lubridate::week(dt)
+weekly_rainfall <- lapply(unique(wk), function(x) {
+  app(chirpsz[[which(wk == x)]], sum)
+}) %>% do.call(c, .)
+names(weekly_rainfall) <- paste0("wk", unique(wk))
+
+rflim <- range(global(weekly_rainfall, range, na.rm = TRUE))
+plot(weekly_rainfall, zlim = rflim)
+```
+
+---
+
+## Distance
+
+- plot distance from points
+- points must be in same projection as model raster
+```{r, eval=FALSE}
+set.seed(1)
+randsamp <- spatSample(rast(raintotalb), size = 10, xy = TRUE) %>%
+  as_tibble %>%
+  st_as_sf(coords = c("x", "y")) %>% 
+  drop_na()
+st_crs(randsamp) <- crs(raintotalb)
+# #2
+ptdistr <- terra::distance(rast(raintotalb), vect(randsamp))
+ptdistrmsk <- mask(ptdistr, rast(raintotalb))
+plot(ptdistrmsk)
+```
+
+
+
