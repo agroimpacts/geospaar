@@ -1,6 +1,6 @@
 ---
 title: "Geospatial Analysis with R"
-subtitle: "Class 17"
+subtitle: "Class 18"
 format:
   revealjs:
     code-block-height: 650px
@@ -30,7 +30,6 @@ knitr::include_graphics(c(dem1, dem2))
 ```
 
 ---
-
 
 ```{r}
 #| eval: True

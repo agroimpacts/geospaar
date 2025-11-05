@@ -1346,7 +1346,7 @@ margin-left: 0 !important;
       </ul>
     </div>
     <div id="postamble" data-toggle="wy-nav-shift" class="status">
-                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-11-03
+                  <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2025-11-05
 <a href="index.html">Back to home</a></p>
           </div>
    </div>
@@ -2319,8 +2319,7 @@ and high, using &lt;20°, 20-24°, and &gt;24° as the break points for
 determining the classes. Use the <code>reclassify</code> function with a
 reclassification matrix, which you should do like this:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>trng <span class="ot">&lt;-</span> <span class="fu">global</span>(zamtmean, range, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>reclmat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="fu">floor</span>(trng[<span class="dv">1</span>]), <span class="dv">20</span>, <span class="dv">24</span>), <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">24</span>, <span class="fu">ceiling</span>(trng[<span class="dv">2</span>])), <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>reclmat <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(reclmat)</span></code></pre></div>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>reclmat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="fu">floor</span>(trng[<span class="dv">1</span>]), <span class="dv">20</span>, <span class="dv">24</span>), <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">24</span>, <span class="fu">ceiling</span>(trng[<span class="dv">2</span>])), <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code></pre></div>
 <p>Here <code>global</code> is helping to find the values of tmin and
 tmax, which respectively define the lower bound of the “low” class and
 the upper bound of the “high” class. What are the functions
