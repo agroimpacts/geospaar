@@ -3,7 +3,7 @@
 
 ## Fall 2025
 
-Updated on: 2025-11-05
+Updated on: 2025-11-12
 
 |                    |                   |
 |:-------------------|:------------------|
@@ -114,3 +114,4 @@ The class materials were designed by Lyndon Estes and Lei Song.
 - Exam
 - Project Overview due (end week 13)
 - Final Projects due Dec 15
+- [Class 20 slides](class20.html)
