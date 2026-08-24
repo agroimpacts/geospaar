@@ -15,7 +15,7 @@ jobs:
       group: pkgdown-deploy
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -25,8 +25,15 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          cache: always
           extra-packages: any::pkgdown
+          install-quarto: false
           needs: website
+
+      - name: Configure Git author
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Build and deploy site
         run: pkgdown::deploy_to_branch(new_process = FALSE)
