@@ -27,7 +27,7 @@ jobs:
         env:
           R_LIB_FOR_PAK: ${{ runner.temp }}/Library
         with:
-          cache: always
+          cache: true
           extra-packages: any::pkgdown
           install-quarto: false
           needs: website
