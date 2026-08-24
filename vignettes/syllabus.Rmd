@@ -25,13 +25,13 @@ library(knitr)
 Originally developed for statistics, free and open source R became one of the most widely used research/analytical programming languages in both industry and academia. Among its many applications, `R`'s capabilities for geospatial analyses have received significant develop attention, as evidenced the large (and still growing) ecosystem of `R` spatial libraries (covering everything from basic vector and raster manipulation to advanced modeling and image processing), its classes for representing spatial data, and expanding capacity to interact with and leverage the capabilities of other geospatial libraries (GDAL, duckDB), desktop (e.g. GRASS, QGIS, PostGIS, SAGA), and web-based platform (e.g. Google Earth Engine). Alongside its geospatial capabilities, there has been concurrent development of interactive development environments (IDEs) for `R`, which facilitate the creation, presentation, and reproducibility of analyses. `R` is also particularly good for rapid, interactive analyses. `R` therefore is pretty close to being a one-stop shop for GIScience work. This course will provide students with the skills they need to use `R` as a GIS. There will be additional emphases on programming, presentation, and reproducibility, which will entail learning to develop `R` libraries, development of presentations and reports using Rmarkdown (or quarto), and using version control with github. Students will learn and apply `R` skills by working on a specific research problem. 
 
 ## Meeting Time/Place
-B124, MW 1615-1730
+JC217, MW 1200-1315
 
 ## Office Hours
 Instructor | Office | Office hours
 ---------|------------------|------------------
 Lyndon Estes   | Jefferson 201C | Tuesday 1300-1500 
-Luis Oliveira | Geography M103  | TBD
+Luis Oliveira | Geography M103  | Tuesday 1400-1500, Thursday 1030-1200
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also introduces additional skills and concepts related to ___reproducible___ research, and covers how and why `R` capabilities can and should be fit into analytical workflows that are increasingly driven by AI. 

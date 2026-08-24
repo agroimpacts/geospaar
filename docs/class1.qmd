@@ -43,8 +43,8 @@ dev.off()
 
 - By the end of this class, you should:
     - Be comfortable in working with R, including most common geospatial functions
-    - Have a good sense of where R is headed as a language
-    - Know where to look when don't know how to do something
+    - Have a good sense of where R is headed as a language (and how that is changing with AI)
+    - Know how to get help, and how to do it in a way that helps you learn
     - Be using R as part of a ___reproducible___ workflow
 
 - Course approach
@@ -81,6 +81,15 @@ knitr::include_graphics("figures/class1_2.png")
 
     - Attendance and communication
     - Attention to detail
+    - You are responsible for learning the material
+
+---
+
+## Learning and AI
+
+From the [Economist](https://www.economist.com/graphic-detail/2026/08/18/does-ai-stop-children-from-learning)
+
+
 
 ---
 
