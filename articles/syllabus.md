@@ -27,14 +27,14 @@ specific research problem.
 
 ### Meeting Time/Place
 
-B124, MW 1615-1730
+JC217, MW 1200-1315
 
 ### Office Hours
 
-| Instructor    | Office         | Office hours      |
-|---------------|----------------|-------------------|
-| Lyndon Estes  | Jefferson 201C | Tuesday 1300-1500 |
-| Luis Oliveira | Geography M103 | TBD               |
+| Instructor    | Office         | Office hours                          |
+|---------------|----------------|---------------------------------------|
+| Lyndon Estes  | Jefferson 201C | Tuesday 1300-1500                     |
+| Luis Oliveira | Geography M103 | Tuesday 1400-1500, Thursday 1030-1200 |
 
 ### Philosophy
 
