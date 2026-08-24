@@ -23,9 +23,10 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Prepare cacheable R library
+        run: mkdir -p "$R_LIBS_USER"
+
       - uses: r-lib/actions/setup-r-dependencies@v2
-        env:
-          R_LIB_FOR_PAK: ${{ runner.temp }}/Library
         with:
           cache: true
           extra-packages: any::pkgdown
