@@ -2,7 +2,7 @@ name: pkgdown
 
 on:
   push:
-    branches: [main]
+    branches: [fall2026]
   workflow_dispatch:
 
 permissions:
