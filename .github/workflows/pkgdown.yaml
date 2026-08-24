@@ -26,11 +26,12 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache: always
-          extra-packages: |
-            any::pkgdown
-            local::.
+          extra-packages: any::pkgdown
           install-quarto: false
           needs: website
+
+      - name: Install course package
+        run: R CMD INSTALL .
 
       - name: Configure Git author
         run: |

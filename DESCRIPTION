@@ -29,6 +29,7 @@ Suggests:
     knitr, 
     pkgdown,
     prettydoc,
+    raster,
     rmarkdown,
     rmdformats
 VignetteBuilder: knitr
