@@ -430,7 +430,7 @@ functions, including various commonly used statistical functions.
 mean
 #> function (x, ...) 
 #> UseMethod("mean")
-#> <bytecode: 0x5561be5f0760>
+#> <bytecode: 0x55b250a99020>
 #> <environment: namespace:base>
 sample
 #> function (x, size, replace = FALSE, prob = NULL) 
@@ -447,13 +447,13 @@ sample
 #>         x[sample.int(length(x), size, replace, prob)]
 #>     }
 #> }
-#> <bytecode: 0x5561c118dbd8>
+#> <bytecode: 0x55b253639798>
 #> <environment: namespace:base>
 sd
 #> function (x, na.rm = FALSE) 
 #> sqrt(var(if (is.vector(x) || is.factor(x)) x else as.double(x), 
 #>     na.rm = na.rm))
-#> <bytecode: 0x5561c11c5e50>
+#> <bytecode: 0x55b253671a10>
 #> <environment: namespace:stats>
 ```
 
@@ -1242,11 +1242,11 @@ f <- function(x) {
   environment()
 }
 f(x)
-#> <environment: 0x5561f30f5f70>
+#> <environment: 0x55b28559f660>
 f(10)
-#> <environment: 0x5561f31528c0>
+#> <environment: 0x55b2855fbfb0>
 f(x = x)
-#> <environment: 0x5561f3283008>
+#> <environment: 0x55b28572b198>
 ```
 
 The function is modified to return the value from `environment`, which

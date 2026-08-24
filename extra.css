@@ -62,6 +62,24 @@
 
 #main pre,
 #main pre code {
+  background: #191919;
+  color: #f5f5f5;
   font-size: 0.9em;
   line-height: 1.5;
+}
+
+/* Base graphics are transparent PNGs with dark axes and labels. */
+#main img[src*="figure-html"] {
+  background: #ffffff;
+}
+
+/* Keep code and bibliographic output readable on the Darkly background. */
+#main pre.sourceCode span {
+  color: #f5f5f5 !important;
+}
+
+#main .citation,
+#main .csl-entry,
+#main .references {
+  color: #f5f5f5;
 }

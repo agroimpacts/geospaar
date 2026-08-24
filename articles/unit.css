@@ -110,6 +110,19 @@ pre code {
   color: #f5f5f5;
 }
 
+/* Base graphics are transparent PNGs with dark axes and labels. */
+#content img[src*="figure-html"] {
+  background: #ffffff;
+}
+
+/* Pygments styles otherwise include near-black tokens on the dark surface. */
+#content pre,
+#content pre code,
+#content pre.sourceCode,
+#content pre.sourceCode span {
+  color: #f5f5f5 !important;
+}
+
 #content div.sourceCode,
 #content blockquote {
   background: #303030;
@@ -119,6 +132,12 @@ pre code {
 
 #content hr {
   border-color: #4c4c4c;
+}
+
+#content .citation,
+#content .csl-entry,
+#content .references {
+  color: #f5f5f5;
 }
 
 /* readthedown places navigation on the left by default; align it with pkgdown. */
