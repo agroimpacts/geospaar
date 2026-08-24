@@ -1,0 +1,48 @@
+url: https://agroimpacts.github.io/geospaar/
+
+template:
+  bootstrap: 5
+  bootswatch: darkly
+  bslib:
+    primary: "#C8102E"
+    link-color: "#F05A67"
+    navbar-dark-bg: "#151515"
+
+home:
+  title: "Geospatial Analysis with R"
+  description: "Course materials for Clark University GEOG 246/346"
+
+navbar:
+  structure:
+    left: [intro, articles, reference]
+    right: [search, github]
+
+articles:
+  - title: Course Guide
+    contents:
+      - toc
+  - title: Course Resources
+    contents:
+      - syllabus
+      - assessment
+      - software-installation
+      - git-github
+      - bugs-fixes
+      - cheatsheets
+      - helpful_functions
+      - projects
+  - title: Unit 1 - R and Reproducibility
+    contents:
+      - unit1
+      - unit1-module1
+      - unit1-module2
+      - unit1-module3
+      - unit1-module4
+      - unit1-appendix
+  - title: Unit 2 - Geospatial Analysis
+    contents:
+      - unit2
+      - unit2-module1
+      - unit2-module2a
+      - unit2-module2b
+      - unit2-appendix

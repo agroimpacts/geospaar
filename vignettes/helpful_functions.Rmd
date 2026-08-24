@@ -135,7 +135,7 @@ maize <- read.csv(f)
 site_summary <- maize %>% 
   filter(Element == "Production") %>% 
   group_by(Area) %>% 
-  summarise(Value)
+  summarise(mean_value = mean(Value, na.rm = TRUE), .groups = "drop")
 site_summary
 ```
 

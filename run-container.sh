@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Adapted from
 # https://github.com/davetang/learning_docker/blob/main/rstudio/run_docker.sh
-# Optimized and unified for Unix/macOS and Git Bash (Windows) by GPT-5
+# Starts the course RStudio Server image on macOS, Linux, and Git Bash.
 
 set -euo pipefail
 
@@ -11,8 +11,8 @@ if ! command -v docker &>/dev/null; then
 fi
 
 usage() {
-   echo "Usage: $0 -v <rstudio_airg version> -p <host_port> <dir_to_mount>"
-   echo "Example: $0 -v 4.3.2 -p 8787 /path/to/projects"
+   echo "Usage: $0 -v <course-image-version> -p <host-port> <directory-to-mount>"
+   echo "Example: $0 -v 4.4.2 -p 8787 /path/to/projects"
    exit 1
 }
 
@@ -23,8 +23,6 @@ case "$(uname -s)" in
   CYGWIN*|MINGW32*|MSYS*|MINGW*) OS="gitbash" ;;
   *)          >&2 echo "Error: Unsupported operating system ($(uname -s))."; exit 1 ;;
 esac
-
-echo "Operating system: $(uname -s)"
 
 # Parse options
 ver=""
@@ -58,7 +56,7 @@ d="${!OPTIND}"
 
 # --- Helpers ---
 
-# Resolve absolute path (portable; macOS lacks readlink -f)
+# Resolve absolute path (portable; macOS lacks readlink -f).
 abspath() {
   case "$OS" in
     gitbash)
@@ -76,13 +74,16 @@ abspath() {
   esac
 }
 
-# Convert a host path to a Docker-friendly path (Git Bash needs Windows-style)
+# Convert a host path to a Docker-friendly path. Files may not exist yet.
 docker_path() {
   local p="$1"
   case "$OS" in
     gitbash)
-      # pwd -W returns Windows path for CWD; cd into target first
-      ( cd "$p" && pwd -W )
+      if [[ -d "$p" ]]; then
+        (cd "$p" && pwd -W)
+      else
+        (cd "$(dirname "$p")" && printf '%s/%s\n' "$(pwd -W)" "$(basename "$p")")
+      fi
       ;;
     *)
       echo "$p"
@@ -105,13 +106,34 @@ if [[ "$bname" == "geospaar" ]]; then
 fi
 
 r_package_dir="${full_d}/r_${ver}_packages"
-if [[ ! -d "$r_package_dir" ]]; then
-  echo "Creating ${r_package_dir}"
-  mkdir -p "$r_package_dir"
+mkdir -p "$r_package_dir"
+
+# Keep IDE preferences separate from the mounted student workspace.
+config_dir="${full_d}/geospaar/.config/rstudio"
+mkdir -p "$config_dir"
+prefs="${config_dir}/rstudio-prefs.json"
+if [[ ! -f "$prefs" ]]; then
+  printf '{}\n' > "$prefs"
+fi
+
+rprofile="${full_d}/geospaar/.Rprofile"
+if [[ ! -f "$rprofile" ]]; then
+  : > "$rprofile"
 fi
 
 rstudio_image="agroimpacts/geospaar:${ver}"
-prefs="rstudio-prefs.json"
+password="${RSTUDIO_PASSWORD:-password}"
+
+platform_args=()
+if [[ "$(uname -m)" == "arm64" || "$(uname -m)" == "aarch64" ]]; then
+  # The pinned course image is amd64; Docker Desktop/QEMU provides emulation.
+  platform_args=(--platform linux/amd64)
+fi
+
+user_args=()
+if command -v id >/dev/null 2>&1; then
+  user_args=(-e "USERID=$(id -u)" -e "GROUPID=$(id -g)")
+fi
 
 # Pull image if not present
 if ! docker image inspect "$rstudio_image" >/dev/null 2>&1; then
@@ -129,16 +151,18 @@ fi
 
 # Map host:${port} -> container:8787
 echo "Launching from platform: ${OS}"
-docker run --rm -d -p "${port}:8787" -e PASSWORD=password \
+docker run --rm -d -p "${port}:8787" -e "PASSWORD=${password}" \
+  "${platform_args[@]}" \
+  "${user_args[@]}" \
   --name geospaar_rstudio \
   -v "$(docker_path "${full_d}")":/home/rstudio \
   -v "$(docker_path "${r_package_dir}")":/packages \
-  -v "$(docker_path "${full_d}/geospaar")/${prefs}":/home/rstudio/.config/rstudio/${prefs} \
-  -v "$(docker_path "${full_d}/geospaar")/.Rprofile":/home/rstudio/.Rprofile:rw \
+  -v "$(docker_path "${config_dir}")":/home/rstudio/.config/rstudio \
+  -v "$(docker_path "${rprofile}")":/home/rstudio/.Rprofile:rw \
   "${rstudio_image}"
 
 echo "geospaar_rstudio listening on port ${port}"
 echo "Open:  http://localhost:${port}"
 echo "Username: rstudio"
-echo "Password: password"
+echo "Password: ${password}"
 echo "To stop: docker stop geospaar_rstudio"

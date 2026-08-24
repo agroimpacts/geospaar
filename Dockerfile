@@ -1,5 +1,5 @@
-# Latest image from rocker: https://rocker-project.org/
-FROM rocker/geospatial:latest
+# Pinned for a consistent teaching environment. This tag is linux/amd64.
+FROM rocker/geospatial:4.4.2
 
 RUN apt-get clean all && \
     apt-get update && \
@@ -9,7 +9,8 @@ RUN apt-get clean all && \
         build-essential \
         libcurl4-openssl-dev \
         libssl-dev \
-        libxml2-dev
+        libxml2-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install R packages
 RUN install2.r --error \

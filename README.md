@@ -1,6 +1,12 @@
 # Geospatial Analysis with R
 
-This is the repository for Clark University's Geospatial Analysis with R course (GEOG 246/346). The course materials are provided as an `R` package (`geospaar`), with the course material provided in the package vignettes, and, thanks to @LLeiSong, through the [course website](https://agroimpacts.github.io/geospaar/).
+Course materials for Clark University's GEOG 246/346. Learn R for geospatial analysis while developing the habits of reproducible research and computational thinking.
+
+[Course materials](articles/toc.html){.btn .btn-primary} [Install the course environment](#installation){.btn .btn-outline-light} [Class slides](#class-slides){.btn .btn-outline-light}
+
+## Course Overview
+
+The goal of this course is to teach a suite of skills organized around the R programming language, with a primary focus on geospatial analyses. Beyond programming, this course aims to teach the tools and mindset for conducting reproducible, shareable research, and organization. Although this is the age of AI, and AI is better than humans at most, if not all, programming tasks, learning how to code and think like a programmer/software developer provides important critical thinking skills that can help you frame, execute, and share your ideas more clearly, and understand and diagnose problems in your own work and that of others (including AI). 
 
 Although these materials were designed for a course taught at Clark University, the two modules it provides may be useful to anyone interested in learning `R` programming and basic geospatial analysis.
 
@@ -24,7 +30,7 @@ If you are enrolled in this course, also get a [personal access token](https://h
 
 <p align="center">
 
-<img src="vignettes/fig/pat4.png" width="793" height="328"/>
+<img src="vignettes/fig/pat4.png" width="793" height="328" alt="GitHub personal access token settings"/>
 
 </p>
 
@@ -56,47 +62,43 @@ cd c/My\ Documents/projects/geog246346
 git clone https://github.com/agroimpacts/geospaar.git
 ```
 
-### 6. Build or pull the `docker` image
+### 6. Build or pull the Docker image
 
-Using docker, you can either build or pull the docker image you need by running the following in your terminal, assuming you have either a Mac with an Intel chip, or a Windows-based machine. If not, go to the section on Mac with M1/M2 chips.
+The course image is versioned. Use the release version specified by your instructor; the example below uses `4.4.2`. Building locally uses the pinned `rocker/geospatial:4.4.2` base image, which makes course environments more repeatable.
 
-#### Intel-based Mac and Windows
-
-You can either build a local image or pull a pre-built image:
-
--   build (assuming you are in the project directory you made in step 4):
-
-    ``` bash
-    cd geospaar
-    LATEST=VERSION # replace VERSION with latest version number, or "latest" (w/no quotes)
-    docker build . -t agroimpacts/geospaar:$LATEST
-    ```
-
--   pull (this gets you the latest version already committed to docker hub):
-
-    ``` bash
-    LATEST=VERSION # replace VERSION with latest version number, or "latest" (w/no quotes)
-    docker pull agroimpacts/geospaar:$LATEST
-    ```
-
-#### Mac Silicon
-
-For Macs with a Silicon chip (M1/M2/M3), it appears that your OS has to be 14.2 or higher to run the container, otherwise there are clashes with the Linux architecture that is used to build the image (which is linux/amd64, whereas M1/M2 wants to use linux/arm64). We have started an experimental build script for M1/M2 chips running OS \<14.2, but this doesn't work yet, so for now we advise you to upgrade your OS, and then run the build command as:
+From the directory containing the `geospaar` clone, either pull a published course image:
 
 ``` bash
-docker build --platform=linux/amd64 . -t agroimpacts/geospaar:$LATEST
+VERSION=4.4.2
+docker pull agroimpacts/geospaar:$VERSION
 ```
 
-If that still doesn't work, please install `R` and Rstudio desktop
-
-#### 7. Run the container
-
-After building, run the image using the following script that comes with the `geopaar` repo:
+Or build it locally:
 
 ``` bash
-PORT=8787 # this is the port to run on--you might want to change it
-MY_DIR=c/My\ Documents/projects/geog246346 # change to your directory!!!
-./run-container.sh -v $LATEST -p $PORT $MY_DIR
+cd geospaar
+VERSION=4.4.2
+docker build -t agroimpacts/geospaar:$VERSION .
+```
+
+#### Apple Silicon and other ARM computers
+
+The pinned Rocker base image is `linux/amd64`. Docker Desktop can run it on Apple Silicon through emulation. When building locally on an ARM computer, request that platform explicitly:
+
+``` bash
+docker build --platform=linux/amd64 -t agroimpacts/geospaar:$VERSION .
+```
+
+The launcher below automatically uses `linux/amd64` on ARM Macs and Linux computers. Emulation is slower than a native image; if Docker Desktop cannot run the image, use RStudio Desktop for the course instead.
+
+### 7. Run the container
+
+After pulling or building, run the image using the script included with the `geospaar` repository:
+
+``` bash
+PORT=8787 # choose another port if this one is in use
+MY_DIR=c/My\ Documents/projects/geog246346 # change this path
+./run-container.sh -v $VERSION -p $PORT "$MY_DIR"
 ```
 
 Note: Make sure that MY_DIR is the path of the directory that your cloned `geospaar` is in. MY_DIR should not include "geospaar" at the end of the path, because then `docker` will try and mount the `geospaar` folder, which will cause problems (the script will fail). We want to mount the directory `geospaar` is in so that we can create other projects in the same directory as `geospaar` while we are working in the `docker` container.
@@ -104,8 +106,8 @@ Note: Make sure that MY_DIR is the path of the directory that your cloned `geosp
 You can also (preferably) run it from your project directory containing `geospaar`, as follows:
 
 ``` bash
-cd $MY_DIR # or, if you are in geospaar, you can one level up with cd ..
-./geospaar/run-container.sh -v $LATEST -p $PORT `pwd`
+cd "$MY_DIR" # or, if you are in geospaar, move up one level with cd ..
+./geospaar/run-container.sh -v $VERSION -p $PORT "$(pwd)"
 ```
 
 Either approach to launching will give you a URL (<https://localhost:8787>) that you can copy and paste into your browser, which will then give you a fully functioning Rstudio-server instance after you log in.
@@ -116,7 +118,7 @@ When you are finished with Rstudio server, you should stop the container:
 docker stop geospaar_rstudio
 ```
 
-You can restart the container again with the same `./geospaar/run-container.sh ...` command you used previously.
+You can restart the container again with the same `./geospaar/run-container.sh ...` command you used previously. The script stores packages installed inside R in `r_<version>_packages/` next to your projects. Use a new directory when changing R versions.
 
 ### 8. Additional GitHub configuration steps
 
@@ -131,9 +133,9 @@ For people launching the container from Git Bash, there are some additional step
 1.  First, make sure your project folder is fresh and empty, except for a new clone of `geospaar`
 2.  If it isn't, the easiest and least risky is to make a new folder (e.g. geog246346b). Move into that folder, and run git clone again on the `geospaar` repo
 3.  Make sure your an container is not running (`docker stop geospaar_rstudio`)
-4.  Run `docker image ls` and copy the image id for any existing `agroimpacts/geospaar:$LATEST` images. Then using that copied id, run `docker rmi <imageid>` (replace `<imageid>` with the id you just copied. That will remove the current image.
+4.  Run `docker image ls` and copy the image id for any existing `agroimpacts/geospaar:$VERSION` images. Then using that copied id, run `docker rmi <imageid>` (replace `<imageid>` with the id you just copied. That will remove the current image.
 5.  Enter the geospaar folder (`cd geospaar`) to get into your newly cloned `geospaar`, and then rerun the docker build commands. Then launch the container again
-6.  You are now in a fresh Rstudio server environment. You should see that the "geospaar" and the "r_ver4.3.2_packages" folders are there. The Rstudio server interface should not be pointing at a new project
+6.  You are now in a fresh RStudio Server environment. You should see the `geospaar` and `r_<version>_packages` folders. The RStudio Server interface should not be pointing at a new project.
 7.  Now, follow the steps mentioned at the top of this section:
 
 -   Configure your GitHub username and email in the terminal of Rstudio server
@@ -186,3 +188,7 @@ http://localhost:8787/help/session/Rvig.17c2b221378.html
 And you will be able to read the individual vignettes.
 
 On the web: Thanks to @LLeiSong, the materials are also available through the [course website](https://agroimpacts.github.io/geospaar/).
+
+## Class slides
+
+- [Class 1: Course introduction](class1.html)

@@ -10,8 +10,10 @@ output:
     css: unit.css
 vignette: >
   %\VignetteIndexEntry{Assessment}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -41,13 +43,13 @@ kable(DF)
 
 # Participation
 
-Participation is worth 10% of your final grade and has two components. 
+Participation is worth 15% of your final grade and has two components. 
 
 - Attendance. You are expected to attend each class. If you cannot make it for some reason, please arrange ahead of time. 
 
 - Engagement with the course material, including any coding work assigned for homework. It is essential to read and work through the class material between classes. You will not be able to learn everything just from class. Additionally, you will at times be asked to work on practical problems between classes, for which you should be prepared to share your code and provide examples of errors/obstacles. 
 
-- Reading quizzes. Periodically, short quizzes may be given on core concepts from readings. These quizzes will be closed-book and not exceed 10 minutes. (e.g. explain in general terms how an apply function works). Students receiving 60% or higher on a quiz receive a "Complete" grade.
+- Class participation. Please be prepared to answer questions in class about the material we are working on. 
 
 # Exam
 
@@ -55,9 +57,9 @@ There will be an end of coursework coding concepts exam, worth 15% of the total 
 
 # Assignments
 
-Assessment: Can we load the data you used, run your code, and arrive at the same result you reported? Does your code conform to the style guide (note: we are a little obsessive about this)
+Assessment: Can we load the data you used, run your code, and arrive at the same result you reported? Does your code conform to the style guide (note: we are a little obsessive about this). Can you answer questions about the material covered in your submitted assignment? 
 
-We will grade using this rubric (or one close to it that captures the results/style/reproducibility dimensions).
+We will use the 50 point rubric below (or one close to it that captures the results/style/reproducibility dimensions) to assess submitted assignments. An additional 30 points will be allocated to your answers to in-class questions related to your assignment.  
 
 ```{r, echo=FALSE}
 mat <- rbind(c("Results all wrong (0-5%)", 0, 
