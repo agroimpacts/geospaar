@@ -1,0 +1,82 @@
+# Software installation
+
+## Overview
+
+If you have previously installed any of the software below, we recommend
+you upgrade to the most current stable version.
+
+## Installation
+
+### Install `git`
+
+For Mac and Linux users, please follow [the instructions
+here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+
+If you are a Windows users, please first install a Linux terminal
+emulator, either install
+[`WSL`](https://learn.microsoft.com/en-us/windows/wsl/install), or [Git
+Bash](https://gitforwindows.org/). The latter approach gives you `git`
+and a Linux terminal emulator. For WSL, there is a helpful
+[tutorial](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-git#installing-git)
+on how to get started with `git`.
+
+You can get always get away with using Windows command prompt or Power
+Shell, but it is greatly preferrable to use \*nix emulator, and it will
+result in much more standardized workflows. We will not be able to
+support Windows command-based problems with `git`.
+
+### Install `docker`
+
+If you are enrolled in the class, you need to do this step, which can be
+the final one. If not you can skip to the next section Download and
+install the version of docker for your operating system from
+[here](https://www.docker.com/products/docker-desktop/), and create an
+account. Note: You can sign up with your Github credentials, if you
+already have them.
+
+### Optional: Install `R`
+
+Go to [R page](https://www.r-project.org) and download the current
+stable release, using the correct version for your operating system
+(Linux x86, Mac, Windows, etc).
+
+### Optional: Install RStudio Desktop
+
+Go to [RStudio
+page](https://rstudio.com/products/rstudio/download/#download) and
+download the current stable release, using the correct version for your
+operating system (Linux x86, Mac, Windows, etc).
+
+### Optional: Install `RTools` (Windows only)
+
+Windows machine needs RTools to build some packages from source. It is
+better to install it beforehand. Go to [RTools
+page](https://cran.r-project.org/bin/windows/Rtools/) to read the
+instruction, then download and install.
+
+### Optional: Install `gdal`
+
+GDAL is a widely used library for geospatial data. A lot of R geospatial
+packages rely on it. R packages at the point (I think) typically don’t
+require it to function properly, but it will likely be useful for
+research projects later in the class. The way to install it differs by
+operating systems:
+
+- Windows: go to this [page](https://gdal.org/download.html) to download
+  and install the current stable version.
+
+- Mac: a bit trickier, but probably best is to install using `homebrew`
+  (see [here](https://brew.sh/) for how to install it):
+  `brew install gdal`.
+
+- Linux: If you use a Linux machine, try to search the tutorial online
+  for your operating systems to install. For example, GDAL is available
+  for Ubuntu from the [UbuntuGIS-Stable
+  PPA](https://launchpad.net/~ubuntugis/+archive/ubuntu/ppa?field.series_filter=xenial).
+  Let’s solve together if you got any issues.
+
+------------------------------------------------------------------------
+
+[Back to home](https://agroimpacts.github.io/geospaar/articles/index.md)
+
+------------------------------------------------------------------------

@@ -1,0 +1,28 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  assessment: assessment.html
+  bugs-fixes: bugs-fixes.html
+  cheatsheets: cheatsheets.html
+  git-github: git-github.html
+  helpful_functions: helpful_functions.html
+  projects: projects.html
+  software-installation: software-installation.html
+  syllabus: syllabus.html
+  toc: toc.html
+  unit1-appendix: unit1-appendix.html
+  unit1-module1: unit1-module1.html
+  unit1-module2: unit1-module2.html
+  unit1-module3: unit1-module3.html
+  unit1-module4: unit1-module4.html
+  unit1: unit1.html
+  unit2-appendix: unit2-appendix.html
+  unit2-module1: unit2-module1.html
+  unit2-module2a: unit2-module2a.html
+  unit2-module2b: unit2-module2b.html
+  unit2: unit2.html
+last_built: 2026-08-24T12:32Z
+urls:
+  reference: https://agroimpacts.github.io/geospaar/reference
+  article: https://agroimpacts.github.io/geospaar/articles

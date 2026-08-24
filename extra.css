@@ -1,0 +1,67 @@
+/* Improve long-form reading without changing the installed vignette format. */
+.navbar-brand {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.navbar-brand::before {
+  background: #ffffff url("https://www.neche.org/wp-content/uploads/2023/06/CU_Seal_Red_SM-768x768.webp") center / contain no-repeat;
+  border-radius: 50%;
+  content: "";
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+}
+
+#main {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  counter-reset: section;
+}
+
+#main > .section.level2 {
+  counter-increment: section;
+  counter-reset: subsection;
+}
+
+#main > .section.level2 > h2 {
+  font-size: 1.8rem;
+  margin-top: 2.25rem;
+}
+
+#main > .section.level2 > h2::before {
+  content: counter(section) ". ";
+}
+
+#main > .section.level2 > .section.level3 {
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+
+#main > .section.level2 > .section.level3 > h3:not([data-toc-skip]) {
+  font-size: 1.4rem;
+  margin-top: 1.75rem;
+}
+
+#main > .section.level2 > .section.level3 > h3:not([data-toc-skip])::before {
+  content: counter(section) "." counter(subsection) " ";
+}
+
+#main > .section.level2 > .section.level3 > .section.level4 {
+  counter-increment: subsubsection;
+}
+
+#main > .section.level2 > .section.level3 > .section.level4 > h4 {
+  font-size: 1.2rem;
+}
+
+#main > .section.level2 > .section.level3 > .section.level4 > h4::before {
+  content: counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+}
+
+#main pre,
+#main pre code {
+  font-size: 0.9em;
+  line-height: 1.5;
+}

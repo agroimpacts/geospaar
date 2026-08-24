@@ -1,0 +1,693 @@
+# Appendix
+
+## Module 1 practice answers
+
+### Practice 1
+
+#### Questions
+
+1.  Answers
+    [here](https://r-spatial.github.io/sf/articles/sf1.html#simple-feature-geometry-types).
+
+2.  Assuming the `tibble` has x and y or lat/long coordinates, you apply
+    the function `st_as_sf` with the “coords” argument set to specify
+    which columns contain the x and y coordinates.
+
+3.  [`sf::plot`](https://r-spatial.github.io/sf/reference/plot.html) by
+    default plots one panel per variable. You can create a single panel
+    by specifying the variable you want, or by using the `st_geometry`
+    argument to strip out the geometry from object. It also prevent
+    distortions that sometimes occur when overlaying subsequent features
+    on top of a base map.
+
+4.  For a single point you provide an x and y coordinate, otherwise you
+    give an input matrix containing x and y coordinates. A polygon
+    requires that the last point pair in the matrix is the same as the
+    first point pair, to close the polygon.
+
+#### Code
+
+1.  
+
+``` r
+
+farmers %>% st_geometry()
+st_geometry(farmers)
+```
+
+2.  
+
+``` r
+
+st_crs(farmers) <- st_crs(districts)
+# p <- "path/to/your/project/notebooks/data"
+p <- "~/Desktop"
+st_write(farmers, dsn = file.path(p, "farmers.sqlite"))
+rm(farmers)
+st_read(file.path(p, "farmers.sqlite"))
+```
+
+3.  
+
+``` r
+
+class(roads)
+str(roads)
+class(districts)
+str(districts)
+```
+
+4.  
+
+``` r
+
+plot(roads %>% st_geometry(), col = "blue")
+```
+
+5.  
+
+``` r
+
+plot(districts %>% select(distName), main = "Zambia Districts")
+```
+
+6.  
+
+``` r
+
+pts <- st_multipoint(x = cbind(x = c(27, 28, 29), y = c(-13, -14, -15)))
+plot(districts %>% st_geometry(), col = "grey")
+plot(pts, add = TRUE, col = "orange", pch = 16)
+```
+
+### Practice 2
+
+#### Questions
+
+1.  At least with this example, pretty negligible–well less than 1% mean
+    absolute error. It might matter more in other places and with other
+    scales though. The reason `st_area` knows how to estimate areas is
+    because it invokes
+    [`lwgeom::st_geod_area`](https://r-spatial.github.io/lwgeom/reference/geod.html),
+    which calculates a geodetic surface area.
+
+2.  Because for the time being
+    [`sf::plot`](https://r-spatial.github.io/sf/reference/plot.html) is
+    a fair bit faster. However, [this recent twitter
+    thread](https://twitter.com/thomasp85/status/1092412825899810817)
+    suggests that may change soon.
+
+3.  By using `mutate` with `cut` that has break values based on those
+    properties. In our example, we found the breaks using `quantile` and
+    different probabilities/percentile levels that creating tertiles of
+    area.
+
+#### Code
+
+1.  
+
+``` r
+
+set.seed(1)
+districts %>% 
+  sample_n(20) %>% 
+  st_area() %>% 
+  units::set_units("ha") %>% 
+  mean()
+```
+
+2.  
+
+``` r
+
+set.seed(1)
+roads %>% 
+  sample_n(100) %>% 
+  st_length() %>% 
+  units::set_units("km") %>% 
+  mean()
+```
+
+3.  
+
+``` r
+
+plot(st_geometry(districts), col = "lightgrey")
+set.seed(1)
+farmers %>% filter(season == 2) %>% sample_n(200) %>% st_geometry() %>% 
+  plot(col = "red", pch = 20, add = TRUE)
+```
+
+4.  
+
+``` r
+
+districts %>% st_transform(st_crs(roads)) %>% st_geometry() %>% 
+  plot(col = "lightgrey")
+roads %>%  
+  mutate(length = as.numeric(st_length(.) / 1000)) %>% 
+  filter(length > 50 & length < 100) %>% st_geometry() %>% 
+  plot(col = "red", pch = 20, add = TRUE)
+```
+
+5.  
+
+``` r
+
+deciles <- function(x) quantile(x, probs = seq(0, 1, 0.1))
+dist_deciles <- districts %>% mutate(area = as.numeric(st_area(.)) / 10^6) %>%
+  mutate(acls = cut(area, breaks = deciles(area), include.lowest = TRUE)) %>% 
+  group_by(acls) %>% summarize(sum_area = sum(area))  
+dist_deciles
+#
+# #2
+cols <- heat.colors(10)
+par(mar = rep(0, 4))
+plot(st_geometry(dist_deciles), col = cols)
+legend(x = "bottomright", pch = 15, col = cols, bty = "n", 
+       legend = paste0(1:10, c("st", "nd", "rd", rep("th", 7))))
+```
+
+#### Practice 3
+
+##### Questions
+
+1.  It changes features from one type to another (e.g. POLYGON to
+    MULTIPOLYGON), either one specified by the user or the simplest
+    possible common feature, if left unspecified. Casting is sometimes
+    necessary to avoid mixed feature types that cause failures for
+    subsequent operations.
+
+2.  `st_union` runs under the hood of `summarise.sf`, so a `summarize`
+    operation on an `sf` will result in a merged/dissolved set of
+    spatial features.
+
+3.  It affects the order of the fields in the resulting unioned `sf`
+    object–the fields from the object passed to the “x” argument appear
+    first.
+
+##### Code
+
+1.  
+
+``` r
+
+coords <- cbind("x" = c(27, 27.5, 27.5, 27, 27), 
+                "y" = c(-13, -13, -13.5, -13.5, -13))
+pol2 <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(pol2, col = "blue", add = TRUE)
+```
+
+2.  
+
+``` r
+
+pol2_int_dists <- st_intersection(pol2, districts)
+districts[1] %>% plot(col = "grey", main = NULL)
+pol2_int_dists[2] %>% plot(col = rainbow(nrow(pol2_int_dists)), add = TRUE)
+```
+
+3.  `pol2` is nearly 26 hectares larger
+
+``` r
+
+pol2_int_dists %>% st_area() %>% as.numeric() %>% sum() / 10000 -
+  pol2 %>% st_area() %>% as.numeric() %>% sum() / 10000
+```
+
+4.  
+
+``` r
+
+st_difference(districts, pol2)[2] %>% plot(col = "grey", main = NULL)
+```
+
+5.  
+
+``` r
+
+# Try compare the
+set.seed(1)
+farmers_alb %>% filter(season == 2) %>%
+  sample_n(size = 5) %>% 
+  st_buffer(dist = 30000) %>% 
+  st_geometry %>% 
+  plot()
+
+# With 
+set.seed(1)
+farmers_alb %>% 
+  filter(season == 2) %>%
+  st_sample(size = 5) %>%
+  st_buffer(dist = 30000) %>% 
+  st_geometry %>% 
+  plot()
+```
+
+6.  
+
+``` r
+
+roads_gt400 <- roads %>% 
+  filter(as.numeric(st_length(.)) / 1000 > 400)
+par(mar = rep(0, 4))
+st_transform(districts, st_crs(roads)) %>%
+  st_geometry %>% 
+  plot(col = "grey", main = NULL)
+roads_gt400 %>% 
+  st_buffer(25000) %>%
+  plot(col = "green", add = TRUE)
+```
+
+7.  
+
+``` r
+
+par(mar = rep(0, 4))
+st_transform(districts, st_crs(roads)) %>% 
+  st_geometry %>% 
+  plot(col = "grey", main = NULL)
+roads_gt400 %>% st_buffer(25000) %>% 
+  plot(col = "tan", add = TRUE)
+set.seed(1)
+roads_gt400 %>% st_buffer(25000) %>% 
+  st_sample(size = rep(20, nrow(.)), exact = TRUE) %>% 
+  plot(col = "red", pch = 20, add = TRUE)
+```
+
+## Module 2 practice answers
+
+### Practice 1
+
+#### Questions
+
+1.  `terra` uses the S4 object-oriented system, where `sf` uses S3.
+    Slots in S4 objects are accessed using the `@` operator.
+
+2.  [`terra::rast`](https://rspatial.github.io/terra/reference/rast.html),
+    the same function you would use for reading and writing a
+    single-layer raster.
+
+3.  stack and brick are terms leftover from the `raster` package, which
+    had separate functions fo r these. For `terra`, a stack might be
+    still thought of as a `spatRaster` made from multiple rasters stored
+    in separation locations on disk into a single multi-layer object,
+    whereas a brick is read from, or written to, a single file on disk.
+
+4.  The output of `terra`’s vectorization functions are `vect` objects,
+    so you have to convert them to `sf` objects using `st_as_sf`.
+
+#### Code
+
+1.  
+
+``` r
+
+# recreate r, r2, r3
+e <- ext(c("xmin" = 27, "xmax" = 29, "ymin" = -16, "ymax" = -14))  
+r <- rast(x = e, res = 0.25, crs = crs(districts))
+set.seed(1)  
+values(r) <- sample(1:100, size = ncell(r), replace = TRUE)  # 3
+r2 <- r > 50
+r3 <- r
+set.seed(1)
+values(r3) <- rnorm(n = ncell(r3), mean = 10, sd = 2)
+
+# 
+r4 <- r3
+set.seed(1)
+values(r4) <- runif(n = ncell(r4), 0, 1)
+r5 <- r4 > 0.5
+
+s2 <- c(r, r2, r3, r4, r5)
+names(s2) <- c("r", "r2", "r3", "r4", "r5")
+plot(s2)
+```
+
+2.  We use [`tempdir()`](https://rdrr.io/r/base/tempfile.html) here, but
+    you should use your `notebooks/data` folder.
+
+``` r
+
+b <- writeRaster(s2, file = file.path(tempdir(), "b2.tif"))
+```
+
+3.  
+
+``` r
+
+zamr <- rast(x = ext(districts), crs = crs(districts), res = 0.2)
+values(zamr) <- 1:ncell(zamr)
+
+farmersr <- farmers %>% 
+  distinct(uuid, .keep_all = TRUE) %>% 
+  select(x, y) %>% 
+  mutate(count = 1) %>% 
+  st_as_sf(coords = c("x", "y")) %>% 
+  rasterize(x = ., y = zamr, field = "count", fun = sum)
+
+par(mar = c(0, 0, 1, 4))
+plot(st_union(districts), col = "grey", border = "grey")
+terra::plot(farmersr, add = TRUE)
+```
+
+4.  
+
+``` r
+
+zamr_alb <- project(x = zamr, y = crs(roads), res = 20000, method = "near")
+farmersr_alb <- project(x = farmersr, y = zamr_alb, method = "bilinear")
+
+par(mar = c(0, 0, 1, 4), mfrow = c(1, 2))
+plot(st_union(districts), col = "grey", border = "grey")
+plot(farmersr, add = TRUE)
+plot(st_transform(st_union(districts), crs(roads)), col = "grey", 
+     border = "grey")
+plot(farmersr_alb, add = TRUE)
+
+# Note currently there is a bug in terra::plot when mixed with `sf` plots. A 
+# workaround is to coerse districts to vect and plot. 
+par(mar = c(0, 0, 1, 4), mfrow = c(1, 2))
+plot(vect(st_union(districts)), col = "grey", border = "grey", axes = FALSE)
+plot(farmersr, add = TRUE)
+plot(vect(st_transform(st_union(districts), crs(roads))), col = "grey", 
+     border = "grey", axes = FALSE)
+plot(farmersr_alb, add = TRUE)
+```
+
+5.  
+
+``` r
+
+par(mar = c(0, 0, 0, 0))
+farmersr %>% 
+  as.polygons() %>% 
+  st_as_sf %>% 
+  plot(main = NULL)
+```
+
+### Practice 2
+
+#### Questions
+
+1.  `global` provides summary statistics over an entire layer; `zonal`
+    calculates statistics within pre-defined zones; `focal` calculates
+    statistics within a moving window.
+
+2.  Use `method = bilinear`.
+
+3.  You don’t. You have to resample them to a common resolution and
+    extent first. And then you have to stack them (with `c`).
+
+#### Code
+
+1.  
+
+``` r
+
+as.Date("10-11-2017", "%m-%d-%Y")
+as.Date("10-11-17", "%m-%d-%y")
+as.Date("101117", "%m%d%y")
+as.Date("10112017", "%m%d%Y")
+lubridate::mdy("10-11-2017")
+lubridate::as_date("20171011")
+```
+
+2.  
+
+``` r
+
+farmersr2 <- farmers %>% 
+  distinct(uuid, .keep_all = TRUE) %>% 
+  mutate(count = 1) %>% 
+  select(x, y, count) %>% 
+  st_as_sf(coords = c("x", "y")) %>% 
+  rasterize(., distsr, field = "count", fun = sum)
+```
+
+3.  
+
+``` r
+
+subtab <- zonal(farmersr2, distsr, fun = sum, na.rm = TRUE)
+subst(distsr, from = subtab$ID, to = subtab$sum) %>% plot_noaxes
+```
+
+4.  
+
+``` r
+
+wmat3 <- matrix(1, nrow = 3, ncol = 3) 
+wmat5 <- matrix(1, nrow = 5, ncol = 5) 
+fstack <- c(focal(x = chirpsz[[20]], w = wmat3, fun = sd), 
+            focal(x = chirpsz[[20]], w = wmat5, fun = sd),
+            focal(x = chirpsz[[20]], w = wmat3, fun = max), 
+            focal(x = chirpsz[[20]], w = wmat5, fun = max)) 
+names(fstack) <- c("sd3", "sd5", "max3", "max5")
+plot_noaxes(fstack)
+```
+
+5.  
+
+``` r
+
+chirps_d57 <- chirpsz[[1]] %>% 
+  crop(., ext(districts[57, ]))
+s <- c(disagg(chirps_d57, fact = 5), 
+       disagg(chirps_d57, fact = 5, method = "bilinear"))
+names(s) <- c("d1", "d2")
+plot_noaxes(s)
+```
+
+6.  
+
+``` r
+
+cv <- function(x) sd(x, na.rm = TRUE) / mean(x, na.rm = TRUE)
+s <- lapply(list(mean, cv, median), function(x) {
+  app(chirpsz, fun = x)  
+}) %>% do.call(c, .)
+names(s) <- c("Mean", "CV", "Median")
+plot_noaxes(s, nr = 1)
+```
+
+### Practice 3
+
+#### Questions
+
+1.  Using the cut approach,with vector of breakpoints (e.g. quantiles)
+    passed to `classify`, or a reclassification matrix.
+
+2.  `spatSample`, using either the “random” or “stratified” methods.
+    There is also “regular” as an option, and you can pass a weights
+    vector when method is “stratified”.
+
+#### Code
+
+1.  
+
+``` r
+
+chirps_sd <- app(chirpsz, fun = sd)
+```
+
+2.  
+
+``` r
+
+(chirps_sd < unlist(global(chirps_sd, mean, na.rm = TRUE))) %>% plot
+```
+
+3.  
+
+``` r
+
+qtiles <- global(raintot, function(x) {
+  quantile(x, probs = seq(0, 1, 0.2), na.rm = TRUE)
+}) 
+plot_noaxes(classify(raintot, rcl = unlist(qtiles)))
+```
+
+4.  
+
+``` r
+
+set.seed(11)
+randdistsr <- districts %>% 
+  sample_n(size = 15) %>% 
+  rasterize(., raintot)
+plot_noaxes(randdistsr)
+
+newrandrain <- mask(raintot, randdistsr)
+plot_noaxes(newrandrain)
+```
+
+5.  
+
+``` r
+
+set.seed(1)
+randsamp <- spatSample(x = newrandrain, size = 300, na.rm = TRUE)
+
+set.seed(1)
+ind <- spatSample(x = randdistsr, size = 300 / 15, cells = TRUE, na.rm = TRUE)
+stratsamp <- newrandrain[ind[, 1]]
+
+rand_rain_stats <- bind_rows(
+  tibble(rain = randsamp$sum, dat = "Simple"),
+  tibble(rain = stratsamp$sum, dat = "Stratified"),
+) %>% drop_na
+
+bp_theme <- theme(legend.title = element_blank(), axis.text.x = element_blank(),
+                  axis.ticks.x = element_blank(), 
+                  panel.grid.major.x = element_blank(), 
+                  panel.grid.minor.x = element_blank(), 
+                  panel.background = element_rect(fill = "grey95"))
+
+rand_rain_stats %>% ggplot() +
+  geom_boxplot(mapping = aes(y = rain, fill = dat), position = "dodge2") +
+  scale_fill_manual(values = c("lightblue", "steelblue")) + 
+  ggtitle("Rainfall distributions") + xlab(NULL) + ylab("mm") + bp_theme
+```
+
+###### 
+
+### Below still in raster format
+
+###### 
+
+### Practice 4
+
+#### Questions
+
+1.  The `area` function is your friend for this.
+
+2.  Use `expression` together combined with `paste` as needed for more
+    complex labels.
+
+3.  Make `names(predstack)` matches the predictor names used by the
+    model.
+
+#### Code
+
+1.  
+
+``` r
+
+demalb42 <- districts %>% filter(ID == 42) %>% st_transform(st_crs(roads)) %>% 
+  crop(demalb, .)
+vars <- c("slope", "aspect", "flowdir", "tri")
+terrvars <- stack(lapply(1:length(vars), function(x) {
+  tv <- terrain(x = demalb42, opt = vars[x], unit = "degrees")
+}))
+names(terrvars) <- vars
+
+plot_noaxes(terrvars)
+```
+
+2.  
+
+``` r
+
+library(gstat)
+
+# #1
+raintotalb <- projectRaster(from = raintot, res = 5000, crs = crs(roads))
+names(raintotalb) <- "rain"
+r <- raster(extent(raintotalb), res = res(raintotalb), crs = crs(raintotalb),             vals = 1)
+
+# lapply approach to interpolation
+idw_list <- lapply(c(250, 500, 1000), function(x) {
+  set.seed(1)
+  rainsamp <- sampleRandom(raintotalb, size = 1000, xy = TRUE)
+  rainsamp <- as.data.frame(rainsamp)
+  invdist <- gstat(id = "rain", formula = rain ~ 1, locations = ~x + y, 
+                   data = rainsamp)
+  invdistr <- interpolate(object = r, model = invdist)
+  invdistrmsk <- mask(x = invdistr, mask = raintotalb)
+})
+
+idws <- stack(c(raintotalb, idw_list))
+
+titles <- c("CHIRPS rainfall", "1000 pt IDW", "500 pt IDW", "250 pt IDW")
+plot_noaxes(idws, main = titles, zlim = c(0, 150))
+```
+
+3.  
+
+``` r
+
+districts %>% filter(ID %in% seq(15, 50, 5)) %>% 
+  st_transform(st_crs(roads)) %>% st_geometry %>% st_centroid %>% 
+  as_Spatial(.) %>% 
+  distanceFromPoints(object = raintotalb, xy = .) %>% 
+  mask(., raintotalb) %>% plot_noaxes
+```
+
+4.  Pretty close to results of highest density sample. Slightly higher
+    mean error.
+
+``` r
+
+# #1
+data(zamprec)
+zamprecalb <- projectRaster(from = zamprec, to = raintotalb)
+names(zamprecalb) <- "rain"
+elev <- resample(aggregate(x = demalb, fact = 5), y = raintotalb)
+
+# #2
+set.seed(1)
+pts <- sampleRandom(x = zamprecalb, size = 25, sp = TRUE) %>% st_as_sf
+pts <- pts %>% mutate(elev = raster::extract(x = elev, y = .)) 
+pts_dat <- bind_cols(pts %>% data.frame %>% select(-geometry) %>% as_tibble, 
+                     st_coordinates(pts) %>% as_tibble) %>% drop_na
+  
+# #3
+p1 <- ggplot(pts_dat) + geom_point(aes(X, rain), col = "steelblue") +
+  ylab("Rainfall (mm)")
+p2 <- ggplot(pts_dat) + geom_point(aes(Y, rain), col = "blue2") + ylab("")
+p3 <- ggplot(pts_dat) + geom_point(aes(elev, rain), col = "darkblue") + ylab("")
+cowplot::plot_grid(p1, p2, p3, nrow = 1)
+
+# #4
+rain_lm <- lm(rain ~ X + Y + elev, data = pts_dat)
+summary(rain_lm)
+
+# #5
+xs <- xFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+ys <- yFromCell(object = raintotalb, cell = 1:ncell(raintotalb))
+X <- Y <- raintotalb
+values(X) <- xs
+values(Y) <- ys
+
+# #6
+predst <- stack(X, Y, elev)
+names(predst) <- c("X", "Y", "elev")
+predrainr <- predict(object = predst, model = rain_lm)
+
+# #7
+s <- stack(zamprecalb, predrainr, (predrainr - zamprecalb) / zamprecalb * 100)
+mae <- round(cellStats(abs(zamprecalb - predrainr), mean), 1)  
+
+pnames <- c("'Observed' Rainfall", "Predicted Rainfall", "% Difference")
+par(mfrow = c(1, 3), mar = c(0, 0, 1, 4))
+for(i in 1:3) {
+  plot_noaxes(s[[i]], main = pnames[i])
+  if(i %in% 1:2) {
+    pts %>% st_geometry %>% 
+      plot(pch = 20, cex = 0.2, col = "grey70", add = TRUE)
+  } else {
+    mtext(side = 1, line = -3, cex = 0.8, 
+          text = paste("Mean abs err =", mae, "mm"))
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+[Back to home](https://agroimpacts.github.io/geospaar/articles/index.md)
+
+------------------------------------------------------------------------

@@ -1,0 +1,379 @@
+# Semester Projects
+
+## Overview
+
+Each student will undertake an R-based final project for this class as
+part of a team. This project mayb be from a list of [potential projects
+below](https://agroimpacts.github.io/geospaar/articles/projects.html#project-list),
+which are related to ongoing research projects, or could be one related
+to your own thesis work, which we will discuss and agree upon. There are
+two parts to the final project: 1) the project overview; 2) the final
+project itself.
+
+## Project overview assignment
+
+The purpose of this assignment is to provide a plan for your semester
+final project.
+
+### Set-up
+
+We say goodbye to the repos/packages used for assignments 1-5 (e.g. your
+version of `xyza1`). Working with your team, start a new package within
+a Git/GitHub repo, naming it something short but descriptive of the
+project you are doing. Follow the R package naming conventions to setup
+your repo name. This should be a private repo under either one of your
+profiles, or the agroimpacts organization.
+
+As with your previous assignments, your work should be structured as an
+`R` package. That does not mean that you will necessarily need to be
+writing functions that are native to the package (i.e. documented
+functions living in the R folder that build with the package), but you
+should be writing your project up and showing your code and analysis
+within vignettes.
+
+### Tasks
+
+For this assignment, you should write a single vignette called
+“overview.Rmd”, which has the following sections:
+
+1.  Summary: A brief (up to 250 words) description of the project, and a
+    bullet point or enumerated list of its primary objectives.
+
+2.  Approach and Method: An outline of the analytical methods and code
+    you plan to use, including the names of key packages that you will
+    draw on. This section should be composed of the following
+    sub-sections:
+
+3.  Data: A brief (~250 words) description **and** visualization of the
+    datasets you will be using. That means spatial plots of the main
+    datasets and their key values, and, as a bonus, a plot of summary
+    statistics, e.g. a histogram or boxplot of one of the more
+    importants variables in the dataset.
+
+4.  Code: A bullet point summary of the analysis and coding approach
+    that you propose to follow. For teams, this section should include a
+    description of which member will be responsible for each bullet
+    point.
+
+5.  Timelines: Provide a timeline for when each portion of the analysis
+    will be completed. These timelines should be constructed relative to
+    the time period of presentations (during the last two weeks of
+    class) and final project submission (during exam week). For teams,
+    names should be associated with each step on the timeline.
+
+6.  Anticipated outcomes: Briefly describe, as bullet points, the
+    outcomes you expect for each of your primary project objectives
+
+### An additional note for teams
+
+For this last assignment, it doesn’t make sense that team members do
+separate work in different branches of the repo, with the exception of
+cases where data fetching and wrangling tasks needed to describe and
+visualize the data are partitioned between members. In this case, team
+members should have separate vignettes in their respective branches
+describing the data gathering and processing steps to date. Otherwise,
+the expectation is that this assignment is presented as a jointly
+written vignette that builds with the package in the main branch. Please
+put your initials next to sections that you were responsible for
+writing. If you want to get really advanced, you can each jointly work
+on a version of overview in your own branches, and then do a merge and
+reconcile of your differing version in the main branch.
+
+------------------------------------------------------------------------
+
+[Back to home](https://agroimpacts.github.io/geospaar/articles/index.md)
+
+------------------------------------------------------------------------
+
+## Final project
+
+The following are the requirements and assessment approach for the final
+project:
+
+### Overall scope
+
+The purpose of the final product is to provide an overview of the
+results of the project you have been working on during the final unit of
+the class, building on the work you will have already presented in class
+during one of the last four sessions. The nature of this product can
+vary according to the type of project you are pursuing, which I would
+broadly define into two groups:
+
+1.  Those that are more focused on developing a package that provides a
+    set of R functions that will be more broadly useful;
+
+2.  Those that are more analytical in nature, i.e. using R to answer
+    particular questions of interest.
+
+In the former case, we will want to see a good presentation of worked
+examples presented in your package vignette(s). In the latter case, your
+package vignette(s) should give an informative overview of your key
+findings and (if applicable) way forward for the project. Some projects
+may fall somewhere in between these two extremes.
+
+### Structure and content
+
+Regardless of the type of project you are developing, you will submit it
+as an `R` package (within the repo you started for your overview
+assignment), as we have been doing all semester. That `R` package should
+be fully reproducible, i.e.
+
+``` r
+
+devtools::install_github("agroimpacts/yourproject", build_vignettes = TRUE)
+browseVignettes("yourproject")
+```
+
+Works perfectly and gives us results that contain everything we need to
+evaluate the project. Datasets that are too large to be committed to the
+package repo should be linked to, but the code used to process them
+should be clear, and any figures built from them should be committed to
+the repo and incorporated in your package vignettes.
+
+**NOTE on analyses**: It is strongly recommend for big datasets and
+slow-running analyses that you develop and run the analyses within
+`eval = FALSE` chunks, which can be accomplished as follows:
+
+- Save smaller intermediate datasets as needed, which can be read back
+  in to downstream `eval = TRUE` chunks
+
+- Write plots to png files that you then read back in to the vignettes
+  using
+  [`knitr::include_graphics()`](https://rdrr.io/pkg/knitr/man/include_graphics.html).
+  See the Rmds for Unit2, Module 2\* as examples
+
+- Following this approach will let you iterate much faster on testing
+  whether your vignettes knit properly.
+
+Vignettes will contain the material we are most interested in, but we
+will also examine your DESCRIPTION, NAMESPACE, function documentation
+(if applicable), i.e. the key components of making an R package and
+delivering it in a reproducible manner.
+
+Jointly authored vignettes in group projects should have team member
+initials indicating which section each member worked on, specify the
+particular section. Otherwise, separately authored vignettes should have
+team member titles at the top.
+
+As stated before, if there are clear, separable tasks that lend
+themselves to separate development efforts, team members should work on
+those and make frequent commits within their own repo branches.
+
+`R` code should follow the [style](http://adv-r.had.co.nz/Style.md) we
+have been using all along.
+
+The main item in your package that we will assess is/are the package
+vignette/vignettes.
+
+### Vignette(s)
+
+You can choose to have one or several vignettes, depending on how much
+sense it makes to break down the information into separate documents.
+Regardless, your vignette or vignettes should contain the following
+information (the names of the headings can vary though according to what
+makes sense)
+
+#### Introduction (or Overview)
+
+A more detailed and informative overview of the project’s purpose and
+objectives than what your provided in assignment 6. Approximate maximum
+length of 400 (individual) to 800 (team, assuming a single package
+vignette) words.
+
+#### Methods (or Approach)
+
+For a more analytical project, provide a complete description of the
+methods you used to undertake the analysis, complete with informative
+illustrations and summaries of the input datasets. Approximate maximum
+length of 400 (individual) to 800 words.
+
+For a project that is more tools-oriented, use this section to describe
+the purpose and rationale of the functions/capabilities you are
+developing, what other packages/software/tools it is building on, and
+provide informative illustrations and summaries of the dataset(s) you
+are using to demonstrate your functions. Same approximate length.
+
+#### Results (Worked Examples)
+
+For analytical projects, describe and illustrate your results, using
+standard scientific reporting conventions: 1) plan on having 2-4
+figures; 2) a similar number of statistical summaries; 3) describe the
+results in your figures and tables in (up to) 400-800 words (range
+refers to individual versus team efforts).
+
+For tools-oriented projects, provide and illustrate 2-4 worked examples
+of how to use the functions in your package, with descriptive
+accompanying text that will help users to understand what the functions
+do and how to apply them (up to 400-800 words; range refers to
+individual versus team efforts).
+
+#### Discussion
+
+For analytical projects, briefly provide your interpretation of the
+results, any uncertainties/difficulties encountered, and any next steps
+to be taken. Up to 400-800 words (range refers to individual versus team
+efforts).
+
+For tools-oriented projects, describe any limitations of the package,
+improvements that can be made, and any plans to undertake these. Up to
+400-800 words (range refers to individual versus team efforts).
+
+Alternatively, you can choose to undertake one of the projects listed
+below.
+
+This list is currently in thumbnail form, and will fill out during the
+next few weeks.
+
+## Potential project list
+
+### Example of past projects
+
+A number of these projects were undertaken by previous classes, but
+several of them may be built on further.
+
+#### Urban tree health (HERO)
+
+Develop a Shiny app identifying locations of HERO trees and their health
+over time. Project would potentially cover both HERO trees (across MA,
+RI) and trees in arboretum.
+
+[HERO
+Research](https://www.clarku.edu/departments/hero-program/research/)
+
+#### Ecological sensing in MA via in-situ sound sensors
+
+Building on data from Prof. Sangermano’s work on sound sensing, this
+project would examine relationship morning bird chorus and other
+variables, including MODIS temperature data and forest fragmentation.
+
+Ideally, project would also create an interactive map that displays
+sensing data.
+
+If interested, students can also work with sound processing libraries
+(seewave, soundecology).
+
+[Flor presentation](https://vimeo.com/762855200)
+
+#### Tracking CAFO installation in Yucatan peninsula
+
+We have a data set of vector polygons identifying Concentrated Animal
+Feeding Operations (CAFOs) in Yucatan Peninsula Mexico. This project
+will develop a classification model for identifying CAFO locations, and
+use historical remote sensing imagery to estimate when CAFO’s were
+built.
+
+[Storymap](https://storymaps.arcgis.com/collections/3e7203cf44cf417c9b5fe1db7a182293)
+
+#### Game Design
+
+R is not especially used for games but there are some [nice
+examples](https://appsilon.com/shiny-videogame-video-tutorial/#:~:text=Did%20you%20know%20you%20can,and%20easy%20to%20play%20games.).
+This would be an educational geospatial game (similar to “Worldle” and
+“Carmen SanDiego”). The game should give progressive hints that are
+based off of geospatial analysis (i.e. predominant climate type, percent
+forest etc). The user could guess the country by picking a location in
+the app.
+
+#### Redistricting effects
+
+Congressional maps were redrawn in 2022 after the 2020 Census. Where
+were the largest changes seen? Ideally you would have a background in
+political science/demographics.
+
+[Redistricting Data Hub](https://redistrictingdatahub.org/)
+
+#### COVID policy impact
+
+Create shiny app to examine trends relating COVID cases and different
+policies implemented (masking, vaccine requirements, social distancing).
+Can be at state or country level.
+
+[COVID
+tracking](https://covid.cdc.gov/covid-data-tracker/#datatracker-home)
+
+#### Modeling climate change
+
+Use climate data from GEE `ee.ImageCollection("NASA/NEX-DCP30")` to
+estimate impacts on heat stress, drought and precipitation. Use the
+`rgee` library to create a Shiny app. [rgee
+link](https://r-spatial.github.io/rgee/reference/rgee-package.html)
+
+[rgee sample app](https://github.com/MVanDenburg92/RGEE_Shiny)
+
+#### USF projects
+
+##### Are neighborhoods with public housing more brightly lit than those without?
+
+Following up on previous semesters’
+[work](https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md)
+(and processed further for the Urban Studies Foundation summer
+institute) that used VIIRS nightlights data to show that neighborhoods
+with public housing (in New York and several other cities) are more
+brightly lit than comparable neighborhoods without, we want to enhance
+the existing analyses by increasing the number of cities examined, and
+improving the analysis of variables.
+
+This will entail collecting data on public housing projects and building
+footpoints from other US cities, and then collecting and analyzing the
+nightlights data following the steps in the previous project.
+
+### New projects
+
+#### Analyzing cropland data
+
+The Agricultural Impacts Research Group, through the [Mapping
+Africa](http://mappingafrica.io) project and several funded projects
+(e.g. work [Farmerline](https://farmerline.co/), a farmer services
+provider, for the Enabling Crop Analytics at Scale (ECAAS) project) and
+the Lacuna Fund, has mapped croplands in various countries throughout
+Africa. Wall-to-wall, high resolution maps of field boundaries exist for
+Ghana, Zambia, and the Republic of Congo, which were developed using
+neural networks. An Africa’s wide sample of images and digitized field
+boundaries was recently collected.
+
+There are several possible projects available from these data.
+
+##### Assess country–scale field dynamics
+
+There are several potential Working with a set of cropland predictions
+at 3 m resolution throughout Ghana, convert the predictions to
+individual field boundaries using python scripts plus R, and then
+estimate field sizes throughout the region. Can this dataset be used to
+identify center pivot irrigation?
+
+##### Analyze annual field dynamics
+
+There are several possibilities:
+
+- Maps of Ghana for several years exist, in the form of 5x5 km tiles
+  score maps produced by a neural network. These need to be assembled
+  and mosaicked into country scale maps, and then annual frequency of
+  and changes in intensity of cropping can be assessed.
+
+- A comparison of field characteristics between Ghana and another
+  country, e.g. Zambia or Republic for Congo
+
+- Use the continent wide field boundaries to assess regional difference
+  in field size. Examine whether there are any regional trend in field
+  size over the 7 year times series. Calculate uncertainty metrics in
+  the collected data based on overlaps between multiple labellers’ maps
+  for the same locations.
+
+#### Create a drone sampling tool
+
+For our prior ECAAS project, we created [a
+method](https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf#D2.5%20Service%20Scale-up%20Plan.indd%3A.3986%3A32)
+for using Open Street Maps data together with agricultural layers and
+gridded cluster to develop an approach for creating drone-based
+probability samples. The method used `R` packages to do the job, but
+never went beyond scripts. Turn this approach into a generalizable `R`
+package that can be applied nearly anywhere. Demonstrate that it
+produces probabilistic samples that are representative of the landscapes
+being sampled.
+
+#### Improve the polygonization of crop fields
+
+Our current mapping project using `R` functions to polygonize field
+objects predicted by our neural networks. The shapes could be better
+regularized to be less rounded. Find an approach for regularizing
+polygons in R.
