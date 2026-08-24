@@ -76,9 +76,9 @@ Your progress in this class will be assessed as follows:
 # a / sum(a)
 mat <- rbind(c("Practical assignments (n=5)", "40% of grade", "30% of grade"), 
              c("Exam", "15% of grade", "15% of grade"),
-             c("Participation", "10% of grade", "10% of grade"),
-             c("Overview for final semester project", "10% of grade", 
-               "15% of grade"),
+             c("Participation", "15% of grade", "15% of grade"),
+             c("Overview for final semester project", "5% of grade", 
+               "10% of grade"),
              c("Final report on semester project", "25% of grade", 
                "30% of grade"))
 colnames(mat) <- c("Component", "GEOG246", "GEOG346")
