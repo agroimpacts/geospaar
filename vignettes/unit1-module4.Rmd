@@ -111,7 +111,7 @@ dat <- tibble(a = sample(1:10), b = rnorm(10))
 # #2
 td <- tempdir()
 # #3
-readr::write_csv(dat, path = file.path(td, "dummy.csv"))
+readr::write_csv(dat, file = file.path(td, "dummy.csv"))
 # #4
 readr::read_csv(file.path(td, "dummy.csv"))
 ```

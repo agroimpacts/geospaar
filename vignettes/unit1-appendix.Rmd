@@ -270,7 +270,7 @@ lapply(dat_list, function(x) sum(x[1:2, 2]))
 set.seed(1)
 dat <- tibble(a = sample(1:10), b = rnorm(10))
 td <- "/path/where/you/want/to/write" # REPLACE THIS WITH YOUR OWN!!!!
-readr::write_csv(dat, path = file.path(td, "dummy.csv"))
+readr::write_csv(dat, file = file.path(td, "dummy.csv"))
 ```
 
 2. 
