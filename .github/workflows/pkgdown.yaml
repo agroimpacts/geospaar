@@ -24,6 +24,8 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          R_LIB_FOR_PAK: ${{ runner.temp }}/Library
         with:
           cache: always
           extra-packages: any::pkgdown
