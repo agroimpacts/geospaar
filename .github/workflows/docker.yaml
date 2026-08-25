@@ -13,19 +13,20 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         include:
           - dockerfile: Dockerfile
             platform: linux/amd64
             suffix: ""
+            runner: ubuntu-24.04
           - dockerfile: Dockerfile.arm64
             platform: linux/arm64
             suffix: -arm64
+            runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v5
-      - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
