@@ -83,13 +83,13 @@ docker build -t agroimpacts/geospaar:$VERSION .
 
 #### Apple Silicon and other ARM computers
 
-The pinned Rocker base image is `linux/amd64`. Docker Desktop can run it on Apple Silicon through emulation. When building locally on an ARM computer, request that platform explicitly:
+Apple Silicon computers use a native ARM course image. The launcher selects the `-arm64` image tag automatically, avoiding Intel emulation. When building locally on an ARM computer, use the ARM Dockerfile:
 
 ``` bash
-docker build --platform=linux/amd64 -t agroimpacts/geospaar:$VERSION .
+docker build -f Dockerfile.arm64 -t agroimpacts/geospaar:${VERSION}-arm64 .
 ```
 
-The launcher below automatically uses `linux/amd64` on ARM Macs and Linux computers. Emulation is slower than a native image; if Docker Desktop cannot run the image, use RStudio Desktop for the course instead.
+On Intel computers, continue to build the standard image with `Dockerfile` as shown above.
 
 ### 7. Run the container
 

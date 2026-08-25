@@ -1,0 +1,64 @@
+# Native Apple Silicon variant. rocker/geospatial:4.4.2 is amd64-only,
+# while rocker/rstudio:4.4.2 publishes an arm64 image.
+FROM rocker/rstudio:4.4.2
+
+RUN apt-get clean all && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        gdal-bin \
+        libcurl4-openssl-dev \
+        libfontconfig1-dev \
+        libfreetype6-dev \
+        libfribidi-dev \
+        libgdal-dev \
+        libgeos-dev \
+        libgl1-mesa-dev \
+        libharfbuzz-dev \
+        libhdf5-dev \
+        libgit2-dev \
+        libjpeg-dev \
+        libnetcdf-dev \
+        libpng-dev \
+        libproj-dev \
+        libssl-dev \
+        libssh2-1-dev \
+        libtiff-dev \
+        libudunits2-dev \
+        libv8-dev \
+        libxml2-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Match the course packages provided by the amd64 geospatial base image.
+RUN install2.r --error \
+    cowplot \
+    devtools \
+    here \
+    kableExtra \
+    lwgeom \
+    patchwork \
+    pkgdown \
+    prettydoc \
+    raster \
+    rmapshaper \
+    rmarkdown \
+    rmdformats \
+    sf \
+    terra \
+    tidyverse
+
+# Packages available in the amd64 geospatial base and used by course materials.
+RUN install2.r --error \
+    gstat \
+    leaflet \
+    stars \
+    xaringan
+
+COPY --chown=rstudio:rstudio rstudio-prefs.json \
+  /home/rstudio/.config/rstudio
+
+COPY --chown=rstudio:rstudio .Rprofile /home/rstudio/
+
+EXPOSE 8787
+
+WORKDIR /home/rstudio

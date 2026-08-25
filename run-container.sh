@@ -124,10 +124,9 @@ fi
 rstudio_image="agroimpacts/geospaar:${ver}"
 password="${RSTUDIO_PASSWORD:-password}"
 
-platform_args=()
 if [[ "$(uname -m)" == "arm64" || "$(uname -m)" == "aarch64" ]]; then
-  # The pinned course image is amd64; Docker Desktop/QEMU provides emulation.
-  platform_args=(--platform linux/amd64)
+  # The ARM image avoids emulating the amd64-only geospatial base on Apple Silicon.
+  rstudio_image="${rstudio_image}-arm64"
 fi
 
 user_args=()
@@ -152,7 +151,6 @@ fi
 # Map host:${port} -> container:8787
 echo "Launching from platform: ${OS}"
 docker run --rm -d -p "${port}:8787" -e "PASSWORD=${password}" \
-  "${platform_args[@]}" \
   "${user_args[@]}" \
   --name geospaar_rstudio \
   -v "$(docker_path "${full_d}")":/home/rstudio \
