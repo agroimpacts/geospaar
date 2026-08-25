@@ -122,9 +122,9 @@
 <div class="section level4">
 <h4 id="apple-silicon-and-other-arm-computers">Apple Silicon and other ARM computers<a class="anchor" aria-label="anchor" href="#apple-silicon-and-other-arm-computers"></a>
 </h4>
-<p>The pinned Rocker base image is <code>linux/amd64</code>. Docker Desktop can run it on Apple Silicon through emulation. When building locally on an ARM computer, request that platform explicitly:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">--platform</span><span class="op">=</span>linux/amd64 <span class="at">-t</span> agroimpacts/geospaar:<span class="va">$VERSION</span> .</span></code></pre></div>
-<p>The launcher below automatically uses <code>linux/amd64</code> on ARM Macs and Linux computers. Emulation is slower than a native image; if Docker Desktop cannot run the image, use RStudio Desktop for the course instead.</p>
+<p>Apple Silicon computers use a native ARM course image. The launcher selects the <code>-arm64</code> image tag automatically, avoiding Intel emulation. When building locally on an ARM computer, use the ARM Dockerfile:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-f</span> Dockerfile.arm64 <span class="at">-t</span> agroimpacts/geospaar:<span class="va">${VERSION}</span>-arm64 .</span></code></pre></div>
+<p>On Intel computers, continue to build the standard image with <code>Dockerfile</code> as shown above.</p>
 </div>
 </div>
 <div class="section level3">
