@@ -111,73 +111,44 @@ cd c/My\ Documents/projects/geog246346
 git clone https://github.com/agroimpacts/geospaar.git
 ```
 
-### 6. Build or pull the Docker image
+### 6. Start the course container
 
 The course image is versioned. Use the release version specified by your
-instructor; the example below uses `4.4.2`. Building locally uses the
-pinned `rocker/geospatial:4.4.2` base image, which makes course
-environments more repeatable.
+instructor; the example below uses `4.4.2`. No local image build is
+needed for normal course use. The launcher downloads the required image
+automatically the first time it runs.
 
-From the directory containing the `geospaar` clone, either pull a
-published course image:
+From the directory that contains the `geospaar` clone, run:
 
 ``` bash
 VERSION=4.4.2
-docker pull agroimpacts/geospaar:$VERSION
+PORT=8787 # choose another port if this one is in use
+./geospaar/run-container.sh -v "$VERSION" -p "$PORT" "$(pwd)"
 ```
 
-Or build it locally:
+The final argument must be the parent directory of `geospaar`, not the
+`geospaar` directory itself. This makes the course materials and any
+assignment projects available together in RStudio Server.
 
-``` bash
-cd geospaar
-VERSION=4.4.2
-docker build -t agroimpacts/geospaar:$VERSION .
-```
+On Apple Silicon Macs, the launcher automatically downloads the native
+ARM image (`agroimpacts/geospaar:<version>-arm64`). On Intel computers,
+it downloads the standard image. Students use the same command on both
+platforms.
 
-#### Apple Silicon and other ARM computers
+After launch, open <http://localhost:8787> in a browser and sign in:
 
-Apple Silicon computers use a native ARM course image. The launcher
-selects the `-arm64` image tag automatically, avoiding Intel emulation.
-When building locally on an ARM computer, use the ARM Dockerfile:
+- Username: `rstudio`
+- Password: `password` (or the value of `RSTUDIO_PASSWORD`, if set)
+
+#### Local image builds
+
+Building is only needed when developing the course image. From the
+`geospaar` directory, use `Dockerfile` on Intel computers or
+`Dockerfile.arm64` on Apple Silicon:
 
 ``` bash
 docker build -f Dockerfile.arm64 -t agroimpacts/geospaar:${VERSION}-arm64 .
 ```
-
-On Intel computers, continue to build the standard image with
-`Dockerfile` as shown above.
-
-### 7. Run the container
-
-After pulling or building, run the image using the script included with
-the `geospaar` repository:
-
-``` bash
-PORT=8787 # choose another port if this one is in use
-MY_DIR=c/My\ Documents/projects/geog246346 # change this path
-./run-container.sh -v $VERSION -p $PORT "$MY_DIR"
-```
-
-Note: Make sure that MY_DIR is the path of the directory that your
-cloned `geospaar` is in. MY_DIR should not include “geospaar” at the end
-of the path, because then `docker` will try and mount the `geospaar`
-folder, which will cause problems (the script will fail). We want to
-mount the directory `geospaar` is in so that we can create other
-projects in the same directory as `geospaar` while we are working in the
-`docker` container.
-
-You can also (preferably) run it from your project directory containing
-`geospaar`, as follows:
-
-``` bash
-cd "$MY_DIR" # or, if you are in geospaar, move up one level with cd ..
-./geospaar/run-container.sh -v $VERSION -p $PORT "$(pwd)"
-```
-
-Either approach to launching will give you a URL
-(<https://localhost:8787>) that you can copy and paste into your
-browser, which will then give you a fully functioning Rstudio-server
-instance after you log in.
 
 When you are finished with Rstudio server, you should stop the
 container:
@@ -191,7 +162,7 @@ You can restart the container again with the same
 script stores packages installed inside R in `r_<version>_packages/`
 next to your projects. Use a new directory when changing R versions.
 
-### 8. Additional GitHub configuration steps
+### 7. Additional GitHub configuration steps
 
 Before installing the course package, there are a few more GitHub
 configuration steps you have to set up to set up your GitHub on your
@@ -247,7 +218,7 @@ git config core.fileMode false
     `git status`. It should show no changes to the repo. Try `git pull`,
     which should that you are be up to date. This should be working now
 
-### 9. Install `geospaar` and browse the course materials
+### 8. Install `geospaar` and browse the course materials
 
 Build the `geospaar` package. To do so, first in Rstudio, go to File \>
 Open Project, and then navigate to the `geospaar` folder, and then
