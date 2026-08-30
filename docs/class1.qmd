@@ -78,18 +78,15 @@ knitr::include_graphics("figures/class1_2.png")
 
 - Let's have a look at the [Syllabus](syllabus.html)
 - Basic policies
-
-    - Attendance and communication
-    - Attention to detail
-    - You are responsible for learning the material
+  - Attendance and communication
+  - Attention to detail
+  - You are responsible for learning the material
 
 ---
 
 ## Learning and AI
 
 From the [Economist](https://www.economist.com/graphic-detail/2026/08/18/does-ai-stop-children-from-learning)
-
-
 
 ---
 

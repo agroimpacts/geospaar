@@ -2,7 +2,7 @@
 
 Course materials for Clark University's GEOG 246/346. Learn R for geospatial analysis while developing the habits of reproducible research and computational thinking.
 
-[Course materials](articles/toc.html){.btn .btn-primary} [Install the course environment](#installation){.btn .btn-outline-light} [Class slides](#class-slides){.btn .btn-outline-light}
+[Course materials](articles/toc.html){.btn .btn-primary} [Syllabus](articles/syllabus.html){.btn .btn-outline-light} [Install the course environment](#installation){.btn .btn-outline-light} [Class slides](#class-slides){.btn .btn-outline-light}
 
 ## Course Overview
 
@@ -171,3 +171,5 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 ## Class slides
 
 - [Class 1: Course introduction](class1.html)
+- [Class 2: Getting setup](class2.html)
+- [Class 3: Packages](class3.html)

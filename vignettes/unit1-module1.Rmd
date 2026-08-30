@@ -419,7 +419,7 @@ You now have two local copies of the repo, so when you make a change on one, pus
 
 ### Branching
 
-The last thing we are going to do is to set up a new branch in our repo. There is a whole set of instructions how to do that via terminal commands in the [branching and merging section](help.html#branching-and-merging) of the package help vignette. However, setting up a new branch and syncing it with the remote repo is fairly trivial in newer versions of Rstudio.
+The last thing we are going to do is to set up a new branch in our repo. There is a whole set of instructions how to do that via terminal commands in the [branching and merging section](git-github.html#branching-and-merging) of the git/GitHub vignette. However, setting up a new branch and syncing it with the remote repo is fairly trivial in newer versions of Rstudio.
 
 - Enter the `git` GUI
 - Press New Branch, add a new branch name, e.g. "test"
@@ -441,6 +441,10 @@ The first command deletes the local branch (named test), the second that branch 
 
 #### Branching and class assignments
 We are going to use branching in this class to keep track of assignments. For the current assignment, you will work in your main branch, making commits as you go.  When you are ready to submit the assignment, you will create a new branch called "ax", where "x" is replaced by the assigmnent number (e.g. "a1" for assignment 1). You will park that branch, and then switch back to main so you can start working on the next assignment. 
+
+```{r, echo=FALSE, fig.align="center", out.width="70%"}
+knitr::include_graphics("fig/class3_1.png")
+```
 
 ### Merging
 We will leave the topic of merging for now, but basically merging is quite useful when a small change on one branch (generally a side branch created for the purpose of developing a new feature or fixing a bug) needs to be incorporated into another.  An example might be like this: 

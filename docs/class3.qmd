@@ -20,7 +20,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 ```{r}
 #| echo: TRUE
 #| eval: FALSE
@@ -59,54 +58,33 @@ dev.off()
 ## Today's Topics
 
 - Trouble-shooting
-- `R` packages
 - `git` / GitHub
-- Overview of assignment
-- Keeping up to date with class materials
-- Tips and tricks for productivity
-  - Seeking help as a skillset
+- `R` packages
+
+---
+
+## `git` / GitHub
+
+- What is version control and what is the advantage of using it? 
+- What is `git` and what is GitHub? 
+- What is a commits? A push? A pull?
+- Which is a branch, how do we create them, and how will we use them in this class?
+- What is a merge?
 
 ---
 
 ## R packages
 
-- File structure
-- Where packages live
-- library versus package
-- Exported functions, loading packages
+- What is an R package and why do we use them? 
+- What is the file/folder structure of an R package and what are the key package files?
+- What is an `R` function, and what is the advantage of using them? What is a package function, and how and why do we export package functions? 
+- Who do we load packages?
+- Where does an installed package live?
+- What is the difference between a library and a package? 
 
 ---
 
-## Types of packages
-
-```{r}
-#| out.width: "55%"
-#| fig.align: 'center'
-#| echo: FALSE
-#| fig.cap: "http://r-pkgs.had.co.nz/package.html"
-
-knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
-```
-
-## Installing packages
-
-```{r}
-#| echo: false
-#| fig-cap: "http://r-pkgs.had.co.nz/package.html"
-#| fig-align: center
-#| out-width: 90%
-
-knitr::include_graphics("https://r-pkgs.org/diagrams/install-load.png") 
-```
----
-
-## `git` / GitHub
-
-- Commits, pushes, pulls
-- Branching
-- Merging
-
----
+## `git`/GitHub extras
 
 ```{r}
 #| echo: false
@@ -129,7 +107,6 @@ knitr::include_graphics("https://kevintshoemaker.github.io/StatsChats/GIT2.png")
 
 ---
 
-
 ## Our Branching Model
 
 ```{r}
@@ -142,16 +119,40 @@ knitr::include_graphics("figures/class3_1.png")
 
 ---
 
-## Keeping current
+## Keeping the repo current
 
 - Using `git` and GitHub
 - Following [4.3.4.](https://agroimpacts.github.io/geospaar/unit1-module1.html#cloning-the-remote-repo) of Unit 1 - Module 1
 
 ---
 
+## Types of `R` packages
+
+```{r}
+#| out.width: "55%"
+#| fig.align: 'center'
+#| echo: FALSE
+#| fig.cap: "http://r-pkgs.had.co.nz/package.html"
+
+knitr::include_graphics("http://r-pkgs.had.co.nz/diagrams/package-files.png") 
+```
+
+## Installing packages
+
+```{r}
+#| echo: false
+#| fig-cap: "http://r-pkgs.had.co.nz/package.html"
+#| fig-align: center
+#| out-width: 90%
+
+knitr::include_graphics("https://r-pkgs.org/diagrams/install-load.png") 
+```
+---
+
+
 ## [Assignment 1]("https://agroimpacts.github.io/geospaar/unit1-module1.html#unit-assignment")
 
-- Due Monday (29th) 
+- Due Friday midnight (9/4)
 
 ---
 
@@ -160,65 +161,4 @@ knitr::include_graphics("figures/class3_1.png")
 - Tab completion and shortcuts
 - Reusing code
 - Code syntax
-- [Posting guide](https://www.r-project.org/posting-guide.html)
-
----
-
-## Knowing how to get help as a skillset
-
-- Slack posting guide
-- Getting help via the search engine
-- (Eventually) posting to listserves
-
----
-
-## Search Engine Science
-
-- Sometimes you just need the error message
-
-```{r}
-#| echo: false
-#| fig-align: center
-#| out-width: 90%
-
-knitr::include_graphics("figures/class3_4.jpeg")
-```
-
----
-
-## Search Engine Science
-
-- Sometimes you need to search
-
-  ```
-  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
-  error setting certificate verify locations:
-   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
-   certs/ca-bundle.crt
-   CApath: none
-  ```
-
-- How you search matters
-
----
-
-```{r}
-#| echo: false
-#| fig-align: center
-#| out-width: 90%
-
-knitr::include_graphics("figures/class3_5.png")
-```
-
----
-
-## Listserves
-
-```{r}
-#| echo: false
-#| fig-align: center
-#| out-width: 90%
-
-knitr::include_graphics("figures/class3_3.png")
-```
 
