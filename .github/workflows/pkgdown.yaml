@@ -23,10 +23,12 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Configure cacheable R library
+        run: |
+          echo "R_LIBS_USER=$RUNNER_TEMP/R-library" >> "$GITHUB_ENV"
+          echo "R_LIB_FOR_PAK=$RUNNER_TEMP/R-library" >> "$GITHUB_ENV"
+
       - uses: r-lib/actions/setup-r-dependencies@v2
-        env:
-          R_LIBS_USER: ${{ runner.temp }}/R-library
-          R_LIB_FOR_PAK: ${{ runner.temp }}/pak-library
         with:
           cache: true
           extra-packages: any::pkgdown
