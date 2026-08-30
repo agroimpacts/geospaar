@@ -78,7 +78,7 @@ dev.off()
 - What is an R package and why do we use them? 
 - What is the file/folder structure of an R package and what are the key package files?
 - What is an `R` function, and what is the advantage of using them? What is a package function, and how and why do we export package functions? 
-- Who do we load packages?
+- How do we load packages?
 - Where does an installed package live?
 - What is the difference between a library and a package? 
 
