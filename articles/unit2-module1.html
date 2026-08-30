@@ -365,9 +365,9 @@ We are now going to write it out to a spatial file.</p>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
 <span><span class="co">#&gt; Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:</span></span>
-<span><span class="co">#&gt; /tmp/Rtmphufb6L/farmers.shp does not appear to be a file or directory.</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/Rtmphufb6L/farmers.shp' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/Rtmphufb6L/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; /tmp/Rtmpy2lHB0/farmers.shp does not appear to be a file or directory.</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/Rtmpy2lHB0/farmers.shp' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/Rtmpy2lHB0/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"</span></span></code></pre></div>
@@ -404,8 +404,8 @@ file.</p>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html" class="external-link">st_write</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">farmers</span>, dsn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"farmers.geojson"</span><span class="op">)</span>, </span>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/Rtmphufb6L/farmers.geojson' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/Rtmphufb6L/farmers.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/Rtmpy2lHB0/farmers.geojson' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/Rtmpy2lHB0/farmers.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"</span></span></code></pre></div>
@@ -423,7 +423,7 @@ much is still done with</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">farmers</span><span class="op">)</span> </span>
 <span><span class="va">farmers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers.shp"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/Rtmphufb6L/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/Rtmpy2lHB0/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 20984 features and 5 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
