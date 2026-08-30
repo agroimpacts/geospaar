@@ -11,9 +11,6 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      R_LIBS_USER: ${{ runner.temp }}/R-library
-      R_LIB_FOR_PAK: ${{ runner.temp }}/pak-library
     concurrency:
       group: pkgdown-deploy
       cancel-in-progress: false
@@ -27,6 +24,9 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          R_LIBS_USER: ${{ runner.temp }}/R-library
+          R_LIB_FOR_PAK: ${{ runner.temp }}/pak-library
         with:
           cache: true
           extra-packages: any::pkgdown
