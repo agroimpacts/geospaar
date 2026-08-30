@@ -325,9 +325,9 @@ st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.shp"),
          delete_dsn = TRUE)
 #> writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS
 #> Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:
-#> /tmp/RtmpGNAtpA/farmers.shp does not appear to be a file or directory.
-#> Deleting source `/tmp/RtmpGNAtpA/farmers.shp' failed
-#> Writing layer `farmers' to data source `/tmp/RtmpGNAtpA/farmers.shp' using driver `ESRI Shapefile'
+#> /tmp/Rtmphufb6L/farmers.shp does not appear to be a file or directory.
+#> Deleting source `/tmp/Rtmphufb6L/farmers.shp' failed
+#> Writing layer `farmers' to data source `/tmp/Rtmphufb6L/farmers.shp' using driver `ESRI Shapefile'
 #> Writing 20984 features with 5 fields and geometry type Point.
 dir(tempdir(), pattern = "farmers")
 #> [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"
@@ -371,8 +371,8 @@ much more convenient “geojson” format, which produces a single file.
 st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.geojson"), 
          delete_dsn = TRUE)
 #> writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS
-#> Deleting source `/tmp/RtmpGNAtpA/farmers.geojson' failed
-#> Writing layer `farmers' to data source `/tmp/RtmpGNAtpA/farmers.geojson' using driver `GeoJSON'
+#> Deleting source `/tmp/Rtmphufb6L/farmers.geojson' failed
+#> Writing layer `farmers' to data source `/tmp/Rtmphufb6L/farmers.geojson' using driver `GeoJSON'
 #> Writing 20984 features with 5 fields and geometry type Point.
 dir(tempdir(), pattern = "farmers")
 #> [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"
@@ -394,7 +394,7 @@ file.remove(dir(tempdir(), pattern = "farmers.geojson", full.names = TRUE))
 #> [1] TRUE
 rm(farmers) 
 farmers <- st_read(dir(tempdir(), pattern = "farmers.shp", full.names = TRUE))
-#> Reading layer `farmers' from data source `/tmp/RtmpGNAtpA/farmers.shp' using driver `ESRI Shapefile'
+#> Reading layer `farmers' from data source `/tmp/Rtmphufb6L/farmers.shp' using driver `ESRI Shapefile'
 #> Simple feature collection with 20984 features and 5 fields
 #> Geometry type: POINT
 #> Dimension:     XY

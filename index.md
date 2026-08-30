@@ -6,6 +6,7 @@ and computational thinking.
 
 [Course
 materials](https://agroimpacts.github.io/geospaar/articles/toc.md)
+[Syllabus](https://agroimpacts.github.io/geospaar/articles/syllabus.md)
 [Install the course environment](#installation) [Class
 slides](#class-slides)
 
@@ -266,3 +267,6 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
 
 - [Class 1: Course
   introduction](https://agroimpacts.github.io/geospaar/class1.md)
+- [Class 2: Getting
+  setup](https://agroimpacts.github.io/geospaar/class2.md)
+- [Class 3: Packages](https://agroimpacts.github.io/geospaar/class3.md)

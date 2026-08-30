@@ -804,10 +804,9 @@ that you delete the resulting project folder (to avoid confusion).
 The last thing we are going to do is to set up a new branch in our repo.
 There is a whole set of instructions how to do that via terminal
 commands in the [branching and merging
-section](https://agroimpacts.github.io/geospaar/articles/help.html#branching-and-merging)
-of the package help vignette. However, setting up a new branch and
-syncing it with the remote repo is fairly trivial in newer versions of
-Rstudio.
+section](https://agroimpacts.github.io/geospaar/articles/git-github.html#branching-and-merging)
+of the git/GitHub vignette. However, setting up a new branch and syncing
+it with the remote repo is fairly trivial in newer versions of Rstudio.
 
 - Enter the `git` GUI
 - Press New Branch, add a new branch name, e.g. “test”
@@ -849,6 +848,8 @@ assignment, you will create a new branch called “ax”, where “x” is
 replaced by the assigmnent number (e.g. “a1” for assignment 1). You will
 park that branch, and then switch back to main so you can start working
 on the next assignment.
+
+![](fig/class3_1.png)
 
 #### Merging
 
@@ -1197,7 +1198,7 @@ front matter looks like this:
     ---
     title: "Vignette Title"
     author: "Vignette Author"
-    date: "2026-08-25"
+    date: "2026-08-30"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Vignette Title}
@@ -1250,7 +1251,7 @@ Now modify it. Start by changing the yaml front matter:
     ---
     title: "Overview of the lde346 Package"
     author: "Lyndon Estes"
-    date: "2026-08-25"
+    date: "2026-08-30"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Overview}
