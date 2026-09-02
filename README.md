@@ -174,3 +174,4 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 1: Course introduction](class1.html)
 - [Class 2: Getting setup](class2.html)
 - [Class 3: Packages](class3.html)
+- [Class 4: More on setting up packages, version control](class4.html)

@@ -19,19 +19,31 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - uses: r-lib/actions/setup-r@v2
+      - id: setup-r
+        uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
 
       - name: Configure cacheable R library
         run: echo "R_LIBS_USER=$RUNNER_TEMP/R-library" >> "$GITHUB_ENV"
 
+      - name: Restore R package cache
+        id: r-package-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/R-library
+          key: r-packages-ubuntu-noble-${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('DESCRIPTION') }}
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          cache: true
+          cache: false
           extra-packages: any::pkgdown
           install-quarto: false
           needs: website
+
+      - name: Report R package cache status
+        run: |
+          echo "R package cache hit: ${{ steps.r-package-cache.outputs.cache-hit }}"
 
       - name: Install course package
         run: R CMD INSTALL .
