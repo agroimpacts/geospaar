@@ -270,3 +270,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
 - [Class 2: Getting
   setup](https://agroimpacts.github.io/geospaar/class2.md)
 - [Class 3: Packages](https://agroimpacts.github.io/geospaar/class3.md)
+- [Class 4: More on setting up packages, version
+  control](https://agroimpacts.github.io/geospaar/class4.md)
