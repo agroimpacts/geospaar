@@ -64,12 +64,12 @@ git clone https://github.com/agroimpacts/geospaar.git
 
 ### 6. Start the course container
 
-The course image is versioned. Use the release version specified by your instructor; the example below uses `4.4.2`. No local image build is needed for normal course use. The launcher downloads the required image automatically the first time it runs.
+The course image is versioned. Use the release version specified by your instructor; the example below uses `4.4.2-1`. No local image build is needed for normal course use. The launcher downloads the required image automatically the first time it runs.
 
 From the directory that contains the `geospaar` clone, run:
 
 ``` bash
-VERSION=4.4.2
+VERSION=4.4.2-1
 PORT=8787 # choose another port if this one is in use
 ./geospaar/run-container.sh -v "$VERSION" -p "$PORT" "$(pwd)"
 ```
@@ -103,7 +103,8 @@ You can restart the container again with the same `./geospaar/run-container.sh .
 
 Before installing the course package, there are a few more GitHub configuration steps you have to set up to set up your GitHub on your container-based Rstudio server (or your local) Rstudio desktop. These entail setting up ssh keys and adding them to your GitHub account.
 
-The instructions for setting those up are found [here](https://agroimpacts.github.io/geospaar/unit1-module1.html#using-git-and-github) in Unit 1, Module, specifically 4.1 on `git` configuration and 4.3 on syncing your first repository.
+The instructions for setting those up are found
+[here](https://agroimpacts.github.io/geospaar/articles/unit1-module1.html#using-git-and-github) in Unit 1, Module, specifically 4.1 on `git` configuration and 4.3 on syncing your first repository.
 
 Once you have completed those steps and confirmed you can access the remote repo of `geospaar`, you can install the package.
 

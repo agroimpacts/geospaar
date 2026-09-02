@@ -8,6 +8,7 @@ RUN apt-get clean all && \
         libv8-dev \
         build-essential \
         libcurl4-openssl-dev \
+        openssh-client \
         libssl-dev \
         libxml2-dev && \
     rm -rf /var/lib/apt/lists/*

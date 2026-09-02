@@ -123,49 +123,59 @@ Copy the token and paste it somewhere safe (e.g. a secure password manager)
 
 #### Set up a project directory 
 
-Set up a directory into which you will install this package, and in which you will develop your own repositories/packages for this class. Assuming you have a directory called something like `c:\My Documents\projects` (if you are Windows-ish), make a sub-folder called `geog246346`. Using your command line interface (your terminal or terminal emulator), navigate to it. 
+Set up a directory into which you will install this package, and in which you will develop your own repositories/packages for this class. Assuming you have a directory called something like `c:\My Documents\projects` (if you are Windows-ish, or `~/Documents/projects`, if you are on a Macbook), make a sub-folder called `geog246346`. Using your command line interface (your terminal or terminal emulator), navigate to it. 
 
 ```bash
 cd c/My\ Documents/projects/geog246346
+```
+
+If you are using a Mac:
+
+```bash
+cd ~/Documents/projects/geog246346
 ```
 
 #### Clone the `geospaar` repository
 
 Once you have your project directory set up and you have navigated into it, change into and then clone the `geospaar` repository into that directory:
 
-  ```bash
-  git clone https://github.com/agroimpacts/geospaar.git
-  ```
+```bash
+git clone https://github.com/agroimpacts/geospaar.git
+```
 
 #### The `docker` route
 If you are going the `docker` route, you should next download and install the version of `docker` for your operating system from [here](https://www.docker.com/products/docker-desktop/), and create an account. It might be preferrable to sign up with your GitHub credentials. 
+Using docker, you can get the latest docker image and start the container running using the following commands:
 
-Using docker, you can either build or pull the docker image you need by running the following:
-
-- Build (assuming you are in the project directory you made in step 4):
-
-  ```bash
-  cd geospaar
-  LATEST=<version number> # enter the version number here, latest is 4.3.2
-  docker build . -t agroimpacts/geospaar:$LATEST
-  ```
+```bash
+VERSION=4.4.2
+PORT=8787 # choose another port if this one is in use
+./geospaar/run-container.sh -v "$VERSION" -p "$PORT" "$(pwd)"
+```
   
-- Pull (this gets you the latest version already committed to docker hub):
-
-  ```bash
-  LATEST=<version number> # enter the version number here, latest is 4.3.2
-  docker pull agroimpacts/geospaar:$LATEST
-  ```
-
-Then run the image using the following script that comes with the `geospaar` repo:
-
-  ```bash
-  PORT=8787 # this is the port to run on--you might want to change it
-  MY_PROJECT_DIRECTORY=c/My\ Documents/projects # change this to yours!!!
-  ./run-container.sh -v $LATEST -p $PORT $MY_PROJECT_DIRECTORY
-  ```
-
 This should give you a URL (https://localhost:8787) that you can copy and paste into your browser, which will will then give you a fully functioning Rstudio-server instance after you log in. 
+
+You can also build the image locally from scratch using, for Windows:
+
+```bash
+docker build -f Dockerfile -t agroimpacts/geospaar:${VERSION} .
+```
+
+Or, for Mac:
+
+```bash
+docker build -f Dockerfile.arm64 -t agroimpacts/geospaar:${VERSION}-arm64 .
+```
+
+And after the image is built you can run the same:
+
+```bash
+VERSION=4.4.2
+PORT=8787 # choose another port if this one is in use
+./geospaar/run-container.sh -v "$VERSION" -p "$PORT" "$(pwd)"
+```
+  
+Simplest however is to not built locally and instead get the pre-built image by running the above.
 
 #### The local install route
 If you opt not to use the `docker` route, or even if you do, but want a local `R`/`Rstudio` installation, then:
@@ -194,19 +204,19 @@ include_graphics("fig/u1m1-2.png")
     - Click "Create Project"
     
 5. You will now have an opened Rstudio project, with the name you selected. You are going to be working in this project for the first two units of the class.  Let's configure Rstudio a bit first. Your first view, if you are not using the docker version (assuming this is your first use of Rstudio) will look something like this:
-```{r out.width = "40%", fig.align='center', echo=FALSE}
+```{r out.width = "100%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-3.png") 
 ```
 
     If this is what you see (because you are not using the `docker` image, which already provides this view as default) modify the pane layout first, by going to Tools > Global Options > Pane Layout, and make it match this: 
-```{r out.width = "40%", fig.align='center', echo=FALSE}
+```{r out.width = "100%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-4.png") 
 ```
 
     You can also change the Rstudio theme by going to Tools > Global Options > Appearance (I personally prefer light text on dark backgrounds). Also check the Tools > Terminal tab, and make sure that either "Bash" (Mac/Linux) or "Git Bash" (Windows) are enabled in the "New terminals open with" dialog.
 
     You should also see a terminal tab next to the console tab:
-```{r out.width = "40%", fig.align='center', echo=FALSE}
+```{r out.width = "100%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-5.png") 
 ```
 
@@ -216,7 +226,7 @@ include_graphics("fig/u1m1-5.png")
     
 7. Now let's set up some project options that will make our lives easier when building packages (again, this is already done if you are using the `docker` version). Go to Tools > Project Options, and make it look like this (i.e. check "Generate documentation with Roxygen" and check all boxes in the dialog after click the Configure button): 
 
-```{r out.width = "50%", fig.align='center', echo=FALSE}
+```{r out.width = "70%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-6.png") 
 ```
 
@@ -231,7 +241,7 @@ Before we get started with some hands on work with `git`, it is important to und
 
 Another post on [git branching](https://nvie.com/posts/a-successful-git-branching-model/) (and merging, which we will come back to) has a more effective schematic for showing the concept and why it is used. 
 
-```{r out.width = "50%", fig.align='center', echo=FALSE}
+```{r out.width = "70%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-branching.png") 
 ```
 
@@ -253,7 +263,7 @@ Let's start to use `git` now. We are going to do this using Rstudio's `git` inte
 
 Once in there, click on the "Files" tab, and you will see your directory structure, which should look like what you see in the image below.
 
-```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="New Rstudio package project file structure (yellow arrow) and git tab (orange arrow). Rstudio's Editor theme is 'Idle Fingers'."}
+```{r out.width = "100%", fig.align='center', echo=FALSE, fig.cap="New Rstudio package project file structure (yellow arrow) and git tab (orange arrow). Rstudio's Editor theme is 'Idle Fingers'."}
 include_graphics("fig/u1m1-7.png") 
 ```
 
@@ -302,7 +312,7 @@ I don't really want `git` to track the .Rbuildignore and .Rhistory files, so I a
 
 We are now ready to make our first commit. So, press the "Commit" button in the GUI, and up will pop a big box, showing the files you added, and giving you a dialog to leave a commit message. The message you put in there should be concise but informative as to what changes you are committing to the repo.
 
-```{r out.width = "70%", fig.align='center', echo=FALSE, fig.cap="RStudio `git` commit window with message"}
+```{r out.width = "100%", fig.align='center', echo=FALSE, fig.cap="RStudio `git` commit window with message"}
 include_graphics("fig/u1m1-8.png") 
 ```
 
@@ -316,24 +326,24 @@ Now, let's make a change. Go to the file dialog, and double-click the DESCRIPTIO
 
 ```
 Package: lde346
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.5.2)
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Jane", "Doe",
+      email = "jane@example.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 ```
 
-Change the Title line to something informative, e.g. "GEOG246-346 coursework", and replace the entire Authors@R line with two new lines:
-
-```
-Author: Your Name
-Maintainer: Your Name <your.email@domain.com>
-```
-
-Just for ease. Replace the "Description" with something longer, such as "Package for GEOG246-346 class assignments". 
+Change the Title line to something informative, e.g. "GEOG246-346 coursework", and replace the name and email in Authors@R with your own, following the formatting. Replace the "Description" with something longer, such as "Package for GEOG246-346 class assignments". 
 
 Once those are done, save the changes, and then go back to the `git` GUI, where you will see a blue M next to the DESCRIPTION file.  Commit the changes with a meaningful message (e.g. "Editing name and purpose in DESCRIPTION"). You will see in the commit dialog how the changes are recorded (old text in red, new in green), and once committed that 4 deletions and 5 insertions were recorded. 
 
@@ -442,7 +452,7 @@ The first command deletes the local branch (named test), the second that branch 
 #### Branching and class assignments
 We are going to use branching in this class to keep track of assignments. For the current assignment, you will work in your main branch, making commits as you go.  When you are ready to submit the assignment, you will create a new branch called "ax", where "x" is replaced by the assigmnent number (e.g. "a1" for assignment 1). You will park that branch, and then switch back to main so you can start working on the next assignment. 
 
-```{r, echo=FALSE, fig.align="center", out.width="70%"}
+```{r, echo=FALSE, fig.align="center", out.width="100%"}
 knitr::include_graphics("fig/class3_1.png")
 ```
 
@@ -473,7 +483,7 @@ We have already created the basics for setting up a package, using RStudio's bui
 
 We'll start by learning a bit more about `R` packages.  First, I will direct you to [a section](http://r-pkgs.had.co.nz/package.html#package) in the `R` packages book to read. When you are done with that, please direct your attention to the structure of the project you created (in my case, lde346). It contains several folder and files (already discussed a bit above): 
 
-```{r out.width = "20%", fig.align='center', echo=FALSE}
+```{r out.width = "40%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-10.png") 
 ```
 
@@ -481,7 +491,7 @@ The one folder (R) and two of the files (DESCRIPTION and NAMESPACE) are critical
 
 You can create your first `R` package quite easily, as the folder is currently structured. If you look right next to the `git` tab in your RStudio interface, you will see a "Build" tab. Click on that, and then click on the "Install" button. That will build the package. You can confirm the package was built and installed if you browse in the "Packages" tab (in the lower right pane in our current setup), and browse down and find your package named listed alphabetically. Click on that. You will see the contents of the help pages for your package. Since you have no functions in your R folder, and no documentation for those functions, you have no help pages. Let's remedy that. 
 
-```{r out.width = "90%", fig.align='center', echo=FALSE}
+```{r out.width = "100%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-11.png") 
 ```
 
@@ -568,7 +578,7 @@ devtools::install()
 
 Which do the same thing. Your package will have built, and you will then see under the package manual that you have a help page for `my_number_checker`.  Click on it, and it will look like this: 
 
-```{r out.width = "90%", fig.align='center', echo=FALSE}
+```{r out.width = "100%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-12.png") 
 ```
 
@@ -676,13 +686,13 @@ vignette: >
 Note the places where I have changed the information to make it say something relevant to my package (`lde346`). Please do the same for your package using its name.  
 
 Let's move down to the text. You will see this code chunk after the yaml:
-```{r out.width = "50%", fig.align='center', echo=FALSE}
+```{r out.width = "80%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-13.png") 
 ```
 
 Keep that, but then replace everything after it to read something like this (make sure to change the package name where needed to match yours, including in the `R` code chunk call to `library()`:
 
-```{r out.width = "70%", fig.align='center', echo=FALSE}
+```{r out.width = "80%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m1-14.png") 
 ```
 
@@ -794,7 +804,7 @@ For the first assignment of this class, you are going to do the following:
 - Update your vignette so that it demonstrates how `my_multiplier` is used, in addition to the demonstration of  `my_number_checker` that you have already added. 
 - Commit and push your changes. Before committing, delete the `hello.Rd` and `hello.R` files, as we do not want those. Also do not commit html files in your vignettes folder. Test installing your packages so that it builds with a browsable vignette. Use `devtools::install`, and also `devtools::install_github` to make sure that it does. 
 - Once complete, create a new branch called "a1" in your local repo. Push that branch to GitHub as well.  Then switch back into (i.e. checkout) your main branch. 
-- You are done. 
+- You are done, with the exception of several questions we will ask you next class to test your understanding of the assignment. 
 
 
 ***

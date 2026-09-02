@@ -23,6 +23,7 @@ RUN apt-get clean all && \
         libproj-dev \
         libssl-dev \
         libssh2-1-dev \
+        openssh-client \
         libtiff-dev \
         libudunits2-dev \
         libv8-dev \
