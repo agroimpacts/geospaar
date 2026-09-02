@@ -111,9 +111,9 @@
 <div class="section level3">
 <h3 id="id_6-start-the-course-container">6. Start the course container<a class="anchor" aria-label="anchor" href="#id_6-start-the-course-container"></a>
 </h3>
-<p>The course image is versioned. Use the release version specified by your instructor; the example below uses <code>4.4.2</code>. No local image build is needed for normal course use. The launcher downloads the required image automatically the first time it runs.</p>
+<p>The course image is versioned. Use the release version specified by your instructor; the example below uses <code>4.4.2-1</code>. No local image build is needed for normal course use. The launcher downloads the required image automatically the first time it runs.</p>
 <p>From the directory that contains the <code>geospaar</code> clone, run:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="va">VERSION</span><span class="op">=</span>4.4.2</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="va">VERSION</span><span class="op">=</span>4.4.2-1</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="va">PORT</span><span class="op">=</span>8787 <span class="co"># choose another port if this one is in use</span></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="ex">./geospaar/run-container.sh</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$VERSION</span><span class="st">"</span> <span class="at">-p</span> <span class="st">"</span><span class="va">$PORT</span><span class="st">"</span> <span class="st">"</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">"</span></span></code></pre></div>
 <p>The final argument must be the parent directory of <code>geospaar</code>, not the <code>geospaar</code> directory itself. This makes the course materials and any assignment projects available together in RStudio Server.</p>
@@ -138,7 +138,7 @@
 <h3 id="id_7-additional-github-configuration-steps">7. Additional GitHub configuration steps<a class="anchor" aria-label="anchor" href="#id_7-additional-github-configuration-steps"></a>
 </h3>
 <p>Before installing the course package, there are a few more GitHub configuration steps you have to set up to set up your GitHub on your container-based Rstudio server (or your local) Rstudio desktop. These entail setting up ssh keys and adding them to your GitHub account.</p>
-<p>The instructions for setting those up are found <a href="https://agroimpacts.github.io/geospaar/unit1-module1.html#using-git-and-github">here</a> in Unit 1, Module, specifically 4.1 on <code>git</code> configuration and 4.3 on syncing your first repository.</p>
+<p>The instructions for setting those up are found <a href="https://agroimpacts.github.io/geospaar/articles/unit1-module1.html#using-git-and-github">here</a> in Unit 1, Module, specifically 4.1 on <code>git</code> configuration and 4.3 on syncing your first repository.</p>
 <p>Once you have completed those steps and confirmed you can access the remote repo of <code>geospaar</code>, you can install the package.</p>
 <p>For people launching the container from Git Bash, there are some additional steps that need to be followed:</p>
 <ol style="list-style-type: decimal">

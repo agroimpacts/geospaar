@@ -264,12 +264,19 @@ manager)
 Set up a directory into which you will install this package, and in
 which you will develop your own repositories/packages for this class.
 Assuming you have a directory called something like
-`c:\My Documents\projects` (if you are Windows-ish), make a sub-folder
+`c:\My Documents\projects` (if you are Windows-ish, or
+`~/Documents/projects`, if you are on a Macbook), make a sub-folder
 called `geog246346`. Using your command line interface (your terminal or
 terminal emulator), navigate to it.
 
 ``` bash
 cd c/My\ Documents/projects/geog246346
+```
+
+If you are using a Mac:
+
+``` bash
+cd ~/Documents/projects/geog246346
 ```
 
 ##### Clone the `geospaar` repository
@@ -288,39 +295,41 @@ If you are going the `docker` route, you should next download and
 install the version of `docker` for your operating system from
 [here](https://www.docker.com/products/docker-desktop/), and create an
 account. It might be preferrable to sign up with your GitHub
-credentials.
-
-Using docker, you can either build or pull the docker image you need by
-running the following:
-
-- Build (assuming you are in the project directory you made in step 4):
-
-  ``` bash
-  cd geospaar
-  LATEST=<version number> # enter the version number here, latest is 4.3.2
-  docker build . -t agroimpacts/geospaar:$LATEST
-  ```
-
-- Pull (this gets you the latest version already committed to docker
-  hub):
-
-  ``` bash
-  LATEST=<version number> # enter the version number here, latest is 4.3.2
-  docker pull agroimpacts/geospaar:$LATEST
-  ```
-
-Then run the image using the following script that comes with the
-`geospaar` repo:
+credentials. Using docker, you can get the latest docker image and start
+the container running using the following commands:
 
 ``` bash
-PORT=8787 # this is the port to run on--you might want to change it
-MY_PROJECT_DIRECTORY=c/My\ Documents/projects # change this to yours!!!
-./run-container.sh -v $LATEST -p $PORT $MY_PROJECT_DIRECTORY
+VERSION=4.4.2
+PORT=8787 # choose another port if this one is in use
+./geospaar/run-container.sh -v "$VERSION" -p "$PORT" "$(pwd)"
 ```
 
 This should give you a URL (<https://localhost:8787>) that you can copy
 and paste into your browser, which will will then give you a fully
 functioning Rstudio-server instance after you log in.
+
+You can also build the image locally from scratch using, for Windows:
+
+``` bash
+docker build -f Dockerfile -t agroimpacts/geospaar:${VERSION} .
+```
+
+Or, for Mac:
+
+``` bash
+docker build -f Dockerfile.arm64 -t agroimpacts/geospaar:${VERSION}-arm64 .
+```
+
+And after the image is built you can run the same:
+
+``` bash
+VERSION=4.4.2
+PORT=8787 # choose another port if this one is in use
+./geospaar/run-container.sh -v "$VERSION" -p "$PORT" "$(pwd)"
+```
+
+Simplest however is to not built locally and instead get the pre-built
+image by running the above.
 
 ##### The local install route
 
@@ -593,23 +602,26 @@ DESCRIPTION file to open it. This is a key part of an R package. Mine
 has the following text
 
     Package: lde346
-    Title: What the Package Does (one line, title case)
-    Version: 0.0.0.9000
-    Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-    Description: What the package does (one paragraph).
-    Depends: R (>= 3.5.2)
+    Type: Package
+    Title: What the Package Does (Title Case)
+    Version: 0.1.0
+    Authors@R: c(
+        person(
+          "Jane", "Doe",
+          email = "jane@example.com",
+          role = c("aut", "cre")
+        )
+      )
+    Description: More about what it does (maybe more than one line).
+        Continuation lines should be indented.
     License: What license is it under?
     Encoding: UTF-8
     LazyData: true
 
 Change the Title line to something informative, e.g. “GEOG246-346
-coursework”, and replace the entire <Authors@R> line with two new lines:
-
-    Author: Your Name
-    Maintainer: Your Name <your.email@domain.com>
-
-Just for ease. Replace the “Description” with something longer, such as
-“Package for GEOG246-346 class assignments”.
+coursework”, and replace the name and email in <Authors@R> with your
+own, following the formatting. Replace the “Description” with something
+longer, such as “Package for GEOG246-346 class assignments”.
 
 Once those are done, save the changes, and then go back to the `git`
 GUI, where you will see a blue M next to the DESCRIPTION file. Commit
@@ -1198,7 +1210,7 @@ front matter looks like this:
     ---
     title: "Vignette Title"
     author: "Vignette Author"
-    date: "2026-08-30"
+    date: "2026-09-02"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Vignette Title}
@@ -1251,7 +1263,7 @@ Now modify it. Start by changing the yaml front matter:
     ---
     title: "Overview of the lde346 Package"
     author: "Lyndon Estes"
-    date: "2026-08-30"
+    date: "2026-09-02"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Overview}
@@ -1427,7 +1439,8 @@ following:
   Push that branch to GitHub as well. Then switch back into
   (i.e. checkout) your main branch.
 
-- You are done.
+- You are done, with the exception of several questions we will ask you
+  next class to test your understanding of the assignment.
 
 ------------------------------------------------------------------------
 
