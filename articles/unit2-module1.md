@@ -325,9 +325,9 @@ st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.shp"),
          delete_dsn = TRUE)
 #> writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS
 #> Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:
-#> /tmp/RtmpBBA0Af/farmers.shp does not appear to be a file or directory.
-#> Deleting source `/tmp/RtmpBBA0Af/farmers.shp' failed
-#> Writing layer `farmers' to data source `/tmp/RtmpBBA0Af/farmers.shp' using driver `ESRI Shapefile'
+#> /tmp/RtmpqNnuYK/farmers.shp does not appear to be a file or directory.
+#> Deleting source `/tmp/RtmpqNnuYK/farmers.shp' failed
+#> Writing layer `farmers' to data source `/tmp/RtmpqNnuYK/farmers.shp' using driver `ESRI Shapefile'
 #> Writing 20984 features with 5 fields and geometry type Point.
 dir(tempdir(), pattern = "farmers")
 #> [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"
@@ -371,8 +371,8 @@ much more convenient “geojson” format, which produces a single file.
 st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.geojson"), 
          delete_dsn = TRUE)
 #> writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS
-#> Deleting source `/tmp/RtmpBBA0Af/farmers.geojson' failed
-#> Writing layer `farmers' to data source `/tmp/RtmpBBA0Af/farmers.geojson' using driver `GeoJSON'
+#> Deleting source `/tmp/RtmpqNnuYK/farmers.geojson' failed
+#> Writing layer `farmers' to data source `/tmp/RtmpqNnuYK/farmers.geojson' using driver `GeoJSON'
 #> Writing 20984 features with 5 fields and geometry type Point.
 dir(tempdir(), pattern = "farmers")
 #> [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"
@@ -394,7 +394,7 @@ file.remove(dir(tempdir(), pattern = "farmers.geojson", full.names = TRUE))
 #> [1] TRUE
 rm(farmers) 
 farmers <- st_read(dir(tempdir(), pattern = "farmers.shp", full.names = TRUE))
-#> Reading layer `farmers' from data source `/tmp/RtmpBBA0Af/farmers.shp' using driver `ESRI Shapefile'
+#> Reading layer `farmers' from data source `/tmp/RtmpqNnuYK/farmers.shp' using driver `ESRI Shapefile'
 #> Simple feature collection with 20984 features and 5 fields
 #> Geometry type: POINT
 #> Dimension:     XY
@@ -417,7 +417,7 @@ one for you.
 fnm <- system.file("extdata/roads.geojson", package = "geospaar")
 roads <- st_read(dsn = fnm) #%>% st_set_crs("ESRI:102022")
 #> Reading layer `roads' from data source 
-#>   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'
+#>   `/home/runner/work/_temp/R-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'
 #> Simple feature collection with 473 features and 1 field
 #> Geometry type: MULTILINESTRING
 #> Dimension:     XY
@@ -426,7 +426,7 @@ roads <- st_read(dsn = fnm) #%>% st_set_crs("ESRI:102022")
 fnm <- system.file("extdata/districts.geojson", package = "geospaar")
 districts <- st_read(dsn = fnm)
 #> Reading layer `districts' from data source 
-#>   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'
+#>   `/home/runner/work/_temp/R-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'
 #> Simple feature collection with 72 features and 1 field
 #> Geometry type: POLYGON
 #> Dimension:     XY
@@ -728,7 +728,7 @@ recreate most of what we need:
 # Chunk 20
 roads <- system.file("extdata/roads.geojson", package = "geospaar") %>% st_read()
 #> Reading layer `roads' from data source 
-#>   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'
+#>   `/home/runner/work/_temp/R-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'
 #> Simple feature collection with 473 features and 1 field
 #> Geometry type: MULTILINESTRING
 #> Dimension:     XY
@@ -737,7 +737,7 @@ roads <- system.file("extdata/roads.geojson", package = "geospaar") %>% st_read(
 districts <- system.file("extdata/districts.geojson", package = "geospaar") %>% 
   st_read()
 #> Reading layer `districts' from data source 
-#>   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'
+#>   `/home/runner/work/_temp/R-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'
 #> Simple feature collection with 72 features and 1 field
 #> Geometry type: POLYGON
 #> Dimension:     XY

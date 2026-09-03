@@ -182,9 +182,9 @@ section.</p>
 <span><span class="va">fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span>, </span>
 <span>          pattern <span class="op">=</span> <span class="st">"FAOSTAT"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">fs</span></span>
-<span><span class="co">#&gt; [1] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata//FAOSTAT_maize.csv"  </span></span>
-<span><span class="co">#&gt; [2] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata//FAOSTAT_sorghum.csv"</span></span>
-<span><span class="co">#&gt; [3] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata//FAOSTAT_wheat.csv"</span></span>
+<span><span class="co">#&gt; [1] "/home/runner/work/_temp/R-library/geospaar/extdata//FAOSTAT_maize.csv"  </span></span>
+<span><span class="co">#&gt; [2] "/home/runner/work/_temp/R-library/geospaar/extdata//FAOSTAT_sorghum.csv"</span></span>
+<span><span class="co">#&gt; [3] "/home/runner/work/_temp/R-library/geospaar/extdata//FAOSTAT_wheat.csv"</span></span>
 <span><span class="co"># #2</span></span>
 <span><span class="va">crops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">fs</span>, <span class="fu">readr</span><span class="fu">::</span><span class="va"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Rows: </span><span style="color: #0000BB;">228</span> <span style="font-weight: bold;">Columns: </span><span style="color: #0000BB;">14</span></span></span>
@@ -220,7 +220,7 @@ Let’s break that down:</p>
 <code class="sourceCode R"><span><span class="co"># Chunk 2</span></span>
 <span><span class="co"># #1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata"</span></span>
+<span><span class="co">#&gt; [1] "/home/runner/work/_temp/R-library/geospaar/extdata"</span></span>
 <span><span class="co">#</span></span>
 <span><span class="co"># #2</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span><span class="op">)</span></span>
@@ -239,9 +239,9 @@ Let’s break that down:</p>
 <span><span class="co"># #4</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"FAOSTAT"</span>, </span>
 <span>    full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/FAOSTAT_maize.csv"  </span></span>
-<span><span class="co">#&gt; [2] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/FAOSTAT_sorghum.csv"</span></span>
-<span><span class="co">#&gt; [3] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/FAOSTAT_wheat.csv"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/home/runner/work/_temp/R-library/geospaar/extdata/FAOSTAT_maize.csv"  </span></span>
+<span><span class="co">#&gt; [2] "/home/runner/work/_temp/R-library/geospaar/extdata/FAOSTAT_sorghum.csv"</span></span>
+<span><span class="co">#&gt; [3] "/home/runner/work/_temp/R-library/geospaar/extdata/FAOSTAT_wheat.csv"</span></span></code></pre></div>
 <p>In #1, we get the file path to the <code>extdata</code> folder in the
 <code>geospaar</code> installed package. #2 gives shows us the names of
 all the files in there. #3 shows us narrows the listed files down to

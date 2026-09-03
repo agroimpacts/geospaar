@@ -31,7 +31,7 @@ farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>%
   read_csv(show_col_types = FALSE) 
 roads <- system.file("extdata/roads.geojson", package = "geospaar") %>% st_read
 #> Reading layer `roads' from data source 
-#>   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'
+#>   `/home/runner/work/_temp/R-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'
 #> Simple feature collection with 473 features and 1 field
 #> Geometry type: MULTILINESTRING
 #> Dimension:     XY
@@ -40,7 +40,7 @@ roads <- system.file("extdata/roads.geojson", package = "geospaar") %>% st_read
 districts <- system.file("extdata/districts.geojson", package = "geospaar") %>% 
   st_read
 #> Reading layer `districts' from data source 
-#>   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'
+#>   `/home/runner/work/_temp/R-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'
 #> Simple feature collection with 72 features and 1 field
 #> Geometry type: POLYGON
 #> Dimension:     XY

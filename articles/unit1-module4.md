@@ -138,9 +138,9 @@ First, let’s read in all three datasets:
 fs <- dir(system.file("extdata/", package = "geospaar"), 
           pattern = "FAOSTAT", full.names = TRUE)
 fs
-#> [1] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata//FAOSTAT_maize.csv"  
-#> [2] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata//FAOSTAT_sorghum.csv"
-#> [3] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata//FAOSTAT_wheat.csv"
+#> [1] "/home/runner/work/_temp/R-library/geospaar/extdata//FAOSTAT_maize.csv"  
+#> [2] "/home/runner/work/_temp/R-library/geospaar/extdata//FAOSTAT_sorghum.csv"
+#> [3] "/home/runner/work/_temp/R-library/geospaar/extdata//FAOSTAT_wheat.csv"
 # #2
 crops <- lapply(fs, readr::read_csv)
 #> Rows: 228 Columns: 14
@@ -179,7 +179,7 @@ paths to the three csvs (#1). Let’s break that down:
 # Chunk 2
 # #1
 system.file("extdata", package = "geospaar")
-#> [1] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata"
+#> [1] "/home/runner/work/_temp/R-library/geospaar/extdata"
 #
 # #2
 dir(system.file("extdata", package = "geospaar"))
@@ -198,9 +198,9 @@ dir(system.file("extdata", package = "geospaar"), pattern = "FAOSTAT")
 # #4
 dir(system.file("extdata", package = "geospaar"), pattern = "FAOSTAT", 
     full.names = TRUE)
-#> [1] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/FAOSTAT_maize.csv"  
-#> [2] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/FAOSTAT_sorghum.csv"
-#> [3] "/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/FAOSTAT_wheat.csv"
+#> [1] "/home/runner/work/_temp/R-library/geospaar/extdata/FAOSTAT_maize.csv"  
+#> [2] "/home/runner/work/_temp/R-library/geospaar/extdata/FAOSTAT_sorghum.csv"
+#> [3] "/home/runner/work/_temp/R-library/geospaar/extdata/FAOSTAT_wheat.csv"
 ```
 
 In \#1, we get the file path to the `extdata` folder in the `geospaar`

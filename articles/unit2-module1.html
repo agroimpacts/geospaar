@@ -365,9 +365,9 @@ We are now going to write it out to a spatial file.</p>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
 <span><span class="co">#&gt; Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:</span></span>
-<span><span class="co">#&gt; /tmp/RtmpBBA0Af/farmers.shp does not appear to be a file or directory.</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/RtmpBBA0Af/farmers.shp' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpBBA0Af/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; /tmp/RtmpqNnuYK/farmers.shp does not appear to be a file or directory.</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/RtmpqNnuYK/farmers.shp' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpqNnuYK/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"</span></span></code></pre></div>
@@ -404,8 +404,8 @@ file.</p>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html" class="external-link">st_write</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">farmers</span>, dsn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"farmers.geojson"</span><span class="op">)</span>, </span>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/RtmpBBA0Af/farmers.geojson' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpBBA0Af/farmers.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/RtmpqNnuYK/farmers.geojson' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpqNnuYK/farmers.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"</span></span></code></pre></div>
@@ -423,7 +423,7 @@ much is still done with</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">farmers</span><span class="op">)</span> </span>
 <span><span class="va">farmers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers.shp"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/RtmpBBA0Af/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/RtmpqNnuYK/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 20984 features and 5 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -443,7 +443,7 @@ you.</p>
 <span><span class="va">fnm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/roads.geojson"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span></span>
 <span><span class="va">roads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="va">fnm</span><span class="op">)</span> <span class="co">#%&gt;% st_set_crs("ESRI:102022")</span></span>
 <span><span class="co">#&gt; Reading layer `roads' from data source </span></span>
-<span><span class="co">#&gt;   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt;   `/home/runner/work/_temp/R-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 473 features and 1 field</span></span>
 <span><span class="co">#&gt; Geometry type: MULTILINESTRING</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -452,7 +452,7 @@ you.</p>
 <span><span class="va">fnm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/districts.geojson"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span></span>
 <span><span class="va">districts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="va">fnm</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reading layer `districts' from data source </span></span>
-<span><span class="co">#&gt;   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt;   `/home/runner/work/_temp/R-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 72 features and 1 field</span></span>
 <span><span class="co">#&gt; Geometry type: POLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -727,7 +727,7 @@ what we need:</p>
 <code class="sourceCode R"><span><span class="co"># Chunk 20</span></span>
 <span><span class="va">roads</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/roads.geojson"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reading layer `roads' from data source </span></span>
-<span><span class="co">#&gt;   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt;   `/home/runner/work/_temp/R-library/geospaar/extdata/roads.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 473 features and 1 field</span></span>
 <span><span class="co">#&gt; Geometry type: MULTILINESTRING</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -736,7 +736,7 @@ what we need:</p>
 <span><span class="va">districts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/districts.geojson"</span>, package <span class="op">=</span> <span class="st">"geospaar"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reading layer `districts' from data source </span></span>
-<span><span class="co">#&gt;   `/opt/R/4.6.1/lib/R/site-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt;   `/home/runner/work/_temp/R-library/geospaar/extdata/districts.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 72 features and 1 field</span></span>
 <span><span class="co">#&gt; Geometry type: POLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
