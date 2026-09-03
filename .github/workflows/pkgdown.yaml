@@ -25,14 +25,14 @@ jobs:
           use-public-rspm: true
 
       - name: Configure cacheable R library
-        run: echo "R_LIBS_USER=$RUNNER_TEMP/R-library" >> "$GITHUB_ENV"
+        run: echo "R_LIBS_SITE=$RUNNER_TEMP/R-library" >> "$GITHUB_ENV"
 
       - name: Restore R package cache
         id: r-package-cache
         uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/R-library
-          key: r-packages-ubuntu-noble-${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('DESCRIPTION') }}
+          key: r-packages-v2-ubuntu-noble-${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('DESCRIPTION') }}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
