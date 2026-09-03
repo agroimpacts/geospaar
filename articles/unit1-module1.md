@@ -1210,7 +1210,7 @@ front matter looks like this:
     ---
     title: "Vignette Title"
     author: "Vignette Author"
-    date: "2026-09-02"
+    date: "2026-09-03"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Vignette Title}
@@ -1263,7 +1263,7 @@ Now modify it. Start by changing the yaml front matter:
     ---
     title: "Overview of the lde346 Package"
     author: "Lyndon Estes"
-    date: "2026-09-02"
+    date: "2026-09-03"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Overview}
@@ -1428,6 +1428,12 @@ following:
 - Update your vignette so that it demonstrates how `my_multiplier` is
   used, in addition to the demonstration of `my_number_checker` that you
   have already added.
+
+- Also add to your vignette a statement (or statements) that **describes
+  how you used AI** to help with the assignment, including links to any
+  chats, name of tools used (e.g. Claude), including model version
+  (e.g. Claude Sonnet 4.6). If you are uncertain about how best to
+  document your AI use, please ask.
 
 - Commit and push your changes. Before committing, delete the `hello.Rd`
   and `hello.R` files, as we do not want those. Also do not commit html

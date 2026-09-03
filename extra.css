@@ -3,6 +3,10 @@
   align-items: center;
   display: inline-flex;
   gap: 0.5rem;
+  padding-bottom: 0;
+  padding-top: 0;
+  position: relative;
+  top: 0.55rem;
 }
 
 .navbar-brand::before {
@@ -17,12 +21,6 @@
 #main {
   font-size: 1.125rem;
   line-height: 1.65;
-  counter-reset: section;
-}
-
-#main > .section.level2 {
-  counter-increment: section;
-  counter-reset: subsection;
 }
 
 #main > .section.level2 > h2 {
@@ -30,34 +28,73 @@
   margin-top: 2.25rem;
 }
 
-#main > .section.level2 > h2::before {
-  content: counter(section) ". ";
-}
-
-#main > .section.level2 > .section.level3 {
-  counter-increment: subsection;
-  counter-reset: subsubsection;
-}
-
 #main > .section.level2 > .section.level3 > h3:not([data-toc-skip]) {
   font-size: 1.4rem;
   margin-top: 1.75rem;
-}
-
-#main > .section.level2 > .section.level3 > h3:not([data-toc-skip])::before {
-  content: counter(section) "." counter(subsection) " ";
-}
-
-#main > .section.level2 > .section.level3 > .section.level4 {
-  counter-increment: subsubsection;
 }
 
 #main > .section.level2 > .section.level3 > .section.level4 > h4 {
   font-size: 1.2rem;
 }
 
-#main > .section.level2 > .section.level3 > .section.level4 > h4::before {
-  content: counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+#main .section.level5 > h5 {
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+#main .section.level6 > h6 {
+  font-size: 1rem;
+  margin-top: 1.25rem;
+}
+
+.section-number {
+  margin-right: 0.25rem;
+}
+
+/* Show only the active heading's branch in the article TOC. */
+.template-article #toc > .nav .nav {
+  display: none !important;
+}
+
+.template-article #toc > .nav li.toc-open > .nav {
+  display: flex !important;
+  flex-direction: column;
+}
+
+.template-article #toc .nav li {
+  position: relative;
+}
+
+.template-article #toc .nav .nav {
+  margin-left: 0.75rem;
+}
+
+.template-article #toc .nav .nav > li > .nav-link {
+  margin-left: 0;
+}
+
+.template-article #toc .nav li > .nav-link {
+  padding-left: 1.25rem;
+}
+
+.toc-toggle {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  height: 1.75rem;
+  padding: 0;
+  position: absolute;
+  left: 0.25rem;
+  top: 0;
+  width: 1rem;
+}
+
+.toc-toggle::before {
+  content: "\25B8";
+}
+
+li.toc-open > .toc-toggle::before {
+  content: "\25BE";
 }
 
 #main pre,

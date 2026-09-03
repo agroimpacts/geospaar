@@ -16,13 +16,13 @@ Source:
 [`DESCRIPTION`](https://github.com/agroimpacts/geospaar/blob/fall2026/DESCRIPTION)
 
 Estes L (2026). *geospaar: Course materials for Clark University's GEOG
-246/346*. R package version 1.1.0,
+246/346*. R package version 1.1.1,
 <https://github.com/agroimpacts/geospaar>.
 
     @Manual{,
       title = {geospaar: Course materials for Clark University's GEOG 246/346},
       author = {Lyndon D. Estes},
       year = {2026},
-      note = {R package version 1.1.0},
+      note = {R package version 1.1.1},
       url = {https://github.com/agroimpacts/geospaar},
     }
