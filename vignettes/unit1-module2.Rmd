@@ -32,7 +32,7 @@ So let's first look at `R`'s species.
 # A taxonomy of R
 The Linnean system of biological classification groups species hierarchically, from Kingdom all the way down to species (and even sub-species), according to the figure below ([source](https://bioelevenncuevas.files.wordpress.com/2012/10/01_14classifyinglife_l.jpg)). 
 
-```{r out.width = "30%", fig.align='center', echo=FALSE}
+```{r out.width = "90%", fig.align='center', echo=FALSE}
 include_graphics("fig/u1m2-1.jpg") 
 ```
 
@@ -51,7 +51,7 @@ Species  logical; integer; character; boolean; closure
 
 Admittedly the classifications I give above this might not be that sound, but our focus here is on Family, Genus, Species, which are internal to `R`. Here we liken taxonomic family to the set of *classes* that define the different types of objects in R. "But wait", you say, "that's confusing! Why don't you map taxonomic class to `R` classes?" I know, I know, but I wanted to use the whole hierarchy, and it felt better to use Class to distinguish programming languages (into interpreted versus compiled). Plus I didn't want to have to jump over Order, which I would have struggled to fill with this analogy. 
 
-Moving on, Family maps onto `R` structures, and Species onto types, primarily to data types. My organization of these topics is pieced together from several sources of information that are online (classes [1](http://adv-r.had.co.nz/OO-essentials.html), [2](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming); structures [3](http://adv-r.had.co.nz/Data-structures.html), [4](https://rspatial.org/intr/3-basic-data-structures.html); types: [5](https://rspatial.org/intr/2-basic-data-types.html)), and it is based on the level of complexity inherent in the object.
+Moving on, genus maps onto `R` structures, and Species onto types, primarily to data types. My organization of these topics is pieced together from several sources of information that are online (classes [1](http://adv-r.had.co.nz/OO-essentials.html), [2](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming); structures [3](http://adv-r.had.co.nz/Data-structures.html), [4](https://rspatial.org/intr/3-basic-data-structures.html); types: [5](https://rspatial.org/intr/2-basic-data-types.html)), and it is based on the level of complexity inherent in the object.
 
 ## Species (data types)
 Let's start with the simplest level first, the species in our taxonomic analogy. Here we refer to the types of data that we work with (in `R` or any language). Types are actually assigned to any `R` object, even ones that we are more complex, as the `typeof` function (run `?typeof` to see) will show you, but here we are thinking only of the types of data, which are logical, integer, double, character, NULL, and the less used (at least for this class) complex and raw.
