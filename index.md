@@ -272,3 +272,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
 - [Class 3: Packages](https://agroimpacts.github.io/geospaar/class3.md)
 - [Class 4: More on setting up packages, version
   control](https://agroimpacts.github.io/geospaar/class4.md)
+- [Class 5: The R
+  ecosystem](https://agroimpacts.github.io/geospaar/class5.md)
