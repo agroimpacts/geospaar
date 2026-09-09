@@ -53,7 +53,7 @@ better to use Class to distinguish programming languages (into
 interpreted versus compiled). Plus I didn’t want to have to jump over
 Order, which I would have struggled to fill with this analogy.
 
-Moving on, Family maps onto `R` structures, and Species onto types,
+Moving on, genus maps onto `R` structures, and Species onto types,
 primarily to data types. My organization of these topics is pieced
 together from several sources of information that are online (classes
 [1](http://adv-r.had.co.nz/OO-essentials.md),
@@ -430,7 +430,7 @@ functions, including various commonly used statistical functions.
 mean
 #> function (x, ...) 
 #> UseMethod("mean")
-#> <bytecode: 0x5623aa8e7930>
+#> <bytecode: 0x563fb177d850>
 #> <environment: namespace:base>
 sample
 #> function (x, size, replace = FALSE, prob = NULL) 
@@ -447,13 +447,13 @@ sample
 #>         x[sample.int(length(x), size, replace, prob)]
 #>     }
 #> }
-#> <bytecode: 0x5623ad46b468>
+#> <bytecode: 0x563fb43006b8>
 #> <environment: namespace:base>
 sd
 #> function (x, na.rm = FALSE) 
 #> sqrt(var(if (is.vector(x) || is.factor(x)) x else as.double(x), 
 #>     na.rm = na.rm))
-#> <bytecode: 0x5623ad4a17c0>
+#> <bytecode: 0x563fb4336a10>
 #> <environment: namespace:stats>
 ```
 
@@ -1242,11 +1242,11 @@ f <- function(x) {
   environment()
 }
 f(x)
-#> <environment: 0x5623df45ef80>
+#> <environment: 0x563fe62f9990>
 f(10)
-#> <environment: 0x5623df4bdce0>
+#> <environment: 0x563fe6358200>
 f(x = x)
-#> <environment: 0x5623df5f0618>
+#> <environment: 0x563fe648a238>
 ```
 
 The function is modified to return the value from `environment`, which

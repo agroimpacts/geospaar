@@ -54,7 +54,7 @@
       <h1>Unit 1 Module 2</h1>
             <h3 data-toc-skip class="subtitle">GEOG246-346</h3>
             
-            <h4 data-toc-skip class="date">2026-09-03 <a href="index.html">Back to home</a>
+            <h4 data-toc-skip class="date">2026-09-09 <a href="index.html">Back to home</a>
 </h4>
       
       <small class="dont-index">Source: <a href="https://github.com/agroimpacts/geospaar/blob/fall2026/vignettes/unit1-module2.Rmd" class="external-link"><code>vignettes/unit1-module2.Rmd</code></a></small>
@@ -87,7 +87,7 @@ e.g. RStudio).</p>
 <p>The Linnean system of biological classification groups species
 hierarchically, from Kingdom all the way down to species (and even
 sub-species), according to the figure below (<a href="https://bioelevenncuevas.files.wordpress.com/2012/10/01_14classifyinglife_l.jpg" class="external-link">source</a>).</p>
-<p><img src="fig/u1m2-1.jpg" class="r-plt" alt="" width="30%" style="display: block; margin: auto;"></p>
+<p><img src="fig/u1m2-1.jpg" class="r-plt" alt="" width="90%" style="display: block; margin: auto;"></p>
 <p>We can adapt the lower end of the hierarchy to classify
 <code>R</code>’s objects (and probably most any other programming
 language), borrowing the organization from family, genus, and species.
@@ -138,7 +138,7 @@ hierarchy, and it felt better to use Class to distinguish programming
 languages (into interpreted versus compiled). Plus I didn’t want to have
 to jump over Order, which I would have struggled to fill with this
 analogy.</p>
-<p>Moving on, Family maps onto <code>R</code> structures, and Species
+<p>Moving on, genus maps onto <code>R</code> structures, and Species
 onto types, primarily to data types. My organization of these topics is
 pieced together from several sources of information that are online
 (classes <a href="http://adv-r.had.co.nz/OO-essentials.html" class="external-link">1</a>, <a href="https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Object_002doriented-programming" class="external-link">2</a>;
@@ -492,7 +492,7 @@ functions.</p>
 <code class="sourceCode R"><span><span class="va">mean</span></span>
 <span><span class="co">#&gt; function (x, ...) </span></span>
 <span><span class="co">#&gt; UseMethod("mean")</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x5623aa8e7930&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x563fb177d850&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:base&gt;</span></span>
 <span><span class="va">sample</span></span>
 <span><span class="co">#&gt; function (x, size, replace = FALSE, prob = NULL) </span></span>
@@ -509,13 +509,13 @@ functions.</p>
 <span><span class="co">#&gt;         x[sample.int(length(x), size, replace, prob)]</span></span>
 <span><span class="co">#&gt;     }</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x5623ad46b468&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x563fb43006b8&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:base&gt;</span></span>
 <span><span class="va">sd</span></span>
 <span><span class="co">#&gt; function (x, na.rm = FALSE) </span></span>
 <span><span class="co">#&gt; sqrt(var(if (is.vector(x) || is.factor(x)) x else as.double(x), </span></span>
 <span><span class="co">#&gt;     na.rm = na.rm))</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x5623ad4a17c0&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x563fb4336a10&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:stats&gt;</span></span></code></pre></div>
 <p>Three are provided above, two of which (<code>mean</code> and
 <code>sample</code>) are part of base <code>R</code>, i.e. they are
@@ -1236,11 +1236,11 @@ the following modification:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">f</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x5623df45ef80&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x563fe62f9990&gt;</span></span>
 <span><span class="fu">f</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x5623df4bdce0&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x563fe6358200&gt;</span></span>
 <span><span class="fu">f</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x5623df5f0618&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;environment: 0x563fe648a238&gt;</span></span></code></pre></div>
 <p>The function is modified to return the value from
 <code>environment</code>, which returns the name of the execution
 environment, which is simply a complicated hex-string. Note, however,
