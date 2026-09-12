@@ -54,7 +54,7 @@
       <h1>Unit 1 Module 2</h1>
             <h3 data-toc-skip class="subtitle">GEOG246-346</h3>
             
-            <h4 data-toc-skip class="date">2026-09-09 <a href="index.html">Back to home</a>
+            <h4 data-toc-skip class="date">2026-09-12 <a href="index.html">Back to home</a>
 </h4>
       
       <small class="dont-index">Source: <a href="https://github.com/agroimpacts/geospaar/blob/fall2026/vignettes/unit1-module2.Rmd" class="external-link"><code>vignettes/unit1-module2.Rmd</code></a></small>
@@ -492,7 +492,7 @@ functions.</p>
 <code class="sourceCode R"><span><span class="va">mean</span></span>
 <span><span class="co">#&gt; function (x, ...) </span></span>
 <span><span class="co">#&gt; UseMethod("mean")</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x559e00ea0850&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x55ed6fca6470&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:base&gt;</span></span>
 <span><span class="va">sample</span></span>
 <span><span class="co">#&gt; function (x, size, replace = FALSE, prob = NULL) </span></span>
@@ -509,13 +509,13 @@ functions.</p>
 <span><span class="co">#&gt;         x[sample.int(length(x), size, replace, prob)]</span></span>
 <span><span class="co">#&gt;     }</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x559e03a23608&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x55ed72829630&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:base&gt;</span></span>
 <span><span class="va">sd</span></span>
 <span><span class="co">#&gt; function (x, na.rm = FALSE) </span></span>
 <span><span class="co">#&gt; sqrt(var(if (is.vector(x) || is.factor(x)) x else as.double(x), </span></span>
 <span><span class="co">#&gt;     na.rm = na.rm))</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x559e03a59960&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x55ed7285f988&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:stats&gt;</span></span></code></pre></div>
 <p>Three are provided above, two of which (<code>mean</code> and
 <code>sample</code>) are part of base <code>R</code>, i.e. they are
@@ -645,9 +645,9 @@ the class. An analogy is that you can have variables of type int which
 translates to saying that variables that store integers are variables
 which are instances (objects) of the int class.</p>
 </blockquote>
-<p>This explanation nicely explains how OOP differs from the alternative
-programming paradigm (procedural programming). Another useful bit of
-explanation on OOP is from <a href="http://adv-r.had.co.nz/OO-essentials.html#oo-answers" class="external-link">Advanced
+<p>That explains nicely how OOP differs from the alternative programming
+paradigm (procedural programming). Another useful bit of explanation on
+OOP is from <a href="http://adv-r.had.co.nz/OO-essentials.html#oo-answers" class="external-link">Advanced
 R</a>:</p>
 <blockquote>
 <p>Central to any object-oriented system are the concepts of class and
@@ -977,7 +977,7 @@ respectively.</p>
 <h3 id="the-package-environment-and-namespaces">The package environment and namespaces<a class="anchor" aria-label="anchor" href="#the-package-environment-and-namespaces"></a>
 </h3>
 <p>This last point on namespaces brings us to packages. Packages have
-their own environments, as well as namespace environment. Let’s let
+their own environments, as well as a namespace environment. Let’s let
 Hadley Wickham <a href="https://adv-r.hadley.nz/environments.html#basics" class="external-link">explain
 this</a>:</p>
 <blockquote>
@@ -1009,7 +1009,7 @@ two ways:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rst</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/raster.html" class="external-link">raster</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">10</span>, ncols <span class="op">=</span> <span class="fl">10</span>, vals <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu">raster</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rst</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module2_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module2_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
 <p>This is the first way we tried to do it, with the exception that we
 now use the <code>::</code> to get access to <code>raster</code>’s
 <code>plot</code> method (we didn’t do that before), so that
@@ -1236,11 +1236,11 @@ the following modification:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">f</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x559e35a195c0&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x55eda4821930&gt;</span></span>
 <span><span class="fu">f</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x559e35a77e30&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x55eda487e280&gt;</span></span>
 <span><span class="fu">f</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x559e35ba5108&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;environment: 0x55eda49b02b8&gt;</span></span></code></pre></div>
 <p>The function is modified to return the value from
 <code>environment</code>, which returns the name of the execution
 environment, which is simply a complicated hex-string. Note, however,

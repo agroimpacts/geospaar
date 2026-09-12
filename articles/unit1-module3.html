@@ -54,7 +54,7 @@
       <h1>Unit 1 Module 3</h1>
             <h3 data-toc-skip class="subtitle">GEOG246-346</h3>
             
-            <h4 data-toc-skip class="date">2026-09-09 <a href="index.html">Back to home</a>
+            <h4 data-toc-skip class="date">2026-09-12 <a href="index.html">Back to home</a>
 </h4>
       
       <small class="dont-index">Source: <a href="https://github.com/agroimpacts/geospaar/blob/fall2026/vignettes/unit1-module3.Rmd" class="external-link"><code>vignettes/unit1-module3.Rmd</code></a></small>
@@ -79,7 +79,7 @@ been undergoing fairly substantial changes recently. There seems to be
 clear development trajectories within the language, much like the
 evolution of species.</p>
 <div class="figure" style="text-align: center">
-<img src="fig/u1m3-1.png" class="r-plt" alt="An (approximate) lineage of R packages/objects involved in data handling and graphics." width="40%"><p class="caption">
+<img src="fig/u1m3-1.png" class="r-plt" alt="An (approximate) lineage of R packages/objects involved in data handling and graphics." width="70%"><p class="caption">
 An (approximate) lineage of R packages/objects involved in data handling
 and graphics.
 </p>
@@ -2804,7 +2804,8 @@ documentation updated), 0.X.0 is an intermediate release (maybe you have
 added a new function or two), X.0.0 is a major release of a working
 version of the package.</p></li>
 <li><p>Can be installed with browsable vignettes using
-<code>install_github</code>.</p></li>
+<code>devtools::install_github</code> or (locally run)
+<code>devtools::install</code>.</p></li>
 <li><p>Code written according to Hadley Wickham’s <code>R</code> style
 guide. Points will be deducted for code that extends beyond 80
 characters per line, does not follow naming conventions, etc.</p></li>
@@ -2833,6 +2834,11 @@ example, if you are asked to create a two column
 <span><span class="co">#&gt; 9   9  9</span></span>
 <span><span class="co">#&gt; 10 10 10</span></span></code></pre></div>
 </li>
+<li><p>Also add to your vignette a statement (or statements) that
+<strong>describes how you used AI</strong> to help with the assignment,
+including links to any chats, name of tools used (e.g. Claude),
+including model version (e.g. Claude Sonnet 4.6). If you are uncertain
+about how best to document your AI use, please ask.</p></li>
 <li>
 <p>Set up the code chunks in your vignette to look like this:</p>
 <div class="sourceCode" id="cb67"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a><span class="in">```{r, error = TRUE}</span></span>

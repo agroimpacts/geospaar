@@ -2813,7 +2813,8 @@ an R package that:
     intermediate release (maybe you have added a new function or two),
     X.0.0 is a major release of a working version of the package.
 
-3.  Can be installed with browsable vignettes using `install_github`.
+3.  Can be installed with browsable vignettes using
+    `devtools::install_github` or (locally run) `devtools::install`.
 
 4.  Code written according to Hadley Wickham’s `R` style guide. Points
     will be deducted for code that extends beyond 80 characters per
@@ -2851,7 +2852,13 @@ an R package that:
     #> 10 10 10
     ```
 
-7.  Set up the code chunks in your vignette to look like this:
+7.  Also add to your vignette a statement (or statements) that
+    **describes how you used AI** to help with the assignment, including
+    links to any chats, name of tools used (e.g. Claude), including
+    model version (e.g. Claude Sonnet 4.6). If you are uncertain about
+    how best to document your AI use, please ask.
+
+8.  Set up the code chunks in your vignette to look like this:
 
     ```` markdown
     ```{r, error = TRUE}
@@ -2862,7 +2869,7 @@ an R package that:
     you will find) to be recorded in vignette output without causing the
     knit to fail
 
-8.  When complete, park the repo on a new side branch called “a2”
+9.  When complete, park the repo on a new side branch called “a2”
 
 ------------------------------------------------------------------------
 

@@ -430,7 +430,7 @@ functions, including various commonly used statistical functions.
 mean
 #> function (x, ...) 
 #> UseMethod("mean")
-#> <bytecode: 0x559e00ea0850>
+#> <bytecode: 0x55ed6fca6470>
 #> <environment: namespace:base>
 sample
 #> function (x, size, replace = FALSE, prob = NULL) 
@@ -447,13 +447,13 @@ sample
 #>         x[sample.int(length(x), size, replace, prob)]
 #>     }
 #> }
-#> <bytecode: 0x559e03a23608>
+#> <bytecode: 0x55ed72829630>
 #> <environment: namespace:base>
 sd
 #> function (x, na.rm = FALSE) 
 #> sqrt(var(if (is.vector(x) || is.factor(x)) x else as.double(x), 
 #>     na.rm = na.rm))
-#> <bytecode: 0x559e03a59960>
+#> <bytecode: 0x55ed7285f988>
 #> <environment: namespace:stats>
 ```
 
@@ -590,9 +590,9 @@ The best short explanation I have seen for what OOP is comes from a
 > translates to saying that variables that store integers are variables
 > which are instances (objects) of the int class.
 
-This explanation nicely explains how OOP differs from the alternative
-programming paradigm (procedural programming). Another useful bit of
-explanation on OOP is from [Advanced
+That explains nicely how OOP differs from the alternative programming
+paradigm (procedural programming). Another useful bit of explanation on
+OOP is from [Advanced
 R](http://adv-r.had.co.nz/OO-essentials.html#oo-answers):
 
 > Central to any object-oriented system are the concepts of class and
@@ -959,7 +959,7 @@ respectively.
 ### The package environment and namespaces
 
 This last point on namespaces brings us to packages. Packages have their
-own environments, as well as namespace environment. Let’s let Hadley
+own environments, as well as a namespace environment. Let’s let Hadley
 Wickham [explain
 this](https://adv-r.hadley.nz/environments.html#basics):
 
@@ -1242,11 +1242,11 @@ f <- function(x) {
   environment()
 }
 f(x)
-#> <environment: 0x559e35a195c0>
+#> <environment: 0x55eda4821930>
 f(10)
-#> <environment: 0x559e35a77e30>
+#> <environment: 0x55eda487e280>
 f(x = x)
-#> <environment: 0x559e35ba5108>
+#> <environment: 0x55eda49b02b8>
 ```
 
 The function is modified to return the value from `environment`, which

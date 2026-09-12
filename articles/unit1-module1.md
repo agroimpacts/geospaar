@@ -1210,7 +1210,7 @@ front matter looks like this:
     ---
     title: "Vignette Title"
     author: "Vignette Author"
-    date: "2026-09-09"
+    date: "2026-09-12"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Vignette Title}
@@ -1263,7 +1263,7 @@ Now modify it. Start by changing the yaml front matter:
     ---
     title: "Overview of the lde346 Package"
     author: "Lyndon Estes"
-    date: "2026-09-09"
+    date: "2026-09-12"
     output: rmarkdown::html_vignette
     vignette: >
       %\VignetteIndexEntry{Overview}
