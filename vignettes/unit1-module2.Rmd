@@ -235,7 +235,7 @@ The best short explanation I have seen for what OOP is comes from a `python` [gu
 
 > Classes and objects are the two main aspects of object oriented programming. A class creates a new type where objects are instances of the class. An analogy is that you can have variables of type int which translates to saying that variables that store integers are variables which are instances (objects) of the int class.
 
-This explanation nicely explains how OOP differs from the alternative programming paradigm (procedural programming). Another useful bit of explanation on OOP is from [Advanced R](http://adv-r.had.co.nz/OO-essentials.html#oo-answers):
+That explains nicely how OOP differs from the alternative programming paradigm (procedural programming). Another useful bit of explanation on OOP is from [Advanced R](http://adv-r.had.co.nz/OO-essentials.html#oo-answers):
 
 > Central to any object-oriented system are the concepts of class and method. A class defines the behaviour of objects by describing their attributes and their relationship to other classes. The class is also used when selecting methods, functions that behave differently depending on the class of their input. Classes are usually organised in a hierarchy: if a method does not exist for a child, then the parent’s method is used instead; the child inherits behaviour from the parent.
 
@@ -357,7 +357,7 @@ environment(lm)
 We see that `f` is a function defined in the global environment, whereas `mean` and `lm` belong to "namespaces" called `base` and `stats`, respectively. 
 
 ## The package environment and namespaces
-This last point on namespaces brings us to packages. Packages have their own environments, as well as namespace environment. Let's let Hadley Wickham [explain this](https://adv-r.hadley.nz/environments.html#basics):
+This last point on namespaces brings us to packages. Packages have their own environments, as well as a namespace environment. Let's let Hadley Wickham [explain this](https://adv-r.hadley.nz/environments.html#basics):
 
 > Every function in a package is associated with a pair of environments: the package environment, which you learned about earlier, and the namespace environment.
 
@@ -368,7 +368,7 @@ This last point on namespaces brings us to packages. Packages have their own env
 There are a few things to dive into in that explanation. First, you will note the mention of `::`. That has already appeared several times in examples in these first two modules. When you create an `R` package, it makes a package environment that contains its functions. You access the functions in the package environment in one of two ways:
 
 
-```{r, fig.width=5, fig.height=3.5}
+```{r, fig.width=7, fig.height=7}
 rst <- raster::raster(nrows = 10, ncols = 10, vals = 1:100)
 raster::plot(rst)
 ```

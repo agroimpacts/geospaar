@@ -3,10 +3,8 @@ title: "Geospatial Analysis with R"
 subtitle: "Class 6"
 format:
   revealjs:
-    code-block-height: 650px
     theme: night
     highlight-style: github
-    highlight-lines: true
     incremental: false    
     embed-resources: true
 resources:
@@ -39,84 +37,24 @@ dev.off()
 
 ## Today
 
-- data folder and lazy loads
-- inst folder and how to get at it
-- If time
-  - RMarkdown
-  - The `R` ecosystem
-  - Building blocks of R: data types, functions, etc
-
-```{r}
-#| echo: TRUE
-
-ls()
-data("farmers_env", package = "geospaar")
-ls()
-farmers_env
-rm(list = ls())
-ls()
-```
-
+- Where we are so far
+- Tips
+- The `R` ecosystem, cont.
+- Working with data structures
+  
 ---
 
-```{r}
-#| message: FALSE
-#| echo: TRUE
+## Where we are so far
+  - GitHub basics
+  - Package basics
+    - data folder and lazy loads
+    - inst folder and how to get at it
+  - R environment
+    - data types
+    - data structures and functions
+    - generics, OOPs, classes
 
-
-library(geospaar)
-ls()
-farmers_env
-ls()
-```
-
----
-
-## Raw data in inst/extdata
-
-```{r}
-#| out.width: "80%"
-#| echo: FALSE
-#| fig.align: 'center'
-
-knitr::include_graphics("figures/class4_2.png")
-```
-
----
-
-```{r}
-#| echo: TRUE
-
-system.file("extdata", package = "geospaar")
-dir(system.file("extdata", package = "geospaar"))
-f <- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
-head(read.csv(f))
-```
-
----
-
-## Other package folders
-
-- See [Chap 9 of "R Packages"](https://r-pkgs.org/misc.html) for more examples of R packages folders.
-
----
-
-## A look at RMarkdown
-
-Chunk options
-
-```{r}
-#| out.width: "80%"
-#| echo: FALSE
-#| fig.align: 'center'
-
-knitr::include_graphics("figures/class4_3.png")
-```
-
-[Rmarkdown demo](rmarkdown_demo.html) by Lei Song
-[RMarkdown gallery](https://rmarkdown.rstudio.com/lesson-1.html)
-
----
+--- 
 
 ## The R Ecosystem
 
@@ -127,6 +65,49 @@ knitr::include_graphics("figures/class4_3.png")
 
 knitr::include_graphics("figures/class5_u1m2.png")
 ```
+
+
+---
+
+
+## The R Ecosystem
+### Environments
+
+```{r}
+#| echo: true
+a <- 1:10
+f <- function(x) {
+  print(environment())
+  x <- x * 10
+  return(x)
+}
+# global environment
+ls()
+environment(f)
+
+# package (external)/namespace (internal)
+environment(lm)
+environment(ls)
+
+# function environment
+x <- 10
+f(x)
+x
+```
+
+---
+
+## The R Ecosystem
+### Environments
+
+`library()` attaches packages to the `search()` path
+```{r}
+#| echo: true
+#| 
+search()
+```
+
+`search()` order is important for understanding which exported functions are found first, and which are masked.
 
 ---
 
@@ -195,6 +176,7 @@ There are 6 atomic data types:
 
 ---
 
+
 ## The R Ecosystem
 ### Converting data type
 
@@ -208,6 +190,7 @@ There are 6 atomic data types:
 
 ## The R Ecosystem
 ### Data structures
+
 - Atomic vectors (most commonly thought of kind):
 
   * A sequence of objects of the **same class**.
@@ -244,6 +227,7 @@ knitr::include_graphics("figures/class2_vector.png")
 - `matrix`
 - `data.frame`
 - `list`
+
 ---
 
 ## Creating a vector
@@ -494,6 +478,12 @@ print(sort(s2))
 
 ---
 
+## Extras
+
+Below here.
+
+___
+
 ## Does S2 have duplicates?
 
 ```{r}
@@ -505,3 +495,53 @@ print(length(s2_unique))
 
 print(length(s2) == length(s2_unique))
 ```
+
+
+```{r}
+#| echo: TRUE
+
+ls()
+data("farmers_env", package = "geospaar")
+ls()
+farmers_env
+rm(list = ls())
+ls()
+```
+
+---
+
+```{r}
+#| message: FALSE
+#| echo: TRUE
+
+
+library(geospaar)
+ls()
+farmers_env
+ls()
+```
+
+---
+
+## Raw data in inst/extdata
+
+```{r}
+#| out.width: "80%"
+#| echo: FALSE
+#| fig.align: 'center'
+
+knitr::include_graphics("figures/class4_2.png")
+```
+
+---
+
+```{r}
+#| echo: TRUE
+
+system.file("extdata", package = "geospaar")
+dir(system.file("extdata", package = "geospaar"))
+f <- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
+head(read.csv(f))
+```
+
+

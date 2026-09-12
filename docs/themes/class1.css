@@ -29,6 +29,10 @@
   font-size: 0.6em;
 }
 
+.reveal li p {
+  font-size: 1em;
+}
+
 /* Inline code */
 .reveal pre.r code {
   background: #272626;

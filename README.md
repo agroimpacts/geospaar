@@ -176,3 +176,4 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 3: Packages](class3.html)
 - [Class 4: More on setting up packages, version control](class4.html)
 - [Class 5: The R ecosystem](class5.html)
+- [Class 6: The R ecosystem 2](class6.html)
