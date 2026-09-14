@@ -144,9 +144,9 @@ The detailed readings and assignments for each week and day can be found in the 
 ### Week 3. R fundamentals and Skills
 
 ### Week 4. R fundamentals and Skills 
-- Module 2/3 assignment (#2) due
 
 ### Week 5. Data preparation and visualization / Basic analytics
+- Module 2/3 assignment (#2) due
 
 ### Week 6. Data preparation and visualization / Basic analytics
 - Unit 1 Module 4 assignment (#3) due

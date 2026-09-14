@@ -38,8 +38,8 @@ dev.off()
 ## Today
 
 - Where we are so far
-- Tips
 - The `R` ecosystem, cont.
+- Productivity tips
 - Working with data structures
   
 ---
@@ -221,7 +221,16 @@ knitr::include_graphics("figures/class2_vector.png")
 
 ---
 
-## Let's create some data
+## Productivity tips 
+
+- Tab completion and shortcuts
+- Reusing code
+- Code syntax
+- [Posting guide](https://www.r-project.org/posting-guide.html)
+
+---
+
+## Working with data structures
 
 - `vector`
 - `matrix`
@@ -489,7 +498,10 @@ ___
 ```{r}
 #| echo: TRUE
 
+set.seed(1)
+s2 <- sample(letters[1:7], size = 20, replace = TRUE)
 s2_unique <- unique(s2)
+s2
 print(length(s2))
 print(length(s2_unique))
 
@@ -544,4 +556,46 @@ f <- system.file("extdata", "farmer_spatial.csv", package = "geospaar")
 head(read.csv(f))
 ```
 
+## Knowing how to get help as a skillset
+
+- Slack posting guide
+- Getting help via the search engine
+- (Eventually) posting to listserves
+
+---
+
+## Search Engine Science
+
+ - Sometimes you just need the error message
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_4.jpeg")
+```
+
+---
+
+## Search Engine Science
+
+- Sometimes you need to search
+  ```
+  fatal: unable to access 'https://github.com/agroimpacts/xyz346.git/': 
+  error setting certificate verify locations:
+   CAfile: C:/Users/xyz/Desktop/ADP/RStudio/xyz346/Git/mingw64/ssl/
+   certs/ca-bundle.crt
+   CApath: none
+  ```
+- How you search matters
+
+---
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_5.png")
+```
+
+---
+
+## Listserves
+
+```{r, out.width = "90%", echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/class3_3.png")
+```
 
