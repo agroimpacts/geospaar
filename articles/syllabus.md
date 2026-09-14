@@ -280,9 +280,9 @@ well as the overall learning goals for the unit.
 
 #### Week 4. R fundamentals and Skills
 
-- Module 2/3 assignment (#2) due
-
 #### Week 5. Data preparation and visualization / Basic analytics
+
+- Module 2/3 assignment (#2) due
 
 #### Week 6. Data preparation and visualization / Basic analytics
 
