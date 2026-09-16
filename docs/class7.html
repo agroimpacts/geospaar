@@ -577,6 +577,9 @@ margin: 5px 0;
 .reveal p {
 font-size: 0.6em;
 }
+.reveal li p {
+font-size: 1em;
+}
 
 .reveal pre.r code {
 background: #272626;
@@ -1115,7 +1118,7 @@ margin-right: 0; }
 <section id="today" class="slide level2">
 <h2>Today</h2>
 <ul>
-<li>Building blocks of R: data types, functions, etc</li>
+<li>Building blocks of R: data structures, functions, etc</li>
 <li>Useful functions</li>
 <li>Indexing and subsetting</li>
 <li>Control structures</li>
@@ -1151,7 +1154,7 @@ margin-right: 0; }
 <section id="accessing-elements-in-vector" class="slide level2">
 <h2>Accessing elements in vector</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>v1 <span class="ot">&lt;-</span> (<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)<span class="sc">*</span><span class="dv">3</span> </span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>v1 <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span> <span class="sc">*</span> <span class="dv">3</span> </span>
 <span id="cb8-2"><a href></a><span class="fu">print</span>(v1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1]  3  6  9 12 15 18 21 24 27</code></pre>
@@ -1544,98 +1547,110 @@ NULL</code></pre>
 [151] print.numeric_version                               
 [152] print.object_size*                                  
 [153] print.octmode                                       
-[154] print.packageDescription*                           
-[155] print.packageInfo                                   
-[156] print.packageIQR*                                   
-[157] print.packageStatus*                                
-[158] print.paged_df*                                     
-[159] print.pairwise.htest*                               
-[160] print.person*                                       
-[161] print.POSIXct                                       
-[162] print.POSIXlt                                       
-[163] print.power.htest*                                  
-[164] print.ppr*                                          
-[165] print.prcomp*                                       
-[166] print.princomp*                                     
-[167] print.proc_time                                     
-[168] print.quosure*                                      
-[169] print.quosures*                                     
-[170] print.raster*                                       
-[171] print.Rconcordance*                                 
-[172] print.Rd*                                           
-[173] print.recordedplot*                                 
-[174] print.restart                                       
-[175] print.RGBcolorConverter*                            
-[176] print.RGlyphFont*                                   
-[177] print.rlang_box_done*                               
-[178] print.rlang_box_splice*                             
-[179] print.rlang_data_pronoun*                           
-[180] print.rlang_dict*                                   
-[181] print.rlang_dyn_array*                              
-[182] print.rlang_envs*                                   
-[183] print.rlang_error*                                  
-[184] print.rlang_fake_data_pronoun*                      
-[185] print.rlang_lambda_function*                        
-[186] print.rlang_message*                                
-[187] print.rlang_trace*                                  
-[188] print.rlang_warning*                                
-[189] print.rlang_zap*                                    
-[190] print.rlang:::list_of_conditions*                   
-[191] print.rle                                           
-[192] print.rlib_bytes*                                   
-[193] print.rlib_error_3_0*                               
-[194] print.rlib_trace_3_0*                               
-[195] print.roman*                                        
-[196] print.scalar*                                       
-[197] print.sessionInfo*                                  
-[198] print.shiny.tag*                                    
-[199] print.shiny.tag.env*                                
-[200] print.shiny.tag.list*                               
-[201] print.shiny.tag.query*                              
-[202] print.simple.list                                   
-[203] print.smooth.spline*                                
-[204] print.socket*                                       
-[205] print.srcfile                                       
-[206] print.srcref                                        
-[207] print.stepfun*                                      
-[208] print.stl*                                          
-[209] print.StructTS*                                     
-[210] print.subdir_tests*                                 
-[211] print.summarize_CRAN_check_status*                  
-[212] print.summary.aov*                                  
-[213] print.summary.aovlist*                              
-[214] print.summary.ecdf*                                 
-[215] print.summary.glm*                                  
-[216] print.summary.lm*                                   
-[217] print.summary.loess*                                
-[218] print.summary.manova*                               
-[219] print.summary.nls*                                  
-[220] print.summary.packageStatus*                        
-[221] print.summary.ppr*                                  
-[222] print.summary.prcomp*                               
-[223] print.summary.princomp*                             
-[224] print.summary.table                                 
-[225] print.summary.warnings                              
-[226] print.summaryDefault                                
-[227] print.table                                         
-[228] print.tables_aov*                                   
-[229] print.terms*                                        
-[230] print.ts*                                           
-[231] print.tskernel*                                     
-[232] print.TukeyHSD*                                     
-[233] print.tukeyline*                                    
-[234] print.tukeysmooth*                                  
-[235] print.undoc*                                        
-[236] print.vignette*                                     
-[237] print.warnings                                      
-[238] print.xfun_md_viewable*                             
-[239] print.xfun_raw_string*                              
-[240] print.xfun_record_results*                          
-[241] print.xfun_rename_seq*                              
-[242] print.xfun_strict_list*                             
-[243] print.xgettext*                                     
-[244] print.xngettext*                                    
-[245] print.xtabs*                                        
+[154] print.otel_counter*                                 
+[155] print.otel_gauge*                                   
+[156] print.otel_histogram*                               
+[157] print.otel_logger*                                  
+[158] print.otel_logger_provider*                         
+[159] print.otel_meter*                                   
+[160] print.otel_meter_provider*                          
+[161] print.otel_span*                                    
+[162] print.otel_span_context*                            
+[163] print.otel_tracer*                                  
+[164] print.otel_tracer_provider*                         
+[165] print.otel_up_down_counter*                         
+[166] print.packageDescription*                           
+[167] print.packageInfo                                   
+[168] print.packageIQR*                                   
+[169] print.packageStatus*                                
+[170] print.paged_df*                                     
+[171] print.pairwise.htest*                               
+[172] print.person*                                       
+[173] print.POSIXct                                       
+[174] print.POSIXlt                                       
+[175] print.power.htest*                                  
+[176] print.ppr*                                          
+[177] print.prcomp*                                       
+[178] print.princomp*                                     
+[179] print.proc_time                                     
+[180] print.quosure*                                      
+[181] print.quosures*                                     
+[182] print.raster*                                       
+[183] print.Rconcordance*                                 
+[184] print.Rd*                                           
+[185] print.recordedplot*                                 
+[186] print.restart                                       
+[187] print.RGBcolorConverter*                            
+[188] print.RGlyphFont*                                   
+[189] print.rlang_box_done*                               
+[190] print.rlang_box_splice*                             
+[191] print.rlang_data_pronoun*                           
+[192] print.rlang_dict*                                   
+[193] print.rlang_dyn_array*                              
+[194] print.rlang_envs*                                   
+[195] print.rlang_error*                                  
+[196] print.rlang_fake_data_pronoun*                      
+[197] print.rlang_lambda_function*                        
+[198] print.rlang_message*                                
+[199] print.rlang_trace*                                  
+[200] print.rlang_warning*                                
+[201] print.rlang_zap*                                    
+[202] print.rlang:::list_of_conditions*                   
+[203] print.rle                                           
+[204] print.rlib_bytes*                                   
+[205] print.rlib_error_3_0*                               
+[206] print.rlib_trace_3_0*                               
+[207] print.roman*                                        
+[208] print.scalar*                                       
+[209] print.sessionInfo*                                  
+[210] print.shiny.tag*                                    
+[211] print.shiny.tag.env*                                
+[212] print.shiny.tag.list*                               
+[213] print.shiny.tag.query*                              
+[214] print.simple.list                                   
+[215] print.smooth.spline*                                
+[216] print.socket*                                       
+[217] print.srcfile                                       
+[218] print.srcref                                        
+[219] print.stepfun*                                      
+[220] print.stl*                                          
+[221] print.StructTS*                                     
+[222] print.subdir_tests*                                 
+[223] print.summarize_CRAN_check_status*                  
+[224] print.summary.aov*                                  
+[225] print.summary.aovlist*                              
+[226] print.summary.ecdf*                                 
+[227] print.summary.glm*                                  
+[228] print.summary.lm*                                   
+[229] print.summary.loess*                                
+[230] print.summary.manova*                               
+[231] print.summary.nls*                                  
+[232] print.summary.packageStatus*                        
+[233] print.summary.ppr*                                  
+[234] print.summary.prcomp*                               
+[235] print.summary.princomp*                             
+[236] print.summary.table                                 
+[237] print.summary.warnings                              
+[238] print.summaryDefault                                
+[239] print.table                                         
+[240] print.tables_aov*                                   
+[241] print.terms*                                        
+[242] print.ts*                                           
+[243] print.tskernel*                                     
+[244] print.TukeyHSD*                                     
+[245] print.tukeyline*                                    
+[246] print.tukeysmooth*                                  
+[247] print.undoc*                                        
+[248] print.vignette*                                     
+[249] print.warnings                                      
+[250] print.xfun_md_viewable*                             
+[251] print.xfun_raw_string*                              
+[252] print.xfun_record_results*                          
+[253] print.xfun_rename_seq*                              
+[254] print.xfun_strict_list*                             
+[255] print.xgettext*                                     
+[256] print.xngettext*                                    
+[257] print.xtabs*                                        
 see &#39;?methods&#39; for accessing help and source code</code></pre>
 </div>
 </div>
@@ -1820,14 +1835,14 @@ see &#39;?methods&#39; for accessing help and source code</code></pre>
 <span id="cb83-5"><a href></a>}</span>
 <span id="cb83-6"><a href></a><span class="fu">myfun</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;environment: 0x10f0b2438&gt;</code></pre>
+<pre><code>&lt;environment: 0x120a3ff20&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 100</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href></a><span class="fu">myfun</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;environment: 0x10f0eb7e8&gt;</code></pre>
+<pre><code>&lt;environment: 0x120a76710&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 100</code></pre>
