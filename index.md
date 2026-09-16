@@ -276,3 +276,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   ecosystem](https://agroimpacts.github.io/geospaar/class5.md)
 - [Class 6: The R ecosystem
   2](https://agroimpacts.github.io/geospaar/class6.md)
+- [Class 7: Functions, subsetting, control
+  structures](https://agroimpacts.github.io/geospaar/class7.md)

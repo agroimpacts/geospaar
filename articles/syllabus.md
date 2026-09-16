@@ -286,8 +286,6 @@ well as the overall learning goals for the unit.
 
 #### Week 6. Data preparation and visualization / Basic analytics
 
-- Unit 1 Module 4 assignment (#3) due
-
 ### Unit 2. Handling and analyzing spatial data with R
 
 In this part of the course we will start to learn to use R as a GIS. The
@@ -295,6 +293,8 @@ detailed syllabus can be found in the [Unit 2
 vignette](https://agroimpacts.github.io/geospaar/articles/unit2.md).
 
 #### Week 7. Introduction, working with vector data
+
+- Unit 1 Module 4 assignment (#3) due
 
 #### Week 8. Vectors continued
 
