@@ -55,17 +55,21 @@ ggsave(here::here("external/slides/figures/africa_capitals.png"),
 
 ---
 
-## 2-d structures
+## Create data structures
 
-- Create the following:
-  - `m`: a matrix with three integer columns named "V1", "V2", "V3"
-    - Create each column first as its own vector, then combine
-    - `V1` = 1:10
-    - `V2` is a random sample between 1:100
-    - `V3` is drawn from a random uniform distribution between 0 and 50     - Use the same `set.seed(50)` as before
-    - Inspect the `str` and `class` of `m`
-  - `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
-    - `V4` is a random selection of the letters A-E
+- Starting note: Use `set.seed(10)` when creating random data
+- Create a list `l` from `a`, `b`, `d`. 
+  - `a`: a random vector of integers with 10 elements drawn from 1-20, with vectors named "V1" through "V10":
+  - `b`: Using `a` as an index to select from `letters`
+  - `d`: Use `rnorm` with a mean = 100 and an sd of 20
+  - Assign the names of the vectors in `l` to the `l`'s elements
+- `m`: a matrix with three integer columns named "V1", "V2", "V3"
+  - Create each column first as its own vector, then combine
+  - `V1` = 1:10
+  - `V2` is a random sample between 1:100
+  - `V3` is drawn from a random uniform distribution between 0 and 50     
+- `dat`, a data.frame built from `V1`, `V2`, `V3`, and `V4`
+  - `V4` is a random selection of the letters A-E
 
 ---
 
@@ -175,15 +179,15 @@ print(which.max(v)) # index of max value
 ## data.frame vs data.table vs. tibble
 
 - all 2D structures.
-- data.frame = Base R
-- tibble = `tidyverse`
-- data.table = fast.
+- `data.frame` = Base R
+- `tibble` = `tidyverse`
+- `data.table` = very fast
 
 For now, we'll stick to data.frame
 
 ---
 
-## data.frame indexing
+## `data.frame` indexing
 
 `data.frame` uses the following to subset: `[*row conditions, *column conditions]`
 
@@ -331,3 +335,21 @@ We can use `apply` or `sapply` to create a new column in a data frame.
 DF$rowMax <- apply(DF, 1, FUN = max)
 DF
 ```
+
+---
+
+## Class exercises (work in threes)
+
+### Create data
+- Use a random seed of 10 for generating data
+- Create a vector `g` with a random sample of 10 numbers drawn from 1-5. 
+- Create a `data.frame` called `dat` combining `g` with `h`, where `h` = `g` divided by a number drawn using `rnorm` with a mean of 10 and `sd` of 1. 
+- Create a list `l2` that combines `a` and `dat`, naming each list element by its object name. 
+
+### Use the data as follows:
+- Write a `for` loop that iterates through `g` and prints only the values >2, otherwise it should print "Nope!"
+- Use `apply` to find the maximum value of each row in `dat`
+- Use `sapply` to find the maximum value of each row in `dat`
+- Use `lapply` to iterate through each element of `l2` and subtract the minimum value of each element from the maximum value of each element
+
+
