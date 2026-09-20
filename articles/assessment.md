@@ -53,12 +53,12 @@ to in-class questions related to your assignment.
 
 | Accuracy | Acc. points | Reproducibility | Repro. points | Elegance | Ele. points |
 |---:|---:|---:|---:|---:|---:|
-| Results all wrong (0-5%) | 0 | Can’t be made to run | 0 | Indecipherable code, no comments/documentation | 0 |
-| Results mostly wrong (5-25%) | 4 | Doesn’t work | 4 | Indecipherable code, no comments/documentation | 2 |
-| Results more wrong than right (25-50%) | 8 | Doesn’t run without numerous fixes | 8 | Code indecipherable/no comments/documentation | 4 |
-| Results more right than wrong (50-75%) | 12 | Runs after a handful of fixes | 12 | Code readable but wrong style/some commenting/doc’tation | 6 |
-| Results almost entirely correct (75-95%) | 16 | Runs after some minor tweaks | 16 | Code mostly conformant/adequate commenting/documentation | 8 |
-| Results all correct (95-100%) | 20 | Runs out of the box | 20 | Code conformant and stylish/well commented/documented | 10 |
+| Results all wrong (0-5%) | 5 | Can’t be made to run | 5 | Indecipherable code, no comments/documentation | 2.0 |
+| Results mostly wrong (5-25%) | 10 | Doesn’t work | 10 | Indecipherable code, no comments/documentation | 5.0 |
+| Results more wrong than right (25-50%) | 12 | Doesn’t run without numerous fixes | 12 | Code indecipherable/no comments/documentation | 6.0 |
+| Results more right than wrong (50-75%) | 15 | Runs after a handful of fixes | 15 | Code readable but wrong style/some commenting/doc’tation | 7.5 |
+| Results almost entirely correct (75-95%) | 19 | Runs after some minor tweaks | 19 | Code mostly conformant/adequate commenting/documentation | 9.5 |
+| Results all correct (95-100%) | 20 | Runs out of the box | 20 | Code conformant and stylish/well commented/documented | 10.0 |
 
 ------------------------------------------------------------------------
 
