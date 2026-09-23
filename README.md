@@ -178,3 +178,6 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 5: The R ecosystem](class5.html)
 - [Class 6: The R ecosystem 2](class6.html)
 - [Class 7: Functions, subsetting, control structures](class7.html)
+- [Class 8: Indexing, subsetting, control structures](class8.html)
+- [Class 9: Control structures](class9.html)
+
