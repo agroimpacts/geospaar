@@ -278,3 +278,7 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   2](https://agroimpacts.github.io/geospaar/class6.md)
 - [Class 7: Functions, subsetting, control
   structures](https://agroimpacts.github.io/geospaar/class7.md)
+- [Class 8: Indexing, subsetting, control
+  structures](https://agroimpacts.github.io/geospaar/class8.md)
+- [Class 9: Control
+  structures](https://agroimpacts.github.io/geospaar/class9.md)
