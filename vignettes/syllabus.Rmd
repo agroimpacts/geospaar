@@ -158,20 +158,19 @@ In this part of the course we will start to learn to use R as a GIS.  The detail
 
 ### Week 8. Vectors continued
 
+### Week 9. - Working with raster data
 - Unit 2 Module 1 assignment (#4) due
 
-### Week 9. - Working with raster data
-
 ### Week 10-11. - Raster data continued
-- Unit 2 Module 2 assignment (#5) due
-- Exam
+- Unit 2 Module 2 assignment (#5) due (end of week 11)
 
 ## Unit 3. Projects
-### Week 12 - Project selection
-- Final project overview due
+### Week 12 - Exam and project selection
+- **Exam** (Monday, 9 November)
+- Final project overview due (Friday)
 
 ### Weeks 13-15 - Project work
-Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. 
+Students will spend this time working on their projects, with a particular focus on working with us to identify and trouble-shoot methods. **Final team projects due Monday, 14 December**. 
 
 The class periods in this week can be used for continued project work. **The final project will be submitted during the exam week.** 
 
