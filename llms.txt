@@ -282,6 +282,8 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   structures](https://agroimpacts.github.io/geospaar/class8.md)
 - [Class 9: Control
   structures](https://agroimpacts.github.io/geospaar/class9.md)
+- [Class 10: Control
+  structures](https://agroimpacts.github.io/geospaar/class10.md)
 
 # Package index
 

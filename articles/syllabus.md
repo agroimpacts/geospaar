@@ -298,26 +298,26 @@ vignette](https://agroimpacts.github.io/geospaar/articles/unit2.md).
 
 #### Week 8. Vectors continued
 
-- Unit 2 Module 1 assignment (#4) due
-
 #### Week 9. - Working with raster data
+
+- Unit 2 Module 1 assignment (#4) due
 
 #### Week 10-11. - Raster data continued
 
-- Unit 2 Module 2 assignment (#5) due
-- Exam
+- Unit 2 Module 2 assignment (#5) due (end of week 11)
 
 ### Unit 3. Projects
 
-#### Week 12 - Project selection
+#### Week 12 - Exam and project selection
 
-- Final project overview due
+- **Exam** (Monday, 9 November)
+- Final project overview due (Friday)
 
 #### Weeks 13-15 - Project work
 
 Students will spend this time working on their projects, with a
 particular focus on working with us to identify and trouble-shoot
-methods.
+methods. **Final team projects due Monday, 14 December**.
 
 The class periods in this week can be used for continued project work.
 **The final project will be submitted during the exam week.**
