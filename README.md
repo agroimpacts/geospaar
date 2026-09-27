@@ -180,5 +180,5 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 7: Functions, subsetting, control structures](class7.html)
 - [Class 8: Indexing, subsetting, control structures](class8.html)
 - [Class 9: Control structures](class9.html)
-- [Class 10: Control structures](class10.html)
+- [Class 10: Reading/writing files, dates, `dplyr`](class10.html)
 
