@@ -62,13 +62,44 @@ ggsave(p, filename = "docs/figures/tanzam_rainfall.png", height = 4,
 
 ---
 
-## Exercises
+## Today 
 
-- Use `lapply` to make three `data.frame`s captured in a list `l`, each composed of one randomly sampled column `v1` (selecting from integers 1:10, with length = 20), and the second being `v2` composed of lowercase letters, randomly selected using `sample`, also of length 20.  
-- The iterator in the `lapply` should be 10, 20, 30, which become the random seeds for the sampling (in the body of the `lapply`)
-- After making `l`, use a `for` loop to iterate through each element of `l`, writing each out to a folder `external/data/` in your project. 
-- Change the name of each as part of the iteration, so that `l[[1]]` is written out as `external/data/dataset1.csv`, etc. Hint: you can use `paste0` to make each file path and name.  
-- After writing these out, use another `lapply` to read back in the three datasets into a new list `l2`.  Bonus: Use `dir` to programmatically read in the file paths from your `external/data` folder.  
+- Homework
+- Bring Your Own Data (to read)
+- Intro to manipulating and analyzing data
+
+---
+
+## Homework exercise: `lapply` + read + write data
+
+- Let's use `lapply` to create a list `l` of 3 `data.frame`s in which the first `data.frame` has it's `V2` column multiplied by 5, the second `data.frame` has `V2` multiplied by 10, and the third has `V2` multipled by 20. Use `dat` (see earlier slides) as the starting `data.frame`.  
+- Within the `lapply`, write each `data.frame` out to `tempdir`, naming each `dataX.csv`, where `X` is replaced by the multiplier value applied to `V2`
+- Use `list.dir()` to read the file names and form a file path vector from them. Name the vector `temp_files`
+- Use `lapply` with `temp_files` to read the files back into a list `l2`. Compare `l` and `l2` for equivalency. 
+
+---
+
+## Buggy answer
+
+```{r, eval=FALSE}
+l <- lappl(c(5, 10, 20), function[x] {
+  d >= datt[dat$V2 * "x"]
+  readr:write.csv(d, file = filepath(tempdir(), paste0("data", X, ".csv")))
+  return(d)
+}})
+
+temp-files <- list.files(tempdir(), full.names = True, row.names = FALSE)
+
+l2 <- lapply(temp-files, function(x) readr:::read.csv(x))
+
+for(i in 1:length(l)) print(l[[i]] == l2[[i]])
+```
+
+---
+
+## BYOD
+
+- [Your data](https://makeagif.com/i/we81dO)
 
 ---
 

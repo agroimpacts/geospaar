@@ -577,6 +577,9 @@ margin: 5px 0;
 .reveal p {
 font-size: 0.6em;
 }
+.reveal li p {
+font-size: 1em;
+}
 
 .reveal pre.r code {
 background: #272626;
@@ -1132,40 +1135,68 @@ margin-right: 0; }
 <span id="cb1-25"><a href></a>       <span class="at">width =</span> <span class="dv">7</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">dpi =</span> <span class="dv">300</span>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="exercises" class="slide level2">
-<h2>Exercises</h2>
+<section id="today" class="slide level2">
+<h2>Today</h2>
 <ul>
-<li>Use <code>lapply</code> to make three <code>data.frame</code>s captured in a list <code>l</code>, each composed of one randomly sampled column <code>v1</code> (selecting from integers 1:10, with length = 20), and the second being <code>v2</code> composed of lowercase letters, randomly selected using <code>sample</code>, also of length 20.<br>
+<li>Homework</li>
+<li>Bring Your Own Data (to read)</li>
+<li>Intro to manipulating and analyzing data</li>
+</ul>
+</section>
+<section id="homework-exercise-lapply-read-write-data" class="slide level2">
+<h2>Homework exercise: <code>lapply</code> + read + write data</h2>
+<ul>
+<li>Let’s use <code>lapply</code> to create a list <code>l</code> of 3 <code>data.frame</code>s in which the first <code>data.frame</code> has it’s <code>V2</code> column multiplied by 5, the second <code>data.frame</code> has <code>V2</code> multiplied by 10, and the third has <code>V2</code> multipled by 20. Use <code>dat</code> (see earlier slides) as the starting <code>data.frame</code>.<br>
 </li>
-<li>The iterator in the <code>lapply</code> should be 10, 20, 30, which become the random seeds for the sampling (in the body of the <code>lapply</code>)</li>
-<li>After making <code>l</code>, use a <code>for</code> loop to iterate through each element of <code>l</code>, writing each out to a folder <code>external/data/</code> in your project.</li>
-<li>Change the name of each as part of the iteration, so that <code>l[[1]]</code> is written out as <code>external/data/dataset1.csv</code>, etc. Hint: you can use <code>paste0</code> to make each file path and name.<br>
-</li>
-<li>After writing these out, use another <code>lapply</code> to read back in the three datasets into a new list <code>l2</code>. Bonus: Use <code>dir</code> to programmatically read in the file paths from your <code>external/data</code> folder.</li>
+<li>Within the <code>lapply</code>, write each <code>data.frame</code> out to <code>tempdir</code>, naming each <code>dataX.csv</code>, where <code>X</code> is replaced by the multiplier value applied to <code>V2</code></li>
+<li>Use <code>list.dir()</code> to read the file names and form a file path vector from them. Name the vector <code>temp_files</code></li>
+<li>Use <code>lapply</code> with <code>temp_files</code> to read the files back into a list <code>l2</code>. Compare <code>l</code> and <code>l2</code> for equivalency.</li>
+</ul>
+</section>
+<section id="buggy-answer" class="slide level2">
+<h2>Buggy answer</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a>l <span class="ot">&lt;-</span> <span class="fu">lappl</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>), <span class="cf">function</span>[x] {</span>
+<span id="cb2-2"><a href></a>  d <span class="sc">&gt;=</span> datt[dat<span class="sc">$</span>V2 <span class="sc">*</span> <span class="st">&quot;x&quot;</span>]</span>
+<span id="cb2-3"><a href></a>  readr<span class="sc">:</span><span class="fu">write.csv</span>(d, <span class="at">file =</span> <span class="fu">filepath</span>(<span class="fu">tempdir</span>(), <span class="fu">paste0</span>(<span class="st">&quot;data&quot;</span>, X, <span class="st">&quot;.csv&quot;</span>)))</span>
+<span id="cb2-4"><a href></a>  <span class="fu">return</span>(d)</span>
+<span id="cb2-5"><a href></a>}<span class="er">}</span>)</span>
+<span id="cb2-6"><a href></a></span>
+<span id="cb2-7"><a href></a>temp<span class="sc">-</span>files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="fu">tempdir</span>(), <span class="at">full.names =</span> True, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-8"><a href></a></span>
+<span id="cb2-9"><a href></a>l2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(temp<span class="sc">-</span>files, <span class="cf">function</span>(x) readr<span class="sc">:::</span><span class="fu">read.csv</span>(x))</span>
+<span id="cb2-10"><a href></a></span>
+<span id="cb2-11"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(l)) <span class="fu">print</span>(l[[i]] <span class="sc">==</span> l2[[i]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="byod" class="slide level2">
+<h2>BYOD</h2>
+<ul>
+<li><a href="https://makeagif.com/i/we81dO">Your data</a></li>
 </ul>
 </section>
 <section id="working-with-data-continued" class="slide level2">
 <h2>Working with data, continued</h2>
 <h3 id="do.call-bind_rows"><code>do.call</code> / <code>bind_rows</code></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a>sz <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb2-2"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
-<span id="cb2-3"><a href></a>  <span class="fu">set.seed</span>(i)</span>
-<span id="cb2-4"><a href></a>  d <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-5"><a href></a>    <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>sz,</span>
-<span id="cb2-6"><a href></a>    <span class="at">v1 =</span> <span class="fu">runif</span>(sz, <span class="at">min =</span> <span class="dv">2</span>, <span class="at">max =</span> <span class="dv">12</span>),</span>
-<span id="cb2-7"><a href></a>    <span class="at">grp =</span> <span class="fu">paste0</span>(<span class="st">&quot;g&quot;</span>, i)</span>
-<span id="cb2-8"><a href></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">v2 =</span> v1 <span class="sc">+</span> <span class="fu">rnorm</span>(sz, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-9"><a href></a>    <span class="fu">select</span>(id, v1, v2, grp)</span>
-<span id="cb2-10"><a href></a>  readr<span class="sc">::</span><span class="fu">write_csv</span>(d, <span class="at">file =</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="fu">paste0</span>(<span class="st">&quot;dataset&quot;</span>, i, <span class="st">&quot;.csv&quot;</span>)))</span>
-<span id="cb2-11"><a href></a>}</span>
-<span id="cb2-12"><a href></a><span class="co"># ggplot(d) + geom_point(aes(x = v1, y = v2))</span></span>
-<span id="cb2-13"><a href></a></span>
-<span id="cb2-14"><a href></a>fs <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="fu">tempdir</span>(), <span class="at">pattern =</span> <span class="st">&quot;dataset.*.csv&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-15"><a href></a><span class="co"># dat &lt;- do.call(rbind, lapply(fs, readr::read_csv))</span></span>
-<span id="cb2-16"><a href></a>dat <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">lapply</span>(fs, readr<span class="sc">::</span>read_csv))</span>
-<span id="cb2-17"><a href></a></span>
-<span id="cb2-18"><a href></a><span class="fu">plot</span>(dat<span class="sc">$</span>v1, dat<span class="sc">$</span>v2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>sz <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb3-2"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb3-3"><a href></a>  <span class="fu">set.seed</span>(i)</span>
+<span id="cb3-4"><a href></a>  d <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-5"><a href></a>    <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>sz,</span>
+<span id="cb3-6"><a href></a>    <span class="at">v1 =</span> <span class="fu">runif</span>(sz, <span class="at">min =</span> <span class="dv">2</span>, <span class="at">max =</span> <span class="dv">12</span>),</span>
+<span id="cb3-7"><a href></a>    <span class="at">grp =</span> <span class="fu">paste0</span>(<span class="st">&quot;g&quot;</span>, i)</span>
+<span id="cb3-8"><a href></a>  ) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">v2 =</span> v1 <span class="sc">+</span> <span class="fu">rnorm</span>(sz, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-9"><a href></a>    <span class="fu">select</span>(id, v1, v2, grp)</span>
+<span id="cb3-10"><a href></a>  readr<span class="sc">::</span><span class="fu">write_csv</span>(d, <span class="at">file =</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="fu">paste0</span>(<span class="st">&quot;dataset&quot;</span>, i, <span class="st">&quot;.csv&quot;</span>)))</span>
+<span id="cb3-11"><a href></a>}</span>
+<span id="cb3-12"><a href></a><span class="co"># ggplot(d) + geom_point(aes(x = v1, y = v2))</span></span>
+<span id="cb3-13"><a href></a></span>
+<span id="cb3-14"><a href></a>fs <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="fu">tempdir</span>(), <span class="at">pattern =</span> <span class="st">&quot;dataset.*.csv&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-15"><a href></a><span class="co"># dat &lt;- do.call(rbind, lapply(fs, readr::read_csv))</span></span>
+<span id="cb3-16"><a href></a>dat <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">lapply</span>(fs, readr<span class="sc">::</span>read_csv))</span>
+<span id="cb3-17"><a href></a></span>
+<span id="cb3-18"><a href></a><span class="fu">plot</span>(dat<span class="sc">$</span>v1, dat<span class="sc">$</span>v2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="manipulating-and-analyzing-data" class="slide level2">
@@ -1183,45 +1214,45 @@ margin-right: 0; }
 <section id="reshape" class="slide level2">
 <h2>Reshape</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>dat <span class="sc">%&gt;%</span> </span>
-<span id="cb3-2"><a href></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> grp, <span class="at">values_from =</span> v1<span class="sc">:</span>v2)</span>
-<span id="cb3-3"><a href></a></span>
-<span id="cb3-4"><a href></a>dat <span class="sc">%&gt;%</span> </span>
-<span id="cb3-5"><a href></a>  <span class="fu">select</span>(<span class="sc">-</span>v1) <span class="sc">%&gt;%</span></span>
-<span id="cb3-6"><a href></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> grp, <span class="at">values_from =</span> v2)</span>
-<span id="cb3-7"><a href></a></span>
-<span id="cb3-8"><a href></a>dat_wide <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span> </span>
-<span id="cb3-9"><a href></a>  <span class="fu">select</span>(id, v2, grp) <span class="sc">%&gt;%</span></span>
-<span id="cb3-10"><a href></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> grp, <span class="at">values_from =</span> v2)</span>
-<span id="cb3-11"><a href></a></span>
-<span id="cb3-12"><a href></a>dat_long <span class="ot">&lt;-</span> dat_wide <span class="sc">%&gt;%</span> </span>
-<span id="cb3-13"><a href></a>  <span class="fu">pivot_longer</span>(g1<span class="sc">:</span>g3, <span class="at">names_to =</span> <span class="st">&quot;grp&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;v2&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-14"><a href></a>  <span class="fu">arrange</span>(grp)</span>
-<span id="cb3-15"><a href></a></span>
-<span id="cb3-16"><a href></a>dat_long2 <span class="ot">&lt;-</span> dat_wide <span class="sc">%&gt;%</span> </span>
-<span id="cb3-17"><a href></a>  <span class="fu">pivot_longer</span>(g1<span class="sc">:</span>g3, <span class="at">names_to =</span> <span class="st">&quot;grp&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;v2&quot;</span>) </span>
-<span id="cb3-18"><a href></a></span>
-<span id="cb3-19"><a href></a><span class="fu">cbind</span>(dat, dat_long) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
-<span id="cb3-20"><a href></a><span class="fu">bind_cols</span>(dat, dat_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a>dat <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> grp, <span class="at">values_from =</span> v1<span class="sc">:</span>v2)</span>
+<span id="cb4-3"><a href></a></span>
+<span id="cb4-4"><a href></a>dat <span class="sc">%&gt;%</span> </span>
+<span id="cb4-5"><a href></a>  <span class="fu">select</span>(<span class="sc">-</span>v1) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> grp, <span class="at">values_from =</span> v2)</span>
+<span id="cb4-7"><a href></a></span>
+<span id="cb4-8"><a href></a>dat_wide <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span> </span>
+<span id="cb4-9"><a href></a>  <span class="fu">select</span>(id, v2, grp) <span class="sc">%&gt;%</span></span>
+<span id="cb4-10"><a href></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> grp, <span class="at">values_from =</span> v2)</span>
+<span id="cb4-11"><a href></a></span>
+<span id="cb4-12"><a href></a>dat_long <span class="ot">&lt;-</span> dat_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb4-13"><a href></a>  <span class="fu">pivot_longer</span>(g1<span class="sc">:</span>g3, <span class="at">names_to =</span> <span class="st">&quot;grp&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;v2&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-14"><a href></a>  <span class="fu">arrange</span>(grp)</span>
+<span id="cb4-15"><a href></a></span>
+<span id="cb4-16"><a href></a>dat_long2 <span class="ot">&lt;-</span> dat_wide <span class="sc">%&gt;%</span> </span>
+<span id="cb4-17"><a href></a>  <span class="fu">pivot_longer</span>(g1<span class="sc">:</span>g3, <span class="at">names_to =</span> <span class="st">&quot;grp&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;v2&quot;</span>) </span>
+<span id="cb4-18"><a href></a></span>
+<span id="cb4-19"><a href></a><span class="fu">cbind</span>(dat, dat_long) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
+<span id="cb4-20"><a href></a><span class="fu">bind_cols</span>(dat, dat_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="joins" class="slide level2">
 <h2>Joins</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a><span class="fu">cbind</span>(dat, dat_long2) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
-<span id="cb4-2"><a href></a><span class="co"># bind_cols(dat, dat_long) </span></span>
-<span id="cb4-3"><a href></a></span>
-<span id="cb4-4"><a href></a>dat <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(dat_long2)</span>
-<span id="cb4-5"><a href></a>dat_long2 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a href></a>  <span class="fu">rename</span>(<span class="at">grp2 =</span> grp) <span class="sc">%&gt;%</span></span>
-<span id="cb4-7"><a href></a>  <span class="fu">select</span>(id, grp2, v2) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-8"><a href></a>  <span class="fu">left_join</span>(dat, ., <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;v2&quot;</span>, <span class="st">&quot;grp&quot;</span> <span class="ot">=</span> <span class="st">&quot;grp2&quot;</span>))</span>
-<span id="cb4-9"><a href></a></span>
-<span id="cb4-10"><a href></a>dat_long2 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-11"><a href></a>  <span class="fu">rename</span>(<span class="at">grp2 =</span> grp) <span class="sc">%&gt;%</span></span>
-<span id="cb4-12"><a href></a>  <span class="fu">select</span>(id, grp2, v2) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-13"><a href></a>  <span class="fu">left_join</span>(dat <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>v2), ., <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;grp&quot;</span> <span class="ot">=</span> <span class="st">&quot;grp2&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-14"><a href></a>  <span class="fu">select</span>(id<span class="sc">:</span>v1, v2, grp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">cbind</span>(dat, dat_long2) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span>
+<span id="cb5-2"><a href></a><span class="co"># bind_cols(dat, dat_long) </span></span>
+<span id="cb5-3"><a href></a></span>
+<span id="cb5-4"><a href></a>dat <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(dat_long2)</span>
+<span id="cb5-5"><a href></a>dat_long2 <span class="sc">%&gt;%</span> </span>
+<span id="cb5-6"><a href></a>  <span class="fu">rename</span>(<span class="at">grp2 =</span> grp) <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href></a>  <span class="fu">select</span>(id, grp2, v2) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-8"><a href></a>  <span class="fu">left_join</span>(dat, ., <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;v2&quot;</span>, <span class="st">&quot;grp&quot;</span> <span class="ot">=</span> <span class="st">&quot;grp2&quot;</span>))</span>
+<span id="cb5-9"><a href></a></span>
+<span id="cb5-10"><a href></a>dat_long2 <span class="sc">%&gt;%</span> </span>
+<span id="cb5-11"><a href></a>  <span class="fu">rename</span>(<span class="at">grp2 =</span> grp) <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href></a>  <span class="fu">select</span>(id, grp2, v2) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-13"><a href></a>  <span class="fu">left_join</span>(dat <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>v2), ., <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;grp&quot;</span> <span class="ot">=</span> <span class="st">&quot;grp2&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-14"><a href></a>  <span class="fu">select</span>(id<span class="sc">:</span>v1, v2, grp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Note: understand the differences between <code>full_join</code>, <code>inner_join</code>, <code>right_join</code>, and <code>left_join</code>.</li>
@@ -1230,17 +1261,17 @@ margin-right: 0; }
 <section id="split-apply-combine" class="slide level2">
 <h2>Split-apply-combine</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb5-2"><a href></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">v1 =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">v2 =</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb5-3"><a href></a>                  <span class="at">grp =</span> <span class="fu">sample</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">size =</span> <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb5-4"><a href></a></span>
-<span id="cb5-5"><a href></a><span class="fu">sapply</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(dat<span class="sc">$</span>grp)), <span class="cf">function</span>(x) {</span>
-<span id="cb5-6"><a href></a>  <span class="fu">colMeans</span>(dat[dat<span class="sc">$</span>grp <span class="sc">==</span> x, <span class="fu">c</span>(<span class="st">&quot;v1&quot;</span>, <span class="st">&quot;v2&quot;</span>)])</span>
-<span id="cb5-7"><a href></a>})</span>
-<span id="cb5-8"><a href></a></span>
-<span id="cb5-9"><a href></a>dat <span class="sc">%&gt;%</span> </span>
-<span id="cb5-10"><a href></a>  <span class="fu">group_by</span>(grp) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-11"><a href></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">c</span>(v1, v2), mean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb6-2"><a href></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">v1 =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="at">v2 =</span> <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb6-3"><a href></a>                  <span class="at">grp =</span> <span class="fu">sample</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">size =</span> <span class="dv">100</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb6-4"><a href></a></span>
+<span id="cb6-5"><a href></a><span class="fu">sapply</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(dat<span class="sc">$</span>grp)), <span class="cf">function</span>(x) {</span>
+<span id="cb6-6"><a href></a>  <span class="fu">colMeans</span>(dat[dat<span class="sc">$</span>grp <span class="sc">==</span> x, <span class="fu">c</span>(<span class="st">&quot;v1&quot;</span>, <span class="st">&quot;v2&quot;</span>)])</span>
+<span id="cb6-7"><a href></a>})</span>
+<span id="cb6-8"><a href></a></span>
+<span id="cb6-9"><a href></a>dat <span class="sc">%&gt;%</span> </span>
+<span id="cb6-10"><a href></a>  <span class="fu">group_by</span>(grp) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-11"><a href></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">c</span>(v1, v2), mean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 </section>

@@ -111,7 +111,7 @@ Let's read in a csv a few different ways.
 
 Full path - clear for you, bad for code sharing.
 
-```{r}
+```{r, eval=FALSE}
 data_tib <- read.csv(
   "/home/rstudio/geospaar/inst/extdata/cdf_corn.csv"
 )
@@ -122,7 +122,7 @@ str(data_tib)
 
 System file
 
-```{r}
+```{r, eval = FALSE}
 data_tib <- readr::read_csv(
   system.file("extdata", "cdf_corn.csv", package = "geospaar")
 )
@@ -136,7 +136,7 @@ str(data_tib)
 - Working directory. Use `getwd()` (from console)  
 - Usually set to project folder.  
 
-```{r}
+```{r, eval = FALSE}
 getwd() ## if in an RMD, this will show the folder of the RMD
 ```
 
@@ -271,8 +271,7 @@ dat %>% slice(1)
 dat %>% filter(V4 == "e")
 ```
 
-
-
+---
 
 ## Exercise: `lapply` + read + write data
 
