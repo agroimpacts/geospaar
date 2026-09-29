@@ -284,6 +284,8 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   structures](https://agroimpacts.github.io/geospaar/class9.md)
 - [Class 10: Reading/writing files, dates,
   `dplyr`](https://agroimpacts.github.io/geospaar/class10.md)
+- [Class 11: Reading/writing, reshaping, joins,
+  SAC](https://agroimpacts.github.io/geospaar/class11.md)
 
 # Package index
 
