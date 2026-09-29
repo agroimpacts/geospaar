@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">geospaar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -365,9 +365,9 @@ We are now going to write it out to a spatial file.</p>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
 <span><span class="co">#&gt; Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:</span></span>
-<span><span class="co">#&gt; /tmp/RtmpvgxazR/farmers.shp does not appear to be a file or directory.</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/RtmpvgxazR/farmers.shp' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpvgxazR/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; /tmp/RtmpxREtCM/farmers.shp does not appear to be a file or directory.</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/RtmpxREtCM/farmers.shp' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpxREtCM/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"</span></span></code></pre></div>
@@ -404,8 +404,8 @@ file.</p>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html" class="external-link">st_write</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">farmers</span>, dsn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"farmers.geojson"</span><span class="op">)</span>, </span>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/RtmpvgxazR/farmers.geojson' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpvgxazR/farmers.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/RtmpxREtCM/farmers.geojson' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpxREtCM/farmers.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"</span></span></code></pre></div>
@@ -423,7 +423,7 @@ much is still done with</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">farmers</span><span class="op">)</span> </span>
 <span><span class="va">farmers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers.shp"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/RtmpvgxazR/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/RtmpxREtCM/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 20984 features and 5 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -1982,7 +1982,7 @@ differences are as follows:</p>
 <ol style="list-style-type: decimal">
 <li>Your submission should be on a new side branch “a4”;</li>
 <li>You should increment your package version number by 1 on the lowest
-number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;</li>
+number (e.g. from 0.3.0 to 0.4.0) in the DESCRIPTION;</li>
 <li>Do not worry about #3 in those instructions</li>
 <li>When asked to report the result of calculations in the vignette text
 (e.g. in Task 10), you can use another RMarkdown trick, which is to let
@@ -1990,6 +1990,8 @@ the calculation be done by code inserted between a single pair of
 backticks, with the first backtick followed immediately by r and a
 space. See <a href="https://rmarkdown.rstudio.com/lesson-4.html" class="external-link">here</a> for more
 explanation of that.</li>
+<li>You will be asked to answer several questions next class to test
+your understanding of the assignment and its accompanying modules.</li>
 </ol>
 <hr>
 <center>

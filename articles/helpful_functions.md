@@ -165,7 +165,7 @@ Example below groups by “site_id” and summarizes the mean NDVI.
 
 library(geospaar)
 #> Loading required package: terra
-#> terra 1.9.46
+#> terra 1.9.50
 #> 
 #> Attaching package: 'terra'
 #> The following object is masked from 'package:knitr':

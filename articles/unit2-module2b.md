@@ -1146,11 +1146,13 @@ is to be done in the vignette.
 
 Refer to [Unit 1 Module 4’s assignment output
 section](https://agroimpacts.github.io/geospaar/articles/unit1-module4.html#assignment-output)
-for submission instructions. The only differences are as follows:
+for submission instructions (and please note you will also be expected
+to answer post-submission questions about the assignment and unit
+modules in class). The only differences are as follows:
 
 1.  Your submission should be on a new side branch “a5”;
 2.  You should increment your package version number by 1 on the lowest
-    number (e.g. from 0.0.2 to 0.0.3) in the DESCRIPTION;
+    number (e.g. from 0.4.0 to 0.5.0) in the DESCRIPTION;
 3.  Do not worry about \#3 in those instructions
 
 ------------------------------------------------------------------------

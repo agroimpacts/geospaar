@@ -325,9 +325,9 @@ st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.shp"),
          delete_dsn = TRUE)
 #> writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS
 #> Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:
-#> /tmp/RtmpvgxazR/farmers.shp does not appear to be a file or directory.
-#> Deleting source `/tmp/RtmpvgxazR/farmers.shp' failed
-#> Writing layer `farmers' to data source `/tmp/RtmpvgxazR/farmers.shp' using driver `ESRI Shapefile'
+#> /tmp/RtmpxREtCM/farmers.shp does not appear to be a file or directory.
+#> Deleting source `/tmp/RtmpxREtCM/farmers.shp' failed
+#> Writing layer `farmers' to data source `/tmp/RtmpxREtCM/farmers.shp' using driver `ESRI Shapefile'
 #> Writing 20984 features with 5 fields and geometry type Point.
 dir(tempdir(), pattern = "farmers")
 #> [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"
@@ -371,8 +371,8 @@ much more convenient “geojson” format, which produces a single file.
 st_write(obj = farmers, dsn = file.path(tempdir(), "farmers.geojson"), 
          delete_dsn = TRUE)
 #> writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS
-#> Deleting source `/tmp/RtmpvgxazR/farmers.geojson' failed
-#> Writing layer `farmers' to data source `/tmp/RtmpvgxazR/farmers.geojson' using driver `GeoJSON'
+#> Deleting source `/tmp/RtmpxREtCM/farmers.geojson' failed
+#> Writing layer `farmers' to data source `/tmp/RtmpxREtCM/farmers.geojson' using driver `GeoJSON'
 #> Writing 20984 features with 5 fields and geometry type Point.
 dir(tempdir(), pattern = "farmers")
 #> [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"
@@ -394,7 +394,7 @@ file.remove(dir(tempdir(), pattern = "farmers.geojson", full.names = TRUE))
 #> [1] TRUE
 rm(farmers) 
 farmers <- st_read(dir(tempdir(), pattern = "farmers.shp", full.names = TRUE))
-#> Reading layer `farmers' from data source `/tmp/RtmpvgxazR/farmers.shp' using driver `ESRI Shapefile'
+#> Reading layer `farmers' from data source `/tmp/RtmpxREtCM/farmers.shp' using driver `ESRI Shapefile'
 #> Simple feature collection with 20984 features and 5 fields
 #> Geometry type: POINT
 #> Dimension:     XY
@@ -2068,7 +2068,7 @@ for submission instructions. The only differences are as follows:
 
 1.  Your submission should be on a new side branch “a4”;
 2.  You should increment your package version number by 1 on the lowest
-    number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
+    number (e.g. from 0.3.0 to 0.4.0) in the DESCRIPTION;
 3.  Do not worry about \#3 in those instructions
 4.  When asked to report the result of calculations in the vignette text
     (e.g. in Task 10), you can use another RMarkdown trick, which is to
@@ -2076,6 +2076,8 @@ for submission instructions. The only differences are as follows:
     of backticks, with the first backtick followed immediately by r and
     a space. See [here](https://rmarkdown.rstudio.com/lesson-4.html) for
     more explanation of that.
+5.  You will be asked to answer several questions next class to test
+    your understanding of the assignment and its accompanying modules.
 
 ------------------------------------------------------------------------
 

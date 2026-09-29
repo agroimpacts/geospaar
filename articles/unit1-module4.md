@@ -3192,7 +3192,7 @@ is to be done in the vignette.
     scatter plot, with a straight trendline fit through each set of
     points (i.e. `method = "lm"`). You will need to use `geom_point` and
     `geom_smooth`. Make a title (“Harvested area versus yield”) and x
-    (“Harvested area (ha)”) and y (“Yield (t/ha)”) labels.  
+    (“Harvested area (ha)”) and y (“Yield (t/ha)”) labels.
 
 7.  Create a single scatter plot with
     [`graphics::plot`](https://rdrr.io/r/graphics/plot.default.html)
@@ -3216,7 +3216,7 @@ for submission instructions. The only differences are as follows:
 1.  Your submission should be on a new side branch “a3”;
 
 2.  You should increment your package version number by 1 on the lowest
-    number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
+    number (e.g. from 0.2.0 to 0.3.0) in the DESCRIPTION;
 
 3.  Control the width of your plots in 6-8 using the following chunk
     options:
@@ -3233,6 +3233,9 @@ for submission instructions. The only differences are as follows:
     ```{r, warning = FALSE, message = FALSE}
     ```
     ````
+
+5.  You will be asked to answer several questions next class to test
+    your understanding of the assignment and its accompanying modules.
 
 ------------------------------------------------------------------------
 

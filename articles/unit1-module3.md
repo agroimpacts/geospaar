@@ -2869,7 +2869,10 @@ an R package that:
     you will find) to be recorded in vignette output without causing the
     knit to fail
 
-9.  When complete, park the repo on a new side branch called “a2”
+9.  When complete, park the repo on a new side branch called “a2”. You
+    are done, with the exception of several questions we will ask you
+    next class to test your understanding of the assignment and its
+    accompanying modules.
 
 ------------------------------------------------------------------------
 
