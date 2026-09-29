@@ -760,10 +760,10 @@ There are no package functions to create for this assignment. All work is to be 
     This yields a `tibble` with columns *x* and *y* that are needed by `gstat`. After running `gstat`, map the interpolated temperatures using `zamtmeanalb` as a target object (it won't be overwritten) and `idw` as the model. Make sure you mask the result to the boundaries of Zambia, using `zamtmeanalb` as the mask. Call the new interpolated, masked grid `zamtidw`. Plot the result side by side with `zamtmeanalb` for comparison using `plot_noaxes` with titles "Real Temperature" and "IDW Temperature". (Refs: Chunks 46, 49)
 
 ## Assignment output
-Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assignment-output) for submission instructions. The only differences are as follows:
+Refer to [Unit 1 Module 4's assignment output section](unit1-module4.html#assignment-output) for submission instructions (and please note you will also be expected to answer post-submission questions about the assignment and unit modules in class). The only differences are as follows:
 
 1. Your submission should be on a new side branch "a5";
-2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.2 to 0.0.3) in the DESCRIPTION;
+2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.4 to 0.0.5) in the DESCRIPTION;
 3. Do not worry about #3 in those instructions
 
 ***

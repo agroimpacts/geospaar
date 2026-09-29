@@ -1299,7 +1299,8 @@ There are no package functions to create for this assignment. All work is to be 
 
 5. Calculate a correlation matrix between *harv_area* and *yield* for each crop-country combination, using `dplyr` verbs. Arrange the result (negative to positive) by the value of the correlation coefficient. See Chunk 34 for guidance.
 
-6. Create a single scatter plot with `ggplot` that shows the relationship between *harv_area* (x-axis) and *yield* (y-axis) for maize, separated by country on a single plot. Make it a point scatter plot, with a straight trendline fit through each set of points (i.e. `method = "lm"`). You will need to use `geom_point` and `geom_smooth`. Make a title ("Harvested area versus yield") and x ("Harvested area (ha)") and y ("Yield (t/ha)") labels.   
+6. Create a single scatter plot with `ggplot` that shows the relationship between *harv_area* (x-axis) and *yield* (y-axis) for maize, separated by country on a single plot. Make it a point scatter plot, with a straight trendline fit through each set of points (i.e. `method = "lm"`). You will need to use `geom_point` and `geom_smooth`. Make a title ("Harvested area versus yield") and x ("Harvested area (ha)") and y ("Yield (t/ha)") labels. 
+
 7. Create a single scatter plot with `graphics::plot` that plots just South African wheat yields (y-axis) against year (x-axis). Plot the points, and then add a linear trendline to it, by wrapping the `abline` around the `lm` function. Make the points solid grey ("grey") and the `abline` blue. Label the y axis as "Yield (t/ha)". Remove the x-axis label. Give a title: "South African wheat (1961-2017)". Chunk 54 is your guide. 
 
 8. Use `ggplot` to make a 5-bin histogram of Zambia's maize yields. The x-label should be "Yield (t/ha)", the title should be "Zambian Maize", and bins should be blue with black outlines. 
@@ -1308,7 +1309,7 @@ There are no package functions to create for this assignment. All work is to be 
 Refer to [Unit 1 Module 3's Assignment output section](unit1-module3.html#assignment-output) for submission instructions. The only differences are as follows:
 
 1. Your submission should be on a new side branch "a3";
-2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.1 to 0.0.2) in the DESCRIPTION;
+2. You should increment your package version number by 1 on the lowest number (e.g. from 0.0.2 to 0.0.3) in the DESCRIPTION;
 3. Control the width of your plots in 6-8 using the following chunk options:
 
     ````markdown
@@ -1321,6 +1322,7 @@ Refer to [Unit 1 Module 3's Assignment output section](unit1-module3.html#assign
     `r ''````{r, warning = FALSE, message = FALSE}
     ```
     ````
+5. You will be asked to answer several questions next class to test your understanding of the assignment and its accompanying modules.
 
 ***
 <center>
