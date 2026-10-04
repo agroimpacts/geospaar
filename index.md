@@ -286,3 +286,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   `dplyr`](https://agroimpacts.github.io/geospaar/class10.md)
 - [Class 11: Reading/writing, reshaping, joins,
   SAC](https://agroimpacts.github.io/geospaar/class11.md)
+- [Class 12: Reshaping, joins, SAC, plotting,
+  regression](https://agroimpacts.github.io/geospaar/class12.md)
