@@ -183,4 +183,5 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 10: Reading/writing files, dates, `dplyr`](class10.html)
 - [Class 11: Reading/writing, reshaping, joins, SAC](class11.html)
 - [Class 12: Reshaping, joins, SAC, plotting, regression](class12.html)
+- [Class 13: Reshaping, joins, SAC, plotting, regression, cont.](class13.html)
 
