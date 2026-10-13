@@ -474,7 +474,7 @@ There are two variants above. The first (#1) is captured in `all_dists`, and it 
 
 ### Length
 For the last example of functions that extract spatial properties, we will calculate the line lengths and perimeters.
-```{r, fig.width=7, fig.height=4}
+```{r, out.width="100%"}
 # Chunk 25
 # #1
 road_length <- st_length(roads) %>% as.numeric()
