@@ -290,3 +290,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   regression](https://agroimpacts.github.io/geospaar/class12.md)
 - [Class 13: Reshaping, joins, SAC, plotting, regression,
   cont.](https://agroimpacts.github.io/geospaar/class13.md)
+- [Class 14: Intro to spatial
+  (`sf`)](https://agroimpacts.github.io/geospaar/class14.md)
