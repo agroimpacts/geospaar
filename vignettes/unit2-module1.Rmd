@@ -95,7 +95,7 @@ Okay, #1 shows us that this dataset, read in as `farmers`, is a `tibble`, which 
 
 Given that these are point data, we can turn them into a facsimile of spatial data by simply plotting them and having a look. 
 
-```{r, out.width='50%'}
+```{r, out.width='80%'}
 # Chunk 2
 ggplot(farmers %>% distinct(uuid, x, y)) + 
   geom_point(aes(x, y))
@@ -103,7 +103,7 @@ ggplot(farmers %>% distinct(uuid, x, y)) +
 
 We first cut `farmers` down to just unique farmer *uuid* and coordinates (to avoid duplicate points--remember, there is more than one observation per farmer for most farmers), and then use `gglot` to shows us, in a very crude way, where these points lie in space. This works, because `farmers$x` (the longitude) is exactly analogous to the x coordinate of a scatter plot, and `farmers$y` (latitude) is the y coordinate. But it is still not a spatial object. So, let's convert it to one, and then plot it again.
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 3
 # #1
 farmers <- st_as_sf(farmers, coords = c("x", "y"))
@@ -122,7 +122,7 @@ Looking at `str` in #2, we see the object is constructed of 4 classes (`sf`, `tb
 
 We then `plot` the new `sf` object, using `st_geometry` to strip out the geometries of this object, dropping the other variables in the `tibble` with associated with the object. The reason for this is that `plot` (`sf`'s generic for plotting `sf` objects) would otherwise default to creating one plot panel for each variable in the `tibble`. We can see this behavior here:
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 4
 plot(farmers %>% slice(1:10), pch = 20, cex = 0.5)
 ```
@@ -198,7 +198,7 @@ districts <- st_read(dsn = fnm)
 ```
 
 Let's end this section by a quick look at these data. We are going to plot `districts`, `roads`, and `farmers` onto one plot.   
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 11
 par(mar = c(0, 0, 0, 0))
 plot(st_geometry(districts), col = "grey")
@@ -269,7 +269,7 @@ We use `sf`'s `st_transform` function to reproject `sfdat$roads` using the param
 
 And that's all. We can now redo our plots. I am going to show you two ways to do it. First, the way we have already done it with `sf:plot`:
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 17
 par(mar = c(0, 0, 0, 0))
 plot(sfdat$districts %>% st_geometry(), col = "grey")
@@ -292,7 +292,7 @@ p <- ggplot(sfdat$districts) + geom_sf() +
 ggsave(p, filename = "vignettes/fig/u2-m1.png", width = 5, height = 5, 
        units = "in", dpi = 300)
 ```
-```{r, echo = FALSE, out.width="50%"}
+```{r, echo = FALSE, out.width="100%"}
 knitr::include_graphics("fig/u2m1-1.png")
 ```
 
@@ -416,7 +416,7 @@ pctd
 
 Using `st_transform` with the CRS from `roads` to reproject `district`, and then calculate polygons areas, we see the mean absolute difference between areas calculated from the projected and unprojected datasets is around `r round(absd)` ha, which is a tiny percentage (`r round(pctd, 3)`%) of the average district area. Not much to write home about, but also not nothing if absolute accuracy of area calculations is your interest.   
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 22
 districts %>% 
   st_area() %>% units::set_units("km^2") %>% 
@@ -431,7 +431,7 @@ Here's a look at the district areas (in km$^2$) as a histogram. Notice the conve
 
 ### Distance
 We can also calculate the distances between spatial features. To do that, we are make use of `st_centroid` on the Albers-projected `districts` data, which we use to find the central coordinates of each district, and then plot the centroids on top of the districts themselves. 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 23
 # # 1
 dist_cent <- districts %>% 
@@ -499,7 +499,7 @@ numeric vectors. We then plot each set of lengths as histograms (#3), converting
 
 `sf` objects stores attributes as `data.frame`s or `tibble`s, and they can be manipulated using the same preparatory and analytical methods we learned about in the previous modules. For example, let's consider some very basic subsetting:
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 26
 par(mar = c(0, 0, 0, 0))
 st_geometry(districts) %>% plot(col = "grey")
@@ -572,7 +572,7 @@ test_join %>%
 
 We have already done a bit of this a couple of sections back, but let's use this opportunity to do a bit more subsetting, including a previously unseen approach:
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 30
 # #1
 kanyi_dists <- districts %>% filter(grepl("^Ka|^Nyi", distName))
@@ -592,7 +592,7 @@ That's two examples of subsetting that that are accomplished with `filter`. #1 i
 
 As with plain old `data.frame`s, we might want to do split-apply-combine operations on spatial data. Let's demonstrate this selecting the districts in `districts_alb2` that fall within certain area ranges, convert the selected districts to centroid points, and then plot them.  
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 30
 # #1
 tertiles <- function(x) quantile(x, probs = c(0, 0.333, 0.667, 1))
@@ -618,7 +618,7 @@ The above is a `dplyr`-based split-apply-combine, which has a fair bit going on,
 - The `plot` shows the result of the union (plus a legend that we add)
 
 We can do the same thing for standard deviation, but using a quintile grouping:
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 31
 quintiles <- function(x) quantile(x, probs = seq(0, 1, 0.2))
 dist_quintiles <- districts %>% 
@@ -663,7 +663,7 @@ That was a quick introduction to SAC for `sf`. There are others we could do (you
 
 In this section we will focus on some of the more common polygon-based spatial operations. To enable this, we are first going to create some additional spatial data. 
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 32
 # #1
 coords <- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
@@ -686,7 +686,7 @@ The above takes `coords`, a `matrix` of x and y coordinates (#1), and repeats th
 
 The first thing we will do with our made-up polygon is figure out which districts it intersects. What we are going to do in this case is the ArcGIS equivalent of select by spatial location (if I remember my ESRI terminology correctly--it's been a while since I looked at it) 
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 32
 # #1
 st_intersects(x = pol, y = districts)
@@ -708,7 +708,7 @@ In #1 we use `st_intersects` to identify the indices of the `districts` that  in
 
 We have just seen how `st_intersects` can be used to identify and extract intersecting polygons. Now let's look at what `st_intersection` does. 
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 33
 pol_int_dists <- st_intersection(x = pol, y = districts)
 
@@ -724,7 +724,7 @@ Seems pretty clear what `st_intersection` does, and how it differs from `st_inte
 
 Now that we have intersected boundaries, let's dissolve them. We've actually already seen this (in section 4.2.3), but let's have a second look: 
 
-```{r, out.width="50%", out.height="50%"}
+```{r, out.width="100%", out.height="50%"}
 # Chunk 34
 # #1
 pol_int_dists %>% summarize
@@ -759,7 +759,7 @@ Same result, although in this case it produces a geometry set, and, unlike `summ
 
 Sometimes a spatial operation will result in mixed geometry types within a single `sf` object, or a more complex geometry type than you actually need. You might need to make all the geometries in the object uniform (to prevent problems with other functions that don't want mixed geometry types), or simplify. Doing this is the job of `st_cast`. Let's look again at `pol_int_dists`
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 36
 pol_int_dists
 
@@ -786,7 +786,7 @@ pol_int_dists %>% st_cast("POLYGON")
 
 It throws a warning, because Mufumbwe can't be reduced to a POLYGON without jettisoning one of two pieces, so it let's us know that it had to do that. We can see the result:
 
-```{r, fig.height=2, fig.width=5}
+```{r, out.width="100%"}
 # Chunk 39
 par(mfrow = c(1, 3), mar = c(0, 0, 1, 0))
 pol_int_dists %>% 
@@ -807,7 +807,7 @@ No difference between the original `pol_int_dists` and the straight cast of it, 
 **Plotting tip**: note how we add titles to the plots and also tweak the margins to add space to the top margin so that those titles can be displayed. 
 
 We can also cast the polygons to lines, and even to points:
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 40
 par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
 pol_int_dists %>% 
@@ -819,7 +819,7 @@ pol_int_dists %>%
   st_geometry %>% 
   plot(col = rbcols, main = "Cast to MULTIPOINT", pch = 20)
 ```
-```{r, echo = FALSE}
+```{r, echo = FALSE, results='hide'}
 dev.off()
 ```
 
@@ -832,7 +832,7 @@ To learn more `st_cast` and its behavior, please read that vignette.
 ## Differencing
 Now we are going to move on to look at another bread and butter operation, differencing (or erasing).
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 41
 d1 <- st_difference(x = districts, y = pol)
 d2 <- st_difference(x = pol, y = districts)
@@ -852,7 +852,7 @@ d2 %>%
 
 We have already seen `st_union` in action to dissolve internal polygon boundaries. Now let's look at unioning two objects. 
 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 42
 # #1
 uni1 <- st_union(x = pol, y = districts)
@@ -873,7 +873,7 @@ Two different order to unioning `pol` and `districts` (#1 and #2). The ordering 
 ## Buffering
 
 This is a fairly common GIS operation that `sf` handles nicely. 
-```{r, out.width="50%"}
+```{r, out.width="100%"}
 # Chunk 43
 # 
 # #1
@@ -922,7 +922,7 @@ In #3 we draw the plots, setting up an outline of Zambia by dissolving district 
 ## Sampling
 We have seen a little bit of sampling already, but the previous examples just sample from the features in an existing object. Sometimes you might be interested in confining the sample to a particular feature or features, for example:  
 
-```{r, out.width="50%", message=FALSE, warning=FALSE}
+```{r, out.width="100%", message=FALSE, warning=FALSE}
 # Chunk 44
 par(mar = rep(0, 4))
 districts %>% 
@@ -938,7 +938,7 @@ districts %>%
 That uses `st_sample` to pull a random sample of 100 points from within the merged district. We set the `exact = TRUE` argument to force the returned sample to be the exact number we specify (otherwise it can sometimes be a bit less). 
 
 Let's look at this in a bit more depth:
-```{r, out.width="50%", message=FALSE, warning=FALSE}
+```{r, out.width="100%", message=FALSE, warning=FALSE}
 # Chunk 45
 # #1
 seed <- 40
@@ -976,7 +976,7 @@ So that's it for this unit, which has given a brief and by no means exhaustive i
 ### Code
 1. Using the code in Chunk 32 as your template, create a rectangular `sf` polygon called `pol2` using the x coordinates 27 and 27.5 (minimum and maximum) and y coordinates -13 and -13.5. Coordinates vectors should be ordered like this for x: xmin, xmax, xmax, xmin, xmin. And for y: ymin, ymin, ymax, ymax, ymin. In both cases, think of min and max in absolute terms (i.e. drop the negative sign). Plot the result on top of `districts` in blue. It should look like this:
 
-```{r, out.width="30%", echo = FALSE}
+```{r, out.width="90%", echo = FALSE}
 knitr::include_graphics("fig/u2m1-2.png")
 ```
 
