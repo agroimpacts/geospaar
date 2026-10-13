@@ -2253,7 +2253,7 @@ few. Here’s a start:</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 40</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prod</span> <span class="op">~</span> <span class="va">harv_area</span>, data <span class="op">=</span> <span class="va">crop_ylds</span><span class="op">[</span><span class="va">crop_ylds</span><span class="op">$</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"maize"</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-47-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-47-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>This is a purely base way of plotting the relationship between
 <em>harv_area</em> on the X axis and versus <em>prod</em> on the Y axis
 for just maize (not distinguishing by country). We set up the
@@ -2267,12 +2267,12 @@ We could do the same exact thing using the syntax below:</p>
 <span><span class="co"># #1</span></span>
 <span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">crop_ylds</span><span class="op">[</span><span class="va">crop_ylds</span><span class="op">$</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"maize"</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">harv_area</span>, y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">prod</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-48-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-48-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#</span></span>
 <span><span class="co"># #2</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">harv_area</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"maize"</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">prod</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"maize"</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-48-2.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-48-2.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Both are more cumbersome, but note that in both cases we pass our
 data as separate vectors into the “x” and “y” arguments. We don’t show
 the plots above, but they are each identical to the one in Chunk 40,
@@ -2286,7 +2286,7 @@ bit:</p>
 <span>     main <span class="op">=</span> <span class="st">"Maize production versus harvested area"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Harvested area (ha)"</span>,</span>
 <span>     ylab <span class="op">=</span> <span class="st">"Production (tons)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-49-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-49-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>This adds on to the approach in Chunk 40. We use the “pch” argument
 to change the type of symbol, “cex” changes the size of the symbol,
 “col” the color of the symbol, and “main”, “xlab”, and “ylab” add titles
@@ -2305,7 +2305,7 @@ seems to decline. What’s going on there?</p>
 <span>     main <span class="op">=</span> <span class="st">"Zambia maize prod vs harv area"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Harvested area (ha)"</span>,</span>
 <span>     ylab <span class="op">=</span> <span class="st">"Production (tons)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-50-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-50-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># #3</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prod</span> <span class="op">~</span> <span class="va">harv_area</span>, data <span class="op">=</span> <span class="va">zaf_maize</span>, </span>
@@ -2313,7 +2313,7 @@ seems to decline. What’s going on there?</p>
 <span>     main <span class="op">=</span> <span class="st">"South Africa maize prod vs harv area"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Harvested area (ha)"</span>,</span>
 <span>     ylab <span class="op">=</span> <span class="st">"Production (tons)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-50-2.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-50-2.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>The difference is caused by different production/harvested area
 patterns in the two countries in the dataset. In the examples above, we
 separately plot each country’s maize dataset, using
@@ -2338,7 +2338,7 @@ both on one plot:</p>
 <span><span class="co"># #4</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Zambia"</span>, <span class="st">"South Africa"</span><span class="op">)</span>, </span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-51-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-51-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>That’s much clearer now, and the plot now makes obvious some
 additional information: 1) South Africa’s harvested area of maize is
 much larger than Zambia’s, 2) it’s production declined with harvested
@@ -2378,7 +2378,7 @@ the point colors, and “pch” for what the point types should be.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">prod</span> <span class="op">~</span> <span class="va">harv_area</span>, data <span class="op">=</span> <span class="va">.</span>, pch <span class="op">=</span> <span class="fl">16</span>, cex <span class="op">=</span> <span class="fl">0.7</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Zambia"</span>, <span class="st">"South Africa"</span><span class="op">)</span>, </span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-52-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-52-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>A little bit, it seems. We can subset the dataset using
 <code>filter</code>, and then pipe each subset to <code>plot</code> and
 <code>points</code>, respectively. To do this, we give <code>.</code> to
@@ -2399,7 +2399,7 @@ the first graph as a start:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">harv_area</span>, y <span class="op">=</span> <span class="va">prod</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Harvested area (ha)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Production (tons)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize production vs harvested area"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-53-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-53-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>That’s a basic recreation of the same plot, although
 <code>ggplot</code> by default has a grey gridded background (which can
 be removed if needed). You can see that the syntax is <em>very</em>
@@ -2452,7 +2452,8 @@ fairly self-explanatory.</p>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">crop_ylds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"maize"</span><span class="op">)</span>, </span>
 <span>       mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">harv_area</span>, y <span class="op">=</span> <span class="va">prod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Harvested area (ha)"</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Production (tons)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize production vs harvested area"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Production (tons)"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize production vs harvested area"</span><span class="op">)</span></span></code></pre></div>
 <p>That is not run, to save space, but is identical. In this case,
 insert the <code>tibble</code> directly into <code>ggplot</code>’s
 “data” argument, and the <code>aes</code> is supplied to the “mapping”
@@ -2470,7 +2471,7 @@ would apply to Chunk 46)</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">harv_area</span>, y <span class="op">=</span> <span class="va">prod</span>, color <span class="op">=</span> <span class="va">country</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Harvested area (ha)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Production (tons)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize production vs harvested area"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-55-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-55-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>All we did here was supply the “color” argument inside
 <code>aes</code>, which in this case is the <em>country</em> variable.
 This means that <code>geom_point</code> (note we drop the argument name
@@ -2495,7 +2496,7 @@ like to change them:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Harvested area (ha)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Production (tons)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize production vs harvested area"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-56-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-56-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Which in this case is done using <code>scale_color_manual</code> and
 the vector of color names pssed to “values”.</p>
 </div>
@@ -2517,7 +2518,7 @@ the data by plotting yield over time:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Yield (tons / ha)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize yield (1961-2017)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-57-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-57-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Interesting. It seems that both countries show an increasing trend in
 yield since 1961, with a more rapid increase after 2000, particularly in
 South Africa. But the point are noisy, so maybe visualizing these as
@@ -2529,7 +2530,7 @@ lines would make things a clearer?</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Yield (tons / ha)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize yields (1961-2017)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-58-1.png" class="r-plt" alt="" width="700" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-58-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>That does make things a bit clearer–and it suggests that South
 African yields diverged from Zambian yields in about the mid-1990s. The
 lines also better illustrate the between-year variations in yields,
@@ -2546,7 +2547,7 @@ make the change was swap out <code>geom_point</code> for
 <span>       main <span class="op">=</span> <span class="st">"Maize yield (1961-2017)"</span><span class="op">)</span></span>
 <span><span class="va">crop_ylds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"maize"</span> <span class="op">&amp;</span> <span class="va">country</span> <span class="op">==</span> <span class="st">"ZAF"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">yield</span> <span class="op">~</span> <span class="va">year</span>, data <span class="op">=</span> <span class="va">.</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-59-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-59-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Pretty much the same set-up as Chunk 44, using the
 <code>type = "l"</code> argument in <code>plot</code> to plot lines
 instead of points for the Zambian maize yields, and then the
@@ -2568,7 +2569,7 @@ that quite easily with <code>ggplot</code>:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Yield (tons / ha)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize yields (1961-2017)"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `geom_smooth()` using method = 'loess' and formula = 'y ~ x'</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-60-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-60-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>The above uses <code>geom_smooth</code> to add a best-fitting curve
 through each country’s yield time series. This function defaults to
 <code>loess</code>, which fits a smoothing spline, or local polynomial
@@ -2586,7 +2587,7 @@ trends:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Year"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Yield (tons / ha)"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Maize yield (1961-2017)"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-61-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-61-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>That gives us a straight line fit through each time series, which is
 calling on the <code>lm</code> function to fit the trendlines, which
 shows a steeper line over the whole time series.</p>
@@ -2602,7 +2603,7 @@ explicitly:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">yield</span> <span class="op">~</span> <span class="va">year</span>, data <span class="op">=</span> <span class="va">zmb_maize</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">yield</span> <span class="op">~</span> <span class="va">year</span>, data <span class="op">=</span> <span class="va">zaf_maize</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">yield</span> <span class="op">~</span> <span class="va">year</span>, data <span class="op">=</span> <span class="va">zaf_maize</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-62-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-62-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We recreate the two subset <code>tibble</code>s
 <code>zmb_maize</code> and <code>zaf_maize</code>, create a new variable
 <code>yl</code> containing the range of yields across both datasets,
@@ -2629,7 +2630,7 @@ first with <code>ggplot</code>:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">yield</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"blue"</span>, col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Distribution of sorghum yields"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value `binwidth`.</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-63-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-63-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We grab sorghum out of <code>crop_ylds</code>, and then
 <code>geom_histogram</code> with an <code>aes</code> mapping
 <em>yield</em> to the x variable. We specify the color for the histogram
@@ -2643,14 +2644,14 @@ try again with a different number of bins:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">yield</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">15</span>, fill <span class="op">=</span> <span class="st">"blue"</span>, col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Distribution of sorghum yields"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-64-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-64-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We specify that we want 15 bins, rather than the default 30. Looks a
 bit better. Here’s how do it using <code><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">graphics::hist</a></code>:</p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 57</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">crop_ylds</span><span class="op">$</span><span class="va">yield</span><span class="op">[</span><span class="va">crop_ylds</span><span class="op">$</span><span class="va">crop</span> <span class="op">==</span> <span class="st">"sorghum"</span><span class="op">]</span>, xlab <span class="op">=</span> <span class="st">"yield"</span>, </span>
 <span>     main <span class="op">=</span> <span class="st">"Distribution of sorghum yields"</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-65-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-65-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We’ll keep focusing on <code>ggplot</code> though. How about a
 histogram breaking sorghum yields down by country?</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
@@ -2659,7 +2660,7 @@ histogram breaking sorghum yields down by country?</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">yield</span>, color <span class="op">=</span> <span class="va">country</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">15</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Distribution of sorghum yields"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-66-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-66-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>As with scatter plots, specifying the “color” argument within
 <code>aes</code> separates the bars by country, making stacked
 histograms. What about changing the fill, rather than the bar outline
@@ -2671,7 +2672,7 @@ color?</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">yield</span>, fill <span class="op">=</span> <span class="va">country</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">15</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Distribution of sorghum yields"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-67-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-67-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We specify that <code>fill = country</code> in <code>aes</code>.
 Okay, so now it is clear that in polygonal object, we distinguish
 between “fill” and “color” within <code>aes</code> (or “fill” and “col”
@@ -2688,7 +2689,7 @@ stacked one:</p>
 <span>                 position <span class="op">=</span> <span class="st">"dodge"</span>, col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Distribution of sorghum yields"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-68-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-68-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We achieve that by using the argument <code>position = "dodge"</code>
 (outside of <code>aes</code>). We also use <code>col = "black"</code>
 outside of <code>aes</code> to add a black line around each box.</p>
@@ -2701,7 +2702,7 @@ categorical variable?</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>yld_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">yield</span> <span class="op">&gt;</span> <span class="fl">6</span>, <span class="fl">3</span>, <span class="va">yld_levels</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_bar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">yld_levels</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"blue"</span>, col <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Yield levels"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-69-1.png" class="r-plt" alt="" width="384" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-69-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>Here we use <code>geom_bar</code> to make a bar plot from the
 categorical variable <em>yld_levels</em>, which we create using
 <code>mutate</code> and <code>ifelse</code> to group wheat yields into 3
@@ -2711,7 +2712,7 @@ blue-filled and outlined with black box.</p>
 <div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 63</span></span>
 <span><span class="va">crop_ylds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">crop</span>, y <span class="op">=</span> <span class="va">yield</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-70-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;">
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-70-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;">
 Pretty straightforward. We get a separate boxplot for each crop by
 specifying <em>crop</em> as the “x” argument and <em>yield</em> as “y”
 in <code>aes</code> within <code>geom_boxplot</code>. Another way to
@@ -2722,7 +2723,7 @@ distinguish separate boxplots for each country:</p>
 <span><span class="va">crop_ylds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">crop</span>, y <span class="op">=</span> <span class="va">yield</span>, fill <span class="op">=</span> <span class="va">country</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="unit1-module4_files/figure-html/unnamed-chunk-71-1.png" class="r-plt" alt="" width="456" style="display: block; margin: auto;"></p>
+<p><img src="unit1-module4_files/figure-html/unnamed-chunk-71-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
 <p>We simply make <em>country</em> the variable on which to “fill” in
 <code>aes</code>, and then change the fill color to red and blue.</p>
 </div>

@@ -208,7 +208,7 @@ spatial data by simply plotting them and having a look.</p>
 <code class="sourceCode R"><span><span class="co"># Chunk 2</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">farmers</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">uuid</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="80%" style="display: block; margin: auto;"></p>
 <p>We first cut <code>farmers</code> down to just unique farmer
 <em>uuid</em> and coordinates (to avoid duplicate points–remember, there
 is more than one observation per farmer for most farmers), and then use
@@ -258,7 +258,7 @@ again.</p>
 <span><span class="co">#</span></span>
 <span><span class="co"># #2</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">farmers</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>In #1, we use our first function from <code>sf</code>, which is
 <code>st_as_sf</code>, which is used to “convert foreign object to an sf
 object” (<code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">?st_as_sf</a></code>). In this case we coerce a
@@ -288,7 +288,7 @@ otherwise default to creating one plot panel for each variable in the
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 4</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">farmers</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>In the above, we illustrate this multi-panel plotting behavior using
 just the first 10 rows of <code>farmers</code>, using <code>dplyr</code>
 syntax to <code>slice</code> out those rows, in the process illustrating
@@ -365,9 +365,9 @@ We are now going to write it out to a spatial file.</p>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
 <span><span class="co">#&gt; Warning in CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options), : GDAL Error 1:</span></span>
-<span><span class="co">#&gt; /tmp/RtmpuTrvWg/farmers.shp does not appear to be a file or directory.</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/RtmpuTrvWg/farmers.shp' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpuTrvWg/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; /tmp/Rtmp8t3MU9/farmers.shp does not appear to be a file or directory.</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/Rtmp8t3MU9/farmers.shp' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/Rtmp8t3MU9/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf" "farmers.prj" "farmers.shp" "farmers.shx"</span></span></code></pre></div>
@@ -404,8 +404,8 @@ file.</p>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html" class="external-link">st_write</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">farmers</span>, dsn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"farmers.geojson"</span><span class="op">)</span>, </span>
 <span>         delete_dsn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; writing: substituting ENGCRS["Undefined Cartesian SRS with unknown unit"] for missing CRS</span></span>
-<span><span class="co">#&gt; Deleting source `/tmp/RtmpuTrvWg/farmers.geojson' failed</span></span>
-<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/RtmpuTrvWg/farmers.geojson' using driver `GeoJSON'</span></span>
+<span><span class="co">#&gt; Deleting source `/tmp/Rtmp8t3MU9/farmers.geojson' failed</span></span>
+<span><span class="co">#&gt; Writing layer `farmers' to data source `/tmp/Rtmp8t3MU9/farmers.geojson' using driver `GeoJSON'</span></span>
 <span><span class="co">#&gt; Writing 20984 features with 5 fields and geometry type Point.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "farmers.dbf"     "farmers.geojson" "farmers.prj"     "farmers.shp"     "farmers.shx"</span></span></code></pre></div>
@@ -423,7 +423,7 @@ much is still done with</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">farmers</span><span class="op">)</span> </span>
 <span><span class="va">farmers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"farmers.shp"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/RtmpuTrvWg/farmers.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt; Reading layer `farmers' from data source `/tmp/Rtmp8t3MU9/farmers.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 20984 features and 5 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -467,7 +467,7 @@ plot <code>districts</code>, <code>roads</code>, and
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">districts</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">roads</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">farmers</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, col <span class="op">=</span> <span class="st">"blue"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>So what have we done? First, we use the <code>par</code> function
 with the <code>mar</code> (margin) argument and a 4-element vector of 0s
 to remove the inner margins of the plot so that the map of Zambia fills
@@ -598,14 +598,14 @@ ways to do it. First, the way we have already done it with
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sfdat</span><span class="op">$</span><span class="va">districts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sfdat</span><span class="op">$</span><span class="va">roads</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sfdat</span><span class="op">$</span><span class="va">farmers</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span>, pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>And with <code>ggplot</code>:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 18</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">sfdat</span><span class="op">$</span><span class="va">districts</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sfdat</span><span class="op">$</span><span class="va">roads</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sfdat</span><span class="op">$</span><span class="va">farmers</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="fig/u2m1-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="fig/u2m1-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>So now you see the roads appearing as red lines on the map.
 <code>ggplot</code> adds a coordinate grid to the outside of the plot,
 and has a special function <code>geom_sf</code> that is designed to plot
@@ -861,7 +861,7 @@ your interest.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">km2</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">15</span>, fill <span class="op">=</span> <span class="st">"blue"</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/bquote.html" class="external-link">bquote</a></span><span class="op">(</span><span class="st">"km"</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Here’s a look at the district areas (in
 km<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>)
 as a histogram. Notice the conversion steps. First we wanted to convert
@@ -900,7 +900,7 @@ of the districts themselves.</p>
 <span><span class="va">dist_cent</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Notice that right below the centroid calculation pipeline (#1) is a
 commented out line, which is the non-pipeline equivalent of the
 operation. In #2, we make the plots, setting up the plotting functions
@@ -1004,7 +1004,7 @@ modules. For example, let’s consider some very basic subsetting:</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html" class="external-link">sample_n</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"yellow"</span>, pch <span class="op">=</span> <span class="st">"+"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-32-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-32-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Notice the use of <code>dplyr</code> verbs to subset two datasets on
 the fly before they are piped into <code>plot</code>. The plot as setup
 with all <code>districts</code> as a backdrop (using
@@ -1112,7 +1112,7 @@ previously unseen approach:</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">districts</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">kanyi_dists</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">dists_gt2m</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-38-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-38-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>That’s two examples of subsetting that that are accomplished with
 <code>filter</code>. #1 is the new one, as it uses <code>grepl</code> to
 select districts with names beginning with either “Ka” or “Nyi”.
@@ -1174,7 +1174,7 @@ and then plot them.</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">dist_tertiles</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"purple"</span>, <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"bottomright"</span>, pch <span class="op">=</span> <span class="fl">15</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"purple"</span>, <span class="st">"blue"</span><span class="op">)</span>, </span>
 <span>       bty <span class="op">=</span> <span class="st">"n"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bottom third"</span>, <span class="st">"Middle third"</span>, <span class="st">"Largest third"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-39-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-39-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>The above is a <code>dplyr</code>-based split-apply-combine, which
 has a fair bit going on, so let’s explain:</p>
 <ul>
@@ -1229,7 +1229,7 @@ grouping:</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">dist_quintiles</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"bottomright"</span>, pch <span class="op">=</span> <span class="fl">15</span>, col <span class="op">=</span> <span class="va">cols</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"st"</span>, <span class="st">"nd"</span>, <span class="st">"rd"</span>, <span class="st">"th"</span>, <span class="st">"th"</span><span class="op">)</span>, <span class="st">" quantile"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-40-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-40-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Our plot in this case uses the <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">heat.colors()</a></code> function
 for filling the polygons.</p>
 <p>That was a quick introduction to SAC for <code>sf</code>. There are
@@ -1314,7 +1314,7 @@ create some additional spatial data.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">districts</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pol</span>, col <span class="op">=</span> <span class="st">"purple"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-41-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-41-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>The above takes <code>coords</code>, a <code>matrix</code> of x and y
 coordinates (#1), and repeats the approach we used in Chunk 19 (Section
 3.6) to create an <code>st_polygon</code> (#2), but then continues on to
@@ -1359,7 +1359,7 @@ ESRI terminology correctly–it’s been a while since I looked at it)</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">districts</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">dists_int</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">pol</span><span class="op">)</span>, border <span class="op">=</span> <span class="st">"purple"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-42-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-42-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>In #1 we use <code>st_intersects</code> to identify the indices of
 the <code>districts</code> that intersect <code>pol</code>. So that
 doesn’t give us back the actual intersecting district polygons. To get
@@ -1389,7 +1389,7 @@ identify and extract intersecting polygons. Now let’s look at what
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">districts</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">pol_int_dists</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">pol_int_dists</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>     add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-43-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-43-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Seems pretty clear what <code>st_intersection</code> does, and how it
 differs from <code>st_intersects</code>: it crops the intersected
 districts to the boundaries of <code>pol</code>, and returns the
@@ -1439,7 +1439,7 @@ look:</p>
 <span><span class="va">pol_int_muarea</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span>, main <span class="op">=</span> <span class="st">"Dissolved intersections"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-44-1.png" class="r-plt" alt="" width="50%" height="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-44-1.png" class="r-plt" alt="" width="100%" height="50%" style="display: block; margin: auto;"></p>
 <p><code>sf</code>’s generic for <code>summarize</code> does the job for
 us. In #1, we run <code>summarize</code> without specifying a variable
 to summarize, and it returns a field-less (attribute-less) single
@@ -1490,7 +1490,7 @@ mixed geometry types), or simplify. Doing this is the job of
 <span><span class="va">pol_int_dists</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="va">st_geometry</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">rbcols</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-46-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-46-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Notice how the object contains three polygons and one multipolygon,
 which is the blue district (Mufumbwe), which needs to be MULTIPOLYGON
 because the light green district (Kaoma) drives a wedge between it,
@@ -1545,7 +1545,7 @@ to do that. We can see the result:</p>
 <span>  <span class="va">st_geometry</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">rbcols</span>, main <span class="op">=</span> <span class="st">"Cast to POLYGON"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in st_cast.MULTIPOLYGON(X[[i]], ...): polygon from first part only</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-49-1.png" class="r-plt" alt="" width="480" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-49-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>No difference between the original <code>pol_int_dists</code> and the
 straight cast of it, but when we try cast to POLYGON, the top sliver of
 the blue district disappears.</p>
@@ -1564,9 +1564,7 @@ titles can be displayed.</p>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="st">"MULTIPOINT"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="va">st_geometry</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">rbcols</span>, main <span class="op">=</span> <span class="st">"Cast to MULTIPOINT"</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-50-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt; null device </span></span>
-<span><span class="co">#&gt;           1</span></span></code></pre>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-50-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>So that’s <code>st_cast</code>. Not really a spatial operation
 <em>per se</em>, but can be important for transitioning between spatial
 operations, as indicated by this passage from <code>sf</code>’s <a href="https://cran.r-project.org/web/packages/sf/vignettes/sf3.html" class="external-link">3rd
@@ -1586,7 +1584,7 @@ vignette.</p>
 </h3>
 <p>Now we are going to move on to look at another bread and butter
 operation, differencing (or erasing).</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 41</span></span>
 <span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_difference</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">districts</span>, y <span class="op">=</span> <span class="va">pol</span><span class="op">)</span></span>
 <span><span class="co">#&gt; although coordinates are longitude/latitude, st_difference assumes that they are planar</span></span>
@@ -1602,7 +1600,7 @@ operation, differencing (or erasing).</p>
 <span><span class="va">d2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="va">st_geometry</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-52-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-52-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p><code>d1</code> erases <code>pol</code>, leaving a hole, whereas
 <code>d2</code>, by reversing the order of objects into the “x” and “y”
 arguments, does the same thing as an intersection, by erasing all the
@@ -1613,7 +1611,7 @@ districts surrounding <code>pol</code>.</p>
 </h3>
 <p>We have already seen <code>st_union</code> in action to dissolve
 internal polygon boundaries. Now let’s look at unioning two objects.</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 42</span></span>
 <span><span class="co"># #1</span></span>
 <span><span class="va">uni1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pol</span>, y <span class="op">=</span> <span class="va">districts</span><span class="op">)</span></span>
@@ -1665,7 +1663,7 @@ internal polygon boundaries. Now let’s look at unioning two objects.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">uni1</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Union of pol with districts"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">uni2</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Union of districts with pol"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-53-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-53-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>Two different order to unioning <code>pol</code> and
 <code>districts</code> (#1 and #2). The ordering simply results in the
 ordering of the attribute fields in the resulting unioned datasets (the
@@ -1684,7 +1682,7 @@ work of selecting a color scheme.</p>
 </h3>
 <p>This is a fairly common GIS operation that <code>sf</code> handles
 nicely.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 43</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># #1</span></span>
@@ -1724,7 +1722,7 @@ nicely.</p>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">buffs</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">roads</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="va">cols2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>  <span class="co"># 6</span></span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">buffs</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">farmers</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>  <span class="co"># 5</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-54-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-54-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>A fair bit of code up there, so let’s walk through it. In #1 we
 convert <code>farmers</code> and <code>districts</code> to Albers
 projections, as buffers should be specified in meters, not decimal
@@ -1755,7 +1753,7 @@ largest to smallest buffers).</p>
 examples just sample from the features in an existing object. Sometimes
 you might be interested in confining the sample to a particular feature
 or features, for example:</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 44</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">districts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -1766,14 +1764,14 @@ or features, for example:</p>
 <span>  <span class="va">st_union</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">100</span>, exact <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-55-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-55-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>That uses <code>st_sample</code> to pull a random sample of 100
 points from within the merged district. We set the
 <code>exact = TRUE</code> argument to force the returned sample to be
 the exact number we specify (otherwise it can sometimes be a bit
 less).</p>
 <p>Let’s look at this in a bit more depth:</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 45</span></span>
 <span><span class="co"># #1</span></span>
 <span><span class="va">seed</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
@@ -1793,7 +1791,7 @@ less).</p>
 <span><span class="va">dists_7</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"khaki"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">samp14</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">samp7_2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span>, pch <span class="op">=</span> <span class="st">"+"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="unit2-module1_files/figure-html/unnamed-chunk-56-1.png" class="r-plt" alt="" width="50%" style="display: block; margin: auto;"></p>
+<p><img src="unit2-module1_files/figure-html/unnamed-chunk-56-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <p>In #1 we start by randomly selecting 7 districts from
 <code>districts</code> (using <code>sample_n</code>). We then use
 <code>st_sample</code> to randomly select 14 points from within those 7
@@ -1840,7 +1838,7 @@ think of min and max in absolute terms (i.e. drop the negative sign).
 Plot the result on top of <code>districts</code> in blue. It should look
 like this:</li>
 </ol>
-<p><img src="fig/u2m1-2.png" class="r-plt" alt="" width="30%" style="display: block; margin: auto;"></p>
+<p><img src="fig/u2m1-2.png" class="r-plt" alt="" width="90%" style="display: block; margin: auto;"></p>
 <ol start="2" style="list-style-type: decimal">
 <li><p>Use your new <code>pol2</code> to do an
 <code>st_intersection</code> with <code>districts</code>. Call it

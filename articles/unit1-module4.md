@@ -2584,7 +2584,8 @@ An alternate was of constructing the same plot is this:
 ggplot(data = crop_ylds %>% filter(crop == "maize"), 
        mapping = aes(x = harv_area, y = prod)) +
   geom_point(col = "blue") + xlab("Harvested area (ha)") + 
-  ylab("Production (tons)") + ggtitle("Maize production vs harvested area")
+  ylab("Production (tons)") + 
+  ggtitle("Maize production vs harvested area")
 ```
 
 That is not run, to save space, but is identical. In this case, insert
