@@ -39,30 +39,76 @@ library(readr)
 ## Spatial continued
 ### Data
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE, suppressMessages=TRUE}
+```{r, message=FALSE, warning=FALSE, suppressMessages=TRUE}
 districts <- st_read(system.file("extdata/districts.geojson", 
                                  package = "geospaar"))
 farmers <- read_csv(system.file("extdata/farmer_spatial.csv", 
                                 package = "geospaar"))
-farmers_s <- st_as_sf(farmers, coords = c("x", "y")) %>% 
-  st_set_crs(st_crs(districts))
+```
 
+---
+
+## Projections, cont.
+
+### Setting
+```{r, eval=FALSE}
+farmers_sf <- st_as_sf(farmers, coords = c("x", "y")) %>% 
+  st_set_crs(st_crs(districts))
+```
+
+### Transform
+
+```{r, message = FALSE}
 roads <- st_read(system.file("extdata/roads.geojson", package = "geospaar")) %>% 
   st_transform(crs = st_crs(districts))
+```
 
+---
+
+## Features from scratch
+
+```{r, eval=FALSE, message = FALSE}
 pt <- st_point(x = c(28, -14))
+pt
+#> POINT (28 -14)
+#
+# #2
 pts <- st_multipoint(x = cbind(x = c(27.5, 28, 28.5), y = c(-14.5, -15, -15.5)))
+pts
+#> MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))
+#
+# #3
 sline <- st_linestring(cbind(x = c(27, 27.5, 28), y = c(-15, -15.5, -16)))
+sline
+#> LINESTRING (27 -15, 27.5 -15.5, 28 -16)
+#
+# #4
 pol <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
                              y = c(-15.5, -16.5, -17, -16, -15.5))))
+pol
 ```
+
+---
+
+### Plotting
+
+- `sf`'s generic `plot()` (use `add = TRUE`)
+```{r, eval=FALSE, message = FALSE}
+par(mar = c(0, 0, 0, 0))
+plot(districts %>% st_geometry(), col = "grey")
+plot(pt, add = TRUE, col = "red", pch = 20)
+plot(pts, add = TRUE, col = "blue", pch = 20)
+plot(sline, add = TRUE, col = "cyan", lwd = 2)
+plot(pol, add = TRUE, col = "orange", lwd = 2)
+```
+
 
 ---
 
 ## Plotting (ggplot)
 
 - Use `geom_sf()`
-```{r, eval = FALSE, message = FALSE}
+```{r, eval=FALSE, message = FALSE}
 ggplot(districts) + geom_sf() +
   geom_sf(data = roads, col = "red") + 
   geom_sf(data = farmers_sf, col = "blue")
@@ -186,7 +232,8 @@ ggplot() +
 - Mixing `%>%` and `+` in `ggplot` 
 - Single pipeline
 ```{r, eval=FALSE}
-ggplot(districts) + geom_sf(color = "black", fill = NA) +
+ggplot(districts) + 
+  geom_sf(color = "black", fill = NA) +
   st_read(system.file("extdata/roads.geojson", package = "geospaar")) %>% 
   mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
   geom_sf(data = ., aes(color = road_length), lwd = 1) + 
@@ -202,8 +249,7 @@ ggplot(districts) + geom_sf(color = "black", fill = NA) +
 
 ```{r, eval=FALSE}
 p <- ggplot(districts) + geom_sf()
-p + 
-  roads %>% 
+p + roads %>% 
   mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
   filter(., road_length <= 500 & road_length > 49) %>% 
   geom_sf(data = ., color = 'red') + theme_minimal()
@@ -331,9 +377,12 @@ plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
 - Best to use projected coordinates (e.g. Albers)
 ```{r, eval = FALSE, message = FALSE}
 ## project everything to Albers
-farmers_alb <- farmers_sf %>% st_transform(st_crs(roads))
-long_roads <- roads %>% filter(as.numeric(st_length(.)) > 500000)
-districts_alb <- districts %>% st_transform(st_crs(roads))
+farmers_alb <- farmers_sf %>% 
+  st_transform(st_crs(roads))
+long_roads <- roads %>% 
+  filter(as.numeric(st_length(.)) > 500000)
+districts_alb <- districts %>% 
+  st_transform(st_crs(roads))
 
 roads_buff_20km <- st_buffer(long_roads, 20000)
 plot(st_geometry(districts_alb), col = "grey")
@@ -368,7 +417,7 @@ par(mar = rep(0, 4))
 districts %>% 
   st_geometry %>% 
   plot(col = "grey")
-# set.seed(1)
+set.seed(1)
 districts %>% 
   st_sample(size = rep(5, nrow(.)), by_polygon = TRUE) %>% 
   plot(pch = 20, add = TRUE)
@@ -380,16 +429,34 @@ districts %>%
 ---
 
 ## Exercise
-Find all districts within 50 km of sampled points? 
+Place 3 random points in Zambia (union districts to make single shape of Zambia). Find all districts within 50 km of sampled points? 
 
+Adapt this
 ```{r, eval=FALSE, message = FALSE}
+set.seed(1)
+pts <- st_union() %>% 
+  st_sample() %>% 
+  st_transform(st_crs())
+dists_in_pts <- districts_alb %>% 
+  slice(unlist(st_intersects(st_buffer(, dist = 50000), .)))
+ggplot() + 
+  geom_sf(data = ) + 
+  geom_sf(data = , fill = "blue") + 
+  geom_sf(data = )
+
 ```
 
 ---
 
 ## Exercise
 How many farmers are within 100km of one of the "long roads"?
+
+Adapt
 ```{r, eval = FALSE, message = FALSE}
+
+farmers_alb %>% 
+  slice(unlist(st_intersects(st_buffer(), .))) %>% 
+  ?
 ```
 
 
@@ -406,7 +473,8 @@ How many farmers are within 100km of one of the "long roads"?
 
 ```{r, eval=FALSE}
 # code to adapt
-roads %>% mutate(km = as.numeric(st_length(.)) / 1000) %>% 
+roads %>% 
+  mutate(km = as.numeric(st_length(.)) / 1000) %>% 
   filter(km > 200) %>% 
   st_buffer(dist = 20000) %>% 
   st_transform(crs = 4326)

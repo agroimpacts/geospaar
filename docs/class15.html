@@ -577,6 +577,9 @@ margin: 5px 0;
 .reveal p {
 font-size: 0.6em;
 }
+.reveal li p {
+font-size: 1em;
+}
 
 .reveal pre.r code {
 background: #272626;
@@ -1103,20 +1106,80 @@ margin-right: 0; }
 <h3 id="data">Data</h3>
 <div class="cell" data-suppressmessages="true">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a>districts <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/districts.geojson&quot;</span>, </span>
-<span id="cb1-2"><a href></a>                                 <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>))</span>
-<span id="cb1-3"><a href></a>farmers <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/farmer_spatial.csv&quot;</span>, </span>
-<span id="cb1-4"><a href></a>                                <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>))</span>
-<span id="cb1-5"><a href></a>farmers_s <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(farmers, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-6"><a href></a>  <span class="fu">st_set_crs</span>(<span class="fu">st_crs</span>(districts))</span>
-<span id="cb1-7"><a href></a></span>
-<span id="cb1-8"><a href></a>roads <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-9"><a href></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(districts))</span>
-<span id="cb1-10"><a href></a></span>
-<span id="cb1-11"><a href></a>pt <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">28</span>, <span class="sc">-</span><span class="dv">14</span>))</span>
-<span id="cb1-12"><a href></a>pts <span class="ot">&lt;-</span> <span class="fu">st_multipoint</span>(<span class="at">x =</span> <span class="fu">cbind</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fl">27.5</span>, <span class="dv">28</span>, <span class="fl">28.5</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">14.5</span>, <span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="fl">15.5</span>)))</span>
-<span id="cb1-13"><a href></a>sline <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">cbind</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">27</span>, <span class="fl">27.5</span>, <span class="dv">28</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="fl">15.5</span>, <span class="sc">-</span><span class="dv">16</span>)))</span>
-<span id="cb1-14"><a href></a>pol <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>(<span class="fu">list</span>(<span class="fu">cbind</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fl">26.5</span>, <span class="fl">27.5</span>, <span class="dv">27</span>, <span class="dv">26</span>, <span class="fl">26.5</span>), </span>
-<span id="cb1-15"><a href></a>                             <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">15.5</span>, <span class="sc">-</span><span class="fl">16.5</span>, <span class="sc">-</span><span class="dv">17</span>, <span class="sc">-</span><span class="dv">16</span>, <span class="sc">-</span><span class="fl">15.5</span>))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href></a>                                 <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `districts&#39; from data source 
+  `/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/geospaar/extdata/districts.geojson&#39; 
+  using driver `GeoJSON&#39;
+Simple feature collection with 72 features and 1 field
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 21.99978 ymin: -18.0751 xmax: 33.6875 ymax: -8.226213
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>farmers <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/farmer_spatial.csv&quot;</span>, </span>
+<span id="cb3-2"><a href></a>                                <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="projections-cont." class="slide level2">
+<h2>Projections, cont.</h2>
+<h3 id="setting">Setting</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a>farmers_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(farmers, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href></a>  <span class="fu">st_set_crs</span>(<span class="fu">st_crs</span>(districts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<h3 id="transform">Transform</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a>roads <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(districts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `roads&#39; from data source 
+  `/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/geospaar/extdata/roads.geojson&#39; 
+  using driver `GeoJSON&#39;
+Simple feature collection with 473 features and 1 field
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: -292996.9 ymin: -2108848 xmax: 873238.8 ymax: -1008785
+Projected CRS: Africa_Albers_Equal_Area_Conic</code></pre>
+</div>
+</div>
+</section>
+<section id="features-from-scratch" class="slide level2">
+<h2>Features from scratch</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a>pt <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">28</span>, <span class="sc">-</span><span class="dv">14</span>))</span>
+<span id="cb7-2"><a href></a>pt</span>
+<span id="cb7-3"><a href></a><span class="co">#&gt; POINT (28 -14)</span></span>
+<span id="cb7-4"><a href></a><span class="co">#</span></span>
+<span id="cb7-5"><a href></a><span class="co"># #2</span></span>
+<span id="cb7-6"><a href></a>pts <span class="ot">&lt;-</span> <span class="fu">st_multipoint</span>(<span class="at">x =</span> <span class="fu">cbind</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fl">27.5</span>, <span class="dv">28</span>, <span class="fl">28.5</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">14.5</span>, <span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="fl">15.5</span>)))</span>
+<span id="cb7-7"><a href></a>pts</span>
+<span id="cb7-8"><a href></a><span class="co">#&gt; MULTIPOINT ((27.5 -14.5), (28 -15), (28.5 -15.5))</span></span>
+<span id="cb7-9"><a href></a><span class="co">#</span></span>
+<span id="cb7-10"><a href></a><span class="co"># #3</span></span>
+<span id="cb7-11"><a href></a>sline <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">cbind</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">27</span>, <span class="fl">27.5</span>, <span class="dv">28</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="sc">-</span><span class="fl">15.5</span>, <span class="sc">-</span><span class="dv">16</span>)))</span>
+<span id="cb7-12"><a href></a>sline</span>
+<span id="cb7-13"><a href></a><span class="co">#&gt; LINESTRING (27 -15, 27.5 -15.5, 28 -16)</span></span>
+<span id="cb7-14"><a href></a><span class="co">#</span></span>
+<span id="cb7-15"><a href></a><span class="co"># #4</span></span>
+<span id="cb7-16"><a href></a>pol <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>(<span class="fu">list</span>(<span class="fu">cbind</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fl">26.5</span>, <span class="fl">27.5</span>, <span class="dv">27</span>, <span class="dv">26</span>, <span class="fl">26.5</span>), </span>
+<span id="cb7-17"><a href></a>                             <span class="at">y =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">15.5</span>, <span class="sc">-</span><span class="fl">16.5</span>, <span class="sc">-</span><span class="dv">17</span>, <span class="sc">-</span><span class="dv">16</span>, <span class="sc">-</span><span class="fl">15.5</span>))))</span>
+<span id="cb7-18"><a href></a>pol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="plotting">Plotting</h3>
+<ul>
+<li><code>sf</code>’s generic <code>plot()</code> (use <code>add = TRUE</code>)</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb8-2"><a href></a><span class="fu">plot</span>(districts <span class="sc">%&gt;%</span> <span class="fu">st_geometry</span>(), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb8-3"><a href></a><span class="fu">plot</span>(pt, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">pch =</span> <span class="dv">20</span>)</span>
+<span id="cb8-4"><a href></a><span class="fu">plot</span>(pts, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">20</span>)</span>
+<span id="cb8-5"><a href></a><span class="fu">plot</span>(sline, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">&quot;cyan&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb8-6"><a href></a><span class="fu">plot</span>(pol, <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="plotting-ggplot" class="slide level2">
@@ -1125,9 +1188,9 @@ margin-right: 0; }
 <li>Use <code>geom_sf()</code></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
-<span id="cb2-2"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> roads, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb2-3"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> farmers_sf, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb9-2"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> roads, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb9-3"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> farmers_sf, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="area-and-length" class="slide level2">
@@ -1137,17 +1200,17 @@ margin-right: 0; }
 <li>How many square m in a square km?</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>dist_areas <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> <span class="fu">st_area</span>()</span>
-<span id="cb3-2"><a href></a>dist_areas</span>
-<span id="cb3-3"><a href></a>dist_areas <span class="sc">%&gt;%</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;km^2&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href></a>dist_areas <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> <span class="fu">st_area</span>()</span>
+<span id="cb10-2"><a href></a>dist_areas</span>
+<span id="cb10-3"><a href></a>dist_areas <span class="sc">%&gt;%</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;km^2&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="add-area-as-column" class="slide level2">
 <h2>Add area as column</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
-<span id="cb4-2"><a href></a>  <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">st_area</span>(.) <span class="sc">%&gt;%</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;km^2&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">as.numeric</span>()) </span>
-<span id="cb4-3"><a href></a>districts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href></a>  <span class="fu">mutate</span>(<span class="at">area =</span> <span class="fu">st_area</span>(.) <span class="sc">%&gt;%</span> units<span class="sc">::</span><span class="fu">set_units</span>(<span class="st">&quot;km^2&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">as.numeric</span>()) </span>
+<span id="cb11-3"><a href></a>districts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="plot-districts-exercise" class="slide level2">
@@ -1158,62 +1221,62 @@ margin-right: 0; }
 <li>Use <code>scale_fill_continuous</code> , with <code>type = &#39;viridis&#39;</code></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> area)) <span class="sc">+</span> </span>
-<span id="cb5-2"><a href></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> area)) <span class="sc">+</span> </span>
+<span id="cb12-2"><a href></a>  <span class="fu">scale_fill_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="compare-areas" class="slide level2">
 <h2>Compare areas</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href></a>  <span class="fu">st_transform</span>(<span class="st">&quot;ESRI:102022&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-3"><a href></a>  <span class="fu">mutate</span>(<span class="at">area2 =</span> <span class="fu">as.numeric</span>(<span class="fu">st_area</span>(.) <span class="sc">/</span> <span class="dv">10000</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-4"><a href></a>  <span class="fu">st_transform</span>(<span class="dv">4326</span>)</span>
-<span id="cb6-5"><a href></a></span>
-<span id="cb6-6"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> </span>
-<span id="cb6-7"><a href></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> area <span class="sc">-</span> area2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
+<span id="cb13-2"><a href></a>  <span class="fu">st_transform</span>(<span class="st">&quot;ESRI:102022&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-3"><a href></a>  <span class="fu">mutate</span>(<span class="at">area2 =</span> <span class="fu">as.numeric</span>(<span class="fu">st_area</span>(.) <span class="sc">/</span> <span class="dv">10000</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb13-4"><a href></a>  <span class="fu">st_transform</span>(<span class="dv">4326</span>)</span>
+<span id="cb13-5"><a href></a></span>
+<span id="cb13-6"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> </span>
+<span id="cb13-7"><a href></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> area <span class="sc">-</span> area2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> (area <span class="sc">-</span> area2) <span class="sc">/</span> area <span class="sc">*</span> <span class="dv">100</span>)</span>
-<span id="cb7-3"><a href></a></span>
-<span id="cb7-4"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span></span>
-<span id="cb7-5"><a href></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> area2, <span class="at">y =</span> areadiff))</span>
-<span id="cb7-6"><a href></a></span>
-<span id="cb7-7"><a href></a>districts <span class="sc">%&gt;%</span></span>
-<span id="cb7-8"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-9"><a href></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> area2, <span class="at">y =</span> areadiff))</span>
-<span id="cb7-10"><a href></a></span>
-<span id="cb7-11"><a href></a>districts <span class="sc">%&gt;%</span></span>
-<span id="cb7-12"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-13"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href></a>districts <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> (area <span class="sc">-</span> area2) <span class="sc">/</span> area <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb14-3"><a href></a></span>
+<span id="cb14-4"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span></span>
+<span id="cb14-5"><a href></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> area2, <span class="at">y =</span> areadiff))</span>
+<span id="cb14-6"><a href></a></span>
+<span id="cb14-7"><a href></a>districts <span class="sc">%&gt;%</span></span>
+<span id="cb14-8"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-9"><a href></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> area2, <span class="at">y =</span> areadiff))</span>
+<span id="cb14-10"><a href></a></span>
+<span id="cb14-11"><a href></a>districts <span class="sc">%&gt;%</span></span>
+<span id="cb14-12"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-13"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>districts <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> areadiff))</span>
-<span id="cb8-4"><a href></a></span>
-<span id="cb8-5"><a href></a>districts <span class="sc">%&gt;%</span></span>
-<span id="cb8-6"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-7"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff)) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-8"><a href></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> mu))</span>
-<span id="cb8-9"><a href></a></span>
-<span id="cb8-10"><a href></a>districts <span class="sc">%&gt;%</span></span>
-<span id="cb8-11"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-12"><a href></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb8-13"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff)) <span class="co">#%&gt;% </span></span>
-<span id="cb8-14"><a href></a>  <span class="co"># ggplot() + geom_sf(aes(fill = mu))</span></span>
-<span id="cb8-15"><a href></a></span>
-<span id="cb8-16"><a href></a>districts <span class="sc">%&gt;%</span></span>
-<span id="cb8-17"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-18"><a href></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb8-19"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff)) <span class="co">#%&gt;%</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href></a>districts <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> areadiff))</span>
+<span id="cb15-4"><a href></a></span>
+<span id="cb15-5"><a href></a>districts <span class="sc">%&gt;%</span></span>
+<span id="cb15-6"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-7"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-8"><a href></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> mu))</span>
+<span id="cb15-9"><a href></a></span>
+<span id="cb15-10"><a href></a>districts <span class="sc">%&gt;%</span></span>
+<span id="cb15-11"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-12"><a href></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb15-13"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff)) <span class="co">#%&gt;% </span></span>
+<span id="cb15-14"><a href></a>  <span class="co"># ggplot() + geom_sf(aes(fill = mu))</span></span>
+<span id="cb15-15"><a href></a></span>
+<span id="cb15-16"><a href></a>districts <span class="sc">%&gt;%</span></span>
+<span id="cb15-17"><a href></a>  <span class="fu">mutate</span>(<span class="at">areadiff =</span> ((area <span class="sc">-</span> area2) <span class="sc">/</span> area) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-18"><a href></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb15-19"><a href></a>  <span class="fu">summarize</span>(<span class="at">mu =</span> <span class="fu">mean</span>(areadiff)) <span class="co">#%&gt;%</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="calculate-length-exercise" class="slide level2">
@@ -1230,28 +1293,29 @@ margin-right: 0; }
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a>roads <span class="ot">&lt;-</span> <span class="fu">st_read</span>(</span>
-<span id="cb9-2"><a href></a>  <span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)</span>
-<span id="cb9-3"><a href></a>) </span>
-<span id="cb9-4"><a href></a>roads <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> </span>
-<span id="cb9-5"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) </span>
-<span id="cb9-6"><a href></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb9-7"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> districts, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb9-8"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> roads, <span class="fu">aes</span>(<span class="at">color =</span> road_length), <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
-<span id="cb9-9"><a href></a>  <span class="fu">scale_color_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb9-10"><a href></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href></a>roads <span class="ot">&lt;-</span> <span class="fu">st_read</span>(</span>
+<span id="cb16-2"><a href></a>  <span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)</span>
+<span id="cb16-3"><a href></a>) </span>
+<span id="cb16-4"><a href></a>roads <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> </span>
+<span id="cb16-5"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) </span>
+<span id="cb16-6"><a href></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb16-7"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> districts, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb16-8"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> roads, <span class="fu">aes</span>(<span class="at">color =</span> road_length), <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb16-9"><a href></a>  <span class="fu">scale_color_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb16-10"><a href></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Mixing <code>%&gt;%</code> and <code>+</code> in <code>ggplot</code></li>
 <li>Single pipeline</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb10-2"><a href></a>  <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-3"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-4"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ., <span class="fu">aes</span>(<span class="at">color =</span> road_length), <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
-<span id="cb10-5"><a href></a>  <span class="fu">scale_color_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="sc">+</span></span>
-<span id="cb10-6"><a href></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href></a><span class="fu">ggplot</span>(districts) <span class="sc">+</span> </span>
+<span id="cb17-2"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-3"><a href></a>  <span class="fu">st_read</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-4"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb17-5"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ., <span class="fu">aes</span>(<span class="at">color =</span> road_length), <span class="at">lwd =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb17-6"><a href></a>  <span class="fu">scale_color_continuous</span>(<span class="at">type =</span> <span class="st">&quot;viridis&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-7"><a href></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
@@ -1262,42 +1326,41 @@ margin-right: 0; }
 <li>plot the selected roads over districts using ggplot. Make the roads red</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>()</span>
-<span id="cb11-2"><a href></a>p <span class="sc">+</span> </span>
-<span id="cb11-3"><a href></a>  roads <span class="sc">%&gt;%</span> </span>
-<span id="cb11-4"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-5"><a href></a>  <span class="fu">filter</span>(., road_length <span class="sc">&lt;=</span> <span class="dv">500</span> <span class="sc">&amp;</span> road_length <span class="sc">&gt;</span> <span class="dv">49</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-6"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ., <span class="at">color =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
-<span id="cb11-7"><a href></a></span>
-<span id="cb11-8"><a href></a>roads_ss <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> </span>
-<span id="cb11-9"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-10"><a href></a>  <span class="fu">filter</span>(., road_length <span class="sc">&lt;=</span> <span class="dv">500</span> <span class="sc">&amp;</span> road_length <span class="sc">&gt;</span> <span class="dv">49</span>)</span>
-<span id="cb11-11"><a href></a></span>
-<span id="cb11-12"><a href></a>p <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> roads_ss, <span class="at">color =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb11-13"><a href></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(districts) <span class="sc">+</span> <span class="fu">geom_sf</span>()</span>
+<span id="cb18-2"><a href></a>p <span class="sc">+</span> roads <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-4"><a href></a>  <span class="fu">filter</span>(., road_length <span class="sc">&lt;=</span> <span class="dv">500</span> <span class="sc">&amp;</span> road_length <span class="sc">&gt;</span> <span class="dv">49</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-5"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ., <span class="at">color =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>()</span>
+<span id="cb18-6"><a href></a></span>
+<span id="cb18-7"><a href></a>roads_ss <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> </span>
+<span id="cb18-8"><a href></a>  <span class="fu">mutate</span>(<span class="at">road_length =</span> <span class="fu">as.numeric</span>(units<span class="sc">::</span><span class="fu">set_units</span>(<span class="fu">st_length</span>(.), <span class="st">&quot;km&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-9"><a href></a>  <span class="fu">filter</span>(., road_length <span class="sc">&lt;=</span> <span class="dv">500</span> <span class="sc">&amp;</span> road_length <span class="sc">&gt;</span> <span class="dv">49</span>)</span>
+<span id="cb18-10"><a href></a></span>
+<span id="cb18-11"><a href></a>p <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="at">data =</span> roads_ss, <span class="at">color =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span> </span>
+<span id="cb18-12"><a href></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="spatial-operations" class="slide level2">
 <h2>Spatial Operations</h2>
 <p>Data setup</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href></a>coords <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="st">&quot;x&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="fl">25.1</span>, <span class="fl">26.4</span>, <span class="fl">26.4</span>, <span class="fl">26.4</span>, <span class="dv">25</span>), </span>
-<span id="cb12-2"><a href></a>                <span class="st">&quot;y&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">15.5</span>, <span class="sc">-</span><span class="fl">14.5</span>, <span class="sc">-</span><span class="fl">14.6</span>, <span class="sc">-</span><span class="fl">14.8</span>, <span class="sc">-</span><span class="fl">15.6</span>, <span class="sc">-</span><span class="fl">15.5</span>))</span>
-<span id="cb12-3"><a href></a>pol <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>(<span class="at">x =</span> <span class="fu">list</span>(coords)) <span class="sc">%&gt;%</span> </span>
-<span id="cb12-4"><a href></a>  st_sfc <span class="sc">%&gt;%</span> </span>
-<span id="cb12-5"><a href></a>  <span class="fu">st_sf</span>(<span class="at">ID =</span> <span class="dv">1</span>, <span class="at">crs =</span> <span class="dv">4326</span>)</span>
-<span id="cb12-6"><a href></a>roads_rpj <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(roads, <span class="at">crs =</span> <span class="fu">st_crs</span>(districts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href></a>coords <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="st">&quot;x&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="fl">25.1</span>, <span class="fl">26.4</span>, <span class="fl">26.4</span>, <span class="fl">26.4</span>, <span class="dv">25</span>), </span>
+<span id="cb19-2"><a href></a>                <span class="st">&quot;y&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">15.5</span>, <span class="sc">-</span><span class="fl">14.5</span>, <span class="sc">-</span><span class="fl">14.6</span>, <span class="sc">-</span><span class="fl">14.8</span>, <span class="sc">-</span><span class="fl">15.6</span>, <span class="sc">-</span><span class="fl">15.5</span>))</span>
+<span id="cb19-3"><a href></a>pol <span class="ot">&lt;-</span> <span class="fu">st_polygon</span>(<span class="at">x =</span> <span class="fu">list</span>(coords)) <span class="sc">%&gt;%</span> </span>
+<span id="cb19-4"><a href></a>  st_sfc <span class="sc">%&gt;%</span> </span>
+<span id="cb19-5"><a href></a>  <span class="fu">st_sf</span>(<span class="at">ID =</span> <span class="dv">1</span>, <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb19-6"><a href></a>roads_rpj <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(roads, <span class="at">crs =</span> <span class="fu">st_crs</span>(districts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="plotting" class="slide level2">
+<section id="plotting-1" class="slide level2">
 <h2>Plotting</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
-<span id="cb13-2"><a href></a><span class="co"># plot(districts)</span></span>
-<span id="cb13-3"><a href></a><span class="co"># plot(districts$geometry, col = &quot;grey&quot;)</span></span>
-<span id="cb13-4"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb13-5"><a href></a><span class="fu">plot</span>(pol, <span class="at">col =</span> <span class="st">&quot;purple&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb13-6"><a href></a><span class="fu">plot</span>(roads_rpj, <span class="at">col =</span> <span class="st">&#39;red&#39;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
+<span id="cb20-2"><a href></a><span class="co"># plot(districts)</span></span>
+<span id="cb20-3"><a href></a><span class="co"># plot(districts$geometry, col = &quot;grey&quot;)</span></span>
+<span id="cb20-4"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb20-5"><a href></a><span class="fu">plot</span>(pol, <span class="at">col =</span> <span class="st">&quot;purple&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb20-6"><a href></a><span class="fu">plot</span>(roads_rpj, <span class="at">col =</span> <span class="st">&#39;red&#39;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_intersects" class="slide level2">
@@ -1307,20 +1370,20 @@ margin-right: 0; }
 <li>Finds indices of second object that intersect each element of first object</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href></a><span class="fu">st_intersects</span>(<span class="at">x =</span> roads_rpj, <span class="at">y =</span> districts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href></a><span class="fu">st_intersects</span>(<span class="at">x =</span> roads_rpj, <span class="at">y =</span> districts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_intersects-1" class="slide level2">
 <h2><code>st_intersects</code></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href></a>highway <span class="ot">&lt;-</span> roads_rpj[<span class="dv">401</span>, ]</span>
-<span id="cb15-2"><a href></a>dists_int <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
-<span id="cb15-3"><a href></a>  <span class="fu">slice</span>(<span class="fu">st_intersects</span>(<span class="at">x =</span> highway, <span class="at">y =</span> .)[[<span class="dv">1</span>]])</span>
-<span id="cb15-4"><a href></a><span class="co"># unlist(st_intersects(x = highway, y = districts))</span></span>
-<span id="cb15-5"><a href></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span>
-<span id="cb15-6"><a href></a>dists_int</span>
-<span id="cb15-7"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(dists_int), <span class="at">col =</span> <span class="st">&#39;grey&#39;</span>)</span>
-<span id="cb15-8"><a href></a><span class="fu">plot</span>(highway, <span class="at">col =</span> <span class="st">&#39;red&#39;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href></a>highway <span class="ot">&lt;-</span> roads_rpj[<span class="dv">401</span>, ]</span>
+<span id="cb22-2"><a href></a>dists_int <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
+<span id="cb22-3"><a href></a>  <span class="fu">slice</span>(<span class="fu">st_intersects</span>(<span class="at">x =</span> highway, <span class="at">y =</span> .)[[<span class="dv">1</span>]])</span>
+<span id="cb22-4"><a href></a><span class="co"># unlist(st_intersects(x = highway, y = districts))</span></span>
+<span id="cb22-5"><a href></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span>
+<span id="cb22-6"><a href></a>dists_int</span>
+<span id="cb22-7"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(dists_int), <span class="at">col =</span> <span class="st">&#39;grey&#39;</span>)</span>
+<span id="cb22-8"><a href></a><span class="fu">plot</span>(highway, <span class="at">col =</span> <span class="st">&#39;red&#39;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_intersection" class="slide level2">
@@ -1330,16 +1393,16 @@ margin-right: 0; }
 <li>Each row in result is one “intersection object” (i.e. an object from x and y that intersect)</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href></a>pol_int_dists <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(<span class="at">x =</span> pol, <span class="at">y =</span> districts)</span>
-<span id="cb16-2"><a href></a></span>
-<span id="cb16-3"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
-<span id="cb16-4"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb16-5"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(pol_int_dists), <span class="at">col =</span> <span class="fu">rainbow</span>(<span class="at">n =</span> <span class="fu">nrow</span>(pol_int_dists)), </span>
-<span id="cb16-6"><a href></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-7"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb16-8"><a href></a>districts <span class="sc">%&gt;%</span> </span>
-<span id="cb16-9"><a href></a>  <span class="fu">slice</span>(<span class="fu">unlist</span>(<span class="fu">st_intersects</span>(<span class="at">x =</span> pol, <span class="at">y =</span> .))) <span class="sc">%&gt;%</span> </span>
-<span id="cb16-10"><a href></a>  <span class="fu">plot</span>(<span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href></a>pol_int_dists <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(<span class="at">x =</span> pol, <span class="at">y =</span> districts)</span>
+<span id="cb23-2"><a href></a></span>
+<span id="cb23-3"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
+<span id="cb23-4"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb23-5"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(pol_int_dists), <span class="at">col =</span> <span class="fu">rainbow</span>(<span class="at">n =</span> <span class="fu">nrow</span>(pol_int_dists)), </span>
+<span id="cb23-6"><a href></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-7"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb23-8"><a href></a>districts <span class="sc">%&gt;%</span> </span>
+<span id="cb23-9"><a href></a>  <span class="fu">slice</span>(<span class="fu">unlist</span>(<span class="fu">st_intersects</span>(<span class="at">x =</span> pol, <span class="at">y =</span> .))) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-10"><a href></a>  <span class="fu">plot</span>(<span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_difference" class="slide level2">
@@ -1349,16 +1412,16 @@ margin-right: 0; }
 <li>Returns first object without second object.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href></a>d1 <span class="ot">&lt;-</span> <span class="fu">st_difference</span>(<span class="at">x =</span> districts, <span class="at">y =</span> pol)</span>
-<span id="cb17-2"><a href></a>d2 <span class="ot">&lt;-</span> <span class="fu">st_difference</span>(<span class="at">x =</span> pol, <span class="at">y =</span> districts)</span>
-<span id="cb17-3"><a href></a></span>
-<span id="cb17-4"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
-<span id="cb17-5"><a href></a>d1 <span class="sc">%&gt;%</span> </span>
-<span id="cb17-6"><a href></a>  st_geometry <span class="sc">%&gt;%</span> </span>
-<span id="cb17-7"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb17-8"><a href></a>d2 <span class="sc">%&gt;%</span> </span>
-<span id="cb17-9"><a href></a>  st_geometry <span class="sc">%&gt;%</span></span>
-<span id="cb17-10"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href></a>d1 <span class="ot">&lt;-</span> <span class="fu">st_difference</span>(<span class="at">x =</span> districts, <span class="at">y =</span> pol)</span>
+<span id="cb24-2"><a href></a>d2 <span class="ot">&lt;-</span> <span class="fu">st_difference</span>(<span class="at">x =</span> pol, <span class="at">y =</span> districts)</span>
+<span id="cb24-3"><a href></a></span>
+<span id="cb24-4"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb24-5"><a href></a>d1 <span class="sc">%&gt;%</span> </span>
+<span id="cb24-6"><a href></a>  st_geometry <span class="sc">%&gt;%</span> </span>
+<span id="cb24-7"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb24-8"><a href></a>d2 <span class="sc">%&gt;%</span> </span>
+<span id="cb24-9"><a href></a>  st_geometry <span class="sc">%&gt;%</span></span>
+<span id="cb24-10"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_union" class="slide level2">
@@ -1369,15 +1432,15 @@ margin-right: 0; }
 <li>Switching order of inputs changes column order</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href></a>uni1 <span class="ot">&lt;-</span> <span class="fu">st_union</span>(<span class="at">x =</span> pol, <span class="at">y =</span> districts)</span>
-<span id="cb18-2"><a href></a>uni1</span>
-<span id="cb18-3"><a href></a></span>
-<span id="cb18-4"><a href></a>uni2 <span class="ot">&lt;-</span> <span class="fu">st_union</span>(<span class="at">x =</span> districts, <span class="at">y =</span> pol)</span>
-<span id="cb18-5"><a href></a>uni2</span>
-<span id="cb18-6"><a href></a></span>
-<span id="cb18-7"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
-<span id="cb18-8"><a href></a><span class="fu">plot</span>(uni1[<span class="dv">2</span>], <span class="at">reset =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">&quot;Union of pol with districts&quot;</span>)</span>
-<span id="cb18-9"><a href></a><span class="fu">plot</span>(uni2[<span class="dv">1</span>], <span class="at">reset =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">&quot;Union of districts with pol&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href></a>uni1 <span class="ot">&lt;-</span> <span class="fu">st_union</span>(<span class="at">x =</span> pol, <span class="at">y =</span> districts)</span>
+<span id="cb25-2"><a href></a>uni1</span>
+<span id="cb25-3"><a href></a></span>
+<span id="cb25-4"><a href></a>uni2 <span class="ot">&lt;-</span> <span class="fu">st_union</span>(<span class="at">x =</span> districts, <span class="at">y =</span> pol)</span>
+<span id="cb25-5"><a href></a>uni2</span>
+<span id="cb25-6"><a href></a></span>
+<span id="cb25-7"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb25-8"><a href></a><span class="fu">plot</span>(uni1[<span class="dv">2</span>], <span class="at">reset =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">&quot;Union of pol with districts&quot;</span>)</span>
+<span id="cb25-9"><a href></a><span class="fu">plot</span>(uni2[<span class="dv">1</span>], <span class="at">reset =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">&quot;Union of districts with pol&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_buffer" class="slide level2">
@@ -1386,48 +1449,70 @@ margin-right: 0; }
 <li>Best to use projected coordinates (e.g. Albers)</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href></a><span class="do">## project everything to Albers</span></span>
-<span id="cb19-2"><a href></a>farmers_alb <span class="ot">&lt;-</span> farmers_sf <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(roads))</span>
-<span id="cb19-3"><a href></a>long_roads <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">st_length</span>(.)) <span class="sc">&gt;</span> <span class="dv">500000</span>)</span>
-<span id="cb19-4"><a href></a>districts_alb <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(roads))</span>
-<span id="cb19-5"><a href></a></span>
-<span id="cb19-6"><a href></a>roads_buff_20km <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(long_roads, <span class="dv">20000</span>)</span>
-<span id="cb19-7"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts_alb), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb19-8"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(roads_buff_20km), <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb19-9"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(long_roads), <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href></a><span class="do">## project everything to Albers</span></span>
+<span id="cb26-2"><a href></a>farmers_alb <span class="ot">&lt;-</span> farmers_sf <span class="sc">%&gt;%</span> </span>
+<span id="cb26-3"><a href></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(roads))</span>
+<span id="cb26-4"><a href></a>long_roads <span class="ot">&lt;-</span> roads <span class="sc">%&gt;%</span> </span>
+<span id="cb26-5"><a href></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">st_length</span>(.)) <span class="sc">&gt;</span> <span class="dv">500000</span>)</span>
+<span id="cb26-6"><a href></a>districts_alb <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span> </span>
+<span id="cb26-7"><a href></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>(roads))</span>
+<span id="cb26-8"><a href></a></span>
+<span id="cb26-9"><a href></a>roads_buff_20km <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(long_roads, <span class="dv">20000</span>)</span>
+<span id="cb26-10"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(districts_alb), <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb26-11"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(roads_buff_20km), <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-12"><a href></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(long_roads), <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="st_sample" class="slide level2">
 <h2><code>st_sample</code></h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
-<span id="cb20-2"><a href></a>districts <span class="sc">%&gt;%</span> </span>
-<span id="cb20-3"><a href></a>  st_union <span class="sc">%&gt;%</span> </span>
-<span id="cb20-4"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb20-5"><a href></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb20-6"><a href></a>districts <span class="sc">%&gt;%</span> </span>
-<span id="cb20-7"><a href></a>  st_union <span class="sc">%&gt;%</span> </span>
-<span id="cb20-8"><a href></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="dv">25</span>, <span class="at">exact =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb20-9"><a href></a>  <span class="fu">plot</span>(<span class="at">pch =</span> <span class="dv">20</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
+<span id="cb27-2"><a href></a>districts <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href></a>  st_union <span class="sc">%&gt;%</span> </span>
+<span id="cb27-4"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb27-5"><a href></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb27-6"><a href></a>districts <span class="sc">%&gt;%</span> </span>
+<span id="cb27-7"><a href></a>  st_union <span class="sc">%&gt;%</span> </span>
+<span id="cb27-8"><a href></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="dv">25</span>, <span class="at">exact =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-9"><a href></a>  <span class="fu">plot</span>(<span class="at">pch =</span> <span class="dv">20</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
-<span id="cb21-2"><a href></a>districts <span class="sc">%&gt;%</span> </span>
-<span id="cb21-3"><a href></a>  st_geometry <span class="sc">%&gt;%</span> </span>
-<span id="cb21-4"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
-<span id="cb21-5"><a href></a><span class="co"># set.seed(1)</span></span>
-<span id="cb21-6"><a href></a>districts <span class="sc">%&gt;%</span> </span>
-<span id="cb21-7"><a href></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="fu">rep</span>(<span class="dv">5</span>, <span class="fu">nrow</span>(.)), <span class="at">by_polygon =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-8"><a href></a>  <span class="fu">plot</span>(<span class="at">pch =</span> <span class="dv">20</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span>
+<span id="cb28-2"><a href></a>districts <span class="sc">%&gt;%</span> </span>
+<span id="cb28-3"><a href></a>  st_geometry <span class="sc">%&gt;%</span> </span>
+<span id="cb28-4"><a href></a>  <span class="fu">plot</span>(<span class="at">col =</span> <span class="st">&quot;grey&quot;</span>)</span>
+<span id="cb28-5"><a href></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb28-6"><a href></a>districts <span class="sc">%&gt;%</span> </span>
+<span id="cb28-7"><a href></a>  <span class="fu">st_sample</span>(<span class="at">size =</span> <span class="fu">rep</span>(<span class="dv">5</span>, <span class="fu">nrow</span>(.)), <span class="at">by_polygon =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-8"><a href></a>  <span class="fu">plot</span>(<span class="at">pch =</span> <span class="dv">20</span>, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exercise" class="slide level2">
 <h2>Exercise</h2>
-<p>Find all districts within 50 km of sampled points?</p>
+<p>Place 3 random points in Zambia (union districts to make single shape of Zambia). Find all districts within 50 km of sampled points?</p>
+<p>Adapt this</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb29-2"><a href></a>pts <span class="ot">&lt;-</span> <span class="fu">st_union</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb29-3"><a href></a>  <span class="fu">st_sample</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb29-4"><a href></a>  <span class="fu">st_transform</span>(<span class="fu">st_crs</span>())</span>
+<span id="cb29-5"><a href></a>dists_in_pts <span class="ot">&lt;-</span> districts_alb <span class="sc">%&gt;%</span> </span>
+<span id="cb29-6"><a href></a>  <span class="fu">slice</span>(<span class="fu">unlist</span>(<span class="fu">st_intersects</span>(<span class="fu">st_buffer</span>(, <span class="at">dist =</span> <span class="dv">50000</span>), .)))</span>
+<span id="cb29-7"><a href></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb29-8"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ) <span class="sc">+</span> </span>
+<span id="cb29-9"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> , <span class="at">fill =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb29-10"><a href></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="exercise-1" class="slide level2">
 <h2>Exercise</h2>
 <p>How many farmers are within 100km of one of the “long roads”?</p>
+<p>Adapt</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href></a>farmers_alb <span class="sc">%&gt;%</span> </span>
+<span id="cb30-2"><a href></a>  <span class="fu">slice</span>(<span class="fu">unlist</span>(<span class="fu">st_intersects</span>(<span class="fu">st_buffer</span>(), .))) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-3"><a href></a>  ?</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="further-exercises" class="slide level2">
 <h2>Further Exercises</h2>
@@ -1440,13 +1525,14 @@ margin-right: 0; }
 <li>Plot the resulting difference using <code>ggplot</code> with the difference in red over Zambia’s districts</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href></a><span class="co"># code to adapt</span></span>
-<span id="cb22-2"><a href></a>roads <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">km =</span> <span class="fu">as.numeric</span>(<span class="fu">st_length</span>(.)) <span class="sc">/</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-3"><a href></a>  <span class="fu">filter</span>(km <span class="sc">&gt;</span> <span class="dv">200</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-4"><a href></a>  <span class="fu">st_buffer</span>(<span class="at">dist =</span> <span class="dv">20000</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-5"><a href></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">4326</span>)</span>
-<span id="cb22-6"><a href></a><span class="fu">st_difference</span>(larger_object, smaller_object)</span>
-<span id="cb22-7"><a href></a><span class="fu">ggplot</span>() <span class="sc">+</span> geom_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href></a><span class="co"># code to adapt</span></span>
+<span id="cb31-2"><a href></a>roads <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href></a>  <span class="fu">mutate</span>(<span class="at">km =</span> <span class="fu">as.numeric</span>(<span class="fu">st_length</span>(.)) <span class="sc">/</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-4"><a href></a>  <span class="fu">filter</span>(km <span class="sc">&gt;</span> <span class="dv">200</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-5"><a href></a>  <span class="fu">st_buffer</span>(<span class="at">dist =</span> <span class="dv">20000</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-6"><a href></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb31-7"><a href></a><span class="fu">st_difference</span>(larger_object, smaller_object)</span>
+<span id="cb31-8"><a href></a><span class="fu">ggplot</span>() <span class="sc">+</span> geom_sf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
@@ -1457,7 +1543,7 @@ margin-right: 0; }
 <li>Plot the 30 km buffer (red) the points in it (blue) over the districts</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href></a>buffered_object <span class="sc">%&gt;%</span> <span class="fu">st_sample</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href></a>buffered_object <span class="sc">%&gt;%</span> <span class="fu">st_sample</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 </section>
