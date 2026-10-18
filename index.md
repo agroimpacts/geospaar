@@ -292,3 +292,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   cont.](https://agroimpacts.github.io/geospaar/class13.md)
 - [Class 14: Intro to spatial
   (`sf`)](https://agroimpacts.github.io/geospaar/class14.md)
+- [Class 15: `sf`
+  continued](https://agroimpacts.github.io/geospaar/class15.md)
