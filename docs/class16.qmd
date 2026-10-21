@@ -23,7 +23,7 @@ execute:
     echo: true
 ---
 
-```{r, echo=FALSE, out.width="40%", results='hold'}
+```{r, echo=FALSE, out.width="38%", results='hold', fig.align='center'}
 dem1 <- "figures/zam_dem_raster.png"
 dem2 <- "figures/zam_dem_stars.png"
 knitr::include_graphics(c(dem1, dem2))
@@ -58,14 +58,256 @@ districts <- st_read(
   system.file("extdata/districts.geojson", package = "geospaar")
 )
 roads <- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
-mypoly <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
-                                y = c(-15.5, -16.5, -17, -16, -15.5)))) %>%
-  st_sfc(crs = 4326) %>% st_intersection(., districts) %>% st_as_sf() %>% 
-  mutate(ID = seq(1:nrow(.)))
-#st_crs(mypoly) <- 4326
-smallest_centroid <- districts %>% 
-  filter(distName == "Lusaka") %>% 
-  st_centroid()
+```
+
+---
+
+## Calculate length (exercise)
+- Use `st_length()` to add column 'road_length' to `roads`
+- 'road_length' should be in km
+- Use ggplot to plot districts with black outline (color), and empty fill (fill = NA)
+- Then plot roads based on length (use `scale_color_continuous()` )
+- Plot roads with line width 1 (`lwd = 1`)
+- Use `theme_bw()`
+
+---
+
+```{r, eval=FALSE}
+roads <- st_read(
+  system.file("extdata/roads.geojson", package = "geospaar")
+) 
+roads <- roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) 
+ggplot() +
+  geom_sf(data = districts, color = "black", fill = NA) +
+  geom_sf(data = roads, aes(color = road_length), lwd = 1) + 
+  scale_color_continuous(type = "viridis") + 
+  theme_bw()
+```
+
+- Mixing `%>%` and `+` in `ggplot` 
+- Single pipeline
+```{r, eval=FALSE}
+ggplot(districts) + 
+  geom_sf(color = "black", fill = NA) +
+  st_read(system.file("extdata/roads.geojson", package = "geospaar")) %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
+  geom_sf(data = ., aes(color = road_length), lwd = 1) + 
+  scale_color_continuous(type = "viridis") +
+  theme_bw()
+```
+
+---
+
+- Calculate length of roads in km
+- select roads between 50 and 500 km length
+- plot the selected roads over districts using ggplot. Make the roads red
+
+```{r, eval=FALSE}
+p <- ggplot(districts) + geom_sf()
+p + roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
+  filter(., road_length <= 500 & road_length > 49) %>% 
+  geom_sf(data = ., color = 'red') + theme_minimal()
+
+roads_ss <- roads %>% 
+  mutate(road_length = as.numeric(units::set_units(st_length(.), "km"))) %>% 
+  filter(., road_length <= 500 & road_length > 49)
+
+p + geom_sf(data = roads_ss, color = 'red') + 
+  theme_minimal()
+
+```
+
+
+---
+
+## Spatial Operations
+Data setup
+```{r, eval = FALSE, message = FALSE}
+coords <- cbind("x" = c(25, 25.1, 26.4, 26.4, 26.4, 25), 
+                "y" = c(-15.5, -14.5, -14.6, -14.8, -15.6, -15.5))
+pol <- st_polygon(x = list(coords)) %>% 
+  st_sfc %>% 
+  st_sf(ID = 1, crs = 4326)
+roads_rpj <- st_transform(roads, crs = st_crs(districts))
+
+```
+
+---
+
+## Plotting
+```{r, eval=FALSE, message=FALSE}
+par(mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(pol, col = "purple", add = TRUE)
+plot(roads_rpj$geometry, col = 'red', add = TRUE)
+```
+
+---
+
+## `st_intersects`
+- Similar to "Select by Spatial Location"
+- Finds indices of second object that intersect each element of first object
+```{r, eval = FALSE, message = FALSE}
+st_intersects(x = roads_rpj, y = districts)
+```
+
+---
+
+## `st_intersects`
+```{r, eval = FALSE, message = FALSE}
+highway <- roads_rpj[401, ]
+dists_int <- districts %>% 
+  slice(st_intersects(x = highway, y = .)[[1]])
+# unlist(st_intersects(x = highway, y = districts))
+#> although coordinates are longitude/latitude, st_intersects assumes that they are planar
+dists_int
+plot(st_geometry(dists_int), col = 'grey')
+plot(highway, col = 'red', add = TRUE)
+```
+
+
+---
+
+## `st_intersection()`
+- finds intersecting pairs between two objects
+- Each row in result is one "intersection object" (i.e. an object from x and y that intersect)
+```{r, eval = FALSE, message = FALSE}
+pol_int_dists <- st_intersection(x = pol, y = districts)
+
+par(mfrow = c(1, 2), mar = rep(0, 4))
+plot(st_geometry(districts), col = "grey")
+plot(st_geometry(pol_int_dists), col = rainbow(n = nrow(pol_int_dists)), 
+     add = TRUE)
+plot(st_geometry(districts), col = "grey")
+districts %>% 
+  slice(unlist(st_intersects(x = pol, y = .))) %>% 
+  plot(add = TRUE)
+
+```
+
+---
+
+## `st_difference`
+- Similar to "erase" in ArcGIS
+- Returns first object without second object. 
+```{r, eval = FALSE, message = FALSE}
+d1 <- st_difference(x = districts, y = pol)
+d2 <- st_difference(x = pol, y = districts)
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+d1 %>% 
+  st_geometry %>% 
+  plot(col = "grey")
+d2 %>% 
+  st_geometry %>%
+  plot(col = "grey")
+```
+
+
+---
+
+## `st_union`
+- Combines objects without resolving borders. 
+- Really takes all possible combinations of first and 2nd object
+- Switching order of inputs changes column order
+```{r, eval = FALSE, message = FALSE}
+uni1 <- st_union(x = pol, y = districts)
+uni1
+
+uni2 <- st_union(x = districts, y = pol)
+uni2
+
+par(mfrow = c(1, 2), mar = c(0, 0, 1, 0))
+plot(uni1[2], reset = FALSE, main = "Union of pol with districts")
+plot(uni2[1], reset = FALSE, main = "Union of districts with pol")
+```
+
+---
+
+## `st_buffer()`
+- Best to use projected coordinates (e.g. Albers)
+```{r, eval = FALSE, message = FALSE}
+## project everything to Albers
+farmers_alb <- farmers_sf %>% 
+  st_transform(st_crs(roads))
+long_roads <- roads %>% 
+  filter(as.numeric(st_length(.)) > 500000)
+districts_alb <- districts %>% 
+  st_transform(st_crs(roads))
+
+roads_buff_20km <- st_buffer(long_roads, 20000)
+plot(st_geometry(districts_alb), col = "grey")
+plot(st_geometry(roads_buff_20km), col = "blue", add = TRUE)
+plot(st_geometry(long_roads), col = "red", add = TRUE)
+```
+
+---
+
+## `st_sample`
+
+```{r}
+#| eval: False
+#| echo: True
+
+par(mar = rep(0, 4))
+districts %>% 
+  st_union %>% 
+  plot(col = "grey")
+set.seed(1)
+districts %>% 
+  st_union %>% 
+  st_sample(size = 25, exact = TRUE) %>% 
+  plot(pch = 20, add = TRUE)
+```
+
+```{r}
+#| eval: False
+#| echo: True
+ 
+par(mar = rep(0, 4))
+districts %>% 
+  st_geometry %>% 
+  plot(col = "grey")
+set.seed(1)
+districts %>% 
+  st_sample(size = rep(5, nrow(.)), by_polygon = TRUE) %>% 
+  plot(pch = 20, add = TRUE)
+
+```
+
+---
+
+## Exercise
+Place 3 random points in Zambia (union districts to make single shape of Zambia). Find all districts within 50 km of sampled points? 
+
+Adapt this
+```{r, eval=FALSE, message = FALSE}
+set.seed(1)
+pts <- st_union() %>% 
+  st_sample() %>% 
+  st_transform(st_crs())
+dists_in_pts <- districts_alb %>% 
+  slice(unlist(st_intersects(st_buffer(, dist = 50000), .)))
+ggplot() + 
+  geom_sf(data = ) + 
+  geom_sf(data = , fill = "blue") + 
+  geom_sf(data = )
+
+```
+
+---
+
+## Exercise
+How many farmers are within 100km of one of the "long roads"?
+
+Adapt
+```{r, eval = FALSE, message = FALSE}
+
+farmers_alb %>% 
+  slice(unlist(st_intersects(st_buffer(), .))) %>% 
+  ?
 ```
 
 ---
@@ -106,6 +348,15 @@ buffered_object %>% st_sample()
 - gridExtra
 ```{r, eval=FALSE}
 library(ggplot2)
+mypoly <- st_polygon(list(cbind(x = c(26.5, 27.5, 27, 26, 26.5), 
+                                y = c(-15.5, -16.5, -17, -16, -15.5)))) %>%
+  st_sfc(crs = 4326) %>% st_intersection(., districts) %>% st_as_sf() %>% 
+  mutate(ID = seq(1:nrow(.)))
+#st_crs(mypoly) <- 4326
+smallest_centroid <- districts %>% 
+  filter(distName == "Lusaka") %>% 
+  st_centroid()
+
 
 p <- ggplot(districts) + 
   geom_sf() + 
@@ -142,304 +393,4 @@ p1 + p2 + plot_layout(guides = "collect")
 p1 + p1 / p
 (p1 + p2) / (p1 + p2) + plot_layout(guides = "collect")
 ```
-
----
-
-## terra objects
-- `SpatRaster` object - 1 layer to many layers, from multiple or single file sources
-- `SpatVector` object - Vector data
-
----
-
-## accessing bands
-- use list `[[ ... ]]` notation
-```{r, eval=FALSE}
-chirps <- rast(system.file("extdata/chirps.tif", package = "geospaar"))
-chirps[[3]] ## access by index
-#chirps[["Y16301"]] ## access by band name
-```
-
-```{r, eval=FALSE}
-plot(chirps[[3]])
-```
-
----
-
-## Creating raster from scratch
-
-- how does `extent` work?
-```{r, eval = FALSE}
-library(terra)
-r <- rast(ext(30, 31, -14, -13), resolution = 0.1, crs = "EPSG:4326")
-values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-# values(r) <- 1:15
-# plot(r)
-
-par(mar = c(0, 0, 0, 0))
-plot(districts %>% st_geometry)
-plot(r, add = TRUE)
-
-# plot(vect(districts))
-# plot(districts)
-```
-
----
-
-- Creating multi-layer stack
-
-```{r, eval=FALSE}
-s <- c(r, log10(r))
-names(s) <- c("dummy", "log10dummy")
-plot(s)
-print(class(s))
-```
-
----
-
-- Creating multi-layer brick
-- what are the dimensions of this raster? resolution?
-- how are the values filled?
-
-```{r, eval = FALSE}
-
-b2 <- lapply(1:10, function(x) {
-  r <- rast(ext(30, 31, -14, -13), resolution = 0.1, 
-            crs = "EPSG:4326")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %>% do.call(c, .)
-names(b2) <- paste0("b", 1:10)
-
-plot(chirps[[1:10]])
-# plot(b2)
-```
-
----
-
-### A large brick
-
-- how does this differ from above?
-```{r, eval = FALSE}
-b3 <- lapply(1:10, function(x) {
-  r <- rast(ext(30, 31, -14, -13), resolution = 0.001, 
-              crs = "EPSG:4326")
-  set.seed(x)
-  values(r) <- sample(1:10, size = ncell(r), replace = TRUE)
-  r
-}) %>% do.call(c, .)
-names(b3) <- paste0("b", 1:10)
-plot(b3)
-plot(b3[[1]])
-plot(b3[[10]])
-plot(b3[[c(1, 10)]])
-
-```
-
----
-
-## read and write
-
-```{r, eval=FALSE}
-## write raster
-writeRaster(r, filename = file.path(tempdir(), "mydummy.tif"), overwrite = TRUE)
-dir(tempdir())
-
-## read in raster
-r <- rast(file.path(tempdir(), "mydummy.tif"))
-plot(r)
-```
-
----
-
-## read and write
-
-- `brick` function can be used both to read and write
-```{r, eval=FALSE}
-## write file
-writeRaster(s, filename = file.path(tempdir(), "mybrick.tif"), overwrite = TRUE)
-
-## read file
-newbrick <- rast(file.path(tempdir(), "mybrick.tif"))
-```
-
----
-
-## Projecting
-- `project` 
-- similar to `st_transform()`, use crs of existing layer to project
-- need to define resolution with `res` argument
-```{r, eval = FALSE}
-roads <- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
-chirpsz_alb <- project(x = chirps, y = crs(roads), res = 5000) 
-chirpsz_alb %>% print()
-plot(chirpsz_alb[[1:10]])
-```
-
----
-
-## Vector <--> Raster
-- `rasterize` converts to raster. Need to pass argument that gives raster dimensions.
-- In below example, we use `chirpsz` for dimensions
-```{r, eval = FALSE}
-distsr <- rasterize(districts, chirpsz, field = "distName")
-distsr %>% plot_noaxes
-str(distsr)
-# stack(distsr, chirpsz[[1:2]]) %>% plotRGB(stretch = "lin")
-
-```
-
----
-
-## Vector <--> Raster
-- `rasterToPolygons`, use dissolve to merge common raster values
-```{r, eval=FALSE}
-distsr_pol <- as.polygons(distsr, dissolve = TRUE)
-distsr_pol %>% 
-  st_as_sf %>% 
-  st_geometry %>% 
-  plot
-distsr_pol %>% 
-  st_as_sf %>% 
-  slice(49) %>% 
-  plot(add = TRUE)
-```
-
-
----
-
-## Plotting
-- run examples below individually
-```{r, eval = FALSE}
-plot(b)
-plot(b2)
-plot_noaxes(b)
-plot_noaxes(b2, main = paste("Random", 1:10))
-plot(b2, main = paste("Random", 1:10))
-plot_noaxes(b, legend = FALSE)
-```
-
----
-
-```{r, eval = FALSE}
-
-plot_noaxes(b[[1]], legend = FALSE)
-legend("right", legend = 1:10, fill = terrain.colors(10), border = FALSE, 
-       bty = "n")
-```
-
----
-
-```{r, eval = FALSE}
-# plotting with larger datasets
-plot_noaxes(b3, main = paste("Random", 1:10))
-plot_noaxes(b3, nc = 3, nr = 4, main = paste("Random", 1:10))
-```
-
----
-
-- rasterVis package includes additional plot options
-```{r, eval = FALSE}
-rasterVis::levelplot(b3)#, #names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b2, names.attr = paste("Random", 1:10))
-rasterVis::levelplot(b[[1]])
-rasterVis::gplot(b[[1]]) + geom_tile(aes(fill = value)) + 
-  scale_fill_viridis_c()
-```
-
----
-
-- ggplot() works with `geom_raster()`
-```{r, eval = FALSE}
-ggplot2::ggplot(as.data.frame(b[[1]], xy = TRUE)) + 
-  # geom_tile(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()  
-  geom_raster(aes(x = x, y = y, fill = dummy)) + scale_fill_viridis_c()
-```
-
-
----
-
-- stars package
-
-```{r, eval = FALSE}
-stars::st_as_stars(b) %>% plot(col = viridis::viridis(10))
-stars::st_as_stars(b) %>% plot()
-```
-
----
-
-## Raster to other types
-```{r, eval=FALSE}
-plot(b)
-b[1:10]
-b[1:ncell(b)]
-as.matrix(b)
-as.data.frame(b) %>% as_tibble()
-```
-
-
----
-
-## Pre-processing
-- Aggregating/disaggregating
-- what is default method for aggregating?
-```{r, eval = FALSE}
-plot(b, main = paste0("Brick ", 1:2) )
-aggregate(b, fact = 2) %>% plot(., main = paste0("Brick agg", 1:2) )
-# aggregate(b, fun = min, fact = 2) %>% plot
-# aggregate(b, fun = sd, fact = 2) %>% plot
-```
-
----
-
-## Pre-processing
-- what is default method for disaggregating?
-```{r, eval = FALSE}
-plot(b, main = paste0("Brick ", 1:2) )
-disaggregate(b, fact = 2) %>% plot(., main = paste0("Brick disagg", 1:2) )
-disaggregate(b, fact = 2, method = 'bilinear') %>% plot(., main = paste0("Brick disagg bilinear", 1:2) )
-```
-
----
-
-- Masking
-- `mask` makes values `NA` outside of mask area.
-```{r, eval = FALSE}
-library(geospaar)
-data(chirps)
-plot_noaxes(chirps[[1]])
-chirpsz <- mask(chirps, districts)
-plot_noaxes(chirpsz[[1]])
-plot(st_geometry(districts), add = TRUE)
-# rasterVis::levelplot(chirpsz[[1:5]])
-```
-
----
-
-## Calculations
-
-- raster algebra
-- statistics
-- z dimension stats
-
-
----
-
-## Calculations
-- math operations work cell-wise
-```{r, eval=FALSE}
-rf1 <- chirpsz[[1]] + chirpsz[[2]]
-rf2 <- chirpsz[[1]] * 5
-```
-
-```{r, eval = FALSE}
-
-# dev.off()
-plot(rf1 / 1000)
-plot(((log10(rf1 + 1) * 10) / 5)^2)
-
-```
-
-
-
 

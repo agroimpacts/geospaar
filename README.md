@@ -186,4 +186,5 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 13: Reshaping, joins, SAC, plotting, regression, cont.](class13.html)
 - [Class 14: Intro to spatial (`sf`)](class14.html)
 - [Class 15: `sf` continued](class15.html)
+- [Class 16: `sf` continued 2](class16.html)
 
