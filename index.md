@@ -294,3 +294,5 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   (`sf`)](https://agroimpacts.github.io/geospaar/class14.md)
 - [Class 15: `sf`
   continued](https://agroimpacts.github.io/geospaar/class15.md)
+- [Class 16: `sf` continued
+  2](https://agroimpacts.github.io/geospaar/class16.md)
