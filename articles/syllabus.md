@@ -31,10 +31,10 @@ JC217, MW 1200-1315
 
 ### Office Hours
 
-| Instructor    | Office         | Office hours                          |
-|---------------|----------------|---------------------------------------|
-| Lyndon Estes  | Jefferson 201C | Tuesday 1300-1500                     |
-| Luis Oliveira | Geography M103 | Tuesday 1400-1500, Thursday 1030-1200 |
+| Instructor    | Office         | Office hours                   |
+|---------------|----------------|--------------------------------|
+| Lyndon Estes  | Jefferson 201C | Tuesday 1300-1500              |
+| Luis Oliveira | Geography 102A | Tuesday and Thursday 1400-1530 |
 
 ### Philosophy
 
