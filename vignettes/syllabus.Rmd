@@ -31,7 +31,7 @@ JC217, MW 1200-1315
 Instructor | Office | Office hours
 ---------|------------------|------------------
 Lyndon Estes   | Jefferson 201C | Tuesday 1300-1500 
-Luis Oliveira | Geography M103  | Tuesday 1400-1500, Thursday 1030-1200
+Luis Oliveira | Geography 102A  | Tuesday and Thursday 1400-1530
 
 ## Philosophy
 Although our primary focus is learning how to use `R` for geospatial analysis, the course also introduces additional skills and concepts related to ___reproducible___ research, and covers how and why `R` capabilities can and should be fit into analytical workflows that are increasingly driven by AI. 
