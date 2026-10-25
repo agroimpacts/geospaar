@@ -3141,10 +3141,10 @@ into the spatial unit of the course.
 
 ### Set-up
 
-Make sure you are working in the master branch of your project (you
-should not be working on the a2 or a3 branch). Create a new vignette
-named “module4.Rmd”. You will use this to document the tasks you
-undertake for this assignment.
+Make sure you are working in the main branch of your project (you should
+not be working on the a2 or a3 branch). Create a new vignette named
+“module4.Rmd”. You will use this to document the tasks you undertake for
+this assignment.
 
 There are no package functions to create for this assignment. All work
 is to be done in the vignette.
