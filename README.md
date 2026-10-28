@@ -188,4 +188,5 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 15: `sf` continued](class15.html)
 - [Class 16: `sf` continued 2](class16.html)
 - [Class 17: Rasters with `terra` ](class17.html)
+- [Class 18: Rasters with `terra` 2 ](class18.html)
 
