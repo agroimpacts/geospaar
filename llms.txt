@@ -300,6 +300,8 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   `terra`](https://agroimpacts.github.io/geospaar/class17.md)
 - [Class 18: Rasters with `terra`
   2](https://agroimpacts.github.io/geospaar/class18.md)
+- [Class 19: `terra`
+  continued](https://agroimpacts.github.io/geospaar/class19.md)
 
 # Package index
 

@@ -430,7 +430,7 @@ functions, including various commonly used statistical functions.
 mean
 #> function (x, ...) 
 #> UseMethod("mean")
-#> <bytecode: 0x560dabeaa930>
+#> <bytecode: 0x5642ff5950a0>
 #> <environment: namespace:base>
 sample
 #> function (x, size, replace = FALSE, prob = NULL) 
@@ -447,13 +447,13 @@ sample
 #>         x[sample.int(length(x), size, replace, prob)]
 #>     }
 #> }
-#> <bytecode: 0x560dae9dcf90>
+#> <bytecode: 0x5643020c5128>
 #> <environment: namespace:base>
 sd
 #> function (x, na.rm = FALSE) 
 #> sqrt(var(if (is.vector(x) || is.factor(x)) x else as.double(x), 
 #>     na.rm = na.rm))
-#> <bytecode: 0x560daea15208>
+#> <bytecode: 0x5643020fd3a0>
 #> <environment: namespace:stats>
 ```
 
@@ -541,17 +541,17 @@ methods(summary)
 #> [13] summary.glm                         summary.infl*                      
 #> [15] summary.lm                          summary.loess*                     
 #> [17] summary.manova                      summary.matrix                     
-#> [19] summary.mlm*                        summary.nls*                       
-#> [21] summary.packageStatus*              summary.POSIXct                    
-#> [23] summary.POSIXlt                     summary.ppr*                       
-#> [25] summary.prcomp*                     summary.princomp*                  
-#> [27] summary.proc_time                   summary.rlang_error*               
-#> [29] summary.rlang_message*              summary.rlang_trace*               
-#> [31] summary.rlang_warning*              summary.rlang:::list_of_conditions*
-#> [33] summary.srcfile                     summary.srcref                     
-#> [35] summary.stepfun                     summary.stl*                       
-#> [37] summary.table                       summary.tukeysmooth*               
-#> [39] summary.warnings                   
+#> [19] summary.mlm*                        summary.MPLfree1way*               
+#> [21] summary.nls*                        summary.packageStatus*             
+#> [23] summary.POSIXct                     summary.POSIXlt                    
+#> [25] summary.ppr*                        summary.prcomp*                    
+#> [27] summary.princomp*                   summary.proc_time                  
+#> [29] summary.rlang_error*                summary.rlang_message*             
+#> [31] summary.rlang_trace*                summary.rlang_warning*             
+#> [33] summary.rlang:::list_of_conditions* summary.srcfile                    
+#> [35] summary.srcref                      summary.stepfun                    
+#> [37] summary.stl*                        summary.table                      
+#> [39] summary.tukeysmooth*                summary.warnings                   
 #> see '?methods' for accessing help and source code
 ```
 
@@ -1242,11 +1242,11 @@ f <- function(x) {
   environment()
 }
 f(x)
-#> <environment: 0x560de0a79d48>
+#> <environment: 0x564334166388>
 f(10)
-#> <environment: 0x560de0ad2868>
+#> <environment: 0x5643341c2cd8>
 f(x = x)
-#> <environment: 0x560de0c04c00>
+#> <environment: 0x5643342f3de0>
 ```
 
 The function is modified to return the value from `environment`, which
