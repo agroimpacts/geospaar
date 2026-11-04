@@ -577,6 +577,9 @@ margin: 5px 0;
 .reveal p {
 font-size: 0.6em;
 }
+.reveal li p {
+font-size: 1em;
+}
 
 .reveal pre.r code {
 background: #272626;
@@ -1101,107 +1104,164 @@ margin-right: 0; }
 <section id="today" class="slide level2">
 <h2>Today</h2>
 <ul>
-<li>Project intro</li>
+<li><code>terra</code> wrap-up</li>
 <li>A few more advanced <code>R</code> applications
 <ul>
 <li>Parallelization</li>
 <li>Random Forests example</li>
+<li><code>duckdb</code>/<code>geoparquet</code></li>
 </ul></li>
 </ul>
 </section>
-<section id="projects" class="slide level2">
-<h2>Projects</h2>
+<section id="data" class="slide level2">
+<h2>Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a>farmers <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/farmer_spatial.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-2"><a href></a>  <span class="fu">read_csv</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</span>
+<span id="cb1-4"><a href></a>districts <span class="ot">&lt;-</span> <span class="fu">st_read</span>(</span>
+<span id="cb1-5"><a href></a>  <span class="fu">system.file</span>(<span class="st">&quot;extdata/districts.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>)</span>
+<span id="cb1-6"><a href></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.))</span>
+<span id="cb1-7"><a href></a>roads <span class="ot">&lt;-</span> <span class="fu">read_sf</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/roads.geojson&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>))</span>
+<span id="cb1-8"><a href></a></span>
+<span id="cb1-9"><a href></a>chirps <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">rast</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata/chirps.tif&quot;</span>, <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>))</span>
+<span id="cb1-10"><a href></a>chirpsz <span class="ot">&lt;-</span> <span class="fu">mask</span>(chirps, districts)</span>
+<span id="cb1-11"><a href></a></span>
+<span id="cb1-12"><a href></a>raintot <span class="ot">&lt;-</span> <span class="fu">app</span>(chirpsz, sum)</span>
+<span id="cb1-13"><a href></a>distsr <span class="ot">&lt;-</span> <span class="fu">rasterize</span>(<span class="at">x =</span> districts, <span class="at">y =</span> raintot, <span class="at">field =</span> <span class="st">&quot;ID&quot;</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="terrain-analysis-with-zonal-statistics" class="slide level2">
+<h2>Terrain analysis with zonal statistics</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a>dem <span class="ot">&lt;-</span> geodata<span class="sc">::</span><span class="fu">elevation_30s</span>(<span class="at">country =</span> <span class="st">&quot;Zambia&quot;</span>,  <span class="at">path =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb2-2"><a href></a>slope <span class="ot">&lt;-</span> <span class="fu">terrain</span>(<span class="at">x =</span> dem, <span class="at">v =</span> <span class="st">&#39;slope&#39;</span>, <span class="at">unit =</span> <span class="st">&#39;degrees&#39;</span>)</span>
+<span id="cb2-3"><a href></a>distsr_rs <span class="ot">&lt;-</span> <span class="fu">resample</span>(<span class="at">x =</span> distsr, <span class="at">y =</span> slope, <span class="at">method =</span> <span class="st">&quot;near&quot;</span>)</span>
+<span id="cb2-4"><a href></a>zoneslope <span class="ot">&lt;-</span> <span class="fu">zonal</span>(<span class="at">x =</span> slope, <span class="at">z =</span> distsr_rs, <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-5"><a href></a>zoneelevation <span class="ot">&lt;-</span> <span class="fu">zonal</span>(<span class="at">x =</span> dem, <span class="at">z =</span> distsr_rs, <span class="at">fun =</span> <span class="st">&quot;mean&quot;</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="subst" class="slide level2">
+<h2>Subst</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a><span class="co"># map zonal statistics</span></span>
+<span id="cb3-2"><a href></a>distr_slopes <span class="ot">&lt;-</span> <span class="fu">subst</span>(<span class="at">x =</span> distsr_rs, <span class="at">from =</span> zoneslope<span class="sc">$</span>ID, </span>
+<span id="cb3-3"><a href></a>                      <span class="at">to =</span> zoneslope<span class="sc">$</span>slope)</span>
+<span id="cb3-4"><a href></a>distr_elevzone <span class="ot">&lt;-</span> <span class="fu">subst</span>(<span class="at">x =</span> distsr_rs, <span class="at">from =</span> zoneelevation<span class="sc">$</span>ID, </span>
+<span id="cb3-5"><a href></a>                        <span class="at">to =</span> zoneelevation<span class="sc">$</span>ZMB_elv_msk)</span>
+<span id="cb3-6"><a href></a></span>
+<span id="cb3-7"><a href></a><span class="co"># plot</span></span>
+<span id="cb3-8"><a href></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(distr_elevzone, distr_slopes)</span>
+<span id="cb3-9"><a href></a>titles <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Elevation&quot;</span>, <span class="st">&quot;Slope&quot;</span>)</span>
+<span id="cb3-10"><a href></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb3-11"><a href></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nlyr</span>(s)) {</span>
+<span id="cb3-12"><a href></a>  <span class="fu">plot_noaxes</span>(s[[i]], <span class="at">main =</span> titles[i])</span>
+<span id="cb3-13"><a href></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="climate-data-summaries-and-zonal-stats" class="slide level2">
+<h2>Climate data summaries and zonal stats</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a>dt <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">gsub</span>(<span class="st">&quot;Y&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(chirpsz)), <span class="at">format =</span> <span class="st">&quot;%y%j&quot;</span>)</span>
+<span id="cb4-2"><a href></a>dt <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">parse_date_time</span>(<span class="fu">gsub</span>(<span class="st">&quot;Y&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(chirpsz)), <span class="at">orders =</span> <span class="st">&quot;yj&quot;</span>)</span>
+<span id="cb4-3"><a href></a>wk <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">week</span>(dt)</span>
+<span id="cb4-4"><a href></a>weekly_rainfall <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">unique</span>(wk), <span class="cf">function</span>(x) {</span>
+<span id="cb4-5"><a href></a>  <span class="fu">app</span>(chirpsz[[<span class="fu">which</span>(wk <span class="sc">==</span> x)]], sum)</span>
+<span id="cb4-6"><a href></a>}) <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(c, .)</span>
+<span id="cb4-7"><a href></a><span class="fu">names</span>(weekly_rainfall) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;wk&quot;</span>, <span class="fu">unique</span>(wk))</span>
+<span id="cb4-8"><a href></a></span>
+<span id="cb4-9"><a href></a>rflim <span class="ot">&lt;-</span> <span class="fu">range</span>(<span class="fu">global</span>(weekly_rainfall, range, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb4-10"><a href></a><span class="fu">plot</span>(weekly_rainfall, <span class="at">zlim =</span> rflim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="distance" class="slide level2">
+<h2>Distance</h2>
 <ul>
-<li>24 students = ~9-12 projects</li>
-<li>Ideally mixed UG + Grad students in a team</li>
-<li>Why team?</li>
-<li>Potential projects:
-<ul>
-<li><a href>Projects page</a></li>
-<li>Something HERO-ic</li>
-<li>Long-term vegetation trends</li>
-<li>Head-start on a PhD project</li>
-<li>Lots of country-scale cropland/<a href="https://agroimpacts.github.io/mapping-africa/">field boundary data</a>
-<ul>
-<li>Algorithm to break up narrowly connected fields</li>
-<li>Compare field characteristics (e.g. area, shape metrics) between countries or between years</li>
-</ul></li>
-<li>Sampling problems:
-<ul>
-<li>Come up hypothetical crop type distributions and <a href="https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf">sample scheme</a> to collect from road network - evaluate sample-based estimates relative to true distribution</li>
-</ul></li>
-</ul></li>
+<li>plot distance from points</li>
+<li>points must be in same projection as model raster</li>
 </ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb5-2"><a href></a>randsamp <span class="ot">&lt;-</span> <span class="fu">spatSample</span>(<span class="fu">rast</span>(raintotalb), <span class="at">size =</span> <span class="dv">10</span>, <span class="at">xy =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href></a>  as_tibble <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-5"><a href></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb5-6"><a href></a><span class="fu">st_crs</span>(randsamp) <span class="ot">&lt;-</span> <span class="fu">crs</span>(raintotalb)</span>
+<span id="cb5-7"><a href></a><span class="co"># #2</span></span>
+<span id="cb5-8"><a href></a>ptdistr <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">distance</span>(<span class="fu">rast</span>(raintotalb), <span class="fu">vect</span>(randsamp))</span>
+<span id="cb5-9"><a href></a>ptdistrmsk <span class="ot">&lt;-</span> <span class="fu">mask</span>(ptdistr, <span class="fu">rast</span>(raintotalb))</span>
+<span id="cb5-10"><a href></a><span class="fu">plot</span>(ptdistrmsk)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="modelling-demo" class="slide level2">
 <h2>Modelling demo</h2>
 <h3 id="random-forests">Random Forests</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a><span class="co"># Train model</span></span>
-<span id="cb1-2"><a href></a><span class="fu">library</span>(caTools)</span>
-<span id="cb1-3"><a href></a><span class="fu">library</span>(randomForest)</span>
-<span id="cb1-4"><a href></a><span class="fu">library</span>(geospaar)</span>
-<span id="cb1-5"><a href></a></span>
-<span id="cb1-6"><a href></a><span class="co"># read in train set</span></span>
-<span id="cb1-7"><a href></a>train_ref <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/train_reference.csv&quot;</span>, </span>
-<span id="cb1-8"><a href></a>                         <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-9"><a href></a>  <span class="fu">read_csv</span>()  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">crop =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
-<span id="cb1-10"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;Maize&quot;</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb1-11"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;Rice&quot;</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
-<span id="cb1-12"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;Other&quot;</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
-<span id="cb1-13"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;noncrop&quot;</span> <span class="sc">~</span> <span class="dv">4</span></span>
-<span id="cb1-14"><a href></a>))) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(id, class, crop, <span class="sc">!!</span><span class="fu">names</span>(.))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href></a><span class="co"># Train model</span></span>
+<span id="cb6-2"><a href></a><span class="fu">library</span>(caTools)</span>
+<span id="cb6-3"><a href></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb6-4"><a href></a><span class="fu">library</span>(geospaar)</span>
+<span id="cb6-5"><a href></a></span>
+<span id="cb6-6"><a href></a><span class="co"># read in train set</span></span>
+<span id="cb6-7"><a href></a>train_ref <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata/train_reference.csv&quot;</span>, </span>
+<span id="cb6-8"><a href></a>                         <span class="at">package =</span> <span class="st">&quot;geospaar&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-9"><a href></a>  <span class="fu">read_csv</span>()  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">crop =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
+<span id="cb6-10"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;Maize&quot;</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb6-11"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;Rice&quot;</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb6-12"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;Other&quot;</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb6-13"><a href></a>  class <span class="sc">==</span> <span class="st">&quot;noncrop&quot;</span> <span class="sc">~</span> <span class="dv">4</span></span>
+<span id="cb6-14"><a href></a>))) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(id, class, crop, <span class="sc">!!</span><span class="fu">names</span>(.))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <h3 id="model">Model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a><span class="co"># prepare dataset</span></span>
-<span id="cb2-2"><a href></a>dset <span class="ot">&lt;-</span> train_ref <span class="sc">%&gt;%</span> <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">&quot;mean&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href></a>  <span class="fu">select</span>(<span class="sc">-</span>id, <span class="sc">-</span>class, <span class="sc">-</span>type, <span class="sc">-</span>seed)</span>
-<span id="cb2-4"><a href></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb2-5"><a href></a>samp <span class="ot">&lt;-</span> <span class="fu">sample.split</span>(dset<span class="sc">$</span>crop, <span class="at">SplitRatio =</span> <span class="fl">0.8</span>)</span>
-<span id="cb2-6"><a href></a>train <span class="ot">&lt;-</span> <span class="fu">subset</span>(dset, samp <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-7"><a href></a>test <span class="ot">&lt;-</span> <span class="fu">subset</span>(dset, samp <span class="sc">==</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-8"><a href></a><span class="co"># train %&gt;% tidyr::drop_na()</span></span>
-<span id="cb2-9"><a href></a></span>
-<span id="cb2-10"><a href></a><span class="co"># fit model</span></span>
-<span id="cb2-11"><a href></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb2-12"><a href></a>mod <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(crop <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">ntree =</span> <span class="dv">1000</span>,</span>
-<span id="cb2-13"><a href></a>                    <span class="at">importance =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-14"><a href></a><span class="fu">sum</span>(<span class="fu">diag</span>(mod<span class="sc">$</span>confusion[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])) <span class="sc">/</span> <span class="fu">sum</span>(mod<span class="sc">$</span>confusion[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
-<span id="cb2-15"><a href></a><span class="fu">summary</span>(mod) </span>
-<span id="cb2-16"><a href></a></span>
-<span id="cb2-17"><a href></a><span class="co"># Evaluation</span></span>
-<span id="cb2-18"><a href></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> test <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(crop)))</span>
-<span id="cb2-19"><a href></a>cm <span class="ot">&lt;-</span> <span class="fu">table</span>(test<span class="sc">$</span>crop, pred)</span>
-<span id="cb2-20"><a href></a><span class="co"># sum(diag(cm)) / sum(cm)</span></span>
-<span id="cb2-21"><a href></a></span>
-<span id="cb2-22"><a href></a>rf_results <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;train&quot;</span> <span class="ot">=</span> train, <span class="st">&quot;test&quot;</span> <span class="ot">=</span> test, <span class="st">&quot;mod&quot;</span> <span class="ot">=</span> mod, </span>
-<span id="cb2-23"><a href></a>                   <span class="st">&quot;pred&quot;</span> <span class="ot">=</span> pred, <span class="st">&quot;error_mat&quot;</span> <span class="ot">=</span> cm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a><span class="co"># prepare dataset</span></span>
+<span id="cb7-2"><a href></a>dset <span class="ot">&lt;-</span> train_ref <span class="sc">%&gt;%</span> <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">&quot;mean&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href></a>  <span class="fu">select</span>(<span class="sc">-</span>id, <span class="sc">-</span>class, <span class="sc">-</span>type, <span class="sc">-</span>seed)</span>
+<span id="cb7-4"><a href></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb7-5"><a href></a>samp <span class="ot">&lt;-</span> <span class="fu">sample.split</span>(dset<span class="sc">$</span>crop, <span class="at">SplitRatio =</span> <span class="fl">0.8</span>)</span>
+<span id="cb7-6"><a href></a>train <span class="ot">&lt;-</span> <span class="fu">subset</span>(dset, samp <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-7"><a href></a>test <span class="ot">&lt;-</span> <span class="fu">subset</span>(dset, samp <span class="sc">==</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-8"><a href></a><span class="co"># train %&gt;% tidyr::drop_na()</span></span>
+<span id="cb7-9"><a href></a></span>
+<span id="cb7-10"><a href></a><span class="co"># fit model</span></span>
+<span id="cb7-11"><a href></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb7-12"><a href></a>mod <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(crop <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">ntree =</span> <span class="dv">1000</span>,</span>
+<span id="cb7-13"><a href></a>                    <span class="at">importance =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-14"><a href></a><span class="fu">sum</span>(<span class="fu">diag</span>(mod<span class="sc">$</span>confusion[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])) <span class="sc">/</span> <span class="fu">sum</span>(mod<span class="sc">$</span>confusion[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb7-15"><a href></a><span class="fu">summary</span>(mod) </span>
+<span id="cb7-16"><a href></a></span>
+<span id="cb7-17"><a href></a><span class="co"># Evaluation</span></span>
+<span id="cb7-18"><a href></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> test <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(crop)))</span>
+<span id="cb7-19"><a href></a>cm <span class="ot">&lt;-</span> <span class="fu">table</span>(test<span class="sc">$</span>crop, pred)</span>
+<span id="cb7-20"><a href></a><span class="co"># sum(diag(cm)) / sum(cm)</span></span>
+<span id="cb7-21"><a href></a></span>
+<span id="cb7-22"><a href></a>rf_results <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">&quot;train&quot;</span> <span class="ot">=</span> train, <span class="st">&quot;test&quot;</span> <span class="ot">=</span> test, <span class="st">&quot;mod&quot;</span> <span class="ot">=</span> mod, </span>
+<span id="cb7-23"><a href></a>                   <span class="st">&quot;pred&quot;</span> <span class="ot">=</span> pred, <span class="st">&quot;error_mat&quot;</span> <span class="ot">=</span> cm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>imptab <span class="ot">&lt;-</span> mod<span class="sc">$</span>importance</span>
-<span id="cb3-2"><a href></a>nms <span class="ot">&lt;-</span> <span class="fu">rownames</span>(imptab)</span>
-<span id="cb3-3"><a href></a>imp_tbl <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(imptab) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-4"><a href></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> nms) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-5"><a href></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Variable, MeanDecreaseAccuracy) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-6"><a href></a>  <span class="fu">arrange</span>(MeanDecreaseAccuracy) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-7"><a href></a>  <span class="fu">mutate</span>(<span class="at">order =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-8"><a href></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="st">&quot;_&quot;</span>, Variable))</span>
-<span id="cb3-9"><a href></a></span>
-<span id="cb3-10"><a href></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(imp_tbl) <span class="sc">+</span> </span>
-<span id="cb3-11"><a href></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(MeanDecreaseAccuracy, <span class="fu">factor</span>(order))) <span class="sc">+</span> </span>
-<span id="cb3-12"><a href></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="fu">toupper</span>(imp_tbl<span class="sc">$</span>Variable)) <span class="sc">+</span> </span>
-<span id="cb3-13"><a href></a>  <span class="fu">ylab</span>(<span class="st">&quot;Variable&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;Mean Decrease in Accuracy&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb3-14"><a href></a>  <span class="fu">theme_linedraw</span>() <span class="sc">+</span> </span>
-<span id="cb3-15"><a href></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>), </span>
-<span id="cb3-16"><a href></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>))</span>
-<span id="cb3-17"><a href></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>imptab <span class="ot">&lt;-</span> mod<span class="sc">$</span>importance</span>
+<span id="cb8-2"><a href></a>nms <span class="ot">&lt;-</span> <span class="fu">rownames</span>(imptab)</span>
+<span id="cb8-3"><a href></a>imp_tbl <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(imptab) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> nms) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Variable, MeanDecreaseAccuracy) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href></a>  <span class="fu">arrange</span>(MeanDecreaseAccuracy) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-7"><a href></a>  <span class="fu">mutate</span>(<span class="at">order =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href></a>  <span class="fu">mutate</span>(<span class="at">Variable =</span> <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="st">&quot;_&quot;</span>, Variable))</span>
+<span id="cb8-9"><a href></a></span>
+<span id="cb8-10"><a href></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(imp_tbl) <span class="sc">+</span> </span>
+<span id="cb8-11"><a href></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(MeanDecreaseAccuracy, <span class="fu">factor</span>(order))) <span class="sc">+</span> </span>
+<span id="cb8-12"><a href></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> <span class="fu">toupper</span>(imp_tbl<span class="sc">$</span>Variable)) <span class="sc">+</span> </span>
+<span id="cb8-13"><a href></a>  <span class="fu">ylab</span>(<span class="st">&quot;Variable&quot;</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">&quot;Mean Decrease in Accuracy&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb8-14"><a href></a>  <span class="fu">theme_linedraw</span>() <span class="sc">+</span> </span>
+<span id="cb8-15"><a href></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>), </span>
+<span id="cb8-16"><a href></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>))</span>
+<span id="cb8-17"><a href></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="map" class="slide level2">
@@ -1213,23 +1273,23 @@ margin-right: 0; }
 <h2>Parallelization</h2>
 <p>Note the use of <code>wrap</code> and <code>unwrap</code> to serialize the <code>spatRaster</code> object so it can be passed between cores. See <a href="https://github.com/rspatial/terra/issues/36">here</a> for discussion.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a><span class="fu">library</span>(parallel)</span>
-<span id="cb4-2"><a href></a></span>
-<span id="cb4-3"><a href></a><span class="co"># terra</span></span>
-<span id="cb4-4"><a href></a>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">ext</span>(<span class="dv">30</span>, <span class="dv">31</span>, <span class="sc">-</span><span class="dv">14</span>, <span class="sc">-</span><span class="dv">13</span>), <span class="at">res =</span> <span class="fl">0.01</span>, </span>
-<span id="cb4-5"><a href></a>          <span class="at">crs =</span> <span class="st">&quot;+proj=longlat +datum=WGS84&quot;</span>)</span>
-<span id="cb4-6"><a href></a><span class="fu">values</span>(r) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncell</span>(r)</span>
-<span id="cb4-7"><a href></a></span>
-<span id="cb4-8"><a href></a>rp <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">wrap</span>(r)</span>
-<span id="cb4-9"><a href></a><span class="fu">system.time</span>(b <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2000</span>, <span class="cf">function</span>(x, <span class="at">r =</span> rp) {</span>
-<span id="cb4-10"><a href></a>  r <span class="ot">&lt;-</span> <span class="fu">unwrap</span>(r)</span>
-<span id="cb4-11"><a href></a>  <span class="fu">values</span>(r) <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="fu">ncell</span>(r), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-12"><a href></a>  <span class="fu">set.seed</span>(x)</span>
-<span id="cb4-13"><a href></a>  r3 <span class="ot">&lt;-</span> r2 <span class="ot">&lt;-</span> r</span>
-<span id="cb4-14"><a href></a>  <span class="fu">values</span>(r2) <span class="ot">&lt;-</span> <span class="fu">values</span>(r) <span class="sc">*</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">ncell</span>(r), <span class="fl">0.9</span>, <span class="fl">1.2</span>)</span>
-<span id="cb4-15"><a href></a>  <span class="fu">values</span>(r3) <span class="ot">&lt;-</span> <span class="fu">values</span>(r) <span class="sc">*</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">ncell</span>(r), <span class="fl">0.8</span>, <span class="fl">1.3</span>)</span>
-<span id="cb4-16"><a href></a>  <span class="fu">wrap</span>(<span class="fu">c</span>(r3, r2, r))</span>
-<span id="cb4-17"><a href></a>}) <span class="sc">%&gt;%</span> <span class="fu">lapply</span>(., unwrap))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a><span class="fu">library</span>(parallel)</span>
+<span id="cb9-2"><a href></a></span>
+<span id="cb9-3"><a href></a><span class="co"># terra</span></span>
+<span id="cb9-4"><a href></a>r <span class="ot">&lt;-</span> <span class="fu">rast</span>(<span class="fu">ext</span>(<span class="dv">30</span>, <span class="dv">31</span>, <span class="sc">-</span><span class="dv">14</span>, <span class="sc">-</span><span class="dv">13</span>), <span class="at">res =</span> <span class="fl">0.01</span>, </span>
+<span id="cb9-5"><a href></a>          <span class="at">crs =</span> <span class="st">&quot;+proj=longlat +datum=WGS84&quot;</span>)</span>
+<span id="cb9-6"><a href></a><span class="fu">values</span>(r) <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncell</span>(r)</span>
+<span id="cb9-7"><a href></a></span>
+<span id="cb9-8"><a href></a>rp <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">wrap</span>(r)</span>
+<span id="cb9-9"><a href></a><span class="fu">system.time</span>(b <span class="ot">&lt;-</span> <span class="fu">mclapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2000</span>, <span class="cf">function</span>(x, <span class="at">r =</span> rp) {</span>
+<span id="cb9-10"><a href></a>  r <span class="ot">&lt;-</span> <span class="fu">unwrap</span>(r)</span>
+<span id="cb9-11"><a href></a>  <span class="fu">values</span>(r) <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="fu">ncell</span>(r), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-12"><a href></a>  <span class="fu">set.seed</span>(x)</span>
+<span id="cb9-13"><a href></a>  r3 <span class="ot">&lt;-</span> r2 <span class="ot">&lt;-</span> r</span>
+<span id="cb9-14"><a href></a>  <span class="fu">values</span>(r2) <span class="ot">&lt;-</span> <span class="fu">values</span>(r) <span class="sc">*</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">ncell</span>(r), <span class="fl">0.9</span>, <span class="fl">1.2</span>)</span>
+<span id="cb9-15"><a href></a>  <span class="fu">values</span>(r3) <span class="ot">&lt;-</span> <span class="fu">values</span>(r) <span class="sc">*</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">ncell</span>(r), <span class="fl">0.8</span>, <span class="fl">1.3</span>)</span>
+<span id="cb9-16"><a href></a>  <span class="fu">wrap</span>(<span class="fu">c</span>(r3, r2, r))</span>
+<span id="cb9-17"><a href></a>}) <span class="sc">%&gt;%</span> <span class="fu">lapply</span>(., unwrap))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="new-formats" class="slide level2">
@@ -1238,6 +1298,57 @@ margin-right: 0; }
 <li><a href="https://cidree.github.io/duckspatial/">duckdb</a></li>
 <li>geoparquet</li>
 </ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href></a><span class="co"># install.packages(c(&quot;duckdb&quot;))</span></span>
+<span id="cb10-2"><a href></a><span class="fu">library</span>(DBI)</span>
+<span id="cb10-3"><a href></a><span class="fu">library</span>(duckdb)</span>
+<span id="cb10-4"><a href></a></span>
+<span id="cb10-5"><a href></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>())</span>
+<span id="cb10-6"><a href></a></span>
+<span id="cb10-7"><a href></a><span class="co"># Enable spatial operations</span></span>
+<span id="cb10-8"><a href></a><span class="fu">dbExecute</span>(con, <span class="st">&quot;INSTALL spatial;&quot;</span>)</span>
+<span id="cb10-9"><a href></a><span class="fu">dbExecute</span>(con, <span class="st">&quot;LOAD spatial;&quot;</span>)</span>
+<span id="cb10-10"><a href></a></span>
+<span id="cb10-11"><a href></a><span class="co"># AWS connection</span></span>
+<span id="cb10-12"><a href></a><span class="fu">dbExecute</span>(con, <span class="st">&quot;INSTALL httpfs;&quot;</span>)</span>
+<span id="cb10-13"><a href></a><span class="fu">dbExecute</span>(con, <span class="st">&quot;LOAD httpfs;&quot;</span>)</span>
+<span id="cb10-14"><a href></a></span>
+<span id="cb10-15"><a href></a><span class="co"># Anonymous access to a public S3 bucket</span></span>
+<span id="cb10-16"><a href></a><span class="fu">dbExecute</span>(con, <span class="st">&quot;</span></span>
+<span id="cb10-17"><a href></a><span class="st">  CREATE SECRET (</span></span>
+<span id="cb10-18"><a href></a><span class="st">    TYPE s3,</span></span>
+<span id="cb10-19"><a href></a><span class="st">    PROVIDER config,</span></span>
+<span id="cb10-20"><a href></a><span class="st">    REGION &#39;us-west-2&#39;</span></span>
+<span id="cb10-21"><a href></a><span class="st">  )</span></span>
+<span id="cb10-22"><a href></a><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a>s3_path <span class="ot">&lt;-</span> <span class="st">&quot;s3://mappingafrica/croplands/geoparquet/zambia_2024_v4.parquet&quot;</span></span>
+<span id="cb11-2"><a href></a></span>
+<span id="cb11-3"><a href></a><span class="fu">system.time</span>({</span>
+<span id="cb11-4"><a href></a>  result <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="fu">sprintf</span>(<span class="st">&quot;</span></span>
+<span id="cb11-5"><a href></a><span class="st">    SELECT COUNT(*) AS n_fields</span></span>
+<span id="cb11-6"><a href></a><span class="st">    FROM read_parquet(&#39;%s&#39;)</span></span>
+<span id="cb11-7"><a href></a><span class="st">  &quot;</span>, s3_path))</span>
+<span id="cb11-8"><a href></a>})</span>
+<span id="cb11-9"><a href></a></span>
+<span id="cb11-10"><a href></a>district_wkt <span class="ot">&lt;-</span> districts <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href></a>  <span class="fu">slice</span>(<span class="dv">48</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href></a>  <span class="fu">st_geometry</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb11-13"><a href></a>  <span class="fu">st_as_text</span>()</span>
+<span id="cb11-14"><a href></a></span>
+<span id="cb11-15"><a href></a><span class="fu">dbGetQuery</span>(con, <span class="fu">sprintf</span>(<span class="st">&quot;</span></span>
+<span id="cb11-16"><a href></a><span class="st">  SELECT COUNT(*) AS n_fields</span></span>
+<span id="cb11-17"><a href></a><span class="st">  FROM read_parquet(&#39;%s&#39;) AS f</span></span>
+<span id="cb11-18"><a href></a><span class="st">  WHERE ST_Intersects(</span></span>
+<span id="cb11-19"><a href></a><span class="st">    f.geometry,</span></span>
+<span id="cb11-20"><a href></a><span class="st">    ST_GeomFromText(&#39;%s&#39;)</span></span>
+<span id="cb11-21"><a href></a><span class="st">  )</span></span>
+<span id="cb11-22"><a href></a><span class="st">&quot;</span>, s3_path, district_wkt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 </section>
     </div>

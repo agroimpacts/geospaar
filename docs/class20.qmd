@@ -40,32 +40,101 @@ library(terra)
 
 ```
 
-- Project intro
+- `terra` wrap-up
 - A few more advanced `R` applications
   - Parallelization
   - Random Forests example
+  - `duckdb`/`geoparquet` 
 
 ---
 
-## Projects
+## Data
 
-- 24 students = ~9-12 projects
-- Ideally mixed UG + Grad students in a team
-- Why team? 
-- Potential projects: 
-  - [Projects page]()
-  - Something HERO-ic
-  - Long-term vegetation trends
-  - Head-start on a PhD project
-  - Lots of country-scale cropland/[field boundary data](https://agroimpacts.github.io/mapping-africa/)
-    - Algorithm to break up narrowly connected fields
-    - Compare field characteristics (e.g. area, shape metrics) between countries or between years
-  - Sampling problems: 
-    - Come up hypothetical crop type distributions and [sample scheme](https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf) to collect from road network - evaluate sample-based estimates relative to true distribution
+```{r, eval=FALSE}
+farmers <- system.file("extdata/farmer_spatial.csv", package = "geospaar") %>% 
+  read_csv() %>% 
+  st_as_sf(coords = c("x", "y"))
+districts <- st_read(
+  system.file("extdata/districts.geojson", package = "geospaar")
+) %>% mutate(ID = 1:nrow(.))
+roads <- read_sf(system.file("extdata/roads.geojson", package = "geospaar"))
 
+chirps <- terra::rast(system.file("extdata/chirps.tif", package = "geospaar"))
+chirpsz <- mask(chirps, districts)
+
+raintot <- app(chirpsz, sum)
+distsr <- rasterize(x = districts, y = raintot, field = "ID") 
+
+```
 
 ---
 
+## Terrain analysis with zonal statistics
+
+```{r, eval=FALSE}
+dem <- geodata::elevation_30s(country = "Zambia",  path = tempdir())
+slope <- terrain(x = dem, v = 'slope', unit = 'degrees')
+distsr_rs <- resample(x = distsr, y = slope, method = "near")
+zoneslope <- zonal(x = slope, z = distsr_rs, fun = "mean", na.rm = TRUE)
+zoneelevation <- zonal(x = dem, z = distsr_rs, fun = "mean", na.rm = TRUE)
+```
+---
+
+## Subst
+```{r, eval=FALSE}
+# map zonal statistics
+distr_slopes <- subst(x = distsr_rs, from = zoneslope$ID, 
+                      to = zoneslope$slope)
+distr_elevzone <- subst(x = distsr_rs, from = zoneelevation$ID, 
+                        to = zoneelevation$ZMB_elv_msk)
+
+# plot
+s <- c(distr_elevzone, distr_slopes)
+titles <- c("Elevation", "Slope")
+par(mfrow = c(1, 2))
+for(i in 1:nlyr(s)) {
+  plot_noaxes(s[[i]], main = titles[i])
+}
+```
+
+---
+
+## Climate data summaries and zonal stats
+
+```{r, eval=FALSE}
+dt <- as.Date(gsub("Y", "", names(chirpsz)), format = "%y%j")
+dt <- lubridate::parse_date_time(gsub("Y", "", names(chirpsz)), orders = "yj")
+wk <- lubridate::week(dt)
+weekly_rainfall <- lapply(unique(wk), function(x) {
+  app(chirpsz[[which(wk == x)]], sum)
+}) %>% do.call(c, .)
+names(weekly_rainfall) <- paste0("wk", unique(wk))
+
+rflim <- range(global(weekly_rainfall, range, na.rm = TRUE))
+plot(weekly_rainfall, zlim = rflim)
+```
+
+---
+
+## Distance
+
+- plot distance from points
+- points must be in same projection as model raster
+```{r, eval=FALSE}
+set.seed(1)
+randsamp <- spatSample(rast(raintotalb), size = 10, xy = TRUE) %>%
+  as_tibble %>%
+  st_as_sf(coords = c("x", "y")) %>% 
+  drop_na()
+st_crs(randsamp) <- crs(raintotalb)
+# #2
+ptdistr <- terra::distance(rast(raintotalb), vect(randsamp))
+ptdistrmsk <- mask(ptdistr, rast(raintotalb))
+plot(ptdistrmsk)
+```
+
+
+---
 
 ## Modelling demo
 ### Random Forests
@@ -259,5 +328,62 @@ system.time(b <- mclapply(1:2000, function(x, r = rp) {
 
 - [duckdb](https://cidree.github.io/duckspatial/)
 - geoparquet
+
+```{r, eval = FALSE}
+# install.packages(c("duckdb"))
+library(DBI)
+library(duckdb)
+
+con <- dbConnect(duckdb())
+
+# Enable spatial operations
+dbExecute(con, "INSTALL spatial;")
+dbExecute(con, "LOAD spatial;")
+
+# AWS connection
+dbExecute(con, "INSTALL httpfs;")
+dbExecute(con, "LOAD httpfs;")
+
+# Anonymous access to a public S3 bucket
+dbExecute(con, "
+  CREATE SECRET (
+    TYPE s3,
+    PROVIDER config,
+    REGION 'us-west-2'
+  )
+")
+```
+
+---
+
+
+```{r, eval=FALSE}
+s3_path <- "s3://mappingafrica/croplands/geoparquet/zambia_2024_v4.parquet"
+
+system.time({
+  result <- dbGetQuery(con, sprintf("
+    SELECT COUNT(*) AS n_fields
+    FROM read_parquet('%s')
+  ", s3_path))
+})
+
+district_wkt <- districts %>%
+  slice(48) %>%
+  st_geometry() %>% 
+  st_as_text()
+
+dbGetQuery(con, sprintf("
+  SELECT COUNT(*) AS n_fields
+  FROM read_parquet('%s') AS f
+  WHERE ST_Intersects(
+    f.geometry,
+    ST_GeomFromText('%s')
+  )
+", s3_path, district_wkt))
+
+```
+
+
+
 
 

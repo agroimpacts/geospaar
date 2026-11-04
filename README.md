@@ -190,4 +190,5 @@ On the web: Thanks to @LLeiSong, the materials are also available through the [c
 - [Class 17: Rasters with `terra`](class17.html)
 - [Class 18: Rasters with `terra` 2](class18.html)
 - [Class 19: `terra` continued](class19.html)
+- [Class 20: `terra` wrap-up + some advanced examples](class20.html)
 
