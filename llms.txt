@@ -302,6 +302,8 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   2](https://agroimpacts.github.io/geospaar/class18.md)
 - [Class 19: `terra`
   continued](https://agroimpacts.github.io/geospaar/class19.md)
+- [Class 20: `terra` wrap-up + some advanced
+  examples](https://agroimpacts.github.io/geospaar/class20.md)
 
 # Package index
 
