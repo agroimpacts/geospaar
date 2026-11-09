@@ -1,0 +1,58 @@
+---
+title: "Geospatial Analysis with R"
+subtitle: "Class 21"
+format:
+  revealjs:
+    code-block-height: 650px
+    theme: night
+    highlight-style: github
+    highlight-lines: true
+    incremental: false    
+    embed-resources: true
+resources:
+  - figures/zam_dem_raster.png
+title-slide-attributes:
+  style: "color: blue"
+  data-background-image: figures/zam_dem_raster.png
+  data-background-position: center
+  data-background-size: 70%
+css: ["themes/class1.css"]
+editor_options: 
+  chunk_output_type: console
+execute:
+    echo: true
+---
+
+## Exam
+
+- 10 questions, 1 bonus
+- Reproducibility concepts: 
+  - version control, packaging
+  - code reuse
+  - package components
+- R ecosystem
+  - Data types, structures
+  - Control structures, functions
+  - Classes
+  - Environments
+  - object oriented programming, generic methods
+
+---
+
+- Analytics
+  - Data manipulation
+    - Reshaping, long versus tall
+    - joins
+    - key `dplyr` verbs
+  - Split-apply-combine (SAC) 
+  - Spatial data operations
+    - Projections
+    - Geometric 
+    - Raster 
+- Visualization
+  - Graphical SAC
+- Coding:
+  - label parts of complex code
+  - Write basic code for simple operations
+
+---
