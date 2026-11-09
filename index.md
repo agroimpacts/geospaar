@@ -304,3 +304,4 @@ through the [course website](https://agroimpacts.github.io/geospaar/).
   continued](https://agroimpacts.github.io/geospaar/class19.md)
 - [Class 20: `terra` wrap-up + some advanced
   examples](https://agroimpacts.github.io/geospaar/class20.md)
+- [Class 21: Review](https://agroimpacts.github.io/geospaar/class21.md)
