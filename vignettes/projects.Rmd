@@ -133,88 +133,49 @@ This list is currently in thumbnail form, and will fill out during the next few 
 
 # Potential project list {#project-list}
 
-## Example of past projects
+## Visualize and analyze cropland characteristics and change
 
-A number of these projects were undertaken by previous classes, but several of them may be built on further.
+Clark's [Agricultural Impacts Research Group](https://agroimpacts.info/), through the [Mapping Africa](http://mappingafrica.io) project and as a collaborator on [Fields of the World](https://fieldsofthe.world/), has mapped crop field boundaries in several African countries (developed on Planet imagery) and contributed to global Sentinel-2 based maps.
 
-### Urban tree health (HERO)
+There are several possible projects related to these data.
 
-Develop a Shiny app identifying locations of HERO trees and their health over time. Project would potentially cover both HERO trees (across MA, RI) and trees in arboretum.
+### The `ftwr` package
 
-[HERO Research](https://www.clarku.edu/departments/hero-program/research/)
+Develop an R package that provides the tools for querying, downloading, visualizing, and analyzing the geometric properties of FTW's [global field boundary maps](https://source.coop/ftw/global-data-2e) stored on Source Cooperative. Let's image tools that enable you to define a specific region of interest and year, extract the fields from the corresponding geoparquet files, calculate key properties, such as field area, count, and descriptive shape metrics (see [here](https://github.com/agroimpacts/ftw-baselines/blob/feat/instance-metrics/docs/polygon-export-and-descriptors.md) for python-based work on calculating those features), and then visualize those in a shiny interface, along with their corresponding underlying Sentinel-2 quarterly mosaics. Here is a simple example of the type of output you might make. 
 
-### Ecological sensing in MA via in-situ sound sensors
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.caption="A 10x10 km subset of 2024 field boundaries predicted over California, showing the rectangularity values of fields."}
 
-Building on data from Prof. Sangermano's work on sound sensing, this project would examine relationship morning bird chorus and other variables, including MODIS temperature data and forest fragmentation.
+knitr::include_graphics("fig/ftw-viewer.png")
+```
 
-Ideally, project would also create an interactive map that displays sensing data.
+### The `mappingafricar` package
 
-If interested, students can also work with sound processing libraries (seewave, soundecology).
+Similar to above, but querying [Mapping Africa](mappingafrica.io)'s available maps (see [webmap](https://agroimpacts.github.io/mapping-africa/), and [repo](https://github.com/agroimpacts/mapping-africa) listing data sources).
 
-[Flor presentation](https://vimeo.com/762855200)
+### Map cropland change
 
-### Tracking CAFO installation in Yucatan peninsula
+Following methods developed by [Xiong et al (2026)](https://www.cabidigitallibrary.org/doi/abs/10.31220/agriRxiv.2026.00464) for Zambia, use our field boundary maps to develop gridded maps of cropland change trajectories in Nigeria, Angola, and Tanzania. 
 
-We have a data set of vector polygons identifying Concentrated Animal Feeding Operations (CAFOs) in Yucatan Peninsula Mexico. This project will develop a classification model for identifying CAFO locations, and use historical remote sensing imagery to estimate when CAFO's were built.
+```{r, echo=FALSE, fig.align="center", out.width="100%", fig.caption="Changes in cropland area in Zambia between 2018-2024 (Xiong et al, 2026)."}
 
-[Storymap](https://storymaps.arcgis.com/collections/3e7203cf44cf417c9b5fe1db7a182293)
+knitr::include_graphics("fig/cropland-change-zambia.png")
+```
 
-### Game Design
+## A drone-based sampling tool
 
-R is not especially used for games but there are some [nice examples](https://appsilon.com/shiny-videogame-video-tutorial/#:~:text=Did%20you%20know%20you%20can,and%20easy%20to%20play%20games.). This would be an educational geospatial game (similar to "Worldle" and "Carmen SanDiego"). The game should give progressive hints that are based off of geospatial analysis (i.e. predominant climate type, percent forest etc). The user could guess the country by picking a location in the app.
+For a prior [ECAAS](https://cropanalytics.net/) project, we created [a method](https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf#D2.5%20Service%20Scale-up%20Plan.indd%3A.3986%3A32) for using Open Street Maps data together with agricultural layers and grid-based clustering to lay out probability samples over Ghana. The resulting sample sites   were visited by drone operator teams, who flew over those locations at 100 m altitude and collected drone imagery. These images were then used to identify crop types. The sampling method used `R` packages to do the job, but never went beyond scripts. Turn this approach into an `R` package that can be applied nearly anywhere to create such samples. Demonstrate that it produces samples that are representative of the landscapes being sampled.
 
-### Redistricting effects
+## Map crop types
 
-Congressional maps were redrawn in 2022 after the 2020 Census. Where were the largest changes seen? Ideally you would have a background in political science/demographics.
+Those drone samples, together with on the ground data, provided a large number of vectorized data on crop types. Those data were used to train crop type models based on Sentinel-1 and Sentinel-2 predictors. Since then, Google's DeepMind has produced the [Alpha Earth Foundation embeddings](https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/), which provide a much richer (and cleaner) source of information for crop type mapping. Working with these labels and AEF embeddings drawn from [Source Cooperative](https://source.coop/tge-labs/aef), develop new crop type maps and see how well they compare to our earlier generation of models. Using our field boundary maps of Ghana as targets, make updated crop types maps of Ghana. 
 
-[Redistricting Data Hub](https://redistrictingdatahub.org/)
 
-### COVID policy impact
+## BYO project
 
-Create shiny app to examine trends relating COVID cases and different policies implemented (masking, vaccine requirements, social distancing). Can be at state or country level.
+Do you have your own project idea (we know some of you do!)? We are open to any potential project ideas that are geospatial in nature. For example:
 
-[COVID tracking](https://covid.cdc.gov/covid-data-tracker/#datatracker-home)
+### HERO-related projects
 
-### Modeling climate change
+Did you work on the [HERO](https://www.clarku.edu/departments/hero-program/research/) project this past summer? Do have an interesting geospatial analysis you could develop as part of that project? If so, please see us to discuss the possibility. We have had several such projects in the past: [here](https://www.gcamerica.org/scholarships/scholar/aidan-caron) is a story about one of them.  
 
-Use climate data from GEE `ee.ImageCollection("NASA/NEX-DCP30")` to estimate impacts on heat stress, drought and precipitation. Use the `rgee` library to create a Shiny app. [rgee link](https://r-spatial.github.io/rgee/reference/rgee-package.html)
 
-[rgee sample app](https://github.com/MVanDenburg92/RGEE_Shiny)
-
-### USF projects
-
-#### Are neighborhoods with public housing more brightly lit than those without?
-
-Following up on previous semesters' [work](https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md) (and processed further for the Urban Studies Foundation summer institute) that used VIIRS nightlights data to show that neighborhoods with public housing (in New York and several other cities) are more brightly lit than comparable neighborhoods without, we want to enhance the existing analyses by increasing the number of cities examined, and improving the analysis of variables.
-
-This will entail collecting data on public housing projects and building footpoints from other US cities, and then collecting and analyzing the nightlights data following the steps in the previous project.
-
-## New projects
-
-### Analyzing cropland data 
-
-The Agricultural Impacts Research Group, through the [Mapping Africa](http://mappingafrica.io) project and several funded projects (e.g. work [Farmerline](https://farmerline.co/), a farmer services provider, for the Enabling Crop Analytics at Scale (ECAAS) project) and the Lacuna Fund, has mapped croplands in various countries throughout Africa. Wall-to-wall, high resolution maps of field boundaries exist for Ghana, Zambia, and the Republic of Congo, which were developed using neural networks. An Africa's wide sample of images and digitized field boundaries was recently collected.
-
-There are several possible projects available from these data.
-
-#### Assess country–scale field dynamics
-
-There are several potential Working with a set of cropland predictions at 3 m resolution throughout Ghana, convert the predictions to individual field boundaries using python scripts plus R, and then estimate field sizes throughout the region. Can this dataset be used to identify center pivot irrigation?
-
-#### Analyze annual field dynamics
-
-There are several possibilities:
-
--   Maps of Ghana for several years exist, in the form of 5x5 km tiles score maps produced by a neural network. These need to be assembled and mosaicked into country scale maps, and then annual frequency of and changes in intensity of cropping can be assessed.
-
--   A comparison of field characteristics between Ghana and another country, e.g. Zambia or Republic for Congo
-
--   Use the continent wide field boundaries to assess regional difference in field size. Examine whether there are any regional trend in field size over the 7 year times series. Calculate uncertainty metrics in the collected data based on overlaps between multiple labellers' maps for the same locations.
-
-### Create a drone sampling tool
-
-For our prior ECAAS project, we created [a method](https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf#D2.5%20Service%20Scale-up%20Plan.indd%3A.3986%3A32) for using Open Street Maps data together with agricultural layers and gridded cluster to develop an approach for creating drone-based probability samples. The method used `R` packages to do the job, but never went beyond scripts. Turn this approach into a generalizable `R` package that can be applied nearly anywhere. Demonstrate that it produces probabilistic samples that are representative of the landscapes being sampled.
-
-### Improve the polygonization of crop fields
-
-Our current mapping project using `R` functions to polygonize field objects predicted by our neural networks. The shapes could be better regularized to be less rounded. Find an approach for regularizing polygons in R.
