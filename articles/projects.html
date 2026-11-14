@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Lyndon
 Estes</h4>
             
-            <h4 data-toc-skip class="date">2026-11-09 <a href="index.html">Back to home</a>
+            <h4 data-toc-skip class="date">2026-11-14 <a href="index.html">Back to home</a>
 </h4>
       
       <small class="dont-index">Source: <a href="https://github.com/agroimpacts/geospaar/blob/fall2026/vignettes/projects.Rmd" class="external-link"><code>vignettes/projects.Rmd</code></a></small>
@@ -282,165 +282,93 @@ the next few weeks.</p>
 <h2 id="project-list">Potential project list<a class="anchor" aria-label="anchor" href="#project-list"></a>
 </h2>
 <div class="section level3">
-<h3 id="example-of-past-projects">Example of past projects<a class="anchor" aria-label="anchor" href="#example-of-past-projects"></a>
+<h3 id="visualize-and-analyze-cropland-characteristics-and-change">Visualize and analyze cropland characteristics and change<a class="anchor" aria-label="anchor" href="#visualize-and-analyze-cropland-characteristics-and-change"></a>
 </h3>
-<p>A number of these projects were undertaken by previous classes, but
-several of them may be built on further.</p>
+<p>Clark’s <a href="https://agroimpacts.info/" class="external-link">Agricultural Impacts
+Research Group</a>, through the <a href="http://mappingafrica.io" class="external-link">Mapping Africa</a> project and as a
+collaborator on <a href="https://fieldsofthe.world/" class="external-link">Fields of the
+World</a>, has mapped crop field boundaries in several African countries
+(developed on Planet imagery) and contributed to global Sentinel-2 based
+maps.</p>
+<p>There are several possible projects related to these data.</p>
 <div class="section level4">
-<h4 id="urban-tree-health-hero">Urban tree health (HERO)<a class="anchor" aria-label="anchor" href="#urban-tree-health-hero"></a>
+<h4 id="the-ftwr-package">The <code>ftwr</code> package<a class="anchor" aria-label="anchor" href="#the-ftwr-package"></a>
 </h4>
-<p>Develop a Shiny app identifying locations of HERO trees and their
-health over time. Project would potentially cover both HERO trees
-(across MA, RI) and trees in arboretum.</p>
-<p><a href="https://www.clarku.edu/departments/hero-program/research/" class="external-link">HERO
-Research</a></p>
+<p>Develop an R package that provides the tools for querying,
+downloading, visualizing, and analyzing the geometric properties of
+FTW’s <a href="https://source.coop/ftw/global-data-2e" class="external-link">global field
+boundary maps</a> stored on Source Cooperative. Let’s image tools that
+enable you to define a specific region of interest and year, extract the
+fields from the corresponding geoparquet files, calculate key
+properties, such as field area, count, and descriptive shape metrics
+(see <a href="https://github.com/agroimpacts/ftw-baselines/blob/feat/instance-metrics/docs/polygon-export-and-descriptors.md" class="external-link">here</a>
+for python-based work on calculating those features), and then visualize
+those in a shiny interface, along with their corresponding underlying
+Sentinel-2 quarterly mosaics. Here is a simple example of the type of
+output you might make.</p>
+<p><img src="fig/ftw-viewer.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level4">
-<h4 id="ecological-sensing-in-ma-via-in-situ-sound-sensors">Ecological sensing in MA via in-situ sound sensors<a class="anchor" aria-label="anchor" href="#ecological-sensing-in-ma-via-in-situ-sound-sensors"></a>
+<h4 id="the-mappingafricar-package">The <code>mappingafricar</code> package<a class="anchor" aria-label="anchor" href="#the-mappingafricar-package"></a>
 </h4>
-<p>Building on data from Prof. Sangermano’s work on sound sensing, this
-project would examine relationship morning bird chorus and other
-variables, including MODIS temperature data and forest
-fragmentation.</p>
-<p>Ideally, project would also create an interactive map that displays
-sensing data.</p>
-<p>If interested, students can also work with sound processing libraries
-(seewave, soundecology).</p>
-<p><a href="https://vimeo.com/762855200" class="external-link">Flor presentation</a></p>
+<p>Similar to above, but querying <a href="mappingafrica.io">Mapping
+Africa</a>’s available maps (see <a href="https://agroimpacts.github.io/mapping-africa/" class="external-link">webmap</a>, and <a href="https://github.com/agroimpacts/mapping-africa" class="external-link">repo</a> listing
+data sources).</p>
 </div>
 <div class="section level4">
-<h4 id="tracking-cafo-installation-in-yucatan-peninsula">Tracking CAFO installation in Yucatan peninsula<a class="anchor" aria-label="anchor" href="#tracking-cafo-installation-in-yucatan-peninsula"></a>
+<h4 id="map-cropland-change">Map cropland change<a class="anchor" aria-label="anchor" href="#map-cropland-change"></a>
 </h4>
-<p>We have a data set of vector polygons identifying Concentrated Animal
-Feeding Operations (CAFOs) in Yucatan Peninsula Mexico. This project
-will develop a classification model for identifying CAFO locations, and
-use historical remote sensing imagery to estimate when CAFO’s were
-built.</p>
-<p><a href="https://storymaps.arcgis.com/collections/3e7203cf44cf417c9b5fe1db7a182293" class="external-link">Storymap</a></p>
-</div>
-<div class="section level4">
-<h4 id="game-design">Game Design<a class="anchor" aria-label="anchor" href="#game-design"></a>
-</h4>
-<p>R is not especially used for games but there are some <a href="https://appsilon.com/shiny-videogame-video-tutorial/#:~:text=Did%20you%20know%20you%20can,and%20easy%20to%20play%20games." class="external-link">nice
-examples</a>. This would be an educational geospatial game (similar to
-“Worldle” and “Carmen SanDiego”). The game should give progressive hints
-that are based off of geospatial analysis (i.e. predominant climate
-type, percent forest etc). The user could guess the country by picking a
-location in the app.</p>
-</div>
-<div class="section level4">
-<h4 id="redistricting-effects">Redistricting effects<a class="anchor" aria-label="anchor" href="#redistricting-effects"></a>
-</h4>
-<p>Congressional maps were redrawn in 2022 after the 2020 Census. Where
-were the largest changes seen? Ideally you would have a background in
-political science/demographics.</p>
-<p><a href="https://redistrictingdatahub.org/" class="external-link">Redistricting Data
-Hub</a></p>
-</div>
-<div class="section level4">
-<h4 id="covid-policy-impact">COVID policy impact<a class="anchor" aria-label="anchor" href="#covid-policy-impact"></a>
-</h4>
-<p>Create shiny app to examine trends relating COVID cases and different
-policies implemented (masking, vaccine requirements, social distancing).
-Can be at state or country level.</p>
-<p><a href="https://covid.cdc.gov/covid-data-tracker/#datatracker-home" class="external-link">COVID
-tracking</a></p>
-</div>
-<div class="section level4">
-<h4 id="modeling-climate-change">Modeling climate change<a class="anchor" aria-label="anchor" href="#modeling-climate-change"></a>
-</h4>
-<p>Use climate data from GEE
-<code>ee.ImageCollection("NASA/NEX-DCP30")</code> to estimate impacts on
-heat stress, drought and precipitation. Use the <code>rgee</code>
-library to create a Shiny app. <a href="https://r-spatial.github.io/rgee/reference/rgee-package.html" class="external-link">rgee
-link</a></p>
-<p><a href="https://github.com/MVanDenburg92/RGEE_Shiny" class="external-link">rgee sample
-app</a></p>
-</div>
-<div class="section level4">
-<h4 id="usf-projects">USF projects<a class="anchor" aria-label="anchor" href="#usf-projects"></a>
-</h4>
-<div class="section level5">
-<h5 id="are-neighborhoods-with-public-housing-more-brightly-lit-than-those-without">Are neighborhoods with public housing more brightly lit than those
-without?<a class="anchor" aria-label="anchor" href="#are-neighborhoods-with-public-housing-more-brightly-lit-than-those-without"></a>
-</h5>
-<p>Following up on previous semesters’ <a href="https://github.com/agroimpacts/USFlite/blob/main/external/notebooks/nightlights-part2.md" class="external-link">work</a>
-(and processed further for the Urban Studies Foundation summer
-institute) that used VIIRS nightlights data to show that neighborhoods
-with public housing (in New York and several other cities) are more
-brightly lit than comparable neighborhoods without, we want to enhance
-the existing analyses by increasing the number of cities examined, and
-improving the analysis of variables.</p>
-<p>This will entail collecting data on public housing projects and
-building footpoints from other US cities, and then collecting and
-analyzing the nightlights data following the steps in the previous
-project.</p>
-</div>
+<p>Following methods developed by <a href="https://www.cabidigitallibrary.org/doi/abs/10.31220/agriRxiv.2026.00464" class="external-link">Xiong
+et al (2026)</a> for Zambia, use our field boundary maps to develop
+gridded maps of cropland change trajectories in Nigeria, Angola, and
+Tanzania.</p>
+<p><img src="fig/cropland-change-zambia.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="new-projects">New projects<a class="anchor" aria-label="anchor" href="#new-projects"></a>
+<h3 id="a-drone-based-sampling-tool">A drone-based sampling tool<a class="anchor" aria-label="anchor" href="#a-drone-based-sampling-tool"></a>
 </h3>
-<div class="section level4">
-<h4 id="analyzing-cropland-data">Analyzing cropland data<a class="anchor" aria-label="anchor" href="#analyzing-cropland-data"></a>
-</h4>
-<p>The Agricultural Impacts Research Group, through the <a href="http://mappingafrica.io" class="external-link">Mapping Africa</a> project and several
-funded projects (e.g. work <a href="https://farmerline.co/" class="external-link">Farmerline</a>, a farmer services
-provider, for the Enabling Crop Analytics at Scale (ECAAS) project) and
-the Lacuna Fund, has mapped croplands in various countries throughout
-Africa. Wall-to-wall, high resolution maps of field boundaries exist for
-Ghana, Zambia, and the Republic of Congo, which were developed using
-neural networks. An Africa’s wide sample of images and digitized field
-boundaries was recently collected.</p>
-<p>There are several possible projects available from these data.</p>
-<div class="section level5">
-<h5 id="assess-countryscale-field-dynamics">Assess country–scale field dynamics<a class="anchor" aria-label="anchor" href="#assess-countryscale-field-dynamics"></a>
-</h5>
-<p>There are several potential Working with a set of cropland
-predictions at 3 m resolution throughout Ghana, convert the predictions
-to individual field boundaries using python scripts plus R, and then
-estimate field sizes throughout the region. Can this dataset be used to
-identify center pivot irrigation?</p>
-</div>
-<div class="section level5">
-<h5 id="analyze-annual-field-dynamics">Analyze annual field dynamics<a class="anchor" aria-label="anchor" href="#analyze-annual-field-dynamics"></a>
-</h5>
-<p>There are several possibilities:</p>
-<ul>
-<li><p>Maps of Ghana for several years exist, in the form of 5x5 km
-tiles score maps produced by a neural network. These need to be
-assembled and mosaicked into country scale maps, and then annual
-frequency of and changes in intensity of cropping can be
-assessed.</p></li>
-<li><p>A comparison of field characteristics between Ghana and another
-country, e.g. Zambia or Republic for Congo</p></li>
-<li><p>Use the continent wide field boundaries to assess regional
-difference in field size. Examine whether there are any regional trend
-in field size over the 7 year times series. Calculate uncertainty
-metrics in the collected data based on overlaps between multiple
-labellers’ maps for the same locations.</p></li>
-</ul>
-</div>
-</div>
-<div class="section level4">
-<h4 id="create-a-drone-sampling-tool">Create a drone sampling tool<a class="anchor" aria-label="anchor" href="#create-a-drone-sampling-tool"></a>
-</h4>
-<p>For our prior ECAAS project, we created <a href="https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf#D2.5%20Service%20Scale-up%20Plan.indd%3A.3986%3A32" class="external-link">a
+<p>For a prior <a href="https://cropanalytics.net/" class="external-link">ECAAS</a> project,
+we created <a href="https://cropanalytics.net/wp-content/uploads/2021/08/D2.5-Service-Scale-up-Plan-V2-Aug-6-2021-1.pdf#D2.5%20Service%20Scale-up%20Plan.indd%3A.3986%3A32" class="external-link">a
 method</a> for using Open Street Maps data together with agricultural
-layers and gridded cluster to develop an approach for creating
-drone-based probability samples. The method used <code>R</code> packages
-to do the job, but never went beyond scripts. Turn this approach into a
-generalizable <code>R</code> package that can be applied nearly
-anywhere. Demonstrate that it produces probabilistic samples that are
-representative of the landscapes being sampled.</p>
+layers and grid-based clustering to lay out probability samples over
+Ghana. The resulting sample sites were visited by drone operator teams,
+who flew over those locations at 100 m altitude and collected drone
+imagery. These images were then used to identify crop types. The
+sampling method used <code>R</code> packages to do the job, but never
+went beyond scripts. Turn this approach into an <code>R</code> package
+that can be applied nearly anywhere to create such samples. Demonstrate
+that it produces samples that are representative of the landscapes being
+sampled.</p>
 </div>
+<div class="section level3">
+<h3 id="map-crop-types">Map crop types<a class="anchor" aria-label="anchor" href="#map-crop-types"></a>
+</h3>
+<p>Those drone samples, together with on the ground data, provided a
+large number of vectorized data on crop types. Those data were used to
+train crop type models based on Sentinel-1 and Sentinel-2 predictors.
+Since then, Google’s DeepMind has produced the <a href="https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/" class="external-link">Alpha
+Earth Foundation embeddings</a>, which provide a much richer (and
+cleaner) source of information for crop type mapping. Working with these
+labels and AEF embeddings drawn from <a href="https://source.coop/tge-labs/aef" class="external-link">Source Cooperative</a>, develop
+new crop type maps and see how well they compare to our earlier
+generation of models. Using our field boundary maps of Ghana as targets,
+make updated crop types maps of Ghana.</p>
+</div>
+<div class="section level3">
+<h3 id="byo-project">BYO project<a class="anchor" aria-label="anchor" href="#byo-project"></a>
+</h3>
+<p>Do you have your own project idea (we know some of you do!)? We are
+open to any potential project ideas that are geospatial in nature. For
+example:</p>
 <div class="section level4">
-<h4 id="improve-the-polygonization-of-crop-fields">Improve the polygonization of crop fields<a class="anchor" aria-label="anchor" href="#improve-the-polygonization-of-crop-fields"></a>
+<h4 id="hero-related-projects">HERO-related projects<a class="anchor" aria-label="anchor" href="#hero-related-projects"></a>
 </h4>
-<p>Our current mapping project using <code>R</code> functions to
-polygonize field objects predicted by our neural networks. The shapes
-could be better regularized to be less rounded. Find an approach for
-regularizing polygons in R.</p>
+<p>Did you work on the <a href="https://www.clarku.edu/departments/hero-program/research/" class="external-link">HERO</a>
+project this past summer? Do have an interesting geospatial analysis you
+could develop as part of that project? If so, please see us to discuss
+the possibility. We have had several such projects in the past: <a href="https://www.gcamerica.org/scholarships/scholar/aidan-caron" class="external-link">here</a>
+is a story about one of them.</p>
 </div>
 </div>
 </div>

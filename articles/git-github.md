@@ -131,6 +131,13 @@ A very useful reference for basic branching and merging can be found
 
     Note the -u flag. That should fix it.
 
+### Other resources
+
+For more detail on `git`/GitHub, please see
+[Android0](https://github.com/AnnDroid0)’s [detailed
+overview](https://github.com/AnnDroid0/GOT-GIT/blob/main/README.md) of
+`git` commands and trouble-shooting tips.
+
 ------------------------------------------------------------------------
 
 [Back to home](https://agroimpacts.github.io/geospaar/articles/index.md)
